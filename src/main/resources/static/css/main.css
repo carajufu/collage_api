@@ -1,0 +1,44 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+div,
+header,
+main,
+footer{
+    border: 1px solid red;
+}
+
+#wrapper {
+    width: 100vw;
+    height: 110vh;
+    display: flex;
+    flex-direction: column;
+}
+
+header {
+    width: 100vw;
+    height: 5%;
+}
+
+main {
+    width: 99vw;
+    height: 84%;
+}
+
+#sidebar {
+    width: 280px;
+    height: 100%;
+}
+
+#main-container {
+    height: 100%;
+    border-color: gold;
+}
+
+footer {
+    width: 100vw;
+    height: 9%;
+}
