@@ -1,0 +1,16 @@
+package kr
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+
+@Controller
+public class TestController {
+    @GetMapping("/")
+    public String testMain(){
+        return "template";
+    }
+    @GetMapping("/stdntRegist")
+    public String testMain2(){
+        return "regist/stdnt_regist";
+    }
+}
