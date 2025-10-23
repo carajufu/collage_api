@@ -23,12 +23,8 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-<<<<<<< HEAD
                 .csrf(csrf -> csrf.disable())
                 .httpBasic(hbasic -> hbasic.disable())
-=======
-        		.csrf(csrf -> csrf.disable()) // CSRF 보호 비활성화
->>>>>>> 08acef2b2ac223f5cfb4f38af1dbcaa6eb2b5ea9
                 .authorizeHttpRequests(authorize -> authorize
                         .anyRequest().permitAll()
                 );
