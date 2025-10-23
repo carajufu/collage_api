@@ -9,4 +9,8 @@ public class TestController {
     public String testMain(){
         return "template";
     }
+    @GetMapping("/stdntRegist")
+    public String testMain2(){
+        return "regist/stdnt_regist";
+    }
 }

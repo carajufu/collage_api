@@ -21,7 +21,7 @@
     <!-- jquery cdn 추가 -->
     <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
 
-    <link rel="stylesheet" href="css/main.css" />
+    <link rel="stylesheet" href="/css/main.css" />
 </head>
 <body>
 <div id="wrapper">
