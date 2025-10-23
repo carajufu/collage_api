@@ -1,5 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="kr.ac.collage_api.account.mapper.AccountMapper">
+<mapper
+	namespace="kr.ac.collage_api.account.mapper.AccountMapper">
+
+	<!--//파일 그룹 생성 public int insertFileGroup(FileGroupVO fileGroupVO); -->
+	<insert id="insertFileGroup" parameterType="fileGroupVO">
+		<selectKey resultType="long" order="BEFORE"
+			keyProperty="fileGroupNo">
+			SELECT
+          		NVL(MAX(FILE_GROUP_NO), TO_NUMBER(TO_CHAR(SYSDATE, 'YYYYMMDD')) * 1000) + 1
+       		FROM
+           		FILE_GROUP
+     		WHERE
+             	FILE_GROUP_NO >= TO_NUMBER(TO_CHAR(SYSDATE, 'YYYYMMDD')) * 1000
+		</selectKey>
+
+		INSERT INTO FILE_GROUP (FILE_GROUP_NO, FILE_REGIST_DE)
+		VALUES
+		(#{fileGroupNo},SYSDATE)
+
+	</insert>
+
+	<!-- //파일 디테일 생성 
+	public int insertFileDetail(FileDetailVO fileDetailVO); -->
+
+	<insert id="insertFileDetail" parameterType="fileDetailVO">
+		<selectKey resultType="int" order="BEFORE" keyProperty="fileNo">
+			SELECT NVL(MAX(FILE_NO),0)+1
+			FROM FILE_DETAIL
+			WHERE FILE_GROUP_NO = #{fileGroupNo}
+		
+		</selectKey>
+	
+	INSERT INTO FILE_DETAIL
+		(FILE_NO, FILE_GROUP_NO, FILE_NM, FILE_STRE_NM, FILE_STREPLACE
+		, FILE_MG, FILE_EXTSN, FILE_TY, FILE_STRE_DE, FILE_DWLD_CO)
+	VALUES(#{fileNo},#{fileGroupNo},#{fileNm},#{fileStreNm},#{fileStreplace}
+	,#{fileMg},#{fileExtsn},#{fileTy},SYSDATE,#{fileDwldCo})
+	
+	</insert>
+
+
+
+
 
 </mapper>
