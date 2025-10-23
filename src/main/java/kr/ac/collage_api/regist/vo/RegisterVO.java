@@ -16,3 +16,5 @@ public class RegisterVO {
 	private String payStatus;
 	private String regDate;
 }
+
+//테이블 완성되면 나중에 vo, mapper, service, serviceImpl, controller 수정 필요함
