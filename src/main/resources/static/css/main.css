@@ -4,12 +4,6 @@
     box-sizing: border-box;
 }
 
-div,
-header,
-main,
-footer{
-    border: 1px solid red;
-}
 
 #wrapper {
     width: 100vw;
