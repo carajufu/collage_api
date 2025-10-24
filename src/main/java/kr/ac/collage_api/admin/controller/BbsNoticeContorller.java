@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import kr.ac.collage_api.admin.service.BbsNoticeService;
+import kr.ac.collage_api.admin.service.impl.BbsNoticeServiceImpl;
 import kr.ac.collage_api.vo.BbsVO;
 import kr.ac.collage_api.config.ArticlePage;
 import lombok.extern.slf4j.Slf4j;
