@@ -12,7 +12,7 @@ public class SubjctVO {
 	private String subjctNm;      //학과명	SUBJCT_NM
 	private String subjctTelno;   //학과전화번호	SUBJCT_TELNO
 	private String subjctLc;      //학과위치	SUBJCT_LC
-	private int fondyear;         //설립년도	FONDYEAR
+	private String fondyear;         //설립년도	FONDYEAR
 	private int operSttus;        //운영상태	OPER_STTUS
 	private Date recentUpdtDt;    //최근수정일시	RECENT_UPDT_DT
 }

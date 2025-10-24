@@ -9,7 +9,9 @@ import kr.ac.collage_api.account.mapper.AccountMapper;
 import kr.ac.collage_api.counsel.mapper.CounselMapper;
 import kr.ac.collage_api.counsel.service.CounselService;
 import kr.ac.collage_api.vo.CnsltAtVO;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 public class CounselServiceImpl implements CounselService {
 
@@ -24,8 +26,9 @@ public class CounselServiceImpl implements CounselService {
 		
 		//계정 아이디로 교수 아이디 가져오기
 		String profsrNo = this.accountMapper.getProfsrNo(acntId);
-								
+		log.info("getCnsltAtVOList() -> profsrNo : {}", profsrNo);
 		return this.counselMapper.getCnsltAtVOList(profsrNo);
+		
 	}
 
 	@Override
