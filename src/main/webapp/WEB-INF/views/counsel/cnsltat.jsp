@@ -29,10 +29,11 @@
         <table class="table table-bordered table-hover bg-white">
             <thead class="table-light">
                 <tr>
-                    <th>상담_고유번호</th>
-                    <th>상담 시작 일시</th>
-                    <th>상담 가능 시간</th>
+                    <th>상담번호</th>
+                    <th>상담일</th>
+                    <th>상담시간</th>
                     <th>상태</th>
+                    <th>등록일</th>
                 </tr>
             </thead>
             <tbody id="cnstbody">
@@ -91,12 +92,58 @@ function getList() {
         console.log("성공!",result.cnsltAtVOList);
         console.log("rrrseu",result.result);
         const cnsltAts = result.cnsltAtVOList;
-        let str = ""
+        const cnstbody = document.querySelector("#cnstbody");
+        let str = "";
+        let day = "";
+        let hourStart = "";
+        let hourEnd = "";
+        let time ="";
+        let regDay ="";
+        let bg = "";
+        let text = "";
 
-        result.cnsltAtVOList.forEach(cnsltAt => {
-                cnsltAt
+        cnsltAts.forEach(cnsltAt => {
+            if (cnsltAt.sttus =="1") {
+                cnsltAt.sttus = "상담대기";
+                bg="bg-warning";
+                text = "text-dark";
+            } else if (cnsltAt.sttus =="2") {
+            	cnsltAt.sttus = "상담예약완료";
+            	bg="bg-primary";
+            	text = "text-white";
+            }else if (cnsltAt.sttus =="3") {
+            	cnsltAt.sttus = "상담취소";
+            	bg="bg-danger";
+            	text = "text-white";
+            }else if (cnsltAt.sttus =="4") {
+            	cnsltAt.sttus = "상담완료";
+            	bg="bg-success";
+            	text = "text-white";
+            }
             
+            day = cnsltAt.cnsltBeginDe.substring(0,10);
+            hourStart = parseInt(cnsltAt.cnsltBeginDe.substring(11,13));
+            hourEnd = hourStart + parseInt(cnsltAt.cnsltPosblTime);
+            time = hourStart + " ~ " + hourEnd;
+            regDay = cnsltAt.registDt.substring(0,10);
+
+            
+
+            str += `       
+                <tr>
+                    <td>\${cnsltAt.profsrNo}-\${cnsltAt.cnsltInnb}</td>
+                    <td>\${day}</td>
+                    <td>\${time}</td>
+                    <td><span class="badge \${bg} \${text}">\${cnsltAt.sttus}</span></td>
+                    <td>\${regDay}</td>
+                </tr>
+                `
         });
+        
+        
+
+        
+        cnstbody.innerHTML = str;
 
     }).catch(err=>{
         console.err("에러렁",err);

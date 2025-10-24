@@ -25,7 +25,7 @@ public class CounselController {
 	CounselService counselService;
 	
 	
-	@GetMapping("/cnsltprof")
+	@GetMapping("/prof")
 	public String cnsltprof() {
 		//교수 상담영역으로 고고
 		return "counsel/cnsltat";
@@ -36,7 +36,7 @@ public class CounselController {
 	@ResponseBody
 	@GetMapping("/getlist")
 	public Map<String,Object> getlist(Principal principal) {
-		String acntId = "testId";
+		String acntId = "P2301";
 		
 		if(principal != null) {
 			acntId = principal.getName();
