@@ -1,4 +1,4 @@
-package kr.ac.collage_api.account.vo;
+package kr.ac.collage_api.vo;
 
 import java.sql.Date;
 import java.util.List;

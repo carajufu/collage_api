@@ -5,8 +5,7 @@ import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 
-import kr.ac.collage_api.account.vo.FileGroupVO;
-import kr.ac.collage_api.admin.vo.BbsVO;
+import kr.ac.collage_api.vo.BbsVO;
 
 @Mapper
 public interface BbsNoticeMapper {

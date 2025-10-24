@@ -2,8 +2,8 @@ package kr.ac.collage_api.account.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
 
-import kr.ac.collage_api.account.vo.FileDetailVO;
-import kr.ac.collage_api.account.vo.FileGroupVO;
+import kr.ac.collage_api.vo.FileDetailVO;
+import kr.ac.collage_api.vo.FileGroupVO;
 
 @Mapper
 public interface AccountMapper {

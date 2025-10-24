@@ -1,4 +1,4 @@
-package kr.ac.collage_api.admin.vo;
+package kr.ac.collage_api.vo;
 
 import lombok.Data;
 

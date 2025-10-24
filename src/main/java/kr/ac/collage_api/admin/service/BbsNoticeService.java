@@ -3,7 +3,7 @@ package kr.ac.collage_api.admin.service;
 import java.util.List;
 import java.util.Map;
 
-import kr.ac.collage_api.admin.vo.BbsVO;
+import kr.ac.collage_api.vo.BbsVO;
 
 public interface BbsNoticeService {
 

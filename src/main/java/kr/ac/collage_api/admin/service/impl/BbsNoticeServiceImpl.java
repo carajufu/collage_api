@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 import kr.ac.collage_api.admin.mapper.BbsNoticeMapper;
 import kr.ac.collage_api.admin.service.BbsNoticeService;
-import kr.ac.collage_api.admin.vo.BbsVO;
+import kr.ac.collage_api.vo.BbsVO;
 
 @Service
 public class BbsNoticeServiceImpl implements BbsNoticeService {
