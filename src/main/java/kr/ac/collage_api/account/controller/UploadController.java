@@ -9,8 +9,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.multipart.MultipartFile;
 
 import kr.ac.collage_api.account.mapper.AccountMapper;
-import kr.ac.collage_api.account.vo.FileDetailVO;
-import kr.ac.collage_api.account.vo.FileGroupVO;
+import kr.ac.collage_api.vo.FileDetailVO;
+import kr.ac.collage_api.vo.FileGroupVO;
 import kr.ac.collage_api.config.BeanController;
 import lombok.extern.slf4j.Slf4j;
 

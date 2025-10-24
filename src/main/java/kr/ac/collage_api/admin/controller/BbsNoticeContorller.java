@@ -13,8 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import kr.ac.collage_api.admin.service.BbsNoticeService;
-import kr.ac.collage_api.admin.service.impl.BbsNoticeServiceImpl;
-import kr.ac.collage_api.admin.vo.BbsVO;
+import kr.ac.collage_api.vo.BbsVO;
 import kr.ac.collage_api.config.ArticlePage;
 import lombok.extern.slf4j.Slf4j;
 
@@ -24,14 +23,8 @@ import lombok.extern.slf4j.Slf4j;
 @Controller
 public class BbsNoticeContorller {
 
-    private final BbsNoticeServiceImpl bbsNoticeServiceImpl;
-
 	@Autowired
 	BbsNoticeService bbsNoticeService;
-
-    BbsNoticeContorller(BbsNoticeServiceImpl bbsNoticeServiceImpl) {
-        this.bbsNoticeServiceImpl = bbsNoticeServiceImpl;
-    }
 	
 	@GetMapping("/list")
 	public String list(Model model,
