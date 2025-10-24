@@ -14,4 +14,8 @@ public interface AccountMapper {
 	//파일 디테일 생성
 	public int insertFileDetail(FileDetailVO fileDetailVO);
 
+	//계정아이디로 교수 아이디 가져오기
+	public String getProfsrNo(String acntId);	
+	
+
 }

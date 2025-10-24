@@ -24,14 +24,8 @@ import lombok.extern.slf4j.Slf4j;
 @Controller
 public class BbsNoticeContorller {
 
-    private final BbsNoticeServiceImpl bbsNoticeServiceImpl;
-
 	@Autowired
 	BbsNoticeService bbsNoticeService;
-
-    BbsNoticeContorller(BbsNoticeServiceImpl bbsNoticeServiceImpl) {
-        this.bbsNoticeServiceImpl = bbsNoticeServiceImpl;
-    }
 	
 	@GetMapping("/list")
 	public String list(Model model,
