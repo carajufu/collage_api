@@ -1,5 +1,7 @@
 package kr.ac.collage_api.vo;
 
+import java.util.List;
+
 import lombok.Data;
 
 //계정
@@ -10,6 +12,8 @@ public class AcntVO {
 	private String password;  //비밀번호        
 	private String acntTy;    //계정_유형
 	private String authorId;   //권한ID(PK)	AUTHOR_ID(PK)
+	
+	private List<AuthorVO> authorVOList;
 }                                          
 
 
