@@ -29,7 +29,7 @@ public class SecurityConfig {
     public WebSecurityCustomizer configure() {
         return web -> web.debug(false)
                 .ignoring()
-                .requestMatchers("/css/**", "/js/**", "/img/**", "/favicon.ico");
+                .requestMatchers("/css/**");
     }
 
     @Bean

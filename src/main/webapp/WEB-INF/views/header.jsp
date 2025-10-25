@@ -26,13 +26,13 @@
 </head>
 <body>
 <div id="wrapper">
-    <header>
-        <div class="topbar">
+    <header class="header">
+        <div class="container-fluid d-flex justify-content-between align-items-center gap-3">
             <div class="brand"><i class="bi bi-mortarboard-fill"></i> 스마트 LMS</div>
             <div class="user-actions">
-                <i class="bi bi-bell"></i>
-                <i class="bi bi-gear"></i>
-                <i class="bi bi-person-circle"></i>
+                <i class="bi bi-bell p-2"></i>
+                <i class="bi bi-gear p-2"></i>
+                <i class="bi bi-person-circle p-2"></i>
             </div>
         </div>
 

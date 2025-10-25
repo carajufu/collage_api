@@ -42,20 +42,20 @@ public class UserViewController {
     public String studentWelcome(Principal principal) {
         log.info("chkng principal > {}", principal.getName());
 
-        return "dashboard/student/index";
+        return "redirect:/dashboard/student";
     }
 
     @GetMapping("/prof/welcome")
     public String profWelcome(Principal principal) {
         log.info("chkng principal > {}", principal.getName());
 
-        return "dashboard/prof/index";
+        return "redirect:/dashboard/prof";
     }
 
     @GetMapping("/admin/welcome")
     public String adminWelcome(Principal principal) {
         log.info("chkng principal > {}", principal.getName());
 
-        return "dashboard/admin/index";
+        return "redirect:/dashboard/admin";
     }
 }
