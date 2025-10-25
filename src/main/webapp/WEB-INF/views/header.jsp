@@ -34,6 +34,9 @@
                 <i class="bi bi-gear p-2"></i>
                 <i class="bi bi-person-circle p-2"></i>
             </div>
+            <c:if test="${!empty principal.getname()}">
+                <a href="/logout"><button class="btn btn-outline-danger">로그아웃</button></a>
+            </c:if>
         </div>
 
         <!-- ✅ CHANGED: 토스트 -->

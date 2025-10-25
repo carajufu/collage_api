@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class LectureVO {
-    private String lctreNM;
+    private String lctreNm;
     private String lctrum;
     private String sklstfNm;
 }
