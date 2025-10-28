@@ -34,9 +34,9 @@
                 <i class="bi bi-gear p-2"></i>
                 <i class="bi bi-person-circle p-2"></i>
             </div>
-            <c:if test="${!empty principal.getname()}">
+            <sec:authorize access="isAuthenticated()">
                 <a href="/logout"><button class="btn btn-outline-danger">로그아웃</button></a>
-            </c:if>
+            </sec:authorize>
         </div>
 
         <!-- ✅ CHANGED: 토스트 -->
@@ -82,30 +82,32 @@
                     </a>
                 </li>
             </ul>
-<%--            <hr>--%>
-<%--            <div class="dropdown">--%>
-<%--                <a href="#" class="d-flex align-items-center link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">--%>
-<%--                    <img src="https://github.com/mdo.png" alt="" width="32" height="32" class="rounded-circle me-2">--%>
-<%--                    <strong></strong>--%>
-<%--                </a>--%>
-<%--                <ul class="dropdown-menu text-small shadow">--%>
-<%--                    <li>--%>
-<%--                        <a class="dropdown-item" href="#">New project...</a>--%>
-<%--                    </li>--%>
-<%--                    <li>--%>
-<%--                        <a class="dropdown-item" href="#">Settings</a>--%>
-<%--                    </li>--%>
-<%--                    <li>--%>
-<%--                        <a class="dropdown-item" href="#">Profile</a>--%>
-<%--                    </li>--%>
-<%--                    <li>--%>
-<%--                        <hr class="dropdown-divider">--%>
-<%--                    </li>--%>
-<%--                    <li>--%>
-<%--                        <a class="dropdown-item" href="#">Sign out</a>--%>
-<%--                    </li>--%>
-<%--                </ul>--%>
-<%--            </div>--%>
+            <sec:authorize access="isAuthenticated()">
+                <hr>
+                <div class="dropdown">
+                    <a href="#" class="d-flex align-items-center link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                        <img src="https://github.com/mdo.png" alt="" width="32" height="32" class="rounded-circle me-2">
+                        <strong><sec:authentication property="principal.username"/></strong>
+                    </a>
+                    <ul class="dropdown-menu text-small shadow">
+                        <li>
+                            <a class="dropdown-item" href="#">New project...</a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="#">Settings</a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="#">Profile</a>
+                        </li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="#">Sign out</a>
+                        </li>
+                    </ul>
+                </div>
+            </sec:authorize>
         </div>
 
 

@@ -8,5 +8,6 @@ import lombok.NoArgsConstructor;
 public class LectureVO {
     private String lctreNm;
     private String lctrum;
+    private String estbllctreCode;
     private String sklstfNm;
 }

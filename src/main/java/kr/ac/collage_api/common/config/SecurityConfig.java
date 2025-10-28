@@ -1,6 +1,7 @@
-package kr.ac.collage_api.config;
+package kr.ac.collage_api.common.config;
 
 import jakarta.servlet.DispatcherType;
+import jakarta.servlet.http.HttpServletRequest;
 import kr.ac.collage_api.security.service.impl.CustomLoginSuccessHandler;
 import kr.ac.collage_api.security.service.impl.CustomLogoutSuccessHandler;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +17,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 
 @Configuration
 @EnableWebSecurity
@@ -29,7 +30,7 @@ public class SecurityConfig {
     public WebSecurityCustomizer configure() {
         return web -> web.debug(false)
                 .ignoring()
-                .requestMatchers("/css/**");
+                .requestMatchers("/css/**", "/js/**", "favicon.ico");
     }
 
     @Bean
@@ -38,15 +39,24 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http, CustomLoginSuccessHandler customLoginSuccessHandler, CustomLogoutSuccessHandler customLogoutSuccessHandler) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http,
+                                           CustomLoginSuccessHandler customLoginSuccessHandler,
+                                           CustomLogoutSuccessHandler customLogoutSuccessHandler) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
                 .httpBasic(hbasic -> hbasic.disable())
                 .authorizeHttpRequests(authorize -> authorize
                         .dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.ASYNC).permitAll()
-                        .requestMatchers("/", "/login", "/accessError").permitAll()
+                        .requestMatchers("/", "/login", "/accessError", "/.well-known/**").permitAll()
                         .anyRequest().authenticated()
                 )
+                .requestCache(cache -> cache.requestCache(new HttpSessionRequestCache() {{
+                    setRequestMatcher(req -> {
+                        var httpReq = (HttpServletRequest) req;
+                        var uri = httpReq.getRequestURI();
+                        return !(uri.startsWith("/.well-known/"));
+                    });
+                }}))
                 .formLogin(formLogin -> formLogin.loginPage("/login")
                         .successHandler(customLoginSuccessHandler))
                 .sessionManagement(session -> session.maximumSessions(1))
