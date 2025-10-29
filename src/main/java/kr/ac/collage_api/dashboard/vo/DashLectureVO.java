@@ -5,7 +5,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class LectureVO {
+public class DashLectureVO {
     private String lctreNm;
     private String lctrum;
     private String estbllctreCode;
