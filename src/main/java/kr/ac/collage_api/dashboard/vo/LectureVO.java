@@ -1,0 +1,12 @@
+package kr.ac.collage_api.dashboard.vo;
+
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+public class LectureVO {
+    private String lctreNm;
+    private String lctrum;
+    private String sklstfNm;
+}
