@@ -1,4 +1,4 @@
-package kr.ac.collage_api.config;
+package kr.ac.collage_api.common.config;
 
 import java.util.List;
 

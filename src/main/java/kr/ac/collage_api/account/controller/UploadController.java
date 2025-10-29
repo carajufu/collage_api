@@ -11,7 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 import kr.ac.collage_api.account.mapper.AccountMapper;
 import kr.ac.collage_api.vo.FileDetailVO;
 import kr.ac.collage_api.vo.FileGroupVO;
-import kr.ac.collage_api.config.BeanController;
+import kr.ac.collage_api.common.config.BeanController;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
