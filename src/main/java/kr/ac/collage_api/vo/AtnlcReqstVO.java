@@ -16,13 +16,3 @@ public class AtnlcReqstVO {
 	private String reqstDe;          //신청일자		                           
 	private Date recentUpdtDt;       //최근수정일시	 	                      
 }
-
-
-
-
-
-
-
-
-
-

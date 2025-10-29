@@ -1,5 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="kr.or.collage_api.counsel.mapper.CounselMapper">
+<mapper namespace="kr.ac.collage_api.counsel.mapper.CounselMapper">
+		
+	<!-- //교수아이디가 포함된 상담_가능_여부 테이블 List 가져오기
+	public List<CnsltAtVO> getCnsltAtVOList(String profsrNo); -->
+	<select id="getCnsltAtVOList" parameterType="String" resultType="cnsltAtVO">
+		SELECT CNSLT_INNB, CNSLT_BEGIN_DE, CNSLT_POSBL_TIME, STTUS, CNSLT_MTHD
+			 , CNSLT_RESULT, REGIST_DT, PROFSR_NO
+		  FROM CNSLT_AT
+		 WHERE PROFSR_NO = #{profsrNo}
+	</select>
+	
+	<!-- 상담_가능_여부 테이블에 입력
+	public int insertCnsltAt(CnsltAtVO cnsltAtVO); -->
+	<insert id="insertCnsltAt" parameterType="cnsltAtVO">
+		<selectKey resultType="int" order="BEFORE" keyProperty="cnsltInnb">
+			SELECT NVL(MAX(CNSLT_INNB),0)+1 FROM CNSLT_AT
+		</selectKey>
+	
+		INSERT INTO CNSLT_AT 
+			(CNSLT_INNB, CNSLT_BEGIN_DE, CNSLT_POSBL_TIME, STTUS, CNSLT_MTHD
+		   , REGIST_DT, PROFSR_NO)
+		VALUES (#{cnsltInnb},#{cnsltBeginDe},#{cnsltPosblTime},1,#{cnsltMthd}
+		,SYSDATE,#{profsrNo})
+	</insert>
 
 </mapper>

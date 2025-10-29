@@ -1,7 +1,5 @@
 package kr.ac.collage_api.vo;
 
-import java.util.List;
-
 import lombok.Data;
 
 //개설강의
