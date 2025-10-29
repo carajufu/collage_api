@@ -83,8 +83,42 @@
 	
 	
 25-10-24 VO만들기,  더미데이터 만들기(대학,학과,계정,학생)
+         
 
 
+25-10-25 상담 기능
+		0. 상담 진행 로직 수정
+		1. 상담테이블 수정후 하나로 병합 (기존 테이블 삭제 아직 삭제 안하고 추가함)
+		2. 상담 VO 생성
+		3. 상담 학생 JSP 생성
+		4. 상담 학생 list 불러오기 진행중....
+
+
+
+
+
+
+
+----- 연도 학기 구하는 함수 -----
+	Calendar cal = Calendar.getInstance();
+
+    public String getYear() {
+        String year = Integer.toString(cal.get(Calendar.YEAR));
+        return year;
+    }
+
+    public String getCurrentPeriod() {
+        int currentMonth = cal.get(Calendar.MONTH) + 1;
+        String currentPeriod = null;
+
+        if(currentMonth >= 3 && currentMonth <= 7) {
+            currentPeriod = "1학기";
+        } else if(currentMonth >= 9 && currentMonth <= 12) {
+            currentPeriod = "2학기";
+        }
+
+        return currentPeriod;
+    }
 
 
 

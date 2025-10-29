@@ -43,6 +43,17 @@
 	  WHERE S.ACNT_ID = #{acntId}
 	</select>
 
+	<!-- 계정 아이디로 학생 아이디 가져오기
+	public String selectStdntNo(String acntId); -->
+	
+	<select id="selectStdntNo" parameterType="String" resultType="String" >
+		SELECT S.STDNT_NO
+		  FROM STDNT S
+		  JOIN ACNT A ON A.ACNT_ID = S.ACNT_ID
+		 WHERE S.ACNT_ID = #{acntId}
+	</select>
+
+
 
 
 

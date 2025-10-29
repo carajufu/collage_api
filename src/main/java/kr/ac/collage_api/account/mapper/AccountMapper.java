@@ -8,6 +8,9 @@ import kr.ac.collage_api.vo.FileGroupVO;
 @Mapper
 public interface AccountMapper {
 
+	
+
+	
 	//파일 그룹 생성
 	public int insertFileGroup(FileGroupVO fileGroupVO);
 
@@ -15,7 +18,11 @@ public interface AccountMapper {
 	public int insertFileDetail(FileDetailVO fileDetailVO);
 
 	//계정아이디로 교수 아이디 가져오기
-	public String getProfsrNo(String acntId);	
-	
+	public String getProfsrNo(String acntId);
 
+	//계정 아이디로 학생 아이디 가져오기
+	public String selectStdntNo(String acntId);
+
+
+	
 }
