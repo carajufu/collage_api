@@ -15,9 +15,9 @@ public class StudentDashboardService {
     DashboardMapper dashboardMapper;
 
     public List<DashLectureVO> selectStudent(String studentNo, String year, String currentPeriod) {
-        List<DashLectureVO> lectureVOList;
-        lectureVOList = dashboardMapper.selectStudent(studentNo, year, currentPeriod);
+        List<DashLectureVO> dashLectureVOList;
+        dashLectureVOList = dashboardMapper.selectStudent(studentNo, year, currentPeriod);
 
-        return lectureVOList;
+        return dashLectureVOList;
     }
 }

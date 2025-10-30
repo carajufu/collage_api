@@ -9,6 +9,6 @@ import java.util.List;
 @Mapper
 public interface DashboardMapper {
     List<DashLectureVO> selectStudent(@Param("stdntNo") String studentNo,
-                                    @Param("year") String year,
-                                    @Param("period") String currentPeriod);
+                                      @Param("year") String year,
+                                      @Param("period") String currentPeriod);
 }

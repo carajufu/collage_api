@@ -12,6 +12,6 @@ public class TaskVO {
     private String taskCn;
     private String taskBeginDe;
     private String taskClosDe;
-    private String registDe;
-    private String updtDe;
+    private String registDt;
+    private String updtDt;
 }

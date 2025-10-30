@@ -1,9 +1,125 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
 <%@ include file="../../header.jsp" %>
+    <style>
+        .blog-post-meta {
+            /* 폰트 크기를 작게 설정 */
+            font-size: 85%;
+            /* 색상을 연하게 설정 */
+            color: #6c757d; /* 부트스트랩의 secondary 색상과 유사 */
+            /* 상단에 약간의 마진 추가 (필요하다면) */
+            margin-top: 0.5rem;
+            /* (선택 사항) 기울임꼴 */
+            font-style: italic;
+        }
+    </style>
     <script type="text/javascript" src="/js/wtModal.js"></script>
     <script type="text/javascript">
-        function taskDetail() {
+        function renderTaskDetail(modalId, tasks, idx) {
+            const chkRoot = document.querySelector("#taskBodyRoot");
+            if(chkRoot) { chkRoot.remove(); }
+
+            const root = document.createElement("div");
+            root.className = "container";
+            root.id = "taskBodyRoot";
+
+            const grid = document.createElement("div");
+            grid.className = "row";
+            root.appendChild(grid);
+
+            const side = document.createElement("div");
+            side.className = "col-3";
+            side.id = "side"
+            grid.appendChild(side);
+
+            let group = document.createElement("div");
+            group.className = "list-group";
+            side.appendChild(group);
+
+            let titles = [];
+            const listGroup = document.querySelector("#listGroup");
+            titles = listGroup.querySelectorAll(".list-group-item-action");
+
+            let body = document.createElement("div");
+            body.className = "col d-flex flex-column border shadow-sm rounded-3";
+            body.id = "body";
+            grid.appendChild(body);
+
+            for(let i = 0; i < titles.length; i++) {
+                let element = document.createElement("button");
+                element.className = "list-group-item list-group-item-action";
+                element.textContent = titles[i].textContent;
+
+                if(i == idx) { element.classList.add("active"); }
+
+                element.addEventListener("click", () => {
+                    side.querySelectorAll(".list-group-item").forEach(el => el.classList.remove("active"));
+                    element.classList.add("active");
+
+                    taskDetail(body, tasks[i]);
+                });
+
+                group.appendChild(element);
+            }
+
+
+            // todo: 제출 여부에 따른 제출 버튼 추가
+
+            console.log("chkng before change body >  ", root);
+            changeModalBody(modalId, root);
+
+            if (Array.isArray(tasks) && tasks.length && idx >= 0 && idx < tasks.length) {
+                taskDetail(body, tasks[idx]);
+            }
+        }
+
+        function taskDetail(body, detail) {
+            if(!body || !detail) return;
+
+            body.replaceChildren();
+
+            const article = document.createElement("article");
+            article.className = "blog-post";
+            article.id = "article";
+
+            const title = document.createElement("h3");
+            title.textContent = detail.taskSj;
+            article.appendChild(title);
+
+            const meta = document.createElement("p");
+
+            let registTime = new Date(detail.registDt).toLocaleString("ko-KR", {timeZone: "Asia/Seoul"});
+            let registMsg = "작성 일시 : " + registTime;
+
+            let updateTime = "";
+            if(detail.updtDt) {
+                updateTime = new Date(detail.updtDt).toLocaleString("ko-KR", {timeZone: "Asia/Seoul"});
+            }
+            let updateMsg = updateTime ? "수정 일시 : " + updateTime : "";
+
+            meta.className = "blog-post-meta";
+            meta.textContent = registMsg + updateMsg;
+            article.appendChild(meta);
+
+            const deadLine = document.createElement("p");
+            deadLine.className = "blog-post-meta";
+            deadLine.textContent = detail.taskBeginDe + " ~ " + detail.taskClosDe;
+            article.appendChild(deadLine);
+
+            article.appendChild(document.createElement("hr"));
+
+            const content = detail.taskCn;
+            const pContent = document.createElement("p");
+            pContent.style.whiteSpace = "break-spaces";
+            pContent.textContent = content;
+            article.appendChild(pContent);
+
+
+
+            body.appendChild(article);
+        }
+
+        function addButton() {
 
         }
 
@@ -19,23 +135,28 @@
 
             const group = document.createElement("div");
             group.className = "list-group shadow-sm rounded-3";
+            group.id = "listGroup";
 
             // group list의 header
             const groupHeader = document.createElement("div");
             groupHeader.className = "list-group-item d-flex active";
             groupHeader.style = "-bs-list-group-active-bg: var(--bs-primary); --bs-list-group-active-border-color: var(--bs-primary);"
-            groupHeader.innerHTML = "과제";
+            groupHeader.textContent = "과제";
 
             group.appendChild(groupHeader);
 
             // 과제 배열의 각 요소 마다 a 태그 생성해 group list의 요소로 등록
-            tasks.forEach(task => {
+            tasks.forEach((task, idx) => {
                 let anchor = document.createElement("a");
                 anchor.className = "list-group-item list-group-item-action";
                 anchor.style = "cursor: pointer";
-                anchor.innerHTML = task.taskSj;
-                anchor.setAttribute("data-task-no", );
-                anchor.onClick = taskDetail;
+                anchor.textContent = task.taskSj;
+
+                anchor.addEventListener("click", e => {
+                    e.preventDefault();
+
+                    renderTaskDetail(modalId, tasks, idx);
+                });
 
                 group.appendChild(anchor);
             });
