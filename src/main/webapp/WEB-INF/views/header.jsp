@@ -18,7 +18,7 @@
     <!-- bootstrap5 icon cdn 추가 -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"/>
     <!-- bootstrap5.js cdn 추가 -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" type="text/javascript"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" type="text/javascript"></script>
     <!-- jquery cdn 추가 -->
     <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
 

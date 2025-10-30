@@ -58,3 +58,15 @@ function changeModalBody(modalId, cont) {
     modalBody.innerHTML = "";
     modalBody.append(cont);
 }
+
+// todo: 뒤로가기 방지 기능 고치기
+// let isModalOpen = false;
+//
+// window.onpopstate(e => {
+//     if(isModalOpen) { history.go(1); }
+//     if(!isModalOpen) { history.go(-1); }
+// })
+// isModalOpen = true;
+// history.pushState({ isModalOpen: true}, '');
+// isModalOpen = false;
+// history.pushState({ isModalOpen: false }, '');

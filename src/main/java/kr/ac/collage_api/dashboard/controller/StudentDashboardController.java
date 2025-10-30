@@ -2,7 +2,7 @@ package kr.ac.collage_api.dashboard.controller;
 
 import kr.ac.collage_api.common.util.CurrentSemstr;
 import kr.ac.collage_api.dashboard.service.StudentDashboardService;
-import kr.ac.collage_api.dashboard.vo.LectureVO;
+import kr.ac.collage_api.dashboard.vo.DashLectureVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -26,13 +26,13 @@ public class StudentDashboardController {
     @GetMapping("/student")
     public String selectStudent(Model model,
                           Principal principal) {
-        List<LectureVO> lectureVOList;
+        List<DashLectureVO> dashLectureVOList;
 
-        lectureVOList = studentDashboardService.selectStudent(principal.getName(),
+        dashLectureVOList = studentDashboardService.selectStudent(principal.getName(),
                 currentSemester.getYear(),
                 currentSemester.getCurrentPeriod());
 
-        model.addAttribute("lectureList", lectureVOList);
+        model.addAttribute("lectureList", dashLectureVOList);
 
         log.info("chkng student (model) > {}", model);
 
