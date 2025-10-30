@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
-    <footer>
+    <footer style=" width:100%; text-align:center; float:none; display:block; position:relative; margin-top:auto; ">
         <div class="py-3 my-4">
             <ul class="nav justify-content-center border-bottom pb-3 mb-3">
                 <li class="nav-item">
@@ -22,7 +22,6 @@
             <p class="text-center text-body-secondary">© 2025 Company, Inc</p>
         </div>
     </footer>
-</div>
 
 </body>
 </html>
