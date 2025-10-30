@@ -1,4 +1,4 @@
-package kr.ac.collage_api.config;
+package kr.ac.collage_api.common.config;
 
 import java.util.List;
 
@@ -16,12 +16,13 @@ public class ArticlePage<T> {
 
 	//생성자(Constructor) : 페이징 정보를 생성
 	//					전체글 수		현재 페이지 번호   한 화면 	  목록 데이터			검색어
-	public ArticlePage(int total, int currentPage, int size, List<T> content, String keyword) {
+	public ArticlePage(int total, int currentPage, int size, List<T> content, String keyword,String url) {
 		//size : 한 화면에 보여질 목록의 행 수(10)
 		this.total = total;
 		this.currentPage = currentPage;
 		this.keyword = keyword;
 		this.content = content;
+		this.url = url;
 		
 		//전체글 수가 0이면?
 		if(total==0) {
@@ -58,23 +59,24 @@ public class ArticlePage<T> {
 			}
 		}//end if	
 		
-		
+		//비동기 처리일 경우 pagingArea 가 필요 없음!
+		if (this.url != null || !this.url.isEmpty() ) {
 		pagingArea += "<ul class='pagination pagination-sm m-0 justify-content-center'>";
 		
         if(this.startPage > 5) {
-        	pagingArea += "<li class='page-item'><a class='page-link' href='/bbs/list?currentPage="+(this.startPage-5)+"&keyword="+this.keyword+"'>«</a></li>";
+        	pagingArea += "<li class='page-item'><a class='page-link' href='"+this.url+"?currentPage="+(this.startPage-5)+"&keyword="+this.keyword+"'>«</a></li>";
         }//end if
         
         for(int pNo=this.startPage;pNo<=this.endPage;pNo++) {
-        	pagingArea += "<li class='page-item'><a class='page-link' href='/bbs/list?currentPage="+pNo+"&keyword="+this.keyword+"'>"+pNo+"</a></li>";
+        	pagingArea += "<li class='page-item'><a class='page-link' href='"+this.url+"?currentPage="+pNo+"&keyword="+this.keyword+"'>"+pNo+"</a></li>";
         }//end for
         
         if(this.endPage < this.totalPages) {
-        	pagingArea += "<li class='page-item'><a class='page-link' href='/bbs/list?currentPage="+(this.startPage+5)+"&keyword="+this.keyword+"'>»</a></li>";
+        	pagingArea += "<li class='page-item'><a class='page-link' href='"+this.url+"currentPage="+(this.startPage+5)+"&keyword="+this.keyword+"'>»</a></li>";
         }//end if
       
         pagingArea += "</ul>";
-		
+		}
 		
 	}//end 생성자
 

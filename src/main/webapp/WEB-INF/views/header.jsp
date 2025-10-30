@@ -7,6 +7,8 @@
 <!doctype html>
 <html lang="ko">
 <head>
+<link rel="shortcut icon" href="#">
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Collage</title>
@@ -18,7 +20,7 @@
     <!-- bootstrap5 icon cdn 추가 -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"/>
     <!-- bootstrap5.js cdn 추가 -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" type="text/javascript"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" type="text/javascript"></script>
     <!-- jquery cdn 추가 -->
     <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
 
@@ -26,14 +28,17 @@
 </head>
 <body>
 <div id="wrapper">
-    <header>
-        <div class="topbar">
+    <header class="header">
+        <div class="container-fluid d-flex justify-content-between align-items-center gap-3">
             <div class="brand"><i class="bi bi-mortarboard-fill"></i> 스마트 LMS</div>
             <div class="user-actions">
-                <i class="bi bi-bell"></i>
-                <i class="bi bi-gear"></i>
-                <i class="bi bi-person-circle"></i>
+                <i class="bi bi-bell p-2"></i>
+                <i class="bi bi-gear p-2"></i>
+                <i class="bi bi-person-circle p-2"></i>
             </div>
+            <sec:authorize access="isAuthenticated()">
+                <a href="/logout"><button class="btn btn-outline-danger">로그아웃</button></a>
+            </sec:authorize>
         </div>
 
         <!-- ✅ CHANGED: 토스트 -->
@@ -79,30 +84,32 @@
                     </a>
                 </li>
             </ul>
-<%--            <hr>--%>
-<%--            <div class="dropdown">--%>
-<%--                <a href="#" class="d-flex align-items-center link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">--%>
-<%--                    <img src="https://github.com/mdo.png" alt="" width="32" height="32" class="rounded-circle me-2">--%>
-<%--                    <strong></strong>--%>
-<%--                </a>--%>
-<%--                <ul class="dropdown-menu text-small shadow">--%>
-<%--                    <li>--%>
-<%--                        <a class="dropdown-item" href="#">New project...</a>--%>
-<%--                    </li>--%>
-<%--                    <li>--%>
-<%--                        <a class="dropdown-item" href="#">Settings</a>--%>
-<%--                    </li>--%>
-<%--                    <li>--%>
-<%--                        <a class="dropdown-item" href="#">Profile</a>--%>
-<%--                    </li>--%>
-<%--                    <li>--%>
-<%--                        <hr class="dropdown-divider">--%>
-<%--                    </li>--%>
-<%--                    <li>--%>
-<%--                        <a class="dropdown-item" href="#">Sign out</a>--%>
-<%--                    </li>--%>
-<%--                </ul>--%>
-<%--            </div>--%>
+            <sec:authorize access="isAuthenticated()">
+                <hr>
+                <div class="dropdown">
+                    <a href="#" class="d-flex align-items-center link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                        <img src="https://github.com/mdo.png" alt="" width="32" height="32" class="rounded-circle me-2">
+                        <strong><sec:authentication property="principal.username"/></strong>
+                    </a>
+                    <ul class="dropdown-menu text-small shadow">
+                        <li>
+                            <a class="dropdown-item" href="#">New project...</a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="#">Settings</a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="#">Profile</a>
+                        </li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="#">Sign out</a>
+                        </li>
+                    </ul>
+                </div>
+            </sec:authorize>
         </div>
 
 
