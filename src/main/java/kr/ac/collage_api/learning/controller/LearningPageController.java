@@ -1,5 +1,6 @@
 package kr.ac.collage_api.learning.controller;
 
+import kr.ac.collage_api.dashboard.vo.TaskPresentnVO;
 import kr.ac.collage_api.learning.vo.TaskVO;
 import kr.ac.collage_api.learning.service.impl.LearningPageServiceImpl;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +21,13 @@ public class LearningPageController {
     @Autowired
     LearningPageServiceImpl learningPageService;
 
+    /**
+     *  요청받은 강의 페이지를 전송하는 메서드
+     * @param model
+     * @param principal
+     * @param lecNo
+     * @return
+     */
     @GetMapping("/student")
     public String getLearningPage(Model model,
                                   Principal principal,
@@ -61,6 +69,22 @@ public class LearningPageController {
         respMap.put("result", taskByWeekList);
 
         log.debug("chkng taskByWeekList > {}", taskByWeekList);
+
+        return respMap;
+    }
+
+    @GetMapping("/student/isSubmit")
+    @ResponseBody
+    public Map<String, Object> getSubmitTask(String taskNo,
+                                             Principal principal) {
+        TaskPresentnVO taskPresentnVO = learningPageService.getSubmitTask(taskNo, principal.getName());
+        Map<String, Object> respMap = new HashMap<>();
+
+        log.debug("chkng getSubmit Task (taskNo > {}) - (stdntNo > {})", taskNo, principal.getName());
+        log.debug("chkng getSubmitTask (VO) > {}", taskPresentnVO);
+
+        respMap.put("status", "success");
+        respMap.put("data", taskPresentnVO);
 
         return respMap;
     }
