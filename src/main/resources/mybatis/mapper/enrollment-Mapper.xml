@@ -2,4 +2,62 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.ac.collage_api.enrollment.mapper.EnrollmentMapper">
 
+    <insert id="insertEnrollmentRequest" parameterType="SknrgsChangeReqstVO">
+        <selectKey keyProperty="sknrgsChangeInnb" resultType="int" order="BEFORE">
+            SELECT SKNRGS_CHANGE_REQST_SEQ.NEXTVAL FROM DUAL
+        </selectKey>
+
+        INSERT INTO SKNRGS_CHANGE_REQST (
+		      SKNRGS_CHANGE_INNB     
+		    , STDNT_NO                
+		    , CHANGE_TY               
+		    , EFECT_OCCRRNC_SEMSTR    
+		    , REQST_RESN              
+		    , CHANGE_REQST_DT        
+		    , REQST_STTUS             
+		    , CONFM_COMPT_DT          
+		    , RETURN_RESN            
+		    , LAST_UPDT_TM            
+		    , TMPABSSKL_TY            
+		) VALUES (
+		      #{sknrgsChangeInnb}
+		    , #{stdntNo}
+		    , #{changeTy}
+		    , #{efectOccrrncSemstr}
+		    , #{reqstResn, jdbcType=VARCHAR}
+		    , SYSDATE
+		    , #{reqstSttus}
+		    , NULL
+		    , NULL
+		    , SYSDATE
+		    , #{tmpabssklTy}
+		)
+    </insert>
+    
+    <select id="selectHistoryList" parameterType="String" resultType="SknrgsChangeReqstVO">
+        SELECT
+            *
+        FROM
+            SKNRGS_CHANGE_REQST
+        WHERE
+            STDNT_NO = #{stdntNo}
+    </select>
+    
+    <select id="getHistoryList" resultType="kr.ac.collage_api.vo.SknrgsChangeReqstVO">
+	    SELECT
+	        SKNRGS_CHANGE_INNB,
+	        CHANGE_TY,
+	        TMPABSSKL_TY,
+	        EFECT_OCCRRNC_SEMSTR,
+	        CHANGE_REQST_DT,
+	        REQST_STTUS,
+	        REQST_RESN,
+	        RETURN_RESN
+	    FROM
+	        SKNRGS_CHANGE_REQST 
+	    WHERE
+	        STDNT_NO = #{stdntNo}
+	    ORDER BY
+	        CHANGE_REQST_DT DESC
+</select>
 </mapper>
