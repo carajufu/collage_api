@@ -25,7 +25,7 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
                                         Authentication authentication)
             throws IOException, ServletException {
         CustomUser customUser = (CustomUser)authentication.getPrincipal();
-        AcntVO acntVO = (AcntVO) customUser.getStdntVO();
+        AcntVO acntVO = customUser.getAcntVO();
 
         SavedRequest savedRequest = requestCache.getRequest(request, response);
 

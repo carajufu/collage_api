@@ -1,7 +1,6 @@
 package kr.ac.collage_api.security.service.impl;
 
 import kr.ac.collage_api.vo.AcntVO;
-import kr.ac.collage_api.vo.StdntVO;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
@@ -15,8 +14,6 @@ import java.util.stream.Collectors;
 @Setter
 public class CustomUser extends User {
     private AcntVO acntVO;
-	private StdntVO setStdntVO;
-	private Object stdntVO;
 
     public CustomUser(String username, String password, Collection<? extends GrantedAuthority> authorities) {
         super(username, password, authorities);
@@ -30,14 +27,5 @@ public class CustomUser extends User {
         );
 
         this.acntVO = acntVO;
-        this.setStdntVO = acntVO.getStdntVO();
-    }
-
-	public void setStdntVO(StdntVO stdntVO) {
-		this.setStdntVO =  stdntVO;
-	}
-	
-	public String getStdntNo() {
-        return this.stdntVO != null ? ((StdntVO) this.stdntVO).getStdntNo() : null;
     }
 }

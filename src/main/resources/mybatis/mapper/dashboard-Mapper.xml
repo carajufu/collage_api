@@ -2,10 +2,11 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.ac.collage_api.dashboard.mapper.DashboardMapper">
     <select id="selectStudent" resultType="LectureVO">
-        SELECT /* kr.ac.collage_api.dashboard.mapper.DashboardMapper.selectStudent */
-            cour.lctre_nm   /* 강의명 */
-             , est.lctrum   /* 강의실 */
-             , skl.sklstf_nm    /* 교직원명 */
+        SELECT                          /* kr.ac.collage_api.dashboard.mapper.DashboardMapper.selectStudent */
+            cour.lctre_nm               /* 강의명 */
+             , est.lctrum               /* 강의실 */
+             , est.estbllctre_code      /* 개설강의코드 */
+             , skl.sklstf_nm            /* 교직원명 */
         FROM atnlc_reqst at
                  INNER JOIN estbl_course est
                             ON  at.estbllctre_code = est.estbllctre_code

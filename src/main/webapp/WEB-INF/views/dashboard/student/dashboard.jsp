@@ -7,8 +7,11 @@
             console.log("chkng cards > ", cards);
 
             cards.forEach(e => {
-                e.addEventListener("click", () => {
-                   location.href = "/learning/student?lcNo=55";
+                e.addEventListener("click", e => {
+                    const lecNo = e.currentTarget.dataset.lecNo;
+                    console.log("chkng lecNo ", lecNo);
+
+                    location.href = "/learning/student?lecNo=" + lecNo;
                 });
             })
         })
@@ -19,15 +22,15 @@
             <h1>로그인성공</h1>
             <p>${lectureList}</p>
             <div class="row row-cols-4 px-3 gap-2">
-            <c:forEach items="${lectureList}" var="lecture">
-                    <div class="col card">
-                        <div class="card-body" >
-                            <h4 class="card-title">${lecture.lctreNm}</h4>
-                            <p class="card-subtitle">${lecture.lctrum}</p>
-                            <p class="card-subtitle">${lecture.sklstfNm}</p>
+                <c:forEach items="${lectureList}" var="lecture">
+                        <div class="col card rounded-3 shadow-sm" data-lec-no="${lecture.estbllctreCode}">
+                            <div class="card-body">
+                                <h4 class="card-title">${lecture.lctreNm}</h4>
+                                <p class="card-subtitle">${lecture.lctrum}</p>
+                                <p class="card-subtitle">${lecture.sklstfNm}</p>
+                            </div>
                         </div>
-                    </div>
-            </c:forEach>
+                </c:forEach>
             </div>
         </div>
     </div>
