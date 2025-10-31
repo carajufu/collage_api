@@ -1,0 +1,299 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+
+<%@ include file="../header.jsp" %>
+
+    <div id="main-container" class="container-fluid">
+	    <div class="card card-custom p-4">
+			<h5 class="card-title mb-3">개설 강의</h5>
+	        <div class="flex-grow-1 p-1 overflow-visible">
+	       		<div class="container-fluid"> 
+	       			<nav class="navbar navbar-expand-lg bg-body-tertiary">
+					  <div class="container-fluid">
+					    <a class="navbar-brand">구분</a>
+	<!-- 				    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"> -->
+	<!-- 				      <span class="navbar-toggler-icon"></span> -->
+	<!-- 				    </button> -->
+					    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+					        <select class="form-select" aria-label="Default select example" name="complSe" value="${param.complSe}">
+							  <option selected>이수구분</option>
+							  <option value="전필">전필</option>
+							  <option value="전선">전선</option>
+							  <option value="교필">교필</option>
+							  <option value="교선">교선</option>
+							  <option value="일선">일선</option>
+							</select>
+					      <form class="d-flex" role="search">
+					        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="keyword" value="${param.keyword}"/>
+					        <button class="btn btn-outline-primary" type="submit">search</button>
+					      </form>
+					    </div>
+					  </div>
+					</nav>
+	       				
+	       			</div>
+	       		</div>
+	       		<div id="form">
+					<table class="table">
+					  <thead class="table-light">
+					  	<tr>
+					  		<th>교과목ID</th><th>이수구분</th><th>강의명</th><th>교수명</th><th>취득학점</th><th>강의실</th><th>강의시간</th><th>수강인원</th><th></th>
+					  	</tr>
+					  </thead>    
+					  <tbody>
+					  	<c:forEach var="l" items="${estblCourseVOList}" varStatus="stat">
+					  		<tr>
+					  			<td>${l.estbllctreCode}</td><td>${l.complSe}</td>
+					  			<td>${l.allCourse.lctreNm}</td>
+					  			<td>${l.sklstf.sklstfNm}</td><td>${l.acqsPnt}</td>
+					  			<td>${l.lctrum}</td><td>${l.timetable.lctreDfk} ${l.timetable.beginTm},${l.timetable.endTm}</td><td>${l.atnlcNmpr}</td>
+					  			<td>
+						  			<button class="btn btn-outline-secondary d-inline-flex align-items-center" type="button"
+						  					data-bs-toggle="modal" data-bs-target="#modalDetail" data-item-id="${l.estbllctreCode}">
+									강의 정보</button>
+<!-- 									<svg class="bi ms-1" width="10" height="5" aria-hidden="true"><use xlink:href="#arrow-right-short"></use></svg>  -->
+								</td>
+					  		</tr>
+					  	</c:forEach>
+					  </tbody>
+					</table>
+				</div>
+				<div>
+					<button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#modalCreate">강의 개설</button>
+				</div>
+	        </div>
+	    </div>
+    </div>
+</main>
+
+<div class="modal" tabindex="-1" id="modalDetail">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">강의 정보</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+      
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="clsBtn">닫기</button>
+        <button type="button" class="btn btn-primary" id="editBtn">수정</button>
+        <button type="button" class="btn btn-primary" id="editConfirmBtn" style="display:none;">수정 완료</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+const modalDetail = document.getElementById("modalDetail");
+// let editBtn = document.getElementById("editBtn");
+
+
+$("#editBtn").on("click",(event)=>{
+	const formElements = document.querySelector("form.needs-validation");
+	const readonlyElements = formElements.querySelectorAll('[readonly], [disabled]');
+	readonlyElements.forEach(element=>{
+		if(element.hasAttribute("readonly")) {
+			element.removeAttribute("readonly");
+		}
+		if(element.hasAttribute("disabled")) {
+			element.removeAttribute("disabled");
+		}
+	});
+	
+	$("#editBtn").hide();
+	$("#editConfirmBtn").show();
+	$("#lctreDfk").hide();
+	$("#timeEditDiv").show();
+	
+	$("#editConfirmBtn").on("click",(event)=>{
+		
+		const inputValues = formElements.querySelectorAll("input");
+		const data = [...inputValues].filter(input=>input.name).map(input=>{
+																			if (input.name != 'lctreDfk') { return {
+																				name: input.name,
+																				value: input.value
+																			};
+																			}
+																			return null;
+		}).filter(item=>item!=null);
+		const lctreDfkData = $("input[name='lctreDfk']:checked").map(function() {
+		    // 체크박스 <label>의 텍스트("월", "화" 등)를 가져옵니다.
+		    return $(this).parent().text().trim(); 
+		}).get();
+		
+		if(lctreDfkData.length > 0) {
+			data.push({
+				name: 'lctreDfk',
+				value: lctreDfkData.join(',')
+			});
+		}
+		
+		console.log("data : ", data);
+			if(confirm("수정 내용을 저장하시겠습니까?")) {
+				fetch("/lecture/edit",{
+					method: "POST",
+					headers: {"Content-Type":"application/json;charset=UTF-8"},
+					body: JSON.stringify(data)
+				})
+				.then(response=>{
+					if(!response.ok) {
+						throw new Error(`Error! Status: \${response.status}`);
+					}
+					return response.json();
+				})
+				.then(result=>{
+					if(result.result=="2") {
+						alert("수정 내용이 저장되었습니다.");
+						$("#clsBtn").click();
+					}
+				})
+				.catch(error=>{
+					console.error("fetch 요청 오류 발생 : ", error);
+				});
+			}
+	});
+})
+
+
+$("#modalDetail").on("show.bs.modal",(event)=>{
+	let modalDetailBtn = $(event.relatedTarget);
+	let estbllctreCode = modalDetailBtn.data("item-id");
+	
+	var modalBody = modalDetail.querySelector(".modal-body");
+	modalBody.innerHTML = `<p>강의 정보를 불러오는 중...</p>`;
+	
+	console.log("체크 : ", estbllctreCode);
+	
+	fetch("/lecture/detailAjax/"+estbllctreCode)
+		.then(response => {
+			if(!response.ok) {
+				throw new Error("오류 발생...");
+			}
+			return response.json();
+		})
+		.then(data => {
+			const vo = data.estblCourseVO;
+			modalBody.innerHTML = `
+					 <form class="needs-validation" novalidate="">
+						<div class="row g-3"> 
+							<div class="col-md-5"> 
+							<label for="lctreNm" class="form-label">강의명</label>
+								<input type="text" name="lctreNm" class="form-control" id="lctreNm" placeholder="" value="\${vo.allCourse.lctreNm}" required="" readonly> 
+									<div class="invalid-feedback">
+										Valid first name is required.
+									</div> 
+							</div> 
+							<div class="col-md-4"> 
+							<label for="lctreCode" class="form-label">강의 코드</label> 
+								<input type="text" name="lctreCode" class="form-control" id="lctreCode" placeholder="" value="\${vo.lctreCode}" required="" readonly> 
+									<div class="invalid-feedback">
+										Valid first name is required.
+									</div> 
+							</div> 
+							<div class="col-md-3"> 
+							<label for="estblYear" class="form-label">개설년도</label> 
+								<input type="number" name="estblYear" class="form-control" id="estblYear" value="\${vo.estblYear}" required="" readonly> 
+									<div class="invalid-feedback">
+										Valid first name is required.
+									</div> 
+							</div> 
+							<div class="col-md-4"> 
+								<label for="complSe" class="form-label">이수 구분</label> 
+								<select class="form-select" name="complSe" id="complSe" required="" disabled> 
+									<option value="---" \${!vo.complSe || vo.complSe == null ? 'selected' : ''}>---</option> 
+									<option value="전필" \${vo.complSe == '전필' ? 'selected' : ''}>전필</option> 
+									<option value="전선" \${vo.complSe == '전선' ? 'selected' : ''}>전선</option> 
+									<option value="교필" \${vo.complSe == '교필' ? 'selected' : ''}>교필</option> 
+									<option value="교선" \${vo.complSe == '교선' ? 'selected' : ''}>교선</option> 
+									<option value="일선" \${vo.complSe == '일선' ? 'selected' : ''}>일선</option> 
+								</select> 
+								<div class="invalid-feedback">
+									Please provide a valid state.
+								</div> 
+							</div>
+							<div class="col-md-1"> </div>
+							<div class="col-md-3"> 
+								<label for="evlMthd" class="form-label">평가 방식</label> 
+								<select class="form-select" name="evlMthd" id="evlMthd" required="" disabled>
+									<option value="---" \${!vo.evlMthd || vo.evlMthd == null ? 'selected' : ''}>---</option>
+									<option value="절대" \${vo.evlMthd == '절대' ? 'selected' : ''}>절대</option>
+									<option value="상대" \${vo.evlMthd == '상대' ? 'selected' : ''}>상대</option>
+									<option value="P/F" \${vo.evlMthd == 'PF' ? 'selected' : ''}>P/F</option>
+								</select> 
+								<div class="invalid-feedback">
+									Please provide a valid state.
+								</div> 
+							</div>
+							<div class="col-md-1"> </div>
+							<div class="col-md-3"> 
+								<label for="acqsPnt" class="form-label">취득 학점</label> 
+								<input type="number" name="acqsPnt" class="form-control" id="acqsPnt" placeholder="" value="\${vo.acqsPnt}" required="" readonly> 
+									<div class="invalid-feedback">
+										Valid last name is required.
+									</div> 
+							</div>
+							
+							<div class="col-sm-5"> 
+							<label for="lctreDfk" class="form-label">강의일</label>
+								<div id="lctreDfk"><a>\${vo.timetable.lctreDfk} \${vo.timetable.beginTm}, \${vo.timetable.endTm}</a></div>
+								
+								<div id="timeEditDiv" style="display:none;">
+									<div id="lctreDfkCheck">
+										<label for="mon" class="form-check-label">
+											<input type="checkbox" name="lctreDfk" class="form-check-input" id="lctreDfk">&nbsp;월
+										</label>
+										<label for="tue" class="form-check-label">
+											<input type="checkbox" name="lctreDfk" class="form-check-input" id="lctreDfk">&nbsp;화
+										</label>
+										<label for="wed" class="form-check-label">
+											<input type="checkbox" name="lctreDfk" class="form-check-input" id="lctreDfk">&nbsp;수
+										</label>
+										<label for="thu" class="form-check-label">
+											<input type="checkbox" name="lctreDfk" class="form-check-input" id="lctreDfk">&nbsp;목
+										</label>
+										<label for="fri" class="form-check-label">
+											<input type="checkbox" name="lctreDfk" class="form-check-input" id="lctreDfk">&nbsp;금
+										</label>
+									</div>
+									<hr/>
+									<div class="col-md d-flex gap-3 time">
+										<div class="col-md-5">
+										<a>시작 시간</a>
+											<input type="number" name="beginTm" class="form-control" id="beginTm" value="\${vo.timetable.beginTm}" required="">
+										</div>
+										<div class="col-md-5">
+										<a>종료 시간</a>
+											<input type="number" name="endTm" class="form-control" id="endTm" value="\${vo.timetable.endTm}" required="">
+										</div>
+									</div>
+								</div>
+							</div>
+							
+							<div class="col-sm-4"> 
+								<label for="address2" class="form-label">강의실 </label> 
+								<input type="text" class="form-control" id="address2" value="\${vo.lctrum}" readonly> 
+							</div> 
+							<div class="col-sm-3"> 
+							<label for="lctreNm" class="form-label">수강 인원</label> 
+								<input type="number" class="form-control" id="firstName" placeholder="" value="\${vo.atnlcNmpr}" required="" readonly> 
+									<div class="invalid-feedback">
+										Valid first name is required.
+									</div> 
+							</div> 
+							<div class="col-sm-4"> 
+								<label for="address2" class="form-label">강의계획서 </label> 
+								<input type="file" class="form-control" id="address2" placeholder="Apartment or suite" disabled> 
+							</div> 
+						</div>
+					</form> 
+			`
+		})
+		.catch(error => {
+			console.error('fetch 에러 : ', error);
+			modalBody.innerHTML = '<p class="text-danger">강의 정보를 불러오는 데 실패했습니다.</p>';
+		});
+});
+</script>
+
+<%@ include file="../footer.jsp" %>

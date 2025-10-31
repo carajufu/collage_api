@@ -17,7 +17,8 @@
 
     <select id="taskList" resultType="taskVO">
         SELECT                      /* kr.ac.collage_api.learning.mapper.LearningPageMapper.taskList */
-            task_sj                 /* 과제 제목 */
+            task_no                 /* 과제 번호 */
+            , task_sj               /* 과제 제목 */
             , task_cn               /* 과제 내용 */
             , task_begin_de         /* 과제 시작 일자 */
             , task_clos_de          /* 과제 종료 일자 */
@@ -30,5 +31,18 @@
             WHERE estbllctre_code = #{lecNo}
                 AND week = #{weekNo}
             )
+    </select>
+
+    <select id="getSubmitTask" resultType="taskPresentnVO">
+        SELECT                      /* kr.ac.collage_api.learning.mapper.LearningPageMapper.getSubmitTask */
+            task_presentn_no        /* 과제 제출 번호 */
+            , stdnt_no              /* 학생 번호 */
+            , task_no               /* 과제 번호 */
+            , file_group_no         /* 파일 그룹 번호 */
+            , task_presentn_de      /* 과제 제출 일자 */
+            , presentn_at           /* 제출 여부 */
+        FROM task_presentn
+        WHERE task_no = #{taskNo}
+            AND stdnt_no = #{studentNo}
     </select>
 </mapper>

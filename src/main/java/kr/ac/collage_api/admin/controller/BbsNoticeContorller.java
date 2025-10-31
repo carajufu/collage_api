@@ -45,7 +45,7 @@ public class BbsNoticeContorller {
 		List<BbsVO> bbsVOList = this.bbsNoticeService.list(map);
 		
 		//페이지네이션
-		ArticlePage<BbsVO> articlePage = new ArticlePage<BbsVO>(total,currentPage,size,bbsVOList,keyword);
+		ArticlePage<BbsVO> articlePage = new ArticlePage<BbsVO>(total,currentPage,size,bbsVOList,keyword,"/bbs/list");
 		
 		model.addAttribute("bbsVOList",bbsVOList);
 		model.addAttribute("articlePage",articlePage);

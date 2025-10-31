@@ -7,8 +7,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AuthorVO {
     private String acntId;
-    private String authorId;
-    private String alwncDe;
-    private String authorNm;
-    private String authorDc;
+    private String authorId; //권한ID(PK)	AUTHOR_ID(PK)
+    private String alwncDe; //부여일자	ALWNC_DE
+    private String authorNm; //권한_명	AUTHOR_NM
+    private String authorDc; //권한_설명	AUTHOR_DC
 }
