@@ -6,6 +6,97 @@
     </style>
     <script type="text/javascript" src="/js/wtModal.js"></script>
     <script type="text/javascript">
+
+
+        document.addEventListener("DOMContentLoaded", () => {
+            document.querySelector("body").innerHTML += modal;
+
+            // 선택한 주차의 과제 리스트를 보여주는 모달
+            const tModal = document.querySelector("#modal");
+            let modalId = tModal.id;
+
+            // .task : 과제 여부 알려주는 뱃지
+           const taskBadge = document.querySelectorAll(".task");
+
+           // 각 과제 badge의 popModal 호출하는 클릭 이벤트 리스너 등록
+           taskBadge.forEach(e => {
+              e.addEventListener("click", () => {
+                  // URL의 query string에서 현재 강의 일련번호 구함
+                  const currentUrl = new URL(window.location.href);
+                  let lecNo = currentUrl.searchParams.get("lecNo");
+                  let weekNo = e.dataset.weekNo;
+                  console.log("lecNo, weekNo > ", lecNo, ", ", weekNo);
+
+                  // 해당 주차의 과제 목록 조회하는 post 요청
+                  fetch("/learning/student/task", {
+                      method: "POST",
+                      headers: {
+                          "Content-Type": "application/json;charset=UTF-8"
+                      },
+                      body: JSON.stringify({
+                          "lecNo": lecNo,
+                          "weekNo": weekNo
+                      })
+                  })
+                      .then(resp => resp.json())
+                      .then(rslt => {
+                            console.log("chkng rslt > ", rslt);
+                            renderList(modalId, rslt.result);
+                      })
+                      .catch(err => console.error(err));
+
+                popModal(modalId);
+              });
+           });
+
+           // 모달 외부 영역에만 한정해 closeModal 호출
+            tModal.addEventListener("click", () => closeModal(tModal.id));
+            tModal.querySelector("#cont").addEventListener("click", e => e.stopPropagation());
+        });
+
+        /**
+         * 과제 목록을 생성해 모달 바디에 주입
+         * @param {string} modalId - 과제 목록이 주입될 모달의 id
+         * @param {Array<Object>} tasks - 응답 받은 과제의 배열
+         * @return {void} This function does not return a value.
+         */
+        function renderList(modalId, tasks) {
+            const container = document.createElement("div");
+            container.className = "container mt-4";
+
+            const group = document.createElement("div");
+            group.className = "list-group shadow-sm rounded-3";
+            group.id = "listGroup";
+
+            // group list의 header
+            const groupHeader = document.createElement("div");
+            groupHeader.className = "list-group-item d-flex active";
+            groupHeader.style = "-bs-list-group-active-bg: var(--bs-primary); --bs-list-group-active-border-color: var(--bs-primary);"
+            groupHeader.textContent = "과제";
+
+            group.appendChild(groupHeader);
+
+            // 과제 배열의 각 요소 마다 a 태그 생성해 group list의 요소로 등록
+            tasks.forEach((task, idx) => {
+                let anchor = document.createElement("a");
+                anchor.className = "list-group-item list-group-item-action";
+                anchor.style = "cursor: pointer";
+                anchor.textContent = task.taskSj;
+
+                anchor.addEventListener("click", e => {
+                    e.preventDefault();
+
+                    renderTaskDetail(modalId, tasks, idx);
+                });
+
+                group.appendChild(anchor);
+            });
+
+            container.appendChild(group);
+
+            changeModalBody(modalId, container);
+        }
+
         /**
          * <p>과제별 상세 내용을 담은 요소를 동적으로 생성해 해당 요소를 화면에 그리는 메서드</p>
          *
@@ -18,7 +109,7 @@
             if(chkRoot) { chkRoot.remove(); }
 
             const root = document.createElement("div");
-            root.className = "container";
+            root.className = "container mt-4";
             root.id = "taskBodyRoot";
 
             const grid = document.createElement("div");
@@ -90,7 +181,7 @@
             body.replaceChildren();
 
             const article = document.createElement("article");
-            article.className = "blog-post";
+            article.className = "blog-post p-3";
             article.id = "article";
 
             const title = document.createElement("h3");
@@ -125,7 +216,7 @@
             pContent.textContent = content;
             article.appendChild(pContent);
 
-            article.appendChild( await renderSubmitBtn(detail.taskNo, body) );
+            article.appendChild( await renderSubmitBtn(detail.taskNo) );
 
             body.appendChild(article);
         }
@@ -158,19 +249,77 @@
             return data;
         }
 
-         async function renderSubmitBtn(taskNo, body) {
+         async function renderSubmitBtn(taskNo) {
             const container = document.createElement("div");
-            container.className = "container text-center";
+            container.className = "container d-flex justify-content-center gap-3";
 
             const submit = await isSubmit(taskNo);
+
+            const state = { mode: "form" };
             if(!submit) {
+                // form의 부모 div
+                const frmContainer = document.createElement("div");
+                frmContainer.className = "container m-3 border rounded-2"
+                frmContainer.id = "frmContainer";
+
+                //form
+                const frm = document.createElement("form");
+
+                // 버튼 부모 div
+                const btnContainer = document.createElement("div");
+                btnContainer.className = "m-3 fs-6";
+
+                const label = document.createElement("label")
+                label.className = "form-label";
+                label.setAttribute("for", "formFile");
+                label.textContent = "파일을 업로드 하세요.";
+
+                const fileInput = document.createElement("input");
+                fileInput.className = "form-control";
+                fileInput.id = "formFile";
+                fileInput.setAttribute("type", "file");
+                fileInput.setAttribute("multiple", "");
+                fileInput.addEventListener("change", () => state.mode = "upload");
+
                 const submitBtn = document.createElement("button");
                 submitBtn.className = "btn btn-primary btn-lg";
                 submitBtn.textContent = "제출";
-                // todo: 제출 이벤트 핸들러 작성
-                submitBtn.addEventListener("click", () => {
+                submitBtn.id = "submitBtn";
 
-                })
+                const cancleBtn = document.createElement("button");
+                cancleBtn.className = "btn btn-danger btn-lg";
+                cancleBtn.textContent = "취소";
+                // todo: 제출 이벤트 핸들러 작성, 버튼 요소에 상태코드 주고 단일 이벤트 리스너에서 상태 코드에 따라 분기
+                submitBtn.addEventListener("click", () => {
+                    if(state.mode === "form") {
+                        const exist = document.querySelector("#frmContainer");
+                        if(exist) { exist.remove(); }
+
+                        console.log("submit btn clicked")
+
+                        container.before(frmContainer);
+
+                        frmContainer.appendChild(frm);
+
+                        frm.appendChild(btnContainer);
+
+                        btnContainer.appendChild(label);
+                        btnContainer.appendChild(fileInput);
+                    }
+
+                    if(state.mode === "upload") {
+                        console.log("upload btn clicked")
+                        fileSubmit(fileInput);
+                        state.mode = "form";
+                    }
+
+                    container.appendChild(cancleBtn);
+                });
+
+                cancleBtn.addEventListener("click", e => {
+                   frmContainer.remove();
+                   e.target.remove();
+                });
 
                 container.appendChild(submitBtn);
             }
@@ -188,95 +337,23 @@
             return container;
         }
 
-        /**
-         * 과제 목록을 생성해 모달 바디에 주입
-         * @param {string} modalId - 과제 목록이 주입될 모달의 id
-         * @param {Array<Object>} tasks - 응답 받은 과제의 배열
-         * @return {void} This function does not return a value.
-         */
-        function renderList(modalId, tasks) {
-            const container = document.createElement("div");
-            container.className = "container";
+        function fileSubmit(input) {
+            const formData = new FormData();
 
-            const group = document.createElement("div");
-            group.className = "list-group shadow-sm rounded-3";
-            group.id = "listGroup";
+            const files = input.files;
+            Array.prototype.forEach.call(files, file => formData.append("uploadFiles", file));
 
-            // group list의 header
-            const groupHeader = document.createElement("div");
-            groupHeader.className = "list-group-item d-flex active";
-            groupHeader.style = "-bs-list-group-active-bg: var(--bs-primary); --bs-list-group-active-border-color: var(--bs-primary);"
-            groupHeader.textContent = "과제";
-
-            group.appendChild(groupHeader);
-
-            // 과제 배열의 각 요소 마다 a 태그 생성해 group list의 요소로 등록
-            tasks.forEach((task, idx) => {
-                let anchor = document.createElement("a");
-                anchor.className = "list-group-item list-group-item-action";
-                anchor.style = "cursor: pointer";
-                anchor.textContent = task.taskSj;
-
-                anchor.addEventListener("click", e => {
-                    e.preventDefault();
-
-                    renderTaskDetail(modalId, tasks, idx);
-                });
-
-                group.appendChild(anchor);
-            });
-
-            container.appendChild(group);
-
-            changeModalBody(modalId, container);
+            fetch("learning/student/fileUpload", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "multipart/form-data"
+                },
+                body: formData
+            })
+                .then(resp => resp.json())
+                .then(rslt => console.log(rslt))
+                .catch(err => console.error(err));
         }
-
-        document.addEventListener("DOMContentLoaded", () => {
-            document.querySelector("body").innerHTML += modal;
-
-            // 선택한 주차의 과제 리스트를 보여주는 모달
-            const tModal = document.querySelector("#modal");
-            let modalId = tModal.id;
-
-            // .task : 과제 여부 알려주는 뱃지
-           const taskBadge = document.querySelectorAll(".task");
-
-           // 각 과제 badge의 popModal 호출하는 클릭 이벤트 리스너 등록
-           taskBadge.forEach(e => {
-              e.addEventListener("click", () => {
-                  // URL의 query string에서 현재 강의 일련번호 구함
-                  const currentUrl = new URL(window.location.href);
-                  let lecNo = currentUrl.searchParams.get("lecNo");
-                  let weekNo = e.dataset.weekNo;
-                  console.log("lecNo, weekNo > ", lecNo, ", ", weekNo);
-
-                  // 해당 주차의 과제 목록 조회하는 post 요청
-                  fetch("/learning/student/task", {
-                      method: "POST",
-                      headers: {
-                          "Content-Type": "application/json;charset=UTF-8"
-                      },
-                      body: JSON.stringify({
-                          "lecNo": lecNo,
-                          "weekNo": weekNo
-                      })
-                  })
-                      .then(resp => resp.json())
-                      .then(rslt => {
-                            console.log("chkng rslt > ", rslt);
-                            renderList(modalId, rslt.result);
-                      })
-                      .catch(err => console.error(err));
-
-                popModal(modalId);
-              });
-           });
-
-           // 모달 외부 영역에만 한정해 closeModal 호출
-            tModal.addEventListener("click", () => closeModal(tModal.id));
-            tModal.querySelector("#cont").addEventListener("click", e => e.stopPropagation());
-        });
-
     </script>
 
     <div id="main-container" class="container-fluid overflow-scroll">

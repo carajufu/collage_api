@@ -12,7 +12,5 @@ public interface EnrollmentService {
 
 	public List<SknrgsChangeReqstVO> getHistoryList(String stdntNo);
 
-
-
-
+    StdntVO getStdnt(String stdntNo);
 }

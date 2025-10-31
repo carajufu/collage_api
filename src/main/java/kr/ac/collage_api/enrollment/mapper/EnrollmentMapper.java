@@ -2,6 +2,7 @@ package kr.ac.collage_api.enrollment.mapper;
 
 import java.util.List;
 
+import kr.ac.collage_api.vo.StdntVO;
 import org.apache.ibatis.annotations.Mapper;
 
 import kr.ac.collage_api.vo.SknrgsChangeReqstVO;
@@ -20,6 +21,5 @@ public interface EnrollmentMapper {
 
 	List<SknrgsChangeReqstVO> getHistoryList(String stdntNo);
 
-
-    
+    StdntVO getStdnt(String stdntNo);
 }
