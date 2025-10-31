@@ -39,6 +39,8 @@ public class EnrollmentServiceImpl implements EnrollmentService {
 		return enrollmentMapper.getHistoryList(stdntNo);
 	}
 
-
-
+    @Override
+    public StdntVO getStdnt(String stdntNo) {
+        return enrollmentMapper.getStdnt(stdntNo);
+    }
 }

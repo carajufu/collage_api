@@ -52,9 +52,9 @@
                                 <c:when test="${history.reqstSttus == '반려'}">
                                     <span class="badge bg-danger">반려</span>
                                 </c:when>
-                                <c:when>
-                                	<span class="badge bd-warning text-datk">처리중</span>
-                                </c:when>
+<%--                                <c:when>--%>
+<%--                                	<span class="badge bd-warning text-datk">처리중</span>--%>
+<%--                                </c:when>--%>
                                 <c:otherwise>
                                     <span class="badge bg-secondary">신청</span>
                                 </c:otherwise>
@@ -108,6 +108,7 @@
     </div>
   </div>
 </div>
+</main>
 
 <%@ include file="../footer.jsp" %>
 

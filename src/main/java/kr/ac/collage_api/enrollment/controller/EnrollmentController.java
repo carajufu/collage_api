@@ -1,5 +1,6 @@
 package kr.ac.collage_api.enrollment.controller;
 
+import java.security.Principal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,14 +30,16 @@ public class EnrollmentController {
 
 	//학적 상태 조회
     @GetMapping("/status")
-    public String showRegisterPage(Model model, @AuthenticationPrincipal CustomUser customUser) {
+    public String showRegisterPage(Model model,
+                                   @AuthenticationPrincipal CustomUser customUser,
+                                   Principal principal) {
     	
     	if (customUser == null) {
             return "redirect:/login";
         }
     
-    	StdntVO stdntVO = customUser.getAcntVO().getStdntVO();
-    	String stdntNo = stdntVO.getStdntNo();
+    	String stdntNo = principal.getName();
+    	StdntVO stdntVO = enrollmentService.getStdnt(stdntNo);
     	log.info("로그인된 학생 학번 : {}", stdntNo);
     	
     	List<SknrgsChangeReqstVO> historyList = enrollmentService.getHistoryList(stdntNo);
@@ -85,14 +88,14 @@ public class EnrollmentController {
 	public String submitEnrollmentRequest(
             SknrgsChangeReqstVO sknrgsChangeReqstVO,
             @AuthenticationPrincipal CustomUser customUser,
-            RedirectAttributes redirectAttributes) {
+            RedirectAttributes redirectAttributes, Principal principal) {
 		    
         if (customUser == null) {
             return "redirect:/login";
         }
 
-		StdntVO stdntVO = customUser.getAcntVO().getStdntVO();
-		String stdntNo = stdntVO.getStdntNo();
+		String stdntNo = principal.getName();
+		StdntVO stdntVO = enrollmentService.getStdnt(stdntNo);;
 		String currentStatus = stdntVO.getSknrgsSttus();
         String changeType = sknrgsChangeReqstVO.getChangeTy();
 

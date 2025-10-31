@@ -59,5 +59,28 @@
 	        STDNT_NO = #{stdntNo}
 	    ORDER BY
 	        CHANGE_REQST_DT DESC
-</select>
+    </select>
+
+    <select id="getStdnt" resultType="stdntVO">
+        SELECT                  /* kr.ac.collage_api.enrollment.mapper.EnrollmentMapper.getStdnt */
+            stdnt_no
+            , acnt_id
+            , subjct_code
+            , stdnt_nm
+            , brthdy
+            , bass_adres
+            , detail_adres
+            , zip
+            , cttpc
+            , emgnc_cttpc
+            , grade
+            , sknrgs_sttus
+            , entsch_de
+            , grdtn_de
+            , bank_nm
+            , acnutno
+            , last_updated_time
+        FROM STDNT
+        WHERE STDNT_NO = #{stdntNo}
+    </select>
 </mapper>
