@@ -289,7 +289,7 @@
                 const cancleBtn = document.createElement("button");
                 cancleBtn.className = "btn btn-danger btn-lg";
                 cancleBtn.textContent = "취소";
-                // todo: 제출 이벤트 핸들러 작성, 버튼 요소에 상태코드 주고 단일 이벤트 리스너에서 상태 코드에 따라 분기
+                // todo: (Level 5) 제출한 파일 목록 보기 및 수정
                 submitBtn.addEventListener("click", () => {
                     if(state.mode === "form") {
                         const exist = document.querySelector("#frmContainer");
@@ -309,7 +309,7 @@
 
                     if(state.mode === "upload") {
                         console.log("upload btn clicked")
-                        fileSubmit(fileInput);
+                        fileSubmit(fileInput, taskNo);
                         state.mode = "form";
                     }
 
@@ -337,17 +337,15 @@
             return container;
         }
 
-        function fileSubmit(input) {
+        function fileSubmit(input, taskPresentnNo) {
             const formData = new FormData();
 
             const files = input.files;
             Array.prototype.forEach.call(files, file => formData.append("uploadFiles", file));
+            formData.append("taskPresentnNo", taskPresentnNo);
 
-            fetch("learning/student/fileUpload", {
+            fetch("/learning/student/fileUpload", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "multipart/form-data"
-                },
                 body: formData
             })
                 .then(resp => resp.json())
