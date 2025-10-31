@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.security.Principal;
 import java.util.HashMap;
@@ -88,4 +89,11 @@ public class LearningPageController {
 
         return respMap;
     }
+
+    @ResponseBody
+    @PostMapping("/student/fileUpload")
+    public Map<String, Object> taskFileUpload(MultipartFile[] uploadFiles) {
+        return null;
+    }
+
 }

@@ -2,6 +2,7 @@ package kr.ac.collage_api.dashboard.vo;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 @Data
 @NoArgsConstructor
