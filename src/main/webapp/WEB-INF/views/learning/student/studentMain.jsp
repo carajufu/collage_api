@@ -2,16 +2,7 @@
 
 <%@ include file="../../header.jsp" %>
     <style>
-        .blog-post-meta {
-            /* 폰트 크기를 작게 설정 */
-            font-size: 85%;
-            /* 색상을 연하게 설정 */
-            color: #6c757d; /* 부트스트랩의 secondary 색상과 유사 */
-            /* 상단에 약간의 마진 추가 (필요하다면) */
-            margin-top: 0.5rem;
-            /* (선택 사항) 기울임꼴 */
-            font-style: italic;
-        }
+        .blog-post-meta { font-size: 85%; margin-top: 0.5rem; font-style: italic; }
     </style>
     <script type="text/javascript" src="/js/wtModal.js"></script>
     <script type="text/javascript">
@@ -139,6 +130,16 @@
             body.appendChild(article);
         }
 
+        /**
+         * <p>
+         * 현재 학생이 부여된 과제를 제출 했는지 제출 여부를 체크하는 메서드 <br>
+         * 제출 데이터를 JSON 형식으로 응답받는 비동기 GET 요청을 서버에 전송한다 <br>
+         * 응답 받은 데이터가 존재하지 않으면 null을 반환하고, <br>
+         * 데이터가 존재하고 제출 여부 필드가 1이라면 JSON 객체인 데이터를 반환한다 <br>
+         * </p>
+         * @param { string | number } taskNo 제출 여부를 검색하기 위한 과제 번호
+         * @returns {Promise<null>} 데이터 존재 여부에 따라 null 또는 제출 데이터
+         */
         async function isSubmit(taskNo) {
             let data = null;
             let resp, rslt;
@@ -154,7 +155,6 @@
                 console.error("failed get response reason > {}", resp.status);
             }
 
-
             return data;
         }
 
@@ -169,7 +169,7 @@
                 submitBtn.textContent = "제출";
                 // todo: 제출 이벤트 핸들러 작성
                 submitBtn.addEventListener("click", () => {
-                    let
+
                 })
 
                 container.appendChild(submitBtn);
