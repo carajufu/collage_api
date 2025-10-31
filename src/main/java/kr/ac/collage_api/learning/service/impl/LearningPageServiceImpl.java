@@ -1,5 +1,6 @@
 package kr.ac.collage_api.learning.service.impl;
 
+import kr.ac.collage_api.dashboard.vo.TaskPresentnVO;
 import kr.ac.collage_api.learning.vo.TaskVO;
 import kr.ac.collage_api.learning.mapper.LearningPageMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,5 +20,9 @@ public class LearningPageServiceImpl {
 
     public List<TaskVO> taskList(String lecNo, String weekNo) {
         return learningPageMapper.taskList(lecNo, weekNo);
+    }
+
+    public TaskPresentnVO getSubmitTask(String taskNo, String studentNo) {
+        return learningPageMapper.getSubmitTask(taskNo, studentNo);
     }
 }

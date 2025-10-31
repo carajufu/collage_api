@@ -2,6 +2,8 @@ package kr.ac.collage_api.vo;
 
 import lombok.Data;
 
+import java.util.List;
+
 //개설강의
 @Data
 public class EstblCourseVO {
