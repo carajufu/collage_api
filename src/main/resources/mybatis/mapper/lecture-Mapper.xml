@@ -2,230 +2,138 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.ac.collage_api.lecture.mapper.LectureMapper">
 
-	<!-- EVL_NO 시퀀스 (최댓값 + 1) -->
-	<select id="nextEvlNo" resultType="java.lang.Integer">
-	  SELECT NVL(MAX(EVL_NO), 0) + 1 FROM LCTRE_EVL
-	</select>
-	
-	<!-- LCTRE_EVL 기본행 생성 -->
-	<insert id="insertLctreEvl">
-	  INSERT INTO LCTRE_EVL (EVL_NO, ESTBLLCTRE_CODE, ALL_EVL_AVRG)
-	  VALUES (#{evlNo}, #{estbllctreCode}, 0)
-	</insert>
-
-<!-- 교수 -->
-
-	<!-- 1. 전체 개설 강의 목록 조회 -->
-    <select id="getAllCourse" resultType="kr.ac.collage_api.lecture.vo.LectureVO">
-      	SELECT 
-            A.ESTBLLCTRE_CODE
-            ,A.LCTRE_CODE, PROFSR_NO
-            ,A.FILE_GROUP_NO, ACQS_PNT
-            ,A.LCTRUM, COMPL_SE
-            ,A.ATNLC_NMPR
-            ,A.LCTRE_USE_LANG
-            ,A.EVL_MTHD
-            ,A.ATEND_SCORE_REFLCT_RATE
-            ,A.TASK_SCORE_REFLCT_RATE
-            ,A.MIDDLE_TEST_SCORE_REFLCT_RATE
-            ,A.TRMEND_TEST_SCORE_REFLCT_RATE
-            ,A.ESTBL_YEAR, ESTBL_SEMSTR
-            ,B.LCTRE_NM
-        FROM ESTBL_COURSE A
-		LEFT JOIN ALL_COURSE B 
-		ON A.LCTRE_CODE = B.LCTRE_CODE
-    </select>
-
-
-    <!-- 2. 개설강의 단건 조회 -->
-    <select id="getEstblCourseById" resultType="kr.ac.collage_api.lecture.vo.LectureVO">
-        SELECT 
-            ESTBLLCTRE_CODE
-            ,LCTRE_CODE, PROFSR_NO
-            ,FILE_GROUP_NO, ACQS_PNT
-            ,LCTRUM, COMPL_SE
-            ,ATNLC_NMPR
-            ,LCTRE_USE_LANG
-            ,EVL_MTHD
-            ,ATEND_SCORE_REFLCT_RATE
-            ,TASK_SCORE_REFLCT_RATE
-            ,MIDDLE_TEST_SCORE_REFLCT_RATE
-            ,TRMEND_TEST_SCORE_REFLCT_RATE
-            ,ESTBL_YEAR, ESTBL_SEMSTR
-        FROM ESTBL_COURSE
-        WHERE ESTBLLCTRE_CODE = #{estbllctreCode}
-    </select>
-
-
-    <!-- 3. 강의평가 기본정보 조회 -->
-    <select id="getLectureEvalByEstblCode" resultType="kr.ac.collage_api.lecture.vo.LectureVO">
-        SELECT 
-		    A.EVL_NO
-		    ,A.ESTBLLCTRE_CODE
-		    ,A.ALL_EVL_AVRG
-		    ,B.EVL_CN
-		FROM LCTRE_EVL A
-		JOIN LCTRE_EVL_IEM B ON A.EVL_NO = B.EVL_NO
-		WHERE A.ESTBLLCTRE_CODE = #{estbllctreCode}
-    </select>
-
-
-    <!-- 4. 강의평가 항목 조회 -->
-    <select id="getEvalItemsByEvlNo" resultType="kr.ac.collage_api.lecture.vo.LectureVO">
-        SELECT 
-            LCTRE_EVL_INNB
-            ,EVL_NO
-            ,EVL_CN
-            ,EVL_SCORE
-        FROM LCTRE_EVL_IEM
-        WHERE EVL_NO = #{evlNo}
-        ORDER BY LCTRE_EVL_INNB
-    </select>
-
-
-    <!-- 5. 강의평가 점수 조회 -->
-    <select id="getEvalScoresByEvlNo" resultType="kr.ac.collage_api.lecture.vo.LectureVO">
-        SELECT 
-			LCTRE_EVL_SN
-			,STDNT_NO
-			,LCTRE_EVL_INNB
-			,EVL_SCORE
-			,EVL_CN
-        FROM LCTRE_EVL_SCORE
-        WHERE LCTRE_EVL_INNB IN (
-            SELECT LCTRE_EVL_INNB
-            FROM LCTRE_EVL_IEM
-            WHERE EVL_NO = #{evlNo}
-        )
-        ORDER BY LCTRE_EVL_SN
-    </select>
-
-
-    <!-- 6. 강의 시간표 조회 -->
-    <select id="getTimetableByEstblCode" resultType="kr.ac.collage_api.lecture.vo.LectureVO">
-        SELECT 
-            TIMETABLE_NO
-			,ESTBLLCTRE_CODE
-			,LCTRE_DFK
-			,BEGIN_TM
-			,END_TM
-        FROM LCTRE_TIMETABLE
-        WHERE ESTBLLCTRE_CODE = #{estbllctreCode}
-        ORDER BY TIMETABLE_NO
-    </select>
-    
-    <!-- 7. 강의 세부 정보 조회 -->
-    <select id="getEvlIem" resultType="kr.ac.collage_api.lecture.vo.LectureVO">
-        SELECT 
-           LCTRE_EVL_INNB
-           ,EVL_NO
-           ,EVL_CN
-           ,EVL_SCORE
-        FROM LCTRE_EVL_IEM
-        WHERE LCTRE_EVL_INNB = #{lctreEvlInnb}
-        ORDER BY LCTRE_EVL_INNB
-    </select>
-
-<!-- 학생 -->
-	<select id="getAll" resultType="kr.ac.collage_api.lecture.vo.LectureVO">
-		SELECT 
-			ATNLC_REQST_NO,
-			STDNT_NO,
-			ESTBLLCTRE_CODE,
-			REQST_YEAR,
-			REQST_SEMSTR,
-			REQST_STTUS,
-			REQST_DE,
-			RECENT_UPDT_DT
-		FROM ATNLC_REQST
-	</select>
-	
-	<select id="getStdAll" resultType="kr.ac.collage_api.lecture.vo.LectureVO">
-		SELECT 
-			ATNLC_REQST_NO
-			,STDNT_NO
-			,ESTBLLCTRE_CODE
-			,REQST_YEAR
-			,REQST_SEMSTR
-			,REQST_STTUS
-			,REQST_DE
-			,RECENT_UPDT_DT
-		FROM getStdAll
-	</select>
-	
-	
-	<select id="getLectureEvalByStdnt" resultType="kr.ac.collage_api.lecture.vo.LectureVO">
-		SELECT
-			ATNLC_REQST_NO
-			,STDNT_NO
-			,ESTBLLCTRE_CODE
-			,REQST_YEAR
-			,REQST_SEMSTR
-			,REQST_STTUS
-			,REQST_DE
-			,RECENT_UPDT_DT
-		FROM ATNLC_REQST
-		WHERE STDNT_ID = #{stdntId}
-	</select>
-	
-	<select id="getEvlIemList" resultType="kr.ac.collage_api.lecture.vo.LectureVO">
-		SELECT
-			ESTBLLCTRE_CODE
-			,LCTRE_CODE
-			,PROFSR_NO
-			,FILE_GROUP_NO
-			,ACQS_PNT
-			,LCTRUM
-			,COMPL_SE
-			,ATNLC_NMPR
-			,LCTRE_USE_LANG
-			,EVL_MTHD
-			,ATEND_SCORE_REFLCT_RATE
-			,TASK_SCORE_REFLCT_RATE
-			,MIDDLE_TEST_SCORE_REFLCT_RATE
-			,TRMEND_TEST_SCORE_REFLCT_RATE
-			,ESTBL_YEAR
-			,ESTBL_SEMSTR
-		FROM ESTBL_COURSE
-	</select>
-	
-	
-	<select id="getLctreCodeByEstbllctreCode" resultType="string">
-	    SELECT LCTRE_CODE 
-	    FROM ESTBL_COURSE
-	    WHERE ESTBLLCTRE_CODE = #{estbllctreCode}
-	</select>
-
-	<select id="getLectureByLctreCode" resultType="kr.ac.collage_api.lecture.vo.LectureVO">
-	    SELECT 
-	        LCTRE_CODE       AS lctreCode
-	        ,SUBJCT_CODE      AS subjctCode
-	        ,PRE_LECTURE      AS preLecture
-	        ,LCTRE_NM         AS lctreNm
-	        ,OPER_AT          AS operAt
-	        ,RECENT_UPDT_DT   AS recentUpdtDt
-	    FROM ALL_COURSE
-	    WHERE LCTRE_CODE = #{lctreCode}
-	</select>
-	
-	<!-- 개설강의코드로 EVL_NO 조회 -->
-	<select id="getEvlNoByEstbllctreCode" parameterType="string" resultType="java.lang.Integer">
-	    SELECT EVL_NO
-	    FROM LCTRE_EVL
-	    WHERE ESTBLLCTRE_CODE = #{estbllctreCode}
-	</select>
-
-	
+	<resultMap id="lectureMap" type="estblCourseVO">
+	    <result property="estbllctreCode" column="ESTBLLCTRE_CODE"/>
+		<result property="acqsPnt" column="ACQS_PNT"/>
+		<result property="complSe" column="COMPL_SE"/>
+		<result property="atnlcNmpr" column="ATNLC_NMPR"/>
+		<result property="lctreUseLang" column="LCTRE_USE_LANG"/>
+		<result property="evlMthd" column="EVL_MTHD"/>
+		<result property="estblYear" column="ESTBL_YEAR"/>
+		<result property="estblSemstr" column="ESTBL_SEMSTR"/>
+		<result property="lctreCode" column="LCTRE_CODE"/>
+		<result property="profsrNo" column="PROFSR_NO"/>
+		<result property="lctrum" column="LCTRUM"/>
+		<association property="timetable" javaType="lctreTimetableVO" resultMap="lctreTimetableMap"></association>
+		<association property="allCourse" javaType="allCourseVO" resultMap="allCourseMap"></association>
+		<association property="sklstf" javaType="sklstfVO" resultMap="sklstfMap"></association>
+		<association property="profsr" javaType="profsrVO" resultMap="profsrMap"></association>
+	</resultMap>
 		
-	<!-- 칼럼: LCTRE_EVL_IEM(LCTRE_EVL_INNB PK, EVL_NO FK, EVL_CN, EVL_SCORE) -->
-  <insert id="insertLectureEval" parameterType="map">
-    INSERT INTO LCTRE_EVL_IEM
-      (LCTRE_EVL_INNB, EVL_NO, EVL_CN, EVL_SCORE)
-    VALUES
-      ((SELECT NVL(MAX(LCTRE_EVL_INNB),0)+1 FROM LCTRE_EVL_IEM),
-       #{lctreEvlInnb},
-       #{evlCn},
-       #{evlScore})
-  </insert>
+<!-- 		<result property="timetableNo" column="TIMETABLE_NO"/> -->
+	<resultMap type="lctreTimetableVO" id="lctreTimetableMap">
+		<result property="lctreDfk" column="LCTRE_DFK"/>
+		<result property="beginTm" column="BEGIN_TM"/>
+		<result property="endTm" column="END_TM"/>
+	</resultMap>
+	
+	<resultMap type="allCourseVO" id="allCourseMap">
+		<result property="lctreNm" column="LCTRE_NM"/>
+	</resultMap>
+	
+	<resultMap type="sklstfVO" id="sklstfMap">
+		<result property="sklstfNm" column="SKLSTF_NM"/>
+		<result property="cttpc" column="CTTPC"/>
+	</resultMap>
+		
+	<resultMap type="profsrVO" id="profsrMap">
+		<result property="labrumLc" column="LABRUM_LC"/>
+	</resultMap>
 
+
+	<!-- 전체 강의 조회 -->
+	<select id="list" resultMap="lectureMap">
+		select E.ESTBLLCTRE_CODE, E.ACQS_PNT, E.COMPL_SE, A.LCTRE_NM, E.ATNLC_NMPR, E.LCTRE_USE_LANG, 
+		       E.EVL_MTHD, E.ESTBL_SEMSTR, E.LCTRE_CODE, E.PROFSR_NO, E.LCTRUM,
+		       A.LCTRE_CODE, A.OPER_AT,
+		       L.TIMETABLE_NO, L.ESTBLLCTRE_CODE, L.LCTRE_DFK, L.BEGIN_TM, L.END_TM
+		       ,S.SKLSTF_NM
+		from   ESTBL_COURSE E
+		inner join ALL_COURSE A on (E.LCTRE_CODE = A.LCTRE_CODE)
+		inner join LCTRE_TIMETABLE L on (E.ESTBLLCTRE_CODE = L.ESTBLLCTRE_CODE)
+		inner join PROFSR P on (E.PROFSR_NO = P.PROFSR_NO)
+		inner join SKLSTF S on (S.SKLSTF_ID = P.SKLSTF_ID)
+		
+		<where>
+			<if test="keyword != null and keyword != ''">
+				and (lctre_nm like '%' || #{keyword} || '%')
+			</if>
+			<if test="complSe != null and complSe != ''">
+				and compl_se = #{complSe}
+			</if>
+		</where>
+	</select>
+	
+	
+	<!-- 담당 강의 목록 조회(교수) -->
+	<select id="mylist" resultMap="lectureMap">
+		select E.ESTBLLCTRE_CODE, E.ACQS_PNT, E.COMPL_SE, A.LCTRE_NM, E.ATNLC_NMPR, E.LCTRE_USE_LANG, 
+		       E.EVL_MTHD, E.ESTBL_SEMSTR, E.LCTRE_CODE, E.PROFSR_NO, E.LCTRUM,
+		       A.LCTRE_CODE, A.OPER_AT,
+		       L.TIMETABLE_NO, L.ESTBLLCTRE_CODE, L.LCTRE_DFK, L.BEGIN_TM, L.END_TM
+		       ,S.SKLSTF_NM
+		from   estbl_course E
+		inner join all_course A on (E.lctre_code = A.lctre_code)
+		inner join lctre_timetable L on (E.ESTBLLCTRE_CODE = L.ESTBLLCTRE_CODE)
+		inner join profsr P on (E.profsr_no = P.profsr_no)
+		inner join sklstf S on (S.sklstf_id = P.sklstf_id)
+<!-- 		where E.profsr_no = #{profsrNo} -->
+		<where>
+			<if test="keyword != null and keyword != ''">
+				and (lctre_nm like '%' || #{keyword} || '%')
+			</if>
+			<if test="complSe != null and complSe != ''">
+				and compl_se = #{complSe}
+			</if>
+		</where>
+	</select>
+	
+	<select id="detail" parameterType="estblCourseVO" resultMap="lectureMap">
+		select E.ESTBLLCTRE_CODE, E.LCTRE_CODE, E.PROFSR_NO, E.FILE_GROUP_NO, E.ACQS_PNT, 
+		       E.LCTRUM, E.COMPL_SE, E.ATNLC_NMPR, E.LCTRE_USE_LANG, E.EVL_MTHD, 
+		       E.ATEND_SCORE_REFLCT_RATE, E.TASK_SCORE_REFLCT_RATE, E.MIDDLE_TEST_SCORE_REFLCT_RATE, 
+		       E.TRMEND_TEST_SCORE_REFLCT_RATE, E.ESTBL_YEAR, E.ESTBL_SEMSTR,
+		       A.LCTRE_NM, A.OPER_AT,
+		       L.TIMETABLE_NO, L.ESTBLLCTRE_CODE, L.LCTRE_DFK, L.BEGIN_TM, L.END_TM,
+		       P.LABRUM_LC, S.SKLSTF_NM, S.CTTPC
+		from   ESTBL_COURSE E
+		inner join ALL_COURSE A on (E.LCTRE_CODE = A.LCTRE_CODE)
+		inner join LCTRE_TIMETABLE L on (E.ESTBLLCTRE_CODE = L.ESTBLLCTRE_CODE)
+		inner join PROFSR P on (E.PROFSR_NO = P.PROFSR_NO)
+		inner join SKLSTF S on (S.SKLSTF_ID = P.SKLSTF_ID)
+		where E.ESTBLLCTRE_CODE = #{estbllctreCode}
+	</select>
+	
+	<select id="detailAjax" parameterType="estblCourseVO" resultMap="lectureMap">
+		select E.ESTBLLCTRE_CODE, E.LCTRE_CODE, E.PROFSR_NO, E.FILE_GROUP_NO, E.ACQS_PNT, 
+		       E.LCTRUM, E.COMPL_SE, E.ATNLC_NMPR, E.LCTRE_USE_LANG, E.EVL_MTHD, 
+		       E.ATEND_SCORE_REFLCT_RATE, E.TASK_SCORE_REFLCT_RATE, E.MIDDLE_TEST_SCORE_REFLCT_RATE, 
+		       E.TRMEND_TEST_SCORE_REFLCT_RATE, E.ESTBL_YEAR, E.ESTBL_SEMSTR,
+		       A.LCTRE_NM, A.OPER_AT,
+		       L.TIMETABLE_NO, L.ESTBLLCTRE_CODE, L.LCTRE_DFK, L.BEGIN_TM, L.END_TM,
+		       P.LABRUM_LC, S.SKLSTF_NM, S.CTTPC
+		from   ESTBL_COURSE E
+		inner join ALL_COURSE A on (E.LCTRE_CODE = A.LCTRE_CODE)
+		inner join LCTRE_TIMETABLE L on (E.ESTBLLCTRE_CODE = L.ESTBLLCTRE_CODE)
+		inner join PROFSR P on (E.PROFSR_NO = P.PROFSR_NO)
+		inner join SKLSTF S on (S.SKLSTF_ID = P.SKLSTF_ID)
+		where E.ESTBLLCTRE_CODE = #{estbllctreCode}
+	</select>
+	
+	<update id="editEstbl" parameterType="estblCourseVO">
+		update ESTBL_COURSE
+		set	   LCTRUM = #{lctrum},
+			   EVL_MTHD = #{evlMthd}
+		where  ESTBLLCTRE_CODE = #{estbllctreCode}
+	</update>
+	
+	<update id="editTimetable" parameterType="lctreTimetableVO">
+		update LCTRE_TIMETABLE
+		set	   LCTRE_DFK = #{lctreDfk},
+			   BEGIN_TM = #{beginTm},
+			   END_TM = #{endTm}
+		where  ESTBLLCTRE_CODE = #{estbllctreCode}
+	</update>
+	
+	
 </mapper>

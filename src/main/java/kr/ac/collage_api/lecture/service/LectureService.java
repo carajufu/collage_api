@@ -1,41 +1,25 @@
 package kr.ac.collage_api.lecture.service;
 
 import java.util.List;
+import java.util.Map;
 
-import org.springframework.stereotype.Service;
+import kr.ac.collage_api.vo.EstblCourseVO;
 
-import kr.ac.collage_api.lecture.vo.LectureVO;
-
-@Service
 public interface LectureService {
 
-	List<LectureVO> getAllCourses(String estbllctreCode);
+	// 개설 강의 조회
+	public List<EstblCourseVO> list(Map<String, Object> map);
 
-	LectureVO getEstblCourseById(String estbllctreCode);
+	// 담당 강의 목록 조회(교수)
+	public List<EstblCourseVO> mylist(Map<String, Object> map);
 
-	List<LectureVO> getLectureEvalByEstblCode(String estbllctreCode);
+	// 강의 세부 정보
+	public EstblCourseVO detail(EstblCourseVO estblCourseVO);
 
-	List<LectureVO> getEvalItemsByEvlNo(int evlNo);
-
-	List<LectureVO> getEvalScoresByEvlNo(int evlNo);
-
-	List<LectureVO> getTimetableByEstblCode(String estbllctreCode);
-
-	List<LectureVO> getAll();
-
-	List<LectureVO> getEvlIem(Integer lctreEvlInnb);
-
-	List<LectureVO> getStdAll();
-
-	List<LectureVO> getEvlIemList(String estbllctreCode);
-
-	String getLctreCodeByEstbllctreCode(String estbllctreCode);
-
-	LectureVO getLectureByLctreCode(String lctreCode);
-
-	void insertLectureEval(String estbllctreCode, String stdntId, List<Integer> evlScore, List<String> evlCn);
-
-	Integer getEvlNoByEstbllctreCode(String estbllctreCode);
-
+	// 강의 세부 정보(비동기)
+	public EstblCourseVO detailAjax(String estbllctreCode);
 	
+	// 강의 세부 정보 수정(교수)
+	public int edit(EstblCourseVO estblCourseVO);
+
 }

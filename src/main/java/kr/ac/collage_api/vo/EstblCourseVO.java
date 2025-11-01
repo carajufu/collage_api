@@ -1,5 +1,7 @@
 package kr.ac.collage_api.vo;
 
+import java.util.List;
+
 import lombok.Data;
 
 //개설강의
@@ -21,6 +23,25 @@ public class EstblCourseVO {
 	private int trmendTestScoreReflctRate;   //기말시험점수반영비율	TRMEND_TEST_SCORE_REFLCT_RATE
 	private String estblYear;                //개설년도	ESTBL_YEAR
 	private String estblSemstr;              //개설학기	ESTBL_SEMSTR
+	
+//	private AllCourseVO lctreNm;
+//	
+//	private LctreTimetableVO lctreDfk;
+//	private LctreTimetableVO beginTm;
+//	private LctreTimetableVO endTm;
+//	
+//	private SklstfVO sklstfNm;
+//	private SklstfVO cttpc;
+//	
+//	private ProfsrVO labrumLc;
+	
+	private LctreTimetableVO timetable;		//lctreDfk(LCTRE_DFK), beginTm(BEGIN_TM), endTm(END_TM)
+	private AllCourseVO allCourse;			//lctreNm(LCTRE_NM)
+	private SklstfVO sklstf;				//sklstfNm(SKLSTF_NM), cttpc(CTTPC)
+	private ProfsrVO profsr;				//labrumLc(LABRUM_LC)
+	
+	
+	private List<EstblCourseVO> estblCourseVOlist;
 }
 
 

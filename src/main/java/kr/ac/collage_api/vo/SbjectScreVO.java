@@ -15,7 +15,6 @@ public class SbjectScreVO {
 	private int middleScore;      //중간점수	MIDDLE_SCORE
 	private int trmendScore;      //기말점수	TRMEND_SCORE
 	private int sbjectTotpoint;   //과목_총점	SBJECT_TOTPOINT
-	
 }
 
 

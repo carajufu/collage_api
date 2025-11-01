@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.ac.collage_api.learning.mapper.LearningPageMapper">
+    <select id="getLearningPage" parameterType="String" resultType="HashMap">
+        SELECT                      /* kr.ac.collage_api.learning.mapper.LearningPageMapper.getLearningPage */
+            week_accto_lrn_no       /* 주 별 학습 번호 */
+            , estbllctre_code       /* 개설 강의 코드 */
+            , file_group_no         /* 파일 그룹 번호 */
+            , week                  /* 주 */
+            , task_at               /* 과제 여부 */
+            , lrn_thema             /* 학습 주제 */
+            , lrn_cn                /* 학습 내용 */
+        FROM week_accto_lrn         /* 주 별 학습 */
+        WHERE estbllctre_code = #{lecNo}
+        ORDER BY week
+    </select>
+
+    <select id="taskList" resultType="taskVO">
+        SELECT                      /* kr.ac.collage_api.learning.mapper.LearningPageMapper.taskList */
+            task_no                 /* 과제 번호 */
+            , task_sj               /* 과제 제목 */
+            , task_cn               /* 과제 내용 */
+            , task_begin_de         /* 과제 시작 일자 */
+            , task_clos_de          /* 과제 종료 일자 */
+            , regist_dt             /* 등록 일시 */
+            , updt_dt               /* 수정 일시 */
+        FROM task
+        WHERE week_accto_lrn_no = (
+            SELECT week_accto_lrn_no
+            FROM week_accto_lrn
+            WHERE estbllctre_code = #{lecNo}
+                AND week = #{weekNo}
+            )
+    </select>
+</mapper>

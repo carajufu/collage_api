@@ -5,41 +5,30 @@ import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 
-import kr.ac.collage_api.lecture.vo.LectureVO;
+import kr.ac.collage_api.vo.EstblCourseVO;
 
 @Mapper
 public interface LectureMapper {
 
-	List<LectureVO> getAllCourse(String estbllctreCode);
+	// 개설 강의 조회
+	public List<EstblCourseVO> list(Map<String, Object> map);
+
+	// 담당 강의 목록 조회(교수)
+	public List<EstblCourseVO> mylist(Map<String, Object> map);
+
+	// 강의 세부 정보
+	public EstblCourseVO detail(EstblCourseVO estblCourseVO);
+
+	// // 강의 세부 정보(ajax)
+	public EstblCourseVO detailAjax(String estbllctreCode);
+
+//	// 강의 세부 정보 수정(교수)
+//	public void edit(EstblCourseVO estblCourseVO);
+
+	// 강의 세부 정보 수정(교수)
+	public int editEstbl(EstblCourseVO estblCourseVO);
 	
-	LectureVO getEstblCourseById(String estbllctreCode);
-	
-	List<LectureVO> getTimetableByEstblCode(String estbllctreCode);
+	public int editTimetable(EstblCourseVO estblCourseVO);
 
-	List<LectureVO> getEvalItemsByEvlNo(int evlNo);
 
-	List<LectureVO> getEvalScoresByEvlNo(int evlNo);
-
-	List<LectureVO> getLectureEvalByEstblCode(String estbllctreCode);
-
-	List<LectureVO> getAll();
-
-	List<LectureVO> getEvlIem(Integer lctreEvlInnb);
-
-	List<LectureVO> getStdAll();
-
-	List<LectureVO> getLectureEvalByStdnt(String estbllctreCode);
-
-	List<LectureVO> getEvlIemList(String estbllctreCode);
-
-	String getLctreCodeByEstbllctreCode(String estbllctreCode);
-
-	LectureVO getLectureByLctreCode(String lctreCode);
-	
-    Integer getEvlNoByEstbllctreCode(String estbllctreCode);
-
-    // (참고) 학생 평가 저장은 점수 테이블이 맞습니다.
-    void insertLectureEval(Map<String, Object> param);
-	
-	
 }
