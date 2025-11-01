@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.ac.collage_api.security.mapper.SecurityMapper">
+    <resultMap type="acntVO" id="acntMap">
+        <result property="acntId" column="ACNT_ID"/>
+        <result property="fileGroupNo" column="FILE_GROUP_NO"/>
+        <result property="password" column="PASSWORD"/>
+        <result property="acntTy" column="ACNT_TY"/>
+        <association property="authorVOList" resultMap="authorMap" />
+    </resultMap>
+
+    <resultMap type="authorVO" id="authorMap">
+        <result property="authorId" column="AUTHOR_ID"/>
+        <result property="authorNm" column="AUTHOR_NM"/>
+        <result property="authorDc" column="AUTHOR_DC"/>
+        <result property="acntId" column="ACNT_ID"/>
+        <result property="alwncDe" column="ALWNC_DE"/>
+    </resultMap>
+
+    <select id="findAcnt" parameterType="String" resultMap="acntMap">
+        SELECT ac.acnt_id, ac.password, ac.acnt_ty,
+            auth.author_nm, auth.ALWNC_DE
+        FROM acnt ac
+        INNER JOIN author auth
+            ON ac.acnt_id = auth.acnt_id
+        WHERE ac.acnt_id = #{username}
+        </select>
+</mapper>

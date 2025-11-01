@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.ac.collage_api.counsel.mapper.CounselMapper">
+		
+	<!-- //교수아이디가 포함된 상담_가능_여부 테이블 List 가져오기
+	public List<CnsltAtVO> getCnsltAtVOList(String profsrNo); -->
+	<select id="getCnsltAtVOList" parameterType="String" resultType="cnsltAtVO">
+		SELECT CNSLT_INNB, CNSLT_BEGIN_DE, STTUS, CNSLT_MTHD
+			 , CNSLT_RESULT, REGIST_DT, PROFSR_NO, CNSLT_BEGIN_TIME, CNSLT_END_TIME
+		  FROM CNSLT_AT
+		 WHERE PROFSR_NO = #{profsrNo}
+	</select>
+	
+	<!-- 상담_가능_여부 테이블에 입력
+	public int insertCnsltAt(CnsltAtVO cnsltAtVO); -->
+	<insert id="insertCnsltAt" parameterType="cnsltAtVO">
+		<selectKey resultType="int" order="BEFORE" keyProperty="cnsltInnb">
+			SELECT NVL(MAX(CNSLT_INNB),0)+1 FROM CNSLT_AT
+		</selectKey>
+	
+		INSERT INTO CNSLT_AT 
+			(CNSLT_INNB, CNSLT_BEGIN_DE, STTUS, CNSLT_MTHD
+		   , REGIST_DT, PROFSR_NO, CNSLT_BEGIN_TIME, CNSLT_END_TIME)
+		VALUES (#{cnsltInnb},#{cnsltBeginDe},1,#{cnsltMthd}
+		,SYSDATE,#{profsrNo},#{cnsltBeginTime},#{cnsltEndTime})
+	</insert>
+	
+	<!-- //학생NO로 상담VOList 가져오기
+	public List<CnsltVO> selectCnsltStd(String stdntNo); -->
+	
+	<select id="selectCnsltStd" parameterType="String" resultType="cnsltVO">
+	SELECT CNSLT_INNB, CNSLT_REQUST_DE, CNSLT_REQUST_HOUR, CNSLT_REQUST_CN, REQST_DE
+			, STTUS, CNSLT_MTHD, CANCL_REASON, CNSLT_RESULT, PROFSR_NO
+	    	, STDNT_NO
+	    FROM CNSLT
+	    WHERE STDNT_NO = #{stdntNo}
+	    ORDER BY CNSLT_INNB DESC
+	</select>
+	
+	
+	<!-- //상담신청 학생 => 교수
+	public int createCnslt(CnsltVO cnsltVO);  -->
+	
+	<insert id="createCnslt" parameterType="cnsltVO">
+	
+	<selectKey	resultType="int" order="BEFORE" keyProperty="cnsltInnb">
+		SELECT NVL(MAX(CNSLT_INNB),0) + 1 FROM CNSLT
+	</selectKey>
+		
+	INSERT INTO CNSLT (CNSLT_INNB, CNSLT_REQUST_DE, CNSLT_REQUST_HOUR, CNSLT_REQUST_CN, REQST_DE
+			, STTUS, PROFSR_NO, STDNT_NO)
+	    	VALUES(#{cnsltInnb},
+			  	#{cnsltRequstDe},
+				#{cnsltRequstHour},
+				#{cnsltRequstCn},
+				SYSDATE,
+				'1',
+				#{profsrNo},
+				#{stdntNo})
+	</insert>
+	
+	
+	<!-- //학생 아이디로 같은 과 교수(and 현재 수업중인) 가져오기
+	public ProfsrVO selectMyProf(
+		    @Param("stdntNo") String stdntNo, 
+		    @Param("year") String year, 
+		    @Param("semstr") String semstr
+		); -->
+ 
+ 	<select id="selectMyProf" resultType="profsrVO" >
+ 		SELECT
+ 			P.PROFSR_NO, S.SKLSTF_NM
+ 		FROM SKLSTF S
+ 		INNER JOIN
+ 			PROFSR P ON P.SKLSTF_ID = S.SKLSTF_ID
+ 		WHERE 1=1
+ 			<!-- 학생과 같은과 교수 -->
+ 			AND P.SUBJCT_CODE = 
+ 				(SELECT SUBJCT_CODE FROM STDNT WHERE STDNT_NO = #{stdntNo})
+ 			
+ 			<!-- 현재 년도/학기에 수업을 개설한 교수 -->
+ 			AND P.PROFSR_NO IN (
+ 				SELECT DISTINCT PROFSR_NO
+ 				FROM ESTBL_COURSE
+ 				WHERE ESTBL_YEAR = #{year}
+				  AND ESTBL_SEMSTR = #{semstr}
+				  AND PROFSR_NO IS NOT NULL
+ 			)
+ 	</select>
+ 	
+ 	
+ 	<!-- //내 상담교수의 강의 시간표 가져오기
+	public List<LctreTimetableVO> selectMyProfTimetable(String profsrNo); -->
+	
+	<select id="selectMyProfTimetable" parameterType="String" resultType="lctreTimetableVO">
+    SELECT L.TIMETABLE_NO, L.ESTBLLCTRE_CODE, L.LCTRE_DFK, L.BEGIN_TM, L.END_TM
+      FROM LCTRE_TIMETABLE L
+      JOIN ESTBL_COURSE E ON L.ESTBLLCTRE_CODE = E.ESTBLLCTRE_CODE
+     WHERE E.PROFSR_NO = #{profsrNo}
+	</select>
+	
+	<!-- //내 상담교수의 상담리스트 가져오기
+	public List<CnsltVO> profCnsltList(String profsrNo); -->
+	
+	<select id="profCnsltList" parameterType="String" resultType="cnsltVO">
+	SELECT CNSLT_INNB, CNSLT_REQUST_DE, CNSLT_REQUST_HOUR, CNSLT_REQUST_CN
+		 , REQST_DE, STTUS, CNSLT_MTHD, CANCL_REASON, CNSLT_RESULT
+		 , PROFSR_NO, STDNT_NO
+	FROM CNSLT
+	WHERE PROFSR_NO = #{profsrNo}
+	</select>
+	
+	
+	<!-- //상담 detail 보기
+	public CnsltVO seletCnsltDetail(int cnsltInnb); -->
+	
+	<select id="seletCnsltDetail" parameterType="int" resultType="cnsltVO">
+		SELECT C.CNSLT_INNB, C.CNSLT_REQUST_DE, C.CNSLT_REQUST_HOUR, C.CNSLT_REQUST_CN
+			 , C.REQST_DE, C.STTUS, C.CNSLT_MTHD, C.CANCL_REASON, C.CNSLT_RESULT
+		 	 , C.PROFSR_NO, C.STDNT_NO
+	 		 , S.SKLSTF_NM
+		FROM CNSLT C
+		    JOIN PROFSR P ON C.PROFSR_NO  = P.PROFSR_NO
+		    JOIN SKLSTF S ON P.SKLSTF_ID = S.SKLSTF_ID
+		WHERE CNSLT_INNB = #{cnsltInnb}
+	</select>
+	
+	
+	<!-- //상담 상태 따른 카운트
+	public List<CnsltVO> selectCnsltCount(String stdntNo); -->
+	<select id="selectCnsltCount" parameterType="string" resultType="cnsltVO">
+		SELECT STTUS, COUNT(CNSLT_INNB) CNT
+		FROM CNSLT
+		WHERE STDNT_NO = #{stdntNo}
+		GROUP BY STTUS
+	</select>
+	
+
+	
+
+</mapper>

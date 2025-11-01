@@ -1,0 +1,126 @@
+25-10-22
+	- MISSION : 공지 게시판 만들기 -> jsp에서 보는 목록 보고 디테일 보는것 까지함(글쓰기는 관리자에서 react로 하기~!)
+		- 임시 DB는 로컬 pc, jspexam에 테이블 만들어서 테스트 하기로 함
+			- 내 프로젝트에 관련된 테이블만 보는 방법 메뉴:"보기"-> 카트 열고 여기에 담으면 한눈에 보임
+		- admin 패키지에서 작업
+		- 게시판 명에 Bbs 넣음
+		- 생성파일 
+			-  위치 : account
+				- UploadController 파일업로드
+				- AccountMapper
+				- AccountService
+				- AccountServiceImpl
+				- AcntVO        | 계정
+				- FileDetailVO	| 파일그룹 
+				- FileGroupVO   | 파일디테일
+				- SklstfVO     	| 교직원계정			
+				
+			- 위치 : admin
+				- BbsNoticeController 
+				- BbsNoticeService
+				- BbsNoticeServiceImpl
+				- BbsNoticeMapper
+				- BbsVO       | 게시판 
+				- AnswerVO    | 댓글
+				- BbbcctVO    | 좋아요			
+			
+			- 위치 : config
+				- ArticlePage 페이징 처리 | 위치 : config
+				- BeanController
+				- FileConfig.java
+
+			- jsp 생성 파일
+				- bbsnotice.jsp
+				- bbsdetail.jsp
+				
+		! 파일 업로드부분만 업로드 안해봄- 코드는 다 따져봄 나중에 쓰기 기능 만들어서 해볼 예정
+			
+
+			
+		-exERD에서 오라클 테이블 생성 명렁어 추출
+			-메뉴 :  eXERD => 포워드 엔지니어링
+				- 여기서 원하는 테이블만 선택해서 생성할 수 있음
+			-게시판 명령어 생성을 위해 가져온테이블
+				- 관계도를 잘 보고 부모 테이블 껀 다 만들면 됨
+				- 계정, 일반게시판, 게시글좋아요, 댓글, 파일그룹, 파일디테일
+			
+			
+		 
+		 -views 폴더에 bbsnotice.jsp 만듬
+		 -어느폴더에 넣야할지 몰라 일단 이렇게 만들어 둠. 
+		 - 아마 관리자 영역은 리액트로 할 생각이었으니까 관리자 단에서의 폴더가 없는게 아닐까 함
+		 - 추후 웅태씨 방향으로 맞춤(어느폴더에 넣으라고 하면 따라감)
+		 
+		 
+	! 수정사항 = mapper에 경로 잘못됨. kr.or 로 되어있음. 현재 패키지는 kr.ac..임
+			=> 모든 매퍼 경로 수정!
+			=> mybatis.type-aliases-package=kr.ac.college_api.vo => 웅태씨에게 보고
+			=> 웅태씨 지시로 수정 => mybatis.type-aliases-package=kr.ac.college_api.**.vo
+			
+	! 수정사항 = header.jsp
+	          <link rel="stylesheet" href="css/main.css" />
+	          =>	href="/css/main.css"  css 앞에 슬러쉬 추가
+	          
+	! 수정사항 = application alias 만드는 곳에 collage 인데 오타있었음.=> 수정완
+	! 수정사항 = git에 올리기 위해 vo 패키지안에 넣었던 test.java 파일이 파일명이 모두 같아서 오류남
+				=> test2, test3... 이렇게 vo 패키지안에 있는 파일명은 모두 다르게 만듬
+				
+				
+				
+	=> 공지 게시판 목록 부분 만들어짐 "추후 고칠꺼. 작성자 부분을 아이디 말고 이름으로"
+
+	
+==============================================================================================
+
+
+
+25-10-23 상담신청
+	-MISSION : 상담의 모든것.
+	-관련 파일 생성 counsel 패키지에! (controller, service, impl, mapper...)
+	-생성 vo :단과대학, 학과, 학생, 교수,  -> 계정패키지 
+	 	     상담가능여부,상단신청 -> counsel 패키지에
+	- 상담 백앤드 쪽 작업 (컨트롤러 매서드3개 만듬)
+	
+	
+25-10-24 VO만들기,  더미데이터 만들기(대학,학과,계정,학생)
+         
+
+
+25-10-25 상담 기능
+		0. 상담 진행 로직 수정
+		1. 상담테이블 수정후 하나로 병합 (기존 테이블 삭제 아직 삭제 안하고 추가함)
+		2. 상담 VO 생성
+		3. 상담 학생 JSP 생성
+		4. 상담 학생 list 불러오기 진행중....
+
+
+
+
+
+
+
+----- 연도 학기 구하는 함수 -----
+	Calendar cal = Calendar.getInstance();
+
+    public String getYear() {
+        String year = Integer.toString(cal.get(Calendar.YEAR));
+        return year;
+    }
+
+    public String getCurrentPeriod() {
+        int currentMonth = cal.get(Calendar.MONTH) + 1;
+        String currentPeriod = null;
+
+        if(currentMonth >= 3 && currentMonth <= 7) {
+            currentPeriod = "1학기";
+        } else if(currentMonth >= 9 && currentMonth <= 12) {
+            currentPeriod = "2학기";
+        }
+
+        return currentPeriod;
+    }
+
+
+
+	
+	
