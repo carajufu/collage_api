@@ -3,145 +3,144 @@
 
 <mapper namespace="kr.ac.collage_api.grade.mapper.GradeScreMapper">
 
-<!--/////////////////////// 교수용 ///////////////////////-->		
-
-    <!-- 1) 교수가 맡은 개설교과목 목록 -->
+    <select id="getProfsrNoByAcntId" resultType="string">
+	    SELECT P.PROFSR_NO
+	    FROM ACNT A
+	    JOIN SKLSTF S ON A.ACNT_ID = S.ACNT_ID
+	    JOIN PROFSR P ON S.SKLSTF_ID = P.SKLSTF_ID
+	    WHERE A.ACNT_ID = #{acntId}
+	</select>
+	
     <select id="getAllSbject" resultType="kr.ac.collage_api.grade.vo.GradeScreVO">
         SELECT
-            ESTBLLCTRE_CODE, LCTRE_CODE, PROFSR_NO, FILE_GROUP_NO, ACQS_PNT
-            , LCTRUM, COMPL_SE, ATNLC_NMPR, LCTRE_USE_LANG, EVL_MTHD
-            , ATEND_SCORE_REFLCT_RATE, TASK_SCORE_REFLCT_RATE, MIDDLE_TEST_SCORE_REFLCT_RATE, TRMEND_TEST_SCORE_REFLCT_RATE
-            , ESTBL_YEAR, ESTBL_SEMSTR
-        FROM ESTBL_COURSE
-        WHERE PROFSR_NO = #{profsrNo}
+            A.ESTBLLCTRE_CODE, A.LCTRE_CODE, A.PROFSR_NO, A.LCTRUM
+            ,A.COMPL_SE, A.ESTBL_YEAR, A.ESTBL_SEMSTR, B.LCTRE_NM
+        FROM ESTBL_COURSE A
+        LEFT JOIN ALL_COURSE B ON A.LCTRE_CODE = B.LCTRE_CODE
+        WHERE A.PROFSR_NO = #{profsrNo}
+        ORDER BY A.ESTBL_YEAR DESC, A.ESTBL_SEMSTR DESC
     </select>
-
-    <!-- 2) 강의 기본 정보 -->
-    <select id="getCourse" resultType="kr.ac.collage_api.grade.vo.GradeScreVO">
+    
+    <select id="getCourseDetail" resultType="kr.ac.collage_api.grade.vo.GradeScreVO">
         SELECT
-            A.LCTRE_CODE, A.SUBJCT_CODE, A.PRE_LECTURE, A.LCTRE_NM, A.OPER_AT, A.RECENT_UPDT_DT
-            ,B.ESTBLLCTRE_CODE
-        FROM ALL_COURSE A
-        JOIN ESTBL_COURSE B ON A.LCTRE_CODE = B.LCTRE_CODE
-        WHERE B.PROFSR_NO = #{profsrNo}
+            A.ESTBLLCTRE_CODE, A.LCTRE_CODE, B.LCTRE_NM, A.ESTBL_YEAR
+            ,A.ESTBL_SEMSTR, A.LCTRUM, A.COMPL_SE
+        FROM ESTBL_COURSE A
+        JOIN ALL_COURSE B ON A.LCTRE_CODE = B.LCTRE_CODE
+        WHERE A.ESTBLLCTRE_CODE = #{estbllctreCode}
     </select>
-
-    <!-- 3) 해당 강의 수강 학생 & 성적 -->
     <select id="getSbjectScr" resultType="kr.ac.collage_api.grade.vo.GradeScreVO">
-		SELECT 
-		    E.STDNT_NO as stdntNo, E.STDNT_NM as stdntNm, AC.LCTRE_NM, C.PROFSR_NO
-		    ,D.YEAR, D.SEMSTR
-		    ,A.ATEND_SCORE, A.TASK_SCORE, A.MIDDLE_SCORE, A.TRMEND_SCORE
-		    ,A.SBJECT_TOTPOINT, A.PNT_GRAD, A.AVRG_SCORE
-		    ,B.ATNLC_REQST_NO as atnlcReqstNo
-		FROM ATNLC_REQST B
-		JOIN ESTBL_COURSE C ON B.ESTBLLCTRE_CODE = C.ESTBLLCTRE_CODE
-		JOIN ALL_COURSE AC ON C.LCTRE_CODE = AC.LCTRE_CODE
-		JOIN SEMSTR_SCRE D ON B.STDNT_NO = D.STDNT_NO
-		JOIN STDNT E ON D.STDNT_NO = E.STDNT_NO
-		LEFT JOIN SBJECT_SCRE A ON B.ATNLC_REQST_NO = A.ATNLC_REQST_NO 
-		WHERE C.ESTBLLCTRE_CODE = #{estbllctreCode}
-		ORDER BY E.STDNT_NO
+        SELECT
+            SC.STDNT_NO AS stdntNo, ST.STDNT_NM AS stdntNm
+            ,SC.ATNLC_REQST_NO AS atnlcReqstNo
+            ,NVL(G.ATEND_SCORE, 0) AS atendScore, NVL(G.TASK_SCORE, 0) AS taskScore
+            ,NVL(G.MIDDLE_SCORE, 0) AS middleScore, NVL(G.TRMEND_SCORE, 0) AS trmendScore
+            ,NVL(G.SBJECT_TOTPOINT, 0) AS sbjectTotpoint
+            ,NVL(G.PNT_GRAD, 'F') AS pntGrad, NVL(G.AVRG_SCORE, 0) AS pntAvrg
+        FROM ATNLC_REQST SC
+        JOIN STDNT ST ON SC.STDNT_NO = ST.STDNT_NO
+        JOIN ESTBL_COURSE EC ON SC.ESTBLLCTRE_CODE = EC.ESTBLLCTRE_CODE
+        LEFT JOIN SBJECT_SCRE G ON SC.ATNLC_REQST_NO = G.ATNLC_REQST_NO
+        WHERE SC.ESTBLLCTRE_CODE = #{estbllctreCode}
+        ORDER BY ST.STDNT_NO
     </select>
-
-    <!-- 4) 성적 수정 (기존 학생만 수정) -->
-	<update id="updateGrades">
-BEGIN
-    <foreach collection="list" item="g" separator=";">
-        UPDATE SBJECT_SCRE
-        SET ATEND_SCORE = #{g.atendScore},
-            TASK_SCORE = #{g.taskScore},
-            MIDDLE_SCORE = #{g.middleScore},
-            TRMEND_SCORE = #{g.trmendScore},
-            SBJECT_TOTPOINT = #{g.sbjectTotpoint},
-            PNT_GRAD = #{g.pntGrad},
-            AVRG_SCORE = #{g.pntAvrg}
-        WHERE ATNLC_REQST_NO = #{g.atnlcReqstNo}
-    </foreach>;
-END;
-	</update>
-
-    <!-- 5) 성적 저장 (없는 학생은 INSERT → 전체 UPDATE) -->
-	<update id="saveGrades">
-BEGIN
-    INSERT INTO SBJECT_SCRE (ATNLC_REQST_NO, ATEND_SCORE, TASK_SCORE, MIDDLE_SCORE, TRMEND_SCORE, SBJECT_TOTPOINT, PNT_GRAD, AVRG_SCORE)
-    SELECT A.ATNLC_REQST_NO, 0, 0, 0, 0, 0, 'F', 0
-    FROM ATNLC_REQST A
-    WHERE A.ESTBLLCTRE_CODE = #{estbllctreCode}
-    AND NOT EXISTS (
-        SELECT 1 FROM SBJECT_SCRE B WHERE B.ATNLC_REQST_NO = A.ATNLC_REQST_NO
-    );
-
-    <foreach collection="list" item="g" separator=";">
-        UPDATE SBJECT_SCRE
-        SET ATEND_SCORE = #{g.atendScore},
-            TASK_SCORE = #{g.taskScore},
-            MIDDLE_SCORE = #{g.middleScore},
-            TRMEND_SCORE = #{g.trmendScore},
-            SBJECT_TOTPOINT = #{g.sbjectTotpoint},
-            PNT_GRAD = #{g.pntGrad},
-            AVRG_SCORE = #{g.pntAvrg}
-        WHERE ATNLC_REQST_NO = #{g.atnlcReqstNo}
-    </foreach>;
-END;
-	</update>
-
-<!--/////////////////////// 학생용 ///////////////////////-->	
-
-  <!-- 학생용 학기별 성적 목록 -->
-<!-- <select id="getAllScore" resultType="kr.ac.collage_api.grade.vo.GradeVO"> -->
-<!-- 	SELECT -->
-<!-- 	    A.SEMSTR_SCRE_INNB, A.STDNT_NO, A.TOT_REQST_PNT, A.TOT_ACQS_PNT, -->
-<!-- 	    A.PNT_AVRG, A.SEMSTR, A.YEAR, A.SEMSTR_TOTPOINT, -->
-<!-- 	    B.SBJECT_SCRE_INNB, B.SEMSTR_SCRE_INNB, B.ATNLC_REQST_NO, B.PNT_GRAD, B.ACQS_PNT, -->
-<!-- 	    B.ATEND_SCORE, B.TASK_SCORE, B.MIDDLE_SCORE, B.TRMEND_SCORE, B.SBJECT_TOTPOINT, B.AVRG_SCORE, -->
-<!-- 	    C.ESTBLLCTRE_CODE, AC.LCTRE_NM -->
-<!-- 	FROM SEMSTR_SCRE A -->
-<!-- 	JOIN SBJECT_SCRE B ON A.SEMSTR_SCRE_INNB = B.SEMSTR_SCRE_INNB -->
-<!-- 	JOIN ATNLC_REQST C ON B.ATNLC_REQST_NO = C.ATNLC_REQST_NO -->
-<!-- 	JOIN ESTBL_COURSE EC ON C.ESTBLLCTRE_CODE = EC.ESTBLLCTRE_CODE -->
-<!-- 	JOIN ALL_COURSE AC ON EC.LCTRE_CODE = AC.LCTRE_CODE -->
-<!-- 	WHERE A.STDNT_NO = #{stdntNo} -->
-<!-- </select> -->
-  
-  <!-- 학생용 과목별 성적 목록 -->
-<select id="getAllSemstr" resultType="kr.ac.collage_api.grade.vo.GradeScreVO">
-SELECT
-    A.LCTRE_NM, B.ACQS_PNT, B.ESTBL_YEAR, B.ESTBL_SEMSTR
-    ,B.PROFSR_NO, C.STDNT_NO, C.ATNLC_REQST_NO, D.SBJECT_SCRE_INNB
-    ,D.SEMSTR_SCRE_INNB, D.PNT_GRAD, D.ATEND_SCORE, D.TASK_SCORE
-    ,D.MIDDLE_SCORE, D.TRMEND_SCORE, D.SBJECT_TOTPOINT, D.AVRG_SCORE
-    ,E.SEMSTR, E.YEAR
-FROM ALL_COURSE A
-JOIN ESTBL_COURSE B
-      ON A.LCTRE_CODE = B.LCTRE_CODE
-JOIN ATNLC_REQST C
-      ON B.ESTBLLCTRE_CODE = C.ESTBLLCTRE_CODE
-JOIN SBJECT_SCRE D
-      ON C.ATNLC_REQST_NO = D.ATNLC_REQST_NO
-JOIN SEMSTR_SCRE E
-	  ON D.SEMSTR_SCRE_INNB = E.SEMSTR_SCRE_INNB
-WHERE C.STDNT_NO = #{stdntNo}
-</select>
-
-    <!-- 학생용 과목 상세 성적 -->
-<!--     <select id="getSbjectDetailScore" parameterType="map" resultType="kr.ac.collage_api.grade.vo.GradeVO"> -->
-<!--         SELECT -->
-<!--             AC.LCTRE_NM AS lctreNm, -->
-<!--             C.ESTBLLCTRE_CODE AS estbllctreCode, -->
-<!--             A.ATEND_SCORE AS atendScore, -->
-<!--             A.TASK_SCORE AS taskScore, -->
-<!--             A.MIDDLE_SCORE AS middleScore, -->
-<!--             A.TRMEND_SCORE AS trmendScore, -->
-<!--             A.SBJECT_TOTPOINT AS sbjectTotpoint, -->
-<!--             A.AVRG_SCORE AS avrgScore, -->
-<!--             A.PNT_GRAD AS pntGrad -->
-<!--         FROM SBJECT_SCRE A -->
-<!--         JOIN ATNLC_REQST B ON A.ATNLC_REQST_NO = B.ATNLC_REQST_NO -->
-<!--         JOIN ESTBL_COURSE C ON B.ESTBLLCTRE_CODE = C.ESTBLLCTRE_CODE -->
-<!--         JOIN ALL_COURSE AC ON C.LCTRE_CODE = AC.LCTRE_CODE -->
-<!--         WHERE B.STDNT_NO = #{stdntNo} -->
-<!--         AND C.ESTBLLCTRE_CODE = #{estbllctreCode} -->
-<!--     </select> -->
+    <update id="saveGrades" parameterType="java.util.List">
+      BEGIN
+        <foreach collection="list" item="g" separator=";">
+          DECLARE
+            v_semstr_scre_innb NUMBER; v_stdnt_no VARCHAR2(9);
+            v_year VARCHAR2(4); v_semstr VARCHAR2(20);
+          BEGIN
+            SELECT STDNT_NO, REQST_YEAR, REQST_SEMSTR
+            INTO v_stdnt_no, v_year, v_semstr
+            FROM ATNLC_REQST
+            WHERE ATNLC_REQST_NO = #{g.atnlcReqstNo};
+            
+            BEGIN
+              SELECT SEMSTR_SCRE_INNB INTO v_semstr_scre_innb
+              FROM SEMSTR_SCRE
+              WHERE STDNT_NO = v_stdnt_no AND YEAR = v_year AND SEMSTR = v_semstr;
+            EXCEPTION
+              WHEN NO_DATA_FOUND THEN
+                SELECT NVL(MAX(SEMSTR_SCRE_INNB), 0) + 1 INTO v_semstr_scre_innb
+                FROM SEMSTR_SCRE;
+                INSERT INTO SEMSTR_SCRE (
+                  SEMSTR_SCRE_INNB, STDNT_NO, TOT_REQST_PNT, TOT_ACQS_PNT, 
+                  PNT_AVRG, SEMSTR, YEAR, SEMSTR_TOTPOINT, PNT_GRAD
+                ) VALUES (
+                  v_semstr_scre_innb, v_stdnt_no, 0, 0, 0, v_semstr, v_year, 0, NULL
+                );
+            END;
+            
+            MERGE INTO SBJECT_SCRE G
+            USING (
+              SELECT
+                #{g.atnlcReqstNo} AS ATNLC_REQST_NO, #{g.atendScore} AS ATEND_SCORE
+                ,#{g.taskScore} AS TASK_SCORE, #{g.middleScore} AS MIDDLE_SCORE
+                ,#{g.trmendScore} AS TRMEND_SCORE, #{g.sbjectTotpoint} AS SBJECT_TOTPOINT
+                ,#{g.pntGrad} AS PNT_GRAD, #{g.pntAvrg} AS AVRG_SCORE
+              FROM DUAL
+            ) S ON (G.ATNLC_REQST_NO = S.ATNLC_REQST_NO)
+            WHEN MATCHED THEN
+              UPDATE SET
+                G.ATEND_SCORE = S.ATEND_SCORE, G.TASK_SCORE = S.TASK_SCORE
+                ,G.MIDDLE_SCORE = S.MIDDLE_SCORE, G.TRMEND_SCORE = S.TRMEND_SCORE
+                ,G.SBJECT_TOTPOINT = S.SBJECT_TOTPOINT, G.PNT_GRAD = S.PNT_GRAD
+                ,G.AVRG_SCORE = S.AVRG_SCORE
+            WHEN NOT MATCHED THEN
+              INSERT (
+                G.SBJECT_SCRE_INNB, G.SEMSTR_SCRE_INNB, G.ATNLC_REQST_NO
+                ,G.PNT_GRAD, G.ACQS_PNT, G.ATEND_SCORE, G.TASK_SCORE
+                ,G.MIDDLE_SCORE, G.TRMEND_SCORE, G.SBJECT_TOTPOINT, G.AVRG_SCORE
+              ) VALUES (
+                (SELECT NVL(MAX(SBJECT_SCRE_INNB), 0) + 1 FROM SBJECT_SCRE)
+                ,v_semstr_scre_innb, S.ATNLC_REQST_NO, S.PNT_GRAD, NULL
+                ,S.ATEND_SCORE, S.TASK_SCORE, S.MIDDLE_SCORE
+                ,S.TRMEND_SCORE, S.SBJECT_TOTPOINT, S.AVRG_SCORE
+              );
+          END;
+        </foreach>
+      END;
+    </update>
+    <select id="searchStudent" resultType="kr.ac.collage_api.grade.vo.GradeScreVO">
+        SELECT
+            ST.STDNT_NO AS stdntNo, ST.STDNT_NM AS stdntNm
+        FROM STDNT ST
+        JOIN ATNLC_REQST AR ON ST.STDNT_NO = AR.STDNT_NO
+        WHERE AR.ESTBLLCTRE_CODE = #{estbllctreCode}
+        AND ST.STDNT_NM LIKE '%' || #{keyword} || '%'
+        ORDER BY ST.STDNT_NO
+    </select>
+    
+    <select id="getStudentSemstrList" resultType="kr.ac.collage_api.grade.vo.GradeScreVO">
+        SELECT
+            SEMSTR_SCRE_INNB, YEAR, SEMSTR
+            ,NVL(SEMSTR_TOTPOINT, 0) AS semstrTotpoint
+            ,NVL(PNT_AVRG, 0) AS pntAvrg
+            ,NVL(PNT_GRAD, '-') AS pntGrad
+            ,NVL(TOT_ACQS_PNT, 0) AS totAcqsPnt
+        FROM SEMSTR_SCRE
+        WHERE STDNT_NO = #{stdntNo}
+        ORDER BY YEAR DESC, SEMSTR DESC
+    </select>
+    
+    <select id="getStudentSemstrDetail" resultType="kr.ac.collage_api.grade.vo.GradeScreVO">
+        SELECT
+            C.LCTRE_NM, B.COMPL_SE, B.ACQS_PNT
+            ,NVL(A.PNT_GRAD, 'F') AS pntGrad
+            ,NVL(A.SBJECT_TOTPOINT, 0) AS sbjectTotpoint
+            ,NVL(A.AVRG_SCORE, 0) AS pntAvrg
+            ,NVL(A.ATEND_SCORE, 0) AS atendScore
+            ,NVL(A.TASK_SCORE, 0) AS taskScore
+            ,NVL(A.MIDDLE_SCORE, 0) AS middleScore
+            ,NVL(A.TRMEND_SCORE, 0) AS trmendScore
+            
+        FROM SBJECT_SCRE A
+        JOIN ATNLC_REQST AR ON A.ATNLC_REQST_NO = AR.ATNLC_REQST_NO
+        JOIN ESTBL_COURSE B ON AR.ESTBLLCTRE_CODE = B.ESTBLLCTRE_CODE
+        JOIN ALL_COURSE C ON B.LCTRE_CODE = C.LCTRE_CODE
+        WHERE A.SEMSTR_SCRE_INNB = #{semstrScreInnb}
+        ORDER BY C.LCTRE_NM
+    </select>
 
 </mapper>

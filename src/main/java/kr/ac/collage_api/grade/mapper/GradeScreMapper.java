@@ -1,40 +1,45 @@
 package kr.ac.collage_api.grade.mapper;
 
 import java.util.List;
-import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
-import kr.ac.collage_api.grade.vo.GradeScreForm;
 import kr.ac.collage_api.grade.vo.GradeScreVO;
 
+/**
+ * [수정 사항]
+ * - 학생 성적 조회 기능에 필요한 
+ * getStudentSemstrList, getStudentSemstrDetail 메서드 2개를 추가했습니다.
+ */
 @Mapper
 public interface GradeScreMapper {
-	
-//---------------------------- 교수용 ---------------------------- 
 
-	List<GradeScreVO> getAllSbject(String profsrNo);
+    // ---------------------- (기존) 교수용 메서드 ----------------------
+    String getProfsrNoByAcntId(String acntId);
+    List<GradeScreVO> getAllSbject(String profsrNo);
+    List<GradeScreVO> getCourse(String profsrNo);
+    GradeScreVO getCourseDetail(String estbllctreCode);
+    List<GradeScreVO> getSbjectScr(String estbllctreCode);
+    void updateGrades(@Param("list") List<GradeScreVO> grades);
+    void saveGrades(
+        @Param("list") List<GradeScreVO> grades,
+        @Param("estbllctreCode") String estbllctreCode
+    );
+    List<GradeScreVO> searchStudent(
+        @Param("keyword") String keyword,
+        @Param("estbllctreCode") String estbllctreCode
+    );
 
-	List<GradeScreVO> getCourse(String profsrNo);
-	
-	List<GradeScreVO> getSbjectScr(String estbllctreCode);
+    // ---------------------- [신규] 학생용 메서드 ----------------------
+    
+    /**
+     * (학생) 학기별 성적 목록 조회 (SEMSTR_SCRE)
+     */
+    List<GradeScreVO> getStudentSemstrList(String stdntNo);
 
-	int profGradeSubmit(GradeScreForm gradeForm);
-
-	int profGradeEdit(GradeScreForm gradeForm);
-	
-	List<GradeScreVO> searchStudent(String keyword, String estbllctreCode);
-
-	void updateGrades(@Param("list") List<GradeScreVO> grades);
-	
-	void saveGrades(@Param("list") List<GradeScreVO> grades, @Param("estbllctreCode") String estbllctreCode);
-
-//---------------------------- 학생용 ---------------------------- 
-//	List<GradeVO> getAllScore(String stdntNo);
-
-	GradeScreVO getSbjectDetailScore(Map<String, Object> params);
-
-	List<GradeScreVO> getAllSemstr(String stdntNo);
-
+    /**
+     * (학생) 특정 학기의 과목별 상세 성적 조회 (SBJECT_SCRE)
+     */
+    List<GradeScreVO> getStudentSemstrDetail(String semstrScreInnb);
 }

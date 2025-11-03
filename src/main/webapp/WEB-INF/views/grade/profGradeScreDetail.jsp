@@ -2,6 +2,24 @@
 <%@ taglib prefix="c" uri="jakarta.tags.core"%>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt"%>
 
+<%--
+  [수정 사항]
+  1. (JavaScript) wireAjaxSave:
+     - AJAX 호출 URL을 '/prof/grade/main/update'에서 '/prof/grade/main/save'로 변경했습니다.
+     - '/save' 엔드포인트는 사용자의 기존 Mapper.xml에 따라,
+       성적 레코드가 없으면 INSERT, 있으면 UPDATE를 모두 처리(Upsert)합니다.
+     - '/update' 엔드포인트는 UPDATE만 처리하므로, 신규 성적 입력 시 실패합니다.
+
+  2. (HTML) 강의 정보:
+     - 컨트롤러에서 전달하는 모델 속성명에 맞춰 '${selSbjectList[0]}'를
+       단일 객체인 '${selSbject}'로 모두 수정했습니다.
+     - '강의명' 필드에 강의실(${.lctrum})이 잘못 표시되던 오류를
+       강의명(${.lctreNm})으로 수정했습니다.
+
+  3. (HTML) 저장 버튼:
+     - 'wireAjaxSave' 스크립트와 일치하도록 버튼의 value를 'update'에서 'save'로 변경했습니다.
+--%>
+
 <%@ include file="../header.jsp"%>
 
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
@@ -31,7 +49,11 @@ function recalcRowTotal(row) {
   const guwa = parseFloat(row.querySelector("input[name*='.taskScore']").value) || 0;
   const mid  = parseFloat(row.querySelector("input[name*='.middleScore']").value) || 0;
   const fin  = parseFloat(row.querySelector("input[name*='.trmendScore']").value) || 0;
-
+  
+  // (참고) 현재 이 반영비율(0.2, 0.3)은 JS에 하드코딩되어 있습니다.
+  // DB 스키마(ESTBL_COURSE)의 반영비율을 동적으로 적용하려면
+  // 컨트롤러에서 해당 비율을 모델에 담아 JSP의 data-* 속성으로 전달한 후
+  // 이 함수가 data-* 속성을 읽도록 수정해야 합니다.
   const total = (chul * 0.2) + (guwa * 0.2) + (mid * 0.3) + (fin * 0.3);
   row.querySelector("input[name*='.sbjectTotpoint']").value = total.toFixed(1);
 
@@ -71,6 +93,7 @@ function recalcAllTotals() {
 function updateAverageChart() {
   const rows = document.querySelectorAll("table tbody tr");
   const count = rows.length;
+  if (count === 0) return; // 학생이 없으면 차트 그리지 않음
 
   let sumAtend = 0, sumTask = 0, sumMiddle = 0, sumTrmend = 0;
   rows.forEach(row => {
@@ -95,10 +118,20 @@ function updateAverageChart() {
         labels: ['출석(20)', '과제(20)', '중간(30)', '기말(30)'],
         datasets: [{
           label: '평균 점수',
-          data: avgData
+          data: avgData,
+          backgroundColor: [
+            'rgba(255, 99, 132, 0.5)',
+            'rgba(54, 162, 235, 0.5)',
+            'rgba(255, 206, 86, 0.5)',
+            'rgba(75, 192, 192, 0.5)'
+          ]
         }]
       },
-      options: { maintainAspectRatio: false, scales: { y: { beginAtZero: true }} }
+      options: { 
+        maintainAspectRatio: false, 
+        scales: { y: { beginAtZero: true, max: 100 } },
+        plugins: { legend: { display: false } }
+      }
     });
   } else {
     myBarChart.data.datasets[0].data = avgData;
@@ -111,9 +144,16 @@ function updateAverageChart() {
    ========================================================================= */
 function bindScoreInputEvents(scope = document) {
   scope.querySelectorAll(".score-input").forEach(input => {
+    // 기존 이벤트 리스너 제거 (중복 방지)
     const cloned = input.cloneNode(true);
     input.parentNode.replaceChild(cloned, input);
+    
+    // 점수 입력 시 총점/차트 즉시 재계산
     cloned.addEventListener("input", function() {
+      // 0~100 사이 강제
+      if (this.value > 100) this.value = 100;
+      if (this.value < 0) this.value = 0;
+      
       const row = this.closest("tr");
       recalcRowTotal(row);
       updateAverageChart();
@@ -149,19 +189,28 @@ function restoreOriginalValues() {
    기능 8) AJAX 저장
    ========================================================================= */
 function wireAjaxSave() {
-  $(document).on("click","button[name='action'][value='update']",function(e){
-    e.preventDefault();
+  // [수정] 클릭 타겟을 #saveBtn으로 명시
+  $("#saveBtn").on("click", function(e){
+    e.preventDefault(); // form의 기본 submit 동작 방지
+    
+    // [수정] URL을 '/update' -> '/save'로 변경
+    // '/save'는 Service/Mapper에서 INSERT + UPDATE (Upsert)를 모두 처리
     $.ajax({
-      url: "/prof/grade/main/update",
+      url: "/prof/grade/main/save", 
       type: "POST",
-      data: $("#gradeForm").serialize(),
-      success: function() {
-        alert("저장되었습니다.");
-        setEditMode(false);
-        snapshotOriginalValues();
+      data: $("#gradeForm").serialize(), // 폼 전체 데이터 전송 (estbllctreCode 포함)
+      success: function(response) {
+        if(response === "success") {
+            alert("저장되었습니다.");
+            setEditMode(false);
+            snapshotOriginalValues(); // 저장된 값을 새로운 원본으로 스냅샷
+        } else {
+            alert("저장에 실패했습니다. (서버 응답 오류)");
+        }
       },
-      error: function() {
-        alert("저장에 실패했습니다.");
+      error: function(xhr, status, error) {
+        console.error("AJAX Error:", error);
+        alert("저장 중 오류가 발생했습니다. (네트워크 또는 서버 오류)");
       }
     });
   });
@@ -171,13 +220,17 @@ function wireAjaxSave() {
    초기화
    ========================================================================= */
 window.addEventListener("DOMContentLoaded", function() {
-  recalcAllTotals();
-  bindScoreInputEvents(document);
-  updateAverageChart();
-  setEditMode(false);
-  snapshotOriginalValues();
+  recalcAllTotals();          // 1. (로드 시) 총점/등급/평점 재계산
+  bindScoreInputEvents();     // 2. 점수 입력칸 이벤트 바인딩
+  updateAverageChart();       // 3. (로드 시) 차트 그리기
+  setEditMode(false);         // 4. (로드 시) 읽기 전용 모드
+  snapshotOriginalValues();   // 5. (로드 시) 원본 값 스냅샷
+  
+  // 버튼 이벤트 바인딩
   editBtn.addEventListener("click", () => { setEditMode(true); snapshotOriginalValues(); });
   cancelBtn.addEventListener("click", () => { restoreOriginalValues(); setEditMode(false); });
+  
+  // AJAX 저장 이벤트 바인딩
   wireAjaxSave();
 });
 </script>
@@ -188,71 +241,82 @@ window.addEventListener("DOMContentLoaded", function() {
 
       <h2 class="border-bottom pb-3 mb-4">과목별 성적 관리</h2>
 
-      <!-- ✅ 화면설계원칙에 따른 강의 정보 2열배치 -->
       <div class="alert alert-info mb-4">
         <div class="row g-2">
-          <div class="col-sm-6"><strong>강의명:</strong> ${selSbjectList[0].lctrum}</div>
-          <div class="col-sm-6"><strong>강의코드:</strong> ${selSbjectList[0].lctreCode}</div>
+          <div class="col-sm-6"><strong>강의명:</strong> ${selSbject.lctreNm}</div>
+          <div class="col-sm-6"><strong>강의코드:</strong> ${selSbject.lctreCode}</div>
+          <div class="col-sm-6"><strong>이수구분:</strong> ${selSbject.complSe}</div>
+          <div class="col-sm-6"><strong>년도/학기:</strong> ${selSbject.estblYear}년 / ${selSbject.estblSemstr}</div>
         </div>
       </div>
 
-      <!-- 평균 차트 -->
-      <div class="card card-success mt-4">
+      <div class="card card-primary mt-4">
         <div class="card-header">
-          <h3 class="card-title">전체 학생 평균 점수</h3>
+          <h3 class="card-title">전체 학생 평균 점수 (100점 만점 기준)</h3>
         </div>
         <div class="card-body">
           <div class="chart">
-            <canvas id="barChart" style="min-height: 250px; height: 250px;"></canvas>
+            <canvas id="barChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
           </div>
         </div>
       </div>
 
       <form id="gradeForm" method="post">
-        <input type="hidden" name="estbllctreCode" value="${selSbjectList[0].estbllctreCode}">
+        <input type="hidden" name="estbllctreCode" value="${selSbject.estbllctreCode}">
 
-        <table class="table table-hover align-middle mt-3">
-          <thead class="table-light">
-            <tr>
-              <th>학생 ID</th>
-              <th>학생명</th>
-              <th>출석</th>
-              <th>과제</th>
-              <th>중간</th>
-              <th>기말</th>
-              <th>총점</th>
-              <th>평점</th>
-              <th>등급</th>
-            </tr>
-          </thead>
-          <tbody>
-            <c:forEach var="stdnt" items="${sbjectScr}" varStatus="status">
+        <c:if test="${empty sbjectScr}">
+          <div class="alert alert-warning text-center mt-3">
+            수강 중인 학생이 없습니다.
+          </div>
+        </c:if>
+
+        <c:if test="${not empty sbjectScr}">
+          <table class="table table-hover table-bordered align-middle mt-3">
+            <thead class="table-light text-center">
               <tr>
-                <td>${stdnt.stdntNo}</td>
-                <td>${stdnt.stdntNm}</td>
-
-                <input type="hidden" name="grades[${status.index}].atnlcReqstNo" value="${stdnt.atnlcReqstNo}" />
-
-                <td><input type="number" name="grades[${status.index}].atendScore"  value="${stdnt.atendScore}"  class="form-control form-control-sm score-input" readonly></td>
-                <td><input type="number" name="grades[${status.index}].taskScore"   value="${stdnt.taskScore}"   class="form-control form-control-sm score-input" readonly></td>
-                <td><input type="number" name="grades[${status.index}].middleScore" value="${stdnt.middleScore}" class="form-control form-control-sm score-input" readonly></td>
-                <td><input type="number" name="grades[${status.index}].trmendScore" value="${stdnt.trmendScore}" class="form-control form-control-sm score-input" readonly></td>
-
-                <td><input type="number" name="grades[${status.index}].sbjectTotpoint" value="${stdnt.sbjectTotpoint}" class="form-control form-control-sm" readonly></td>
-                <td><input type="number" name="grades[${status.index}].pntAvrg" value="${stdnt.pntAvrg}" class="form-control form-control-sm" readonly></td>
-                <td><input type="text"   name="grades[${status.index}].pntGrad" value="${stdnt.pntGrad}" class="form-control form-control-sm" readonly></td>
+                <th>학번</th>
+                <th>학생명</th>
+                <th>출석 (20%)</th>
+                <th>과제 (20%)</th>
+                <th>중간 (30%)</th>
+                <th>기말 (30%)</th>
+                <th>총점 (100)</th>
+                <th>평점 (4.5)</th>
+                <th>등급</th>
               </tr>
-            </c:forEach>
-          </tbody>
-        </table>
+            </thead>
+            <tbody class="text-center">
+              <c:forEach var="stdnt" items="${sbjectScr}" varStatus="status">
+                <tr>
+                  <td>${stdnt.stdntNo}</td>
+                  <td>${stdnt.stdntNm}</td>
+
+                  <input type="hidden" name="grades[${status.index}].atnlcReqstNo" value="${stdnt.atnlcReqstNo}" />
+
+                  <td><input type="number" min="0" max="100" name="grades[${status.index}].atendScore"  value="${stdnt.atendScore}"  class="form-control form-control-sm score-input" readonly></td>
+                  <td><input type="number" min="0" max="100" name="grades[${status.index}].taskScore"   value="${stdnt.taskScore}"   class="form-control form-control-sm score-input" readonly></td>
+                  <td><input type="number" min="0" max="100" name="grades[${status.index}].middleScore" value="${stdnt.middleScore}" class="form-control form-control-sm score-input" readonly></td>
+                  <td><input type="number" min="0" max="100" name="grades[${status.index}].trmendScore" value="${stdnt.trmendScore}" class="form-control form-control-sm score-input" readonly></td>
+
+                  <td><input type="number" name="grades[${status.index}].sbjectTotpoint" value="${stdnt.sbjectTotpoint}" class="form-control form-control-sm bg-light" readonly style="font-weight: bold;"></td>
+                  <td><input type="number" name="grades[${status.index}].pntAvrg" value="${stdnt.pntAvrg}" class="form-control form-control-sm bg-light" readonly></td>
+                  <td><input type="text"   name="grades[${status.index}].pntGrad" value="${stdnt.pntGrad}" class="form-control form-control-sm bg-light" readonly></td>
+                </tr>
+              </c:forEach>
+            </tbody>
+          </table>
+        </c:if>
 
         <div class="mt-4 d-flex justify-content-between">
-          <a href="/prof/grade/main/All" class="btn btn-secondary">메인으로</a>
-          <div>
-            <button type="button" id="editBtn" class="btn btn-warning">수정하기</button>
-            <button type="submit" id="saveBtn" name="action" value="update" class="btn btn-primary me-2" style="display:none;">저장</button>
-            <button type="button" id="cancelBtn" class="btn btn-secondary" style="display:none;">취소</button>
-          </div>
+          <a href="/prof/grade/main/All" class="btn btn-secondary">목록으로</a>
+          
+          <c:if test="${not empty sbjectScr}">
+            <div>
+              <button type="button" id="editBtn" class="btn btn-warning">수정하기</button>
+              <button type="submit" id="saveBtn" name="action" value="save" class="btn btn-primary me-2" style="display:none;">저장</button>
+              <button type="button" id="cancelBtn" class="btn btn-secondary" style="display:none;">취소</button>
+            </div>
+          </c:if>
         </div>
       </form>
     </div>

@@ -6,99 +6,167 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import kr.ac.collage_api.lecture.mapper.LectureEvlMapper;
 import kr.ac.collage_api.lecture.service.LectureEvlService;
 import kr.ac.collage_api.lecture.vo.LectureEvlVO;
 
-
 @Service
 public class LectureEvlServiceImpl implements LectureEvlService {
 
-	@Autowired
-	LectureEvlMapper lectureMapper;
+    @Autowired
+    private LectureEvlMapper lectureMapper;
 
-	@Override
-	public List<LectureEvlVO> getAllCourses(String estbllctreCode) {
-		return lectureMapper.getAllCourses(estbllctreCode);
-	}
+    // ------------------------------------------------------------
+    // ✅ (공통) ACNT_ID → ID 변환
+    // ------------------------------------------------------------
+    @Override
+    public String getProfsrNoByAcntId(String acntId) {
+        return lectureMapper.getProfsrNoByAcntId(acntId);
+    }
+    
+    @Override
+    public String getStdntNoByAcntId(String acntId) {
+        return lectureMapper.getStdntNoByAcntId(acntId);
+    }
 
-	@Override
-	public LectureEvlVO getEstblCourseById(String estbllctreCode) {
-		return lectureMapper.getEstblCourseById(estbllctreCode);
-	}
+    // ------------------------------------------------------------
+    // ✅ (교수) 로그인 교수 기준 개설강의 목록 조회
+    // ------------------------------------------------------------
+    @Override
+    public int getTotalCourseCount(String profsrNo) {
+        return lectureMapper.getTotalCourseCount(profsrNo);
+    }
 
-	@Override
-	public List<LectureEvlVO> getLectureEvalByEstblCode(String estbllctreCode) {
-		return lectureMapper.getLectureEvalByEstblCode(estbllctreCode);
-	}
-	
-	@Override
-	public List<LectureEvlVO> getEvalItemsByEvlNo(int evlNo) {
-		return lectureMapper.getEvalItemsByEvlNo(evlNo);
-	}
-
-	@Override
-	public List<LectureEvlVO> getEvalScoresByEvlNo(int evlNo) {
-		return lectureMapper.getEvalScoresByEvlNo(evlNo);
-	}
-
-	@Override
-	public List<LectureEvlVO> getTimetableByEstblCode(String estbllctreCode) {
-		return lectureMapper.getTimetableByEstblCode(estbllctreCode);
-	}
-
-	@Override
-	public List<LectureEvlVO> getAll() {
-		return lectureMapper.getAll();
-	}
-
-	@Override
-	public List<LectureEvlVO> getEvlIem(Integer lctreEvlInnb) {
-		return lectureMapper.getEvlIem(lctreEvlInnb);
-	}
-
-	@Override
-	public List<LectureEvlVO> getStdAll() {
-		return lectureMapper.getStdAll();
-	}
-
-	@Override
-	public List<LectureEvlVO> getEvlIemList(String estbllctreCode) {
-		return lectureMapper.getEvlIemList(estbllctreCode);
-	}
-
-	@Override
-	public LectureEvlVO getLectureByLctreCode(String lctreCode) {
-		return lectureMapper.getLectureByLctreCode(lctreCode);
-	}
-
-	@Override
-	public void insertLectureEval(String estbllctreCode, String stdntId,
-	                              List<Integer> evlScore, List<String> evlCn) {
-
-	    int evlNo = lectureMapper.getEvlNoByEstbllctreCode(estbllctreCode);
-
-	    for (int i = 0; i < evlScore.size(); i++) {
-	        Map<String, Object> param = new HashMap<>();
-	        param.put("lctreEvlInnb", evlNo);
-	        param.put("evlCn", evlCn.get(i));
-	        param.put("evlScore", evlScore.get(i));
-
-	        lectureMapper.insertLectureEval(param);
-	    }
-	}
-
-	@Override
-	public String getLctreCodeByEstbllctreCode(String estbllctreCode) {
-		return lectureMapper.getLctreCodeByEstbllctreCode(estbllctreCode);
-	}
-
-	@Override
-	public Integer getEvlNoByEstbllctreCode(String estbllctreCode) {
-		return lectureMapper.getEvlNoByEstbllctreCode(estbllctreCode);
-	}
+    @Override
+    public List<LectureEvlVO> getPagedCourses(String profsrNo, int start, int size) {
+        Map<String, Object> param = new HashMap<>();
+        param.put("profsrNo", profsrNo);
+        param.put("start", start);
+        param.put("size", size);
+        return lectureMapper.getPagedCourses(param);
+    }
 
 
-	
+    // ------------------------------------------------------------
+    // ✅ (공통) 개설강의 기본정보 + 평가 기본정보 조회
+    // ------------------------------------------------------------
+    @Override
+    public LectureEvlVO getEstblCourseById(String estbllctreCode) {
+        return lectureMapper.getEstblCourseById(estbllctreCode);
+    }
+
+    @Override
+    public List<LectureEvlVO> getEvlIem(Integer evlNo) {
+        return lectureMapper.getEvlIem(evlNo);
+    }
+
+    @Override
+    public List<LectureEvlVO> getTimetableByEstblCode(String estbllctreCode) {
+        return lectureMapper.getTimetableByEstblCode(estbllctreCode);
+    }
+    
+    @Override
+    public Integer getEvlNoByEstbllctreCode(String estbllctreCode) {
+        return lectureMapper.getEvlNoByEstbllctreCode(estbllctreCode);
+    }
+
+
+    // ------------------------------------------------------------
+    // ✅ (교수) 강의평가 요약 + 차트용 분포 데이터
+    // ------------------------------------------------------------
+    @Override
+    public List<LectureEvlVO> getLectureEvalSummary(String estbllctreCode) {
+        return lectureMapper.getLectureEvalSummary(estbllctreCode);
+    }
+
+    @Override
+    public List<Integer> getLectureEvalScoreCounts(String estbllctreCode) {
+        return lectureMapper.getLectureEvalScoreCounts(estbllctreCode);
+    }
+
+
+    // ------------------------------------------------------------
+    // ✅ (학생) 강의평가 목록 및 제출
+    // ------------------------------------------------------------
+    
+    /**
+     * ★ [수정] 학생의 '모든' 수강완료 강의 목록
+     */
+    @Override
+    public List<LectureEvlVO> getAllLecturesByStdntNo(String stdntNo) {
+        // ★ [수정] 호출 메소드명 변경 (getUnevaluatedLecturesByStdntNo -> getAllLecturesByStdntNo)
+        return lectureMapper.getAllLecturesByStdntNo(stdntNo);
+    }
+
+    @Override
+    @Transactional // 여러 항목을 Insert 하므로 트랜잭션 처리
+    public void insertLectureEval(String estbllctreCode, String stdntId,
+                                  List<Integer> evlScore, List<String> evlCn) {
+
+        Integer evlNo = lectureMapper.getEvlNoByEstbllctreCode(estbllctreCode);
+        if (evlNo == null) {
+            throw new RuntimeException("강의평가 정보(EVL_NO)를 찾을 수 없습니다.");
+        }
+
+        List<LectureEvlVO> evlItems = lectureMapper.getEvlIem(evlNo);
+        if (evlItems.isEmpty() || evlItems.size() != evlScore.size()) {
+             throw new RuntimeException("평가 항목의 개수가 일치하지 않습니다.");
+        }
+
+        for (int i = 0; i < evlScore.size(); i++) {
+            
+            LectureEvlVO currentItem = evlItems.get(i);
+            Integer lctreEvlInnb = currentItem.getLctreEvlInnb(); 
+
+            Map<String, Object> param = new HashMap<>();
+            
+            param.put("lctreEvlInnb", lctreEvlInnb);
+            param.put("stdntId", stdntId); 
+            param.put("evlScore", evlScore.get(i));
+            param.put("evlCn", (evlCn.size() > i) ? evlCn.get(i) : "");
+
+            lectureMapper.insertLectureEval(param);
+        }
+    }
+    
+    // ------------------------------------------------------------
+    // ✅ (시스템) 평가 '질문지' 자동 생성 로직
+    // ------------------------------------------------------------
+    
+    /**
+     * 기본 평가지를 생성하는 메소드
+     */
+    @Override
+    @Transactional // 마스터/항목 등록이 동시에 성공(Commit)해야 함
+    public Integer createDefaultEvaluation(String estbllctreCode) {
+        
+        // 1. 새로운 EVL_NO (PK)를 가져옵니다. (Mapper.xml의 getNextEvlNo 호출)
+        int newEvlNo = lectureMapper.getNextEvlNo();
+        
+        // 2. LCTRE_EVL (마스터) 테이블에 INSERT
+        Map<String, Object> masterParam = new HashMap<>();
+        masterParam.put("evlNo", newEvlNo);
+        masterParam.put("estbllctreCode", estbllctreCode);
+        lectureMapper.insertLctreEvlMaster(masterParam);
+        
+        // 3. 기본 질문 항목들을 LCTRE_EVL_IEM (항목) 테이블에 INSERT
+        List<String> defaultQuestions = List.of(
+            "강의 내용이 체계적이고 유익했습니다.",
+            "교수님의 설명이 명확하고 이해하기 쉬웠습니다.",
+            "과제, 시험 등은 강의 목표 달성에 적절했습니다.",
+            "전반적으로 이 강의에 만족합니다."
+        );
+        
+        for (String question : defaultQuestions) {
+            Map<String, Object> itemParam = new HashMap<>();
+            itemParam.put("evlNo", newEvlNo);
+            itemParam.put("evlCn", question);
+            lectureMapper.insertLctreEvlIem(itemParam);
+        }
+        
+        // 4. 생성된 EVL_NO를 컨트롤러로 반환
+        return newEvlNo;
+    }
 }

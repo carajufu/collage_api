@@ -6,6 +6,10 @@ public class AccountVO {
 	private int acntTy;
 	private String photoFileNm;
 	private int fileGroupNo;
+	public String getProfsrNo() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
 
 //

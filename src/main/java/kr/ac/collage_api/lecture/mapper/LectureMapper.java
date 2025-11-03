@@ -17,7 +17,7 @@ public interface LectureMapper {
 	public List<EstblCourseVO> mylist(Map<String, Object> map);
 
 	// 강의 세부 정보
-	public EstblCourseVO detail(EstblCourseVO estblCourseVO);
+	public EstblCourseVO detail(EstblCourseVO estblCourseSVO);
 
 	// // 강의 세부 정보(ajax)
 	public EstblCourseVO detailAjax(String estbllctreCode);

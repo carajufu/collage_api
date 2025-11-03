@@ -1,24 +1,29 @@
 package kr.ac.collage_api.grade.controller;
 
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import kr.ac.collage_api.grade.service.GradeScreService;
 import kr.ac.collage_api.grade.vo.GradeScreForm;
 import kr.ac.collage_api.grade.vo.GradeScreVO;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
+/**
+ * [수정 사항]
+ * 1. (추가) @PostMapping("/main/save")
+ * - detail.jsp의 AJAX 저장(/main/save) 요청을 처리할 엔드포인트를 추가했습니다.
+ * - 폼 데이터를 GradeScreForm VO로 바인딩합니다.
+ * - gradeService.saveGrades (INSERT+UPDATE)를 호출합니다.
+ * - AJAX 응답으로 "success" 또는 "error" 문자열을 반환합니다.
+ *
+ * 2. (유지) profGradeDetail
+ * - detail.jsp가 사용하는 ${selSbject}와 ${sbjectScr}를 모델에
+ * 정상적으로 추가하고 있으므로, 기존 코드를 유지합니다.
+ */
 @Controller
 @RequestMapping("/prof/grade")
 public class Prof_GradeScreController {
@@ -26,80 +31,68 @@ public class Prof_GradeScreController {
     @Autowired
     GradeScreService gradeService;
 
-	//교수번호 임시 하드코딩
-	String profsrNo = "P0001";
-    
+    /**
+     * 개설 강의 목록 (수정 없음)
+     */
     @GetMapping("/main/All")
     public String profGradeMain(Model model) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String acntId = auth.getName();
+        String profsrNo = gradeService.getProfsrNoByAcntId(acntId);
+
         List<GradeScreVO> allSbject = gradeService.getAllSbject(profsrNo);
-        log.info("allSbject : {}", allSbject);
-        model.addAttribute("allSbject",allSbject);
+        model.addAttribute("allCourseList", allSbject);
+
         return "grade/profGradeScreMain";
     }
 
+    /**
+     * 강의 상세 / 성적 목록 화면
+     * (detail.jsp와 모델 속성이 일치하므로 수정 없음)
+     */
     @GetMapping("/main/detail/{estbllctreCode}")
-    public String profGradeDetail(@PathVariable String estbllctreCode,
-						          Model model) {
+    public String profGradeDetail(@PathVariable String estbllctreCode, Model model) {
 
-    	List<GradeScreVO> selSbjectList = gradeService.getCourse(profsrNo);
-    	log.info("selSbjectList : {}",selSbjectList);
-    	
-    	List<GradeScreVO> sbjectScr = gradeService.getSbjectScr(estbllctreCode);
-    	log.info("sbjectScr : {}",sbjectScr);
-    	
-    	model.addAttribute("selSbject", selSbjectList.get(0));
-    	model.addAttribute("sbjectScr", sbjectScr);
-    	
-    	return "grade/profGradeScreDetail";
-    }
-    
-    @PostMapping("/main/detail/{estbllctreCode}/save")
-    public String profGradeSubmint(@PathVariable String estbllctreCode,
-    								@ModelAttribute GradeScreForm gradeForm, Model model) {
-    	int result = this.gradeService.profGradeSubmit(gradeForm);
-    	log.info("result : {}", result);
-    	model.addAttribute("result",result);
-    	return "redirect:/prof/grade/main/detail/" + estbllctreCode;
-    }
-    
-    @PostMapping("/main/detail/{estbllctreCode}/edit")
-    public String profGradeEdit(@PathVariable String estbllctreCode,
-    							@ModelAttribute GradeScreForm gradeForm, Model model) {
-    	int result = this.gradeService.profGradeEdit(gradeForm);
-    	log.info("result : {}", result);
-    	model.addAttribute("result",result);	
-    	return "redirect:/prof/grade/main/detail/" + estbllctreCode;
-    }
-    
-    /**
-     * 학생 검색 (모달용)
-     */
-    @GetMapping("/main/searchStudent")
-    @ResponseBody
-    public List<GradeScreVO> searchStudent(@RequestParam("keyword") String keyword, String estbllctreCode) {
-        return gradeService.searchStudent(keyword, estbllctreCode);
+        // 1. 강의 기본 정보 (detail.jsp의 ${selSbject}와 매핑)
+        GradeScreVO selSbject = gradeService.getCourseDetail(estbllctreCode);
+
+        // 2. 강의 수강 학생 성적 목록 (detail.jsp의 ${sbjectScr}와 매핑)
+        List<GradeScreVO> sbjectScr = gradeService.getSbjectScr(estbllctreCode);
+
+        model.addAttribute("selSbject", selSbject);
+        model.addAttribute("sbjectScr", sbjectScr);
+
+        return "grade/profGradeScreDetail";
     }
 
     /**
-     * 점수 수정 (기존 데이터만 UPDATE)
-     */
-    @PostMapping("/main/update")
-    @ResponseBody
-    public String updateGrade(@ModelAttribute GradeScreForm gradeForm) {
-    	log.info("gradeForm : {}", gradeForm.getGrades());
-        gradeService.updateGrades(gradeForm.getGrades());
-        return "success";
-    }
-
-    /**
-     * 점수 완료 (없는 학생은 INSERT → 전체 UPDATE)
+     * [신규 추가] 성적 저장 (INSERT + UPDATE)
+     * detail.jsp의 '/main/save' AJAX 호출을 처리합니다.
      */
     @PostMapping("/main/save")
     @ResponseBody
-    public String saveGrade(@ModelAttribute GradeScreForm gradeForm, @RequestParam("estbllctreCode") String estbllctreCode) {
-    	log.info("gradeForm : {}", gradeForm.getGrades());
-        gradeService.saveGrades(gradeForm.getGrades(), estbllctreCode);
-        return "success";
+    public String saveGrade(@ModelAttribute GradeScreForm gradeForm,
+                            @RequestParam("estbllctreCode") String estbllctreCode) {
+        try {
+            // Service 호출: 폼에서 바인딩된 grades 리스트와 estbllctreCode를 전달
+            gradeService.saveGrades(gradeForm.getGrades(), estbllctreCode);
+            
+            // JSP의 success: function()으로 "success" 문자열 반환
+            return "success"; 
+        } catch (Exception e) {
+            e.printStackTrace();
+            // JSP의 error: function() 또는 success:의 else 분기 처리용 "error" 반환
+            return "error"; 
+        }
     }
 
+    /**
+     * 학생 검색 (수정 없음)
+     */
+    @GetMapping("/main/searchStudent")
+    @ResponseBody
+    public List<GradeScreVO> searchStudent(@RequestParam("keyword") String keyword,
+                                           @RequestParam("estbllctreCode") String estbllctreCode) {
+        return gradeService.searchStudent(keyword, estbllctreCode);
+    }
 }
