@@ -1,6 +1,6 @@
 package kr.ac.collage_api.learning.service.impl;
 
-import kr.ac.collage_api.common.upload.service.UploadController;
+import kr.ac.collage_api.common.attach.service.UploadController;
 import kr.ac.collage_api.dashboard.vo.TaskPresentnVO;
 import kr.ac.collage_api.learning.vo.TaskVO;
 import kr.ac.collage_api.learning.mapper.LearningPageMapper;
@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
