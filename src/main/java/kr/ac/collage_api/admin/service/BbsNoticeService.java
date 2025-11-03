@@ -19,4 +19,13 @@ public interface BbsNoticeService {
 	//게시글 삭제
 	public int delete(int bbscttNo);
 
+	//관리자 - 공지사항게시판 리스트 가져오기
+	public List<BbsVO> adminList();
+
+	public int adminPutDetail(BbsVO bbsVO);
+
+	public int adminDeleteDetail(int bbscttNo);
+
+	public int adminPostDetail(BbsVO bbsVO);
+
 }

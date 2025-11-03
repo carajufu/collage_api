@@ -19,6 +19,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 
+
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
@@ -55,7 +56,7 @@ public class SecurityConfig {
                 .httpBasic(hbasic -> hbasic.disable())
                 .authorizeHttpRequests(authorize -> authorize
                         .dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.ASYNC).permitAll()
-                        .requestMatchers("/", "/login", "/accessError", "/.well-known/**").permitAll()
+                        .requestMatchers("/", "/login", "/accessError", "/.well-known/**", "/admin/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .requestCache(cache -> cache.requestCache(requestCache))
@@ -80,4 +81,6 @@ public class SecurityConfig {
 
         return new ProviderManager(authProvider);
     }
+    
+ 
 }

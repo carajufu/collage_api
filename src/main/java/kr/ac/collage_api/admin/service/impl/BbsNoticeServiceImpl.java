@@ -14,26 +14,46 @@ import kr.ac.collage_api.vo.BbsVO;
 public class BbsNoticeServiceImpl implements BbsNoticeService {
 	
 	@Autowired
-	BbsNoticeMapper adminMapper;
+	BbsNoticeMapper bbsNoticeMapper;
 
 	@Override
 	public int getTotal(Map<String, Object> map) {
-		return this.adminMapper.getTotal(map);
+		return this.bbsNoticeMapper.getTotal(map);
 	}
 
 	@Override
 	public List<BbsVO> list(Map<String, Object> map) {
-		return this.adminMapper.list(map);
+		return this.bbsNoticeMapper.list(map);
 	}
 
 	@Override
 	public BbsVO detail(int bbscttNo) {
-		return this.adminMapper.detail(bbscttNo);
+		return this.bbsNoticeMapper.detail(bbscttNo);
 	}
 
 	@Override
 	public int delete(int bbscttNo) {
-		return this.adminMapper.delete(bbscttNo);
+		return this.bbsNoticeMapper.delete(bbscttNo);
+	}
+
+	@Override
+	public List<BbsVO> adminList() {
+		return this.bbsNoticeMapper.adminList();
+	}
+
+	@Override
+	public int adminPutDetail(BbsVO bbsVO) {
+		return this.bbsNoticeMapper.adminPutDetail(bbsVO);
+	}
+
+	@Override
+	public int adminDeleteDetail(int bbscttNo) {
+		return this.bbsNoticeMapper.adminDeleteDetail(bbscttNo);
+	}
+
+	@Override
+	public int adminPostDetail(BbsVO bbsVO) {
+		return this.bbsNoticeMapper.adminPostDetail(bbsVO);
 	}
 	
 }
