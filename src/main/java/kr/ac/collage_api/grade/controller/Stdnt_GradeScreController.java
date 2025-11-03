@@ -28,13 +28,11 @@ public class Stdnt_GradeScreController {
 
         // Spring Security에서 로그인한 사용자 정보(학번) 가져오기
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String stdntNo = auth.getName(); // 로그인 ID가 학번(STDNT_NO)이라고 가정
-
-        // (신규) 학생의 '학기별' 성적 목록 조회
+        String stdntNo = auth.getName();
+        
         List<GradeScreVO> semstrList = gradeService.getStudentSemstrList(stdntNo);
         log.info("getStudentSemstrList : {}", semstrList);
 
-        // [수정] JSP에서 사용하는 "getAllSemstr"로 모델 속성명 변경
         model.addAttribute("getAllSemstr", semstrList);
         return "grade/stdntGradeScreMain"; // stdntGradeScreMain.jsp
     }
@@ -42,13 +40,10 @@ public class Stdnt_GradeScreController {
     @GetMapping("/main/detail/{semstrScreInnb}")
     public String stdntGradeDetail(@PathVariable String semstrScreInnb, Model model) {
 
-        // (신규) 해당 학기의 '과목별' 상세 성적 목록 조회
         List<GradeScreVO> subjectList = gradeService.getStudentSemstrDetail(semstrScreInnb);
         log.info("getStudentSemstrDetail : {}", subjectList);
 
-        // (참고) stdntGradeScreDetail.jsp에서 사용할 모델
         model.addAttribute("subjectList", subjectList);
-        // model.addAttribute("semesterInfo", ...); // 필요시 학기 정보도 조회
 
         return "grade/stdntGradeScreDetail"; // stdntGradeScreDetail.jsp
     }
