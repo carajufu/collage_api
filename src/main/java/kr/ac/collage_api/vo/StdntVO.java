@@ -24,6 +24,8 @@ public class StdntVO {
 	private String bankNm;       //은행명	BANK_NM
 	private String acnutno;      //계좌번호	ACNUTNO
 	private Date lastUpdatedTime;//최근수정일시	LAST_UPDATED_TIME
+	
+	private SubjctVO subjctVO;	 //학과
 }
 
 
