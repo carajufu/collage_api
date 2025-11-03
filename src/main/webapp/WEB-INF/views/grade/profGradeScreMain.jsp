@@ -5,7 +5,6 @@
 <html>
 <body>
 
-<%-- 헤더 파일 포함 --%>
 <%@ include file="../header.jsp" %>
 
 <div id="main-container" class="container-fluid">

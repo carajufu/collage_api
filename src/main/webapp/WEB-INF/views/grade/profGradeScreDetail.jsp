@@ -2,23 +2,6 @@
 <%@ taglib prefix="c" uri="jakarta.tags.core"%>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt"%>
 
-<%--
-  [수정 사항]
-  1. (JavaScript) wireAjaxSave:
-     - AJAX 호출 URL을 '/prof/grade/main/update'에서 '/prof/grade/main/save'로 변경했습니다.
-     - '/save' 엔드포인트는 사용자의 기존 Mapper.xml에 따라,
-       성적 레코드가 없으면 INSERT, 있으면 UPDATE를 모두 처리(Upsert)합니다.
-     - '/update' 엔드포인트는 UPDATE만 처리하므로, 신규 성적 입력 시 실패합니다.
-
-  2. (HTML) 강의 정보:
-     - 컨트롤러에서 전달하는 모델 속성명에 맞춰 '${selSbjectList[0]}'를
-       단일 객체인 '${selSbject}'로 모두 수정했습니다.
-     - '강의명' 필드에 강의실(${.lctrum})이 잘못 표시되던 오류를
-       강의명(${.lctreNm})으로 수정했습니다.
-
-  3. (HTML) 저장 버튼:
-     - 'wireAjaxSave' 스크립트와 일치하도록 버튼의 value를 'update'에서 'save'로 변경했습니다.
---%>
 
 <%@ include file="../header.jsp"%>
 
@@ -50,10 +33,6 @@ function recalcRowTotal(row) {
   const mid  = parseFloat(row.querySelector("input[name*='.middleScore']").value) || 0;
   const fin  = parseFloat(row.querySelector("input[name*='.trmendScore']").value) || 0;
   
-  // (참고) 현재 이 반영비율(0.2, 0.3)은 JS에 하드코딩되어 있습니다.
-  // DB 스키마(ESTBL_COURSE)의 반영비율을 동적으로 적용하려면
-  // 컨트롤러에서 해당 비율을 모델에 담아 JSP의 data-* 속성으로 전달한 후
-  // 이 함수가 data-* 속성을 읽도록 수정해야 합니다.
   const total = (chul * 0.2) + (guwa * 0.2) + (mid * 0.3) + (fin * 0.3);
   row.querySelector("input[name*='.sbjectTotpoint']").value = total.toFixed(1);
 
@@ -189,21 +168,18 @@ function restoreOriginalValues() {
    기능 8) AJAX 저장
    ========================================================================= */
 function wireAjaxSave() {
-  // [수정] 클릭 타겟을 #saveBtn으로 명시
   $("#saveBtn").on("click", function(e){
-    e.preventDefault(); // form의 기본 submit 동작 방지
+    e.preventDefault();
     
-    // [수정] URL을 '/update' -> '/save'로 변경
-    // '/save'는 Service/Mapper에서 INSERT + UPDATE (Upsert)를 모두 처리
     $.ajax({
       url: "/prof/grade/main/save", 
       type: "POST",
-      data: $("#gradeForm").serialize(), // 폼 전체 데이터 전송 (estbllctreCode 포함)
+      data: $("#gradeForm").serialize(), 
       success: function(response) {
         if(response === "success") {
             alert("저장되었습니다.");
             setEditMode(false);
-            snapshotOriginalValues(); // 저장된 값을 새로운 원본으로 스냅샷
+            snapshotOriginalValues();
         } else {
             alert("저장에 실패했습니다. (서버 응답 오류)");
         }

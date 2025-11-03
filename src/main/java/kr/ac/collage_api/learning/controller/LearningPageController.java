@@ -1,25 +1,17 @@
 package kr.ac.collage_api.learning.controller;
 
+import kr.ac.collage_api.learning.vo.TaskVO;
+import kr.ac.collage_api.learning.service.impl.LearningPageServiceImpl;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+
 import java.security.Principal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.multipart.MultipartFile;
-
-import kr.ac.collage_api.dashboard.vo.TaskPresentnVO;
-import kr.ac.collage_api.learning.service.impl.LearningPageServiceImpl;
-import kr.ac.collage_api.learning.vo.LearningVO;
-import lombok.extern.slf4j.Slf4j;
 
 @Controller
 @RequestMapping("/learning")
@@ -28,13 +20,6 @@ public class LearningPageController {
     @Autowired
     LearningPageServiceImpl learningPageService;
 
-    /**
-     *  요청받은 강의 페이지를 전송하는 메서드
-     * @param model
-     * @param principal
-     * @param lecNo
-     * @return
-     */
     @GetMapping("/student")
     public String getLearningPage(Model model,
                                   Principal principal,
@@ -70,7 +55,7 @@ public class LearningPageController {
         String lecNo = reqMap.get("lecNo").toString();
         String weekNo = reqMap.get("weekNo").toString();
 
-        List<LearningVO> taskByWeekList = learningPageService.taskList(lecNo, weekNo);
+        List<TaskVO> taskByWeekList = learningPageService.taskList(lecNo, weekNo);
 
         respMap.put("status", "success");
         respMap.put("result", taskByWeekList);
@@ -79,28 +64,4 @@ public class LearningPageController {
 
         return respMap;
     }
-
-    @GetMapping("/student/isSubmit")
-    @ResponseBody
-    public Map<String, Object> getSubmitTask(String taskNo,
-                                             Principal principal) {
-        TaskPresentnVO taskPresentnVO = learningPageService.getSubmitTask(taskNo, principal.getName());
-        Map<String, Object> respMap = new HashMap<>();
-
-        log.debug("chkng getSubmit Task (taskNo > {}) - (stdntNo > {})", taskNo, principal.getName());
-        log.debug("chkng getSubmitTask (VO) > {}", taskPresentnVO);
-
-        respMap.put("status", "success");
-        respMap.put("data", taskPresentnVO);
-
-        return respMap;
-    }
-
-    
-    @ResponseBody
-    @PostMapping("/student/fileUpload")
-    public Map<String, Object> taskFileUpload(MultipartFile[] uploadFiles) {
-        return null;
-    }
-
 }

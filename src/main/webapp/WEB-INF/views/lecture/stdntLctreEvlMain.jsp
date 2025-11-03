@@ -2,7 +2,6 @@
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 
-<%-- header.jsp가 필요합니다 --%>
 <%@ include file="../header.jsp" %>
 
 <div id="main-container" class="container-fluid">

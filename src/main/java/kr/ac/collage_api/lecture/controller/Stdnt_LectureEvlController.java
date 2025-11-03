@@ -33,7 +33,7 @@ public class Stdnt_LectureEvlController {
     @GetMapping("/main/All")
     public String evalForm(Model model) {
         
-        // ★ 1. 세션에서 현재 로그인한 사용자의 ACNT_ID를 가져옵니다.
+        // 세션에서 현재 로그인한 사용자의 ACNT_ID를 가져옵니다.
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String acntId = (auth != null) ? auth.getName() : null;
         
@@ -42,7 +42,7 @@ public class Stdnt_LectureEvlController {
             return "redirect:/login"; // 예: 로그인 페이지로 리다이렉트
         }
         
-        // ★ 2. ACNT_ID를 STDNT_NO (학번)로 변환합니다.
+        // ACNT_ID를 STDNT_NO (학번)로 변환
         String stdntNo = lectureService.getStdntNoByAcntId(acntId);
         
         if (stdntNo == null) {
@@ -51,48 +51,43 @@ public class Stdnt_LectureEvlController {
              return "lecture/stdntLctreEvlMain";
         }
 
-        // ★ 3. [수정] 변환된 stdntNo를 사용해 '모든' 수강 강의 목록을 조회합니다.
+        //변환된 stdntNo를 사용해 '모든' 수강 강의 목록을 조회
         List<LectureEvlVO> atnlcList = lectureService.getAllLecturesByStdntNo(stdntNo);
         
         model.addAttribute("atnlcList", atnlcList);
-        // ★ [수정] 로그 메시지 변경
+        //로그 메시지 변경
         log.info("학생 {} (계정: {}) 의 '전체' 수강 강의 목록 {} 건 조회", stdntNo, acntId, atnlcList.size());
         
         return "lecture/stdntLctreEvlMain";
     }
 
     /**
-     * 2) 학생: 강의평가 작성 상세 페이지 (★ "평가지 자동 생성" 로직 포함)
+     * 2) 학생: 강의평가 작성 상세 페이지
      */
     @GetMapping("/main/{estbllctreCode}")
     public String evalpage(@PathVariable String estbllctreCode, Model model) {
 
-        // A. 강의 기본정보 (강의명, 교수명, 학점 등)
+        // 강의 기본정보 (강의명, 교수명, 학점 등)
         LectureEvlVO lectureInfo = lectureService.getEstblCourseById(estbllctreCode);
         
-        // B. 강의평가 질문지 (평가 항목)
-        // 1. 우선 EVL_NO를 조회합니다.
+        // 강의평가 질문지 (평가 항목)
         Integer evlNo = lectureService.getEvlNoByEstbllctreCode(estbllctreCode);
         
-        // 2. EVL_NO가 없으면(Total: 0), 기본 평가지를 생성합니다.
         if (evlNo == null) {
             log.warn("{} 에 해당하는 평가(EVL_NO)가 LCTRE_EVL에 없습니다. 기본 평가지를 생성합니다.", estbllctreCode);
             try {
-                // 2-1. 서비스의 생성 메소드 호출
                 evlNo = lectureService.createDefaultEvaluation(estbllctreCode);
                 log.info("새로운 평가(EVL_NO: {})가 생성되었습니다.", evlNo);
                 
             } catch (Exception e) {
                 log.error("기본 평가 생성 중 오류 발생", e);
                 model.addAttribute("errorMessage", "평가지 생성 중 오류가 발생했습니다.");
-                return "redirect:/stdnt/lecture/main/All"; // 목록으로 돌려보냄
+                return "redirect:/stdnt/lecture/main/All"; 
             }
         }
 
-        // 3. (생성되었거나 원래 있던) EVL_NO로 질문지 목록을 조회합니다.
         List<LectureEvlVO> evalItemList = lectureService.getEvlIem(evlNo);
 
-        // C. JSP에서 표기용
         model.addAttribute("estbllctreCode", estbllctreCode); // hidden input 용
         model.addAttribute("lectureInfo", lectureInfo);     // 강의정보 표시용
         model.addAttribute("evalItemList", evalItemList);   // 질문지 반복문용
@@ -107,7 +102,6 @@ public class Stdnt_LectureEvlController {
     @ResponseBody
     public String evalSubmit(@RequestBody Map<String, Object> body) {
         try {
-            // ★ 1. 세션에서 ACNT_ID를 가져옵니다.
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             String acntId = (auth != null) ? auth.getName() : null;
             
@@ -116,14 +110,12 @@ public class Stdnt_LectureEvlController {
                 return "fail_auth"; // 인증 실패
             }
 
-            // ★ 2. ACNT_ID를 STDNT_NO (학번)로 변환합니다.
             String stdntNo = lectureService.getStdntNoByAcntId(acntId);
             if (stdntNo == null) {
                 log.error("강의평가 제출: ACNT_ID {} 에 해당하는 STDNT_NO가 없습니다.", acntId);
                 return "fail_auth";
             }
 
-            // 3. 클라이언트에서 전송한 데이터 파싱
             @SuppressWarnings("unchecked")
             List<Integer> evlScore = (List<Integer>) body.get("evlScore");
             @SuppressWarnings("unchecked")
@@ -133,7 +125,6 @@ public class Stdnt_LectureEvlController {
             log.info("강의평가 제출 시도 → estbllctreCode: {}, stdntNo: {}",
                      estbllctreCode, stdntNo);
 
-            // ★ 4. 변환된 stdntNo를 사용하여 평가를 저장합니다.
             lectureService.insertLectureEval(estbllctreCode, stdntNo, evlScore, evlCn);
             
             return "success";

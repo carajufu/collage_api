@@ -10,22 +10,22 @@ import kr.ac.collage_api.lecture.vo.LectureEvlVO;
 public interface LectureEvlMapper {
 
     // ------------------------------------------------------------
-    // ✅ (공통) ACNT_ID → ID 변환
+    //  (공통) ACNT_ID → ID 변환
     // ------------------------------------------------------------
     String getProfsrNoByAcntId(String acntId);
     
-    /** ★ 학생용: ACNT_ID -> STDNT_NO */
+    /**  학생용: ACNT_ID -> STDNT_NO */
     String getStdntNoByAcntId(String acntId);
 
     // ------------------------------------------------------------
-    // ✅ (교수) 강의 목록
+    //  (교수) 강의 목록
     // ------------------------------------------------------------
     int getTotalCourseCount(String profsrNo);
     List<LectureEvlVO> getPagedCourses(Map<String, Object> param);
 
 
     // ------------------------------------------------------------
-    // ✅ (공통) 상세 조회 + 평가 정보 조회
+    //  (공통) 상세 조회 + 평가 정보 조회
     // ------------------------------------------------------------
     LectureEvlVO getEstblCourseById(String estbllctreCode);
     List<LectureEvlVO> getEvlIem(Integer evlNo);
@@ -33,26 +33,21 @@ public interface LectureEvlMapper {
     Integer getEvlNoByEstbllctreCode(String estbllctreCode);
 
     // ------------------------------------------------------------
-    // ✅ (교수) 강의평가 요약
+    //  (교수) 강의평가 요약
     // ------------------------------------------------------------
     List<LectureEvlVO> getLectureEvalSummary(String estbllctreCode);
     List<Integer> getLectureEvalScoreCounts(String estbllctreCode);
 
 
     // ------------------------------------------------------------
-    // ✅ (학생) 강의평가 목록 및 제출
+    //  (학생) 강의평가 목록 및 제출
     // ------------------------------------------------------------
     
-    /** ★ [수정] 학생의 '모든' 수강완료 강의 목록 (평가 완료 여부 포함) */
     List<LectureEvlVO> getAllLecturesByStdntNo(String stdntNo);
 
     /** 학생이 제출한 강의평가 저장 */
     void insertLectureEval(Map<String, Object> param);
-    
-    // ------------------------------------------------------------
-    // ✅ (시스템) 평가 '질문지' 자동 생성용
-    // ------------------------------------------------------------
-    
+
     /**
      * 1. LCTRE_EVL (마스터) INSERT
      * @param param (evlNo, estbllctreCode)

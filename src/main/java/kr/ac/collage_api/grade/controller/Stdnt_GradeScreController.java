@@ -23,13 +23,6 @@ public class Stdnt_GradeScreController {
     @Autowired
     private GradeScreService gradeService;
 
-    /**
-     * [수정] 학생 학기별 성적 메인 목록 (stdntGradeScreMain.jsp)
-     * - 메서드명을 stdntGradeMain으로 수정
-     * - Security에서 로그인한 학생의 stdntNo(학번)를 가져옴
-     * - Service의 getStudentSemstrList 메서드 호출 (신규)
-     * - JSP에서 사용하는 "getAllSemstr" 이름으로 모델에 추가
-     */
     @GetMapping("/main/All")
     public String stdntGradeMain(Model model) {
 
@@ -46,13 +39,6 @@ public class Stdnt_GradeScreController {
         return "grade/stdntGradeScreMain"; // stdntGradeScreMain.jsp
     }
 
-    /**
-     * [수정] 학생 과목별 상세 성적 (stdntGradeScreDetail.jsp)
-     * - 메서드명을 stdntGradeDetail로 수정
-     * - PathVariable을 JSP의 링크와 일치하는 "semstrScreInnb"로 수정
-     * - Service의 getStudentSemstrDetail 메서드 호출 (신규)
-     * - (참고) 상세 페이지(stdntGradeScreDetail.jsp)가 없어서 모델은 임의로 추가
-     */
     @GetMapping("/main/detail/{semstrScreInnb}")
     public String stdntGradeDetail(@PathVariable String semstrScreInnb, Model model) {
 

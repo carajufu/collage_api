@@ -10,11 +10,6 @@ import kr.ac.collage_api.grade.mapper.GradeScreMapper;
 import kr.ac.collage_api.grade.service.GradeScreService;
 import kr.ac.collage_api.grade.vo.GradeScreVO;
 
-/**
- * [수정 사항]
- * - GradeScreService 인터페이스 명세 변경에 따라,
- * 컨트롤러에서 사용하지 않는 getCourse()와 updateGrades() 메서드를 삭제했습니다.
- */
 @Service
 public class GradeScreServiceImpl implements GradeScreService {
 
@@ -84,7 +79,6 @@ public class GradeScreServiceImpl implements GradeScreService {
 		 return gradeMapper.getStudentSemstrDetail(semstrScreInnb);
 	}
     
-    /* * [삭제된 메서드]
      * - public List<GradeScreVO> getCourse(String profsrNo) { ... }
      * - public void updateGrades(List<GradeScreVO> grades) { ... }
      */

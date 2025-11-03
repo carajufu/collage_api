@@ -12,18 +12,6 @@ import kr.ac.collage_api.grade.service.GradeScreService;
 import kr.ac.collage_api.grade.vo.GradeScreForm;
 import kr.ac.collage_api.grade.vo.GradeScreVO;
 
-/**
- * [수정 사항]
- * 1. (추가) @PostMapping("/main/save")
- * - detail.jsp의 AJAX 저장(/main/save) 요청을 처리할 엔드포인트를 추가했습니다.
- * - 폼 데이터를 GradeScreForm VO로 바인딩합니다.
- * - gradeService.saveGrades (INSERT+UPDATE)를 호출합니다.
- * - AJAX 응답으로 "success" 또는 "error" 문자열을 반환합니다.
- *
- * 2. (유지) profGradeDetail
- * - detail.jsp가 사용하는 ${selSbject}와 ${sbjectScr}를 모델에
- * 정상적으로 추가하고 있으므로, 기존 코드를 유지합니다.
- */
 @Controller
 @RequestMapping("/prof/grade")
 public class Prof_GradeScreController {
@@ -65,10 +53,6 @@ public class Prof_GradeScreController {
         return "grade/profGradeScreDetail";
     }
 
-    /**
-     * [신규 추가] 성적 저장 (INSERT + UPDATE)
-     * detail.jsp의 '/main/save' AJAX 호출을 처리합니다.
-     */
     @PostMapping("/main/save")
     @ResponseBody
     public String saveGrade(@ModelAttribute GradeScreForm gradeForm,

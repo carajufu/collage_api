@@ -27,7 +27,7 @@ public class LectureEvlVO {
 	private int submitScore;             //학생이 제출한 점수
 	private String submitCn;             //학생이 작성한 의견
 
-	// ✅ 강의평가 요약 통계 (JSP 요약박스 표시용)
+	//  강의평가 요약 통계 (JSP 요약박스 표시용)
 	private double avgScore;             //평균점수 (AVG)
 	private int evlCnt;                  //평가참여학생수 (COUNT)
 
@@ -54,7 +54,7 @@ public class LectureEvlVO {
 	// ------------------------------------------------------------
 	private String estbllctreCode;       //개설강의코드(PK)
 	private String profsrNo;             //교수번호(FK)
-	private String profsrNm;             // ✅ 교수명 (조인 필요)
+	private String profsrNm;             // 교수명 (조인 필요)
 	private int acqsPnt;                 //취득학점
 	private String lctrum;               //강의실
 	private String complSe;              //이수구분

@@ -15,7 +15,7 @@ public class GradeVO {
 	private int semstrScreInnb;   //학기성적고유번호(PK)	SEMSTR_SCRE_INNB(PK)
 	private int totReqstPnt;      //총신청학점	TOT_REQST_PNT
 	private int totAcqsPnt;       //총취득학점	TOT_ACQS_PNT
-	private int pntAvrg;          //평점_평균	PNT_AVRG
+	private double pntAvrg;          //평점_평균	PNT_AVRG
 	private int semstrTotpoint;   //학기_총점	SEMSTR_TOTPOINT
 	private String semstr;        //학기	SEMSTR
 	private String year;          //년도	YEAR
@@ -44,7 +44,8 @@ public class GradeVO {
 	private int taskScore;        //과제점수	TASK_SCORE
 	private int middleScore;      //중간점수	MIDDLE_SCORE
 	private int trmendScore;      //기말점수	TRMEND_SCORE
-	private int sbjectTotpoint;   //과목_총점	SBJECT_TOTPOINT
+	private double avrgScore;		  //점수평균	AVRG_SCORE
+	private double sbjectTotpoint;   //과목_총점	SBJECT_TOTPOINT
 
 	
 }

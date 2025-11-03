@@ -19,7 +19,7 @@ public class LectureEvlServiceImpl implements LectureEvlService {
     private LectureEvlMapper lectureMapper;
 
     // ------------------------------------------------------------
-    // ✅ (공통) ACNT_ID → ID 변환
+    //  (공통) ACNT_ID → ID 변환
     // ------------------------------------------------------------
     @Override
     public String getProfsrNoByAcntId(String acntId) {
@@ -32,7 +32,7 @@ public class LectureEvlServiceImpl implements LectureEvlService {
     }
 
     // ------------------------------------------------------------
-    // ✅ (교수) 로그인 교수 기준 개설강의 목록 조회
+    //  (교수) 로그인 교수 기준 개설강의 목록 조회
     // ------------------------------------------------------------
     @Override
     public int getTotalCourseCount(String profsrNo) {
@@ -50,7 +50,7 @@ public class LectureEvlServiceImpl implements LectureEvlService {
 
 
     // ------------------------------------------------------------
-    // ✅ (공통) 개설강의 기본정보 + 평가 기본정보 조회
+    //  (공통) 개설강의 기본정보 + 평가 기본정보 조회
     // ------------------------------------------------------------
     @Override
     public LectureEvlVO getEstblCourseById(String estbllctreCode) {
@@ -74,7 +74,7 @@ public class LectureEvlServiceImpl implements LectureEvlService {
 
 
     // ------------------------------------------------------------
-    // ✅ (교수) 강의평가 요약 + 차트용 분포 데이터
+    //  (교수) 강의평가 요약 + 차트용 분포 데이터
     // ------------------------------------------------------------
     @Override
     public List<LectureEvlVO> getLectureEvalSummary(String estbllctreCode) {
@@ -88,15 +88,11 @@ public class LectureEvlServiceImpl implements LectureEvlService {
 
 
     // ------------------------------------------------------------
-    // ✅ (학생) 강의평가 목록 및 제출
+    //  (학생) 강의평가 목록 및 제출
     // ------------------------------------------------------------
-    
-    /**
-     * ★ [수정] 학생의 '모든' 수강완료 강의 목록
-     */
+
     @Override
     public List<LectureEvlVO> getAllLecturesByStdntNo(String stdntNo) {
-        // ★ [수정] 호출 메소드명 변경 (getUnevaluatedLecturesByStdntNo -> getAllLecturesByStdntNo)
         return lectureMapper.getAllLecturesByStdntNo(stdntNo);
     }
 
@@ -132,7 +128,7 @@ public class LectureEvlServiceImpl implements LectureEvlService {
     }
     
     // ------------------------------------------------------------
-    // ✅ (시스템) 평가 '질문지' 자동 생성 로직
+    //  (시스템) 평가 '질문지' 자동 생성 로직
     // ------------------------------------------------------------
     
     /**
@@ -142,16 +138,13 @@ public class LectureEvlServiceImpl implements LectureEvlService {
     @Transactional // 마스터/항목 등록이 동시에 성공(Commit)해야 함
     public Integer createDefaultEvaluation(String estbllctreCode) {
         
-        // 1. 새로운 EVL_NO (PK)를 가져옵니다. (Mapper.xml의 getNextEvlNo 호출)
         int newEvlNo = lectureMapper.getNextEvlNo();
         
-        // 2. LCTRE_EVL (마스터) 테이블에 INSERT
         Map<String, Object> masterParam = new HashMap<>();
         masterParam.put("evlNo", newEvlNo);
         masterParam.put("estbllctreCode", estbllctreCode);
         lectureMapper.insertLctreEvlMaster(masterParam);
         
-        // 3. 기본 질문 항목들을 LCTRE_EVL_IEM (항목) 테이블에 INSERT
         List<String> defaultQuestions = List.of(
             "강의 내용이 체계적이고 유익했습니다.",
             "교수님의 설명이 명확하고 이해하기 쉬웠습니다.",
@@ -166,7 +159,6 @@ public class LectureEvlServiceImpl implements LectureEvlService {
             lectureMapper.insertLctreEvlIem(itemParam);
         }
         
-        // 4. 생성된 EVL_NO를 컨트롤러로 반환
         return newEvlNo;
     }
 }

@@ -2,8 +2,79 @@
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 
-<%-- header.jsp가 필요합니다 --%>
 <%@ include file="../header.jsp" %>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const submitBtn = document.getElementById("submitBtn");
+    
+    if (submitBtn) {
+        submitBtn.addEventListener("click", function() {
+            
+            const form = document.getElementById("evalForm");
+            
+            const radioGroups = document.querySelectorAll(".eval-score-group");
+            let allAnswered = true;
+            radioGroups.forEach((group, index) => {
+                if (!form.querySelector(`input[name="evlScore_${index + 1}"]:checked`)) {
+                    allAnswered = false;
+                }
+            });
+
+            if (!allAnswered) {
+                alert("모든 평가 항목(1~5점)에 응답해야 합니다.");
+                return;
+            }
+
+            const evlScore = [];
+            radioGroups.forEach((group, index) => {
+                const score = form.querySelector(`input[name="evlScore_${index + 1}"]:checked`).value;
+                evlScore.push(parseInt(score)); 
+            });
+
+            const evlCn = [];
+            document.querySelectorAll(".eval-cn").forEach(textarea => {
+                evlCn.push(textarea.value);
+            });
+            
+            const estbllctreCode = document.getElementById("estbllctreCode").value;
+            
+            const data = {
+                estbllctreCode: estbllctreCode,
+                evlScore: evlScore,
+                evlCn: evlCn
+            };
+
+            if (!confirm("강의평가를 제출하시겠습니까? 제출 후 수정할 수 없습니다.")) {
+                return;
+            }
+            
+            fetch("/stdnt/lecture/main/detail/post/submit", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.text())
+            .then(result => {
+                if (result === "success") {
+                    alert("강의평가가 성공적으로 제출되었습니다.");
+                    location.href = "/stdnt/lecture/main/All";
+                } else if (result === "fail_auth") {
+                    alert("인증 정보가 올바르지 않습니다. 다시 로그인해주세요.");
+                } else {
+                    alert("서버 오류로 제출에 실패했습니다. 관리자에게 문의하세요.");
+                }
+            })
+            .catch(error => {
+                console.error("Submit Error:", error);
+                alert("전송 중 오류가 발생했습니다.");
+            });
+        });
+    }
+});
+</script>
 
 <div id="main-container" class="container-fluid">
   <div class="flex-grow-1 p-3 overflow-auto">
@@ -93,84 +164,6 @@
   </div>
 </div>
 
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-    const submitBtn = document.getElementById("submitBtn");
-    
-    if (submitBtn) {
-        submitBtn.addEventListener("click", function() {
-            
-            const form = document.getElementById("evalForm");
-            
-            // 1. 유효성 검사 (모든 라디오 그룹이 선택되었는지)
-            const radioGroups = document.querySelectorAll(".eval-score-group");
-            let allAnswered = true;
-            radioGroups.forEach((group, index) => {
-                // 'name' 속성을 기반으로 선택된 라디오를 찾음
-                if (!form.querySelector(`input[name="evlScore_${index + 1}"]:checked`)) {
-                    allAnswered = false;
-                }
-            });
 
-            if (!allAnswered) {
-                alert("모든 평가 항목(1~5점)에 응답해야 합니다.");
-                return;
-            }
-
-            // 2. 데이터 수집
-            const evlScore = [];
-            radioGroups.forEach((group, index) => {
-                const score = form.querySelector(`input[name="evlScore_${index + 1}"]:checked`).value;
-                evlScore.push(parseInt(score)); // 숫자로 변환
-            });
-
-            const evlCn = [];
-            document.querySelectorAll(".eval-cn").forEach(textarea => {
-                evlCn.push(textarea.value);
-            });
-            
-            const estbllctreCode = document.getElementById("estbllctreCode").value;
-            
-            // 3. 컨트롤러에서 정의한 JSON 형식으로 데이터 객체 생성
-            const data = {
-                estbllctreCode: estbllctreCode,
-                evlScore: evlScore,
-                evlCn: evlCn
-                // ★ stdntNo는 컨트롤러(서버)에서 세션을 통해 가져오므로 전송하지 않습니다.
-            };
-
-            // 4. AJAX (fetch) POST 전송
-            if (!confirm("강의평가를 제출하시겠습니까? 제출 후 수정할 수 없습니다.")) {
-                return;
-            }
-            
-            fetch("/stdnt/lecture/main/detail/post/submit", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                    // (필요시) CSRF 토큰 헤더 추가
-                },
-                body: JSON.stringify(data)
-            })
-            .then(response => response.text())
-            .then(result => {
-                if (result === "success") {
-                    alert("강의평가가 성공적으로 제출되었습니다.");
-                    // 목록 페이지로 이동
-                    location.href = "/stdnt/lecture/main/All";
-                } else if (result === "fail_auth") {
-                    alert("인증 정보가 올바르지 않습니다. 다시 로그인해주세요.");
-                } else {
-                    alert("서버 오류로 제출에 실패했습니다. 관리자에게 문의하세요.");
-                }
-            })
-            .catch(error => {
-                console.error("Submit Error:", error);
-                alert("전송 중 오류가 발생했습니다.");
-            });
-        });
-    }
-});
-</script>
 
 

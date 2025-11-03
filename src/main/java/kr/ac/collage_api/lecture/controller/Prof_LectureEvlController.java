@@ -68,17 +68,16 @@ public class Prof_LectureEvlController {
 
         log.info("▶ 강의평가 상세조회 estbllctreCode={}", estbllctreCode);
 
-        // A. 강의 기본정보 (강의명 + 교수명 포함)
+        // 강의 기본정보 (강의명 + 교수명 포함)
         LectureEvlVO estblCourseInfo = lectureService.getEstblCourseById(estbllctreCode);
 
-        // B. 평가 요약 리스트
+        // 평가 요약 리스트
         List<LectureEvlVO> evalSummaryList = lectureService.getLectureEvalSummary(estbllctreCode);
 
-        // C. 점수 분포 (차트용)
+        // 점수 분포 (차트용)
         List<Integer> evalScoreCounts = lectureService.getLectureEvalScoreCounts(estbllctreCode);
 
-        // D. 강의 시간표
-        // ★ 참고: Service/Mapper/XML의 메소드명을 'getTimetableByEstblCode'로 통일했습니다.
+        // 강의 시간표
         List<LectureEvlVO> timetableList = lectureService.getTimetableByEstblCode(estbllctreCode);
 
         // ✅ JSP 화면에서 사용될 표시용 별도 모델값
