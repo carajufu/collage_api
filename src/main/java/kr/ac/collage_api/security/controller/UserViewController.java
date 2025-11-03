@@ -7,12 +7,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.security.Principal;
 
+@CrossOrigin(origins = "*" )
 @Controller
 @Slf4j
 public class UserViewController {
@@ -27,7 +29,7 @@ public class UserViewController {
 
     @GetMapping("/login")
     public String login() {
-        log.info(">>>>>>>>> {}", bCryptPasswordEncoder.encode("java"));
+//        log.info(">>>>>>>>> {}", bCryptPasswordEncoder.encode("java"));
         return "login";
     }
 
