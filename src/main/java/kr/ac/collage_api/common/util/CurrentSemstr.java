@@ -58,8 +58,5 @@ public class CurrentSemstr {
 
         return currentPeriod;
     }
-<<<<<<< HEAD
 
-=======
->>>>>>> 38d9b25d6de25ece611dc8c31091aba33c42a9d2
 }

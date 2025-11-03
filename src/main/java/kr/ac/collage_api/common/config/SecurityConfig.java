@@ -19,6 +19,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 
+
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
@@ -42,21 +43,23 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http,
                                            CustomLoginSuccessHandler customLoginSuccessHandler,
                                            CustomLogoutSuccessHandler customLogoutSuccessHandler) throws Exception {
+        HttpSessionRequestCache requestCache = new HttpSessionRequestCache();
+        requestCache.setMatchingRequestParameterName("null");
+        requestCache.setRequestMatcher(req -> {
+            var httpReq = (HttpServletRequest) req;
+            var uri = httpReq.getRequestURI();
+            return !(uri.startsWith("/.well-known/"));
+        });
+
         http
                 .csrf(csrf -> csrf.disable())
                 .httpBasic(hbasic -> hbasic.disable())
                 .authorizeHttpRequests(authorize -> authorize
                         .dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.ASYNC).permitAll()
-                        .requestMatchers("/", "/login", "/accessError", "/.well-known/**").permitAll()
+                        .requestMatchers("/", "/login", "/accessError", "/.well-known/**", "/admin/**").permitAll()
                         .anyRequest().authenticated()
                 )
-                .requestCache(cache -> cache.requestCache(new HttpSessionRequestCache() {{
-                    setRequestMatcher(req -> {
-                        var httpReq = (HttpServletRequest) req;
-                        var uri = httpReq.getRequestURI();
-                        return !(uri.startsWith("/.well-known/"));
-                    });
-                }}))
+                .requestCache(cache -> cache.requestCache(requestCache))
                 .formLogin(formLogin -> formLogin.loginPage("/login")
                         .successHandler(customLoginSuccessHandler))
                 .sessionManagement(session -> session.maximumSessions(1))
@@ -78,4 +81,6 @@ public class SecurityConfig {
 
         return new ProviderManager(authProvider);
     }
+    
+ 
 }

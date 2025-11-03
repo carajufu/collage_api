@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import kr.ac.collage_api.account.mapper.AccountMapper;
@@ -24,6 +25,7 @@ public class UploadController {
 	@Autowired
 	AccountMapper accountMapper;
 	
+	@Transactional
 	//다중파일업로드 사용 / 단일파일 업로드도 그룹 만들고 업로드 되게 함
 	public long multiImageUpload(MultipartFile[] multipartFiles) {
 		

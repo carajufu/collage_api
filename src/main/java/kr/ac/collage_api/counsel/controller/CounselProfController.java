@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import kr.ac.collage_api.config.ArticlePage;
+import kr.ac.collage_api.common.config.ArticlePage;
 import kr.ac.collage_api.counsel.service.CounselProfService;
 import kr.ac.collage_api.vo.CnsltVO;
 import lombok.extern.slf4j.Slf4j;
