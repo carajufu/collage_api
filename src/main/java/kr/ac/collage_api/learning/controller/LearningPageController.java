@@ -10,7 +10,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -92,8 +94,15 @@ public class LearningPageController {
 
     @ResponseBody
     @PostMapping("/student/fileUpload")
-    public Map<String, Object> taskFileUpload(MultipartFile[] uploadFiles) {
-        return null;
-    }
+    public Map<String, Object> taskFileUpload(@RequestPart MultipartFile[] uploadFiles,
+                                              String taskPresentnNo) {
+        log.debug("chkng taskFileUpload (uploadFiles > {}) (taskPresentnNo > {} )", uploadFiles, taskPresentnNo);
 
+        int rslt = learningPageService.taskFileUpload(taskPresentnNo, uploadFiles);
+
+        Map<String, Object> respMap = new HashMap<>();
+        respMap.put("status", "success");
+
+        return respMap;
+    }
 }

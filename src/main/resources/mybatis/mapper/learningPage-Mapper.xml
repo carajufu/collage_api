@@ -45,4 +45,10 @@
         WHERE task_no = #{taskNo}
             AND stdnt_no = #{studentNo}
     </select>
+
+    <update id="taskFileUpload">
+        UPDATE task_presentn                            /* kr.ac.collage_api.learning.mapper.LearningPageMapper.taskFileUpload */
+        SET file_group_no = #{fileGroupNo}              /* 파일 그룹 번호 */
+        WHERE task_presentn_no = #{taskpresentnNo}      /* 과제 제출 번호 */
+    </update>
 </mapper>
