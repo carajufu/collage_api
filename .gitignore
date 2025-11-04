@@ -50,7 +50,7 @@ Thumbs.db
 
 ### --- Web Assets (선택) ---
 uploads/
-src/main/java/kr/ac/collage_api/common/attach/
+upload/
 files/
 storage/
 tmp/
