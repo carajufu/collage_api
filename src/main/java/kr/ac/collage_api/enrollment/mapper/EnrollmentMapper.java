@@ -1,25 +1,45 @@
 package kr.ac.collage_api.enrollment.mapper;
 
 import java.util.List;
+import java.util.Map;
 
-import kr.ac.collage_api.vo.StdntVO;
 import org.apache.ibatis.annotations.Mapper;
 
+import kr.ac.collage_api.vo.SknrgsChangeHistVO;
 import kr.ac.collage_api.vo.SknrgsChangeReqstVO;
+import kr.ac.collage_api.vo.StdntVO;
 
-@Mapper // 이 인터페이스가 MyBatis의 매퍼임을 나타냅니다.
+@Mapper
 public interface EnrollmentMapper {
 
-    /**
-     * 휴학 신청 정보를 데이터베이스에 삽입(INSERT)합니다.
-     * @param leaveRequestVO 저장할 휴학 신청 정보
-     * @return int 삽입된 행의 수 (보통 1이 반환됩니다)
-     */
-    int insertEnrollmentRequest(SknrgsChangeReqstVO sknrgsChangeReqstVO);
+	//학생정보
+	StdntVO selectStdnt(String stdntNo);
+	
+	//학적변동내역
+	List<SknrgsChangeReqstVO> selectAllHistoryList(String stdntNo);
 
+	//신청내역
 	List<SknrgsChangeReqstVO> selectHistoryList(String stdntNo);
 
-	List<SknrgsChangeReqstVO> getHistoryList(String stdntNo);
+	//제출
+	void submitRequest(SknrgsChangeReqstVO sknrgsChangeReqstVO);
 
-    StdntVO getStdnt(String stdntNo);
+	//관리자------------------------------------------------------------
+	
+	//학적변동 신청 목록 조회
+	List<SknrgsChangeReqstVO> getAllRequests();
+
+	//상세조회
+	SknrgsChangeReqstVO getRequestDetail(int reqId);
+
+	//상태 업데이트
+	void updateStatusOnly(Map<String, Object> params);
+
+	//학적 상태 변경
+	void changeStdntStatus(String stdntNo, String newStatus);
+
+	//학적 이력 저장
+	void insertHistory(SknrgsChangeHistVO histVO);
+
+
 }

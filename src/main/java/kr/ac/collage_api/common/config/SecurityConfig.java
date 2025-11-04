@@ -19,7 +19,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 
-
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
@@ -81,6 +80,4 @@ public class SecurityConfig {
 
         return new ProviderManager(authProvider);
     }
-    
- 
 }
