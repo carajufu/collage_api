@@ -84,6 +84,7 @@
   </div>
 </div>
 
+
 <script type="text/javascript">
 const modalDetail = document.getElementById("modalDetail");
 

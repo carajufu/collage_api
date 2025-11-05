@@ -21,7 +21,6 @@
       	  </div>
 	    </div>
     </div>
-</main>
 
 <script>
 const mycartTbody = document.getElementById("mycartTbody");

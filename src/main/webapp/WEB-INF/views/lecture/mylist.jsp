@@ -67,7 +67,6 @@
 	        </div>
 	    </div>
     </div>
-</main>
 
 <div class="modal" tabindex="-1" id="modalPlan">
   <div class="modal-dialog modal-lg">
