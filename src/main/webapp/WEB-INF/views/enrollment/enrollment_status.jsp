@@ -62,11 +62,30 @@
                     <tr>
                         <td>${item.changeTy}</td>
                         <td>${item.efectOccrrncSemstr.split('-')[0]}년 ${item.efectOccrrncSemstr.split('-')[1]}학기</td>
-                        <%-- '승인일' 컬럼이 있다면 item.승인일 을 쓰는 것이 더 좋습니다 --%>
                         <td><fmt:formatDate value="${item.changeReqstDt}" pattern="yyyy-MM-dd" /></td>
                     </tr>
                 </c:forEach>
                 
+                <fmt:parseDate value="${stdntInfo.entschDe}" pattern="yyyyMMdd" var="admissionDate" />
+                <fmt:formatDate value="${admissionDate}" pattern="MM" var="admissionMonth" />
+                
+                <tr>
+				    <td>입학</td>
+				    <td>
+		            <fmt:formatDate value="${admissionDate}" pattern="yyyy" />년 
+		            <c:choose>
+		                <c:when test="${admissionMonth >= 3 && admissionMonth <= 8}">
+		                    1학기
+		                </c:when>
+		                <c:otherwise>
+		                    2학기
+		                </c:otherwise>
+		            </c:choose>
+		        </td>
+		        <td>
+		            <fmt:formatDate value="${admissionDate}" pattern="yyyy-MM-dd" />
+		        </td>
+		    </tr>                
                 <c:if test="${empty officialList}">
                     <tr>
                         <td colspan="3" class="py-5">공식 학적 변동 내역이 없습니다.</td>
@@ -75,7 +94,7 @@
             </tbody>
         </table>
     </div>
-</div> <%-- div.content-area 끝 --%>
+</div> 
 
 
 <%-- 신청 내역 조회--%>
@@ -146,7 +165,7 @@
             </tbody>
         </table>
         
-      </div> <%-- modal-body 끝 --%>
+      </div> 
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
       </div>
