@@ -26,13 +26,13 @@ public class StudentDashboardController {
     @GetMapping("/student")
     public String selectStudent(Model model,
                           Principal principal) {
-        List<DashLectureVO> lectureVOList;
+        List<DashLectureVO> dashLectureVOList;
 
-        lectureVOList = studentDashboardService.selectStudent(principal.getName(),
+        dashLectureVOList = studentDashboardService.selectStudent(principal.getName(),
                 currentSemester.getYear(),
                 currentSemester.getCurrentPeriod());
 
-        model.addAttribute("lectureList", lectureVOList);
+        model.addAttribute("lectureList", dashLectureVOList);
 
         log.info("chkng student (model) > {}", model);
 

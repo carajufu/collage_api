@@ -46,6 +46,7 @@ logs/
 ### --- OS / Misc ---
 .DS_Store
 Thumbs.db
+.zip
 
 ### --- Web Assets (선택) ---
 uploads/

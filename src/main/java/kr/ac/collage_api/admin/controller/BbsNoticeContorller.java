@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import kr.ac.collage_api.admin.service.BbsNoticeService;
-import kr.ac.collage_api.vo.BbsVO;
 import kr.ac.collage_api.common.config.ArticlePage;
+import kr.ac.collage_api.vo.BbsVO;
 import lombok.extern.slf4j.Slf4j;
 
 
@@ -26,6 +26,12 @@ public class BbsNoticeContorller {
 	@Autowired
 	BbsNoticeService bbsNoticeService;
 	
+
+	
+	/**
+	 *  학생, 교수쪽 리스트
+	 * 
+	 */
 	@GetMapping("/list")
 	public String list(Model model,
 			@RequestParam(value="currentPage",required=false,defaultValue="1") int currentPage,
@@ -45,7 +51,7 @@ public class BbsNoticeContorller {
 		List<BbsVO> bbsVOList = this.bbsNoticeService.list(map);
 		
 		//페이지네이션
-		ArticlePage<BbsVO> articlePage = new ArticlePage<BbsVO>(total,currentPage,size,bbsVOList,keyword);
+		ArticlePage<BbsVO> articlePage = new ArticlePage<BbsVO>(total,currentPage,size,bbsVOList,keyword,"/bbs/list");
 		
 		model.addAttribute("bbsVOList",bbsVOList);
 		model.addAttribute("articlePage",articlePage);
@@ -68,13 +74,20 @@ public class BbsNoticeContorller {
 	@PostMapping("/delete")
 	public String delete(@RequestParam(value="id") int bbscttNo) {
 		
-		
 		int result = this.bbsNoticeService.delete(bbscttNo);
-		
-		
 		
 		return "redirect:/bbs/list";
 	}
+	
+	
+	
+	
+	
+	
+	
+
+	
+	
 	
 	
 }
