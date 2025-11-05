@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import jakarta.servlet.http.HttpServletResponse;
-import kr.ac.collage_api.common.config.BeanController;
+import kr.ac.collage_api.common.attach.service.BeanController;
 import kr.ac.collage_api.lecture.service.LectureService;
 import kr.ac.collage_api.vo.EstblCourseVO;
 import kr.ac.collage_api.vo.FileDetailVO;
@@ -37,7 +37,7 @@ public class LectureController {
 	LectureService lectureService;
 	
 	@Autowired
-	BeanController beanController;
+    BeanController beanController;
 	
 	// 개설 강의 조회
 	@GetMapping("/list")
