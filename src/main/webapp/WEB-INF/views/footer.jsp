@@ -1,5 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
+</div>
+</main>
     <footer>
         <div class="py-3 my-4">
             <ul class="nav justify-content-center border-bottom pb-3 mb-3">

@@ -41,5 +41,4 @@ public interface EnrollmentMapper {
 	//학적 이력 저장
 	void insertHistory(SknrgsChangeHistVO histVO);
 
-
 }
