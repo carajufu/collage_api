@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import kr.ac.collage_api.common.attach.service.UploadController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +18,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 
-import kr.ac.collage_api.account.controller.UploadController;
 import kr.ac.collage_api.enrollment.service.EnrollmentService;
 import kr.ac.collage_api.vo.SknrgsChangeReqstVO;
 import kr.ac.collage_api.vo.StdntVO;
@@ -145,7 +145,7 @@ public class EnrollmentController {
 			try {
 	            if (uploadFile != null && uploadFile[0].getOriginalFilename().length() > 0) {
 	                log.info("파일 업로드");
-	                Long fileGroupNo = uploadcontroller.multiImageUpload(uploadFile);
+	                Long fileGroupNo = uploadcontroller.fileUpload(uploadFile);
 	                
 	                sknrgsChangeReqstVO.setFileGroupNo(fileGroupNo);
 	                log.info("파일 업로드 완료. fileGroupNo: {}", fileGroupNo);

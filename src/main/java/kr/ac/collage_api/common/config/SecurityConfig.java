@@ -1,7 +1,9 @@
 package kr.ac.collage_api.common.config;
 
-import java.util.Arrays;
-
+import jakarta.servlet.DispatcherType;
+import jakarta.servlet.http.HttpServletRequest;
+import kr.ac.collage_api.security.service.impl.CustomLoginSuccessHandler;
+import kr.ac.collage_api.security.service.impl.CustomLogoutSuccessHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
