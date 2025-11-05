@@ -14,7 +14,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
+
+import kr.ac.collage_api.account.controller.UploadController;
 import kr.ac.collage_api.enrollment.service.EnrollmentService;
 import kr.ac.collage_api.vo.SknrgsChangeReqstVO;
 import kr.ac.collage_api.vo.StdntVO;
@@ -27,6 +30,9 @@ public class EnrollmentController {
 	
 	@Autowired
 	private EnrollmentService enrollmentService;
+	
+	@Autowired
+	private UploadController uploadcontroller;
 
 	//학적 상태 조회
     @GetMapping("/status")
@@ -41,10 +47,10 @@ public class EnrollmentController {
     	log.info("로그인된 학생 학번 : {}", stdntNo);
     	
     	List<SknrgsChangeReqstVO> historyList = enrollmentService.getHistoryList(stdntNo);
-    	List<SknrgsChangeReqstVO> allHistoryList = enrollmentService.getAllHistoryList(stdntNo);
+    	List<SknrgsChangeReqstVO> officialList = enrollmentService.getAllHistoryList(stdntNo);
     	
     	model.addAttribute("historyList", historyList);
-    	model.addAttribute("allHistoryList", allHistoryList);
+    	model.addAttribute("officialList", officialList);
     	model.addAttribute("stdntInfo", stdntVO); 
     	
     	LocalDate now = LocalDate.now();
@@ -108,11 +114,12 @@ public class EnrollmentController {
   	}
 
 	
-	//휴학,복학 신청 제출 유효성검사
+	//휴학,복학 신청 제출
 		@PostMapping("/change")
 		@ResponseBody
 		public ResponseEntity<String> submitEnrollmentRequest(
 	            SknrgsChangeReqstVO sknrgsChangeReqstVO,
+	            MultipartFile[] uploadFile,
 				Principal principal) {
 			    
 	        if (principal == null) {
@@ -134,14 +141,25 @@ public class EnrollmentController {
 	        }
 			
 			sknrgsChangeReqstVO.setStdntNo(stdntNo);
-			    
+			
 			try {
+	            if (uploadFile != null && uploadFile[0].getOriginalFilename().length() > 0) {
+	                log.info("파일 업로드");
+	                Long fileGroupNo = uploadcontroller.multiImageUpload(uploadFile);
+	                
+	                sknrgsChangeReqstVO.setFileGroupNo(fileGroupNo);
+	                log.info("파일 업로드 완료. fileGroupNo: {}", fileGroupNo);
+	            } else {
+	                log.info("첨부파일 없음");
+	            }
+	            
 			    enrollmentService.submitRequest(sknrgsChangeReqstVO);
-			    log.info("학적 변동 신청 성공. 학번: {}", stdntNo);
+			    
+	            log.info("학적 변동 신청 성공. 학번: {}", stdntNo);
 			    return ResponseEntity.ok("정상적으로 신청되었습니다.");
 			} catch (Exception e) {
 			    log.error("학적 변동 신청 처리 중 오류 발생. 학번: {}", stdntNo, e);
 	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("처리 중 오류가 발생했습니다. 다시 시도해주세요.");
 			}
 		}
-}
+	}

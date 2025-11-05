@@ -1,5 +1,6 @@
 package kr.ac.collage_api.enrollment.service.impl;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -77,8 +78,16 @@ public class EnrollmentServiceImpl implements EnrollmentService {
 
 		Map<String, Object> params = new HashMap<>();
 		params.put("reqId", reqId);
-		params.put("reqsSttus", clientVO.getReqstSttus());
+		params.put("reqstSttus", clientVO.getReqstSttus());
 		params.put("returnResn", clientVO.getReturnResn());
+		
+		if("승인".equals(clientVO.getReqstSttus())) {
+			params.put("confmComptDt", LocalDateTime.now());
+		}else {
+			params.put("confmComptDt", null);
+		}
+		
+		params.put("lastUpdtTm", LocalDateTime.now());
 		
 		//상태 업데이트
 		enrollmentMapper.updateStatusOnly(params);
@@ -98,8 +107,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
 	        enrollmentMapper.insertHistory(histVO);
 	    }
 	}
-
-
 	
+
 
 }

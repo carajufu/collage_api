@@ -71,7 +71,7 @@
 	            
 	            <div class="mb-3">
 	                <label for="attachment-file" class="form-label">첨부 서류</label>
-	                <input type="file" id="attachment-file" name="attachmentFile" class="form-control">
+	                <input type="file" id="attachment-file" name="uploadFile" class="form-control">
 	            </div>
             </div>
                
