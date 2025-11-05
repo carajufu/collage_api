@@ -1,10 +1,7 @@
 package kr.ac.collage_api.vo;
 
 import java.util.Date;
-<<<<<<< HEAD
 import java.util.List;
-=======
->>>>>>> 6ae9e540d3b43b69545922be45285f7574a2c132
 
 import lombok.Data;
 
