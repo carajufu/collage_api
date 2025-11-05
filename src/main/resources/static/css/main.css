@@ -1,71 +1,40 @@
 @charset "UTF-8";
 
-body {
-    background-color: #f1f3f6;
-    font-family: "Noto Sans KR", sans-serif;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-/* ✅ 사이드바 스타일 */
-.sidebar {
-    width: 260px;
-    background-color: #293d78;
-    color: white;
-    min-height: 100vh;
-    border-right: 1px solid #55539f;
-    padding: 20px;
-}
 
-.sidebar h5 {
-    font-size: 1.8rem;
-    font-weight: 700;
-    color: #ffffff;
-}
-
-.sidebar .btn-toggle {
-    color: #e1d4ff;
-    font-weight: 600;
-    background: none;
-    border: none;
+#wrapper {
     width: 100%;
-    text-align: left;
-    margin-bottom: 8px;
-    font-size: 1.5rem;
+    height: 110vh;
+    display: flex;
+    flex-direction: column;
 }
 
-.sidebar .btn-toggle:hover {
-    background-color: #1b2836;
-    border-radius: 6px;
+header {
+    width: 100%;
+    height: 5%;
 }
 
-.btn-toggle-nav a {
-    display: block;
-    padding: 5px 0 5px 15px;
-    color: #ffffff;
-    text-decoration: none;
-    font-size: 0.95rem;
+main {
+    width: 100%;
+    height: 100%;
 }
 
-.btn-toggle-nav a:hover,
-.active-link {
-    background-color: #1b2836;
-    color: #fff !important;
-    border-radius: 6px;
+#sidebar {
+    width: 280px;
+    height: 100%;
 }
 
-/* ✅ 메인 콘텐츠 */
-.content-area {
-    background-color: #ffffff;
-    flex-grow: 1;
-    padding: 40px;
-    min-height: 100vh;
+#main-container {
+    height: 100%;
+    border-color: gold;
 }
 
-.card-custom {
-    border-radius: 15px;
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.08);
-}
-
-.section-title {
-    font-weight: 600;
-    margin-bottom: 20px;
+footer {
+    width: 100vw;
+    height: 9%;
 }

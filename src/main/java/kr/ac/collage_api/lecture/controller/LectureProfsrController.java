@@ -1,5 +1,6 @@
 package kr.ac.collage_api.lecture.controller;
 
+import java.security.Principal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,22 +23,28 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/lecture")
 @Slf4j
 @Controller
-public class LectureManageController {
+public class LectureProfsrController {
 
 	@Autowired
 	LectureService lectureService;
 	
 	// 담당 강의 목록 조회(교수)
 	@GetMapping("/mylist")
-	public String mylist(Model model, EstblCourseVO estblCourseVO,
+	public String mylist(Model model, Principal principle, EstblCourseVO estblCourseVO,
 						 @RequestParam(value="keyword", required=false, defaultValue="") String keyword,
-//						 @RequestParam(value="profsrNo", required=false, defaultValue="") String profsrNo,
 						 @RequestParam(value="complSe", required=false, defaultValue="") String complSe) {
 		
 		Map<String, Object> map = new HashMap<>();
 		map.put("keyword", keyword);
-//		map.put("profsrNo", profsrNo);
 		map.put("complSe", complSe);
+		
+		String acntId = principle.getName();
+		log.info("mylist()->acntId : {}", acntId);
+		
+		// 로그인한 계정의 교수 번호(profsr_no) 검증
+		String profsrNo = lectureService.findProfsrNo(acntId);
+		log.info("mylist()->profsrNo : {}", profsrNo);
+		map.put("profsrNo", profsrNo);
 		
 		List<EstblCourseVO> estblCourseVOList = lectureService.mylist(map);	//여기 나중에 mylist로 수정해야함
 //		log.info("mylist()->estblCourseVOList : ", estblCourseVOList);
@@ -47,39 +54,7 @@ public class LectureManageController {
 		return "lecture/mylist";
 	}
 	
-	// 강의 세부 정보(교수)
-	@GetMapping("/detail")
-	public String detail(EstblCourseVO estblCourseVO,
-						 @RequestParam String estbllctreCode, Model model) {
-		
-		estblCourseVO = this.lectureService.detail(estblCourseVO);
-		log.info("detail()->estblCourseVO : {}", estblCourseVO);
-		
-		model.addAttribute("estblCourseVO", estblCourseVO);
-		
-		return "lecture/detail";
-	}
-	
-	@GetMapping("/detailAjax/{estbllctreCode}")
-	@ResponseBody
-	public Map<String,Object> detailAjax(@PathVariable String estbllctreCode) {
-		log.info("detailAjax()->estbllctreCode : {}", estbllctreCode);
-		EstblCourseVO estblCourseVO = lectureService.detailAjax(estbllctreCode);
-		log.info("detailAjax()->estblCourseVO : {}", estblCourseVO);
-		
-		int result = 0;
-		
-		if(estblCourseVO != null) {
-			result = 1;
-		}
-		
-		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("result", result);
-		map.put("estblCourseVO", estblCourseVO);
-		
-		return map;
-	}
-	
+	/*
 	// /lecture/edit
 	// 강의 세부 정보 수정(교수)
 	@PostMapping("/edit")
@@ -95,10 +70,46 @@ public class LectureManageController {
 		
 		return map;
 	}
+	*/
+	
+	// 강의 계획서 모달 띄우기
+	@ResponseBody
+	@GetMapping("/detailPlan/{estbllctreCode}")
+	public Map<String,Object> detailPlan(@PathVariable String estbllctreCode) {
+		log.info("detailPlan()->estbllctreCode : {}", estbllctreCode);
+		EstblCourseVO estblCourseVO = lectureService.loadPlanFile(estbllctreCode);
+		log.info("detailPlan()->estblCourseVO : {}", estblCourseVO);
+		
+		int result = 0;
+		
+		if(estblCourseVO != null) {
+			result = 1;
+		}
+		
+		log.info("detailPlan()->result : {}", result);
+		
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("result", result);
+		map.put("estblCourseVO", estblCourseVO);
+		
+		return map;
+	}
+	
+	// 강의 계획서 업로드
+	@ResponseBody
+	@PostMapping("/uploadPlan")
+	public Map<String, Object> uploadPlan(EstblCourseVO estblCourseVO) {
+		log.info("uploadPlan()->estblCourseVO : {}", estblCourseVO);
+		
+		int result = lectureService.uploadPlan(estblCourseVO);
+		log.info("uploadPlan()->result : {}", result);
+		
+		Map<String, Object> map = new HashMap<>();
+		map.put("result", result);
+		
+		return map;
+	}
 	
 	
-	
-	// 강의 계획서 작성, 업로드
-//	@PostMapping("/upload")
-//	public String 
+
 }
