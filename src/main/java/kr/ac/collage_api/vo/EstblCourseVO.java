@@ -1,5 +1,7 @@
 package kr.ac.collage_api.vo;
 
+import lombok.Data;
+
 import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
@@ -25,13 +27,13 @@ public class EstblCourseVO {
 	private int trmendTestScoreReflctRate;   //기말시험점수반영비율	TRMEND_TEST_SCORE_REFLCT_RATE
 	private String estblYear;                //개설년도	ESTBL_YEAR
 	private String estblSemstr;              //개설학기	ESTBL_SEMSTR
-	
+
 	private LctreTimetableVO timetable;		//lctreDfk(LCTRE_DFK), beginTm(BEGIN_TM), endTm(END_TM)
 	private AllCourseVO allCourse;			//lctreNm(LCTRE_NM)
 	private SklstfVO sklstf;				//sklstfNm(SKLSTF_NM), cttpc(CTTPC)
 	private ProfsrVO profsr;				//labrumLc(LABRUM_LC)
 	private FileDetailVO file;				//FILE_NO, FILE_GROUP_NO, FILE_NM, FILE_STRE_NM, FILE_STREPLACE, FILE_STRE_DE
-	
+
 	
 	private List<EstblCourseVO> estblCourseVOlist;
 	private MultipartFile[] uploadFile;
