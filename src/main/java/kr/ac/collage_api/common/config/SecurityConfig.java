@@ -35,7 +35,11 @@ public class SecurityConfig {
     public WebSecurityCustomizer configure() {
         return web -> web.debug(false)
                 .ignoring()
-                .requestMatchers("/css/**", "/js/**", "favicon.ico");
+                .requestMatchers("/css/**",
+                        "/js/**",
+                        "favicon.ico",
+                        "/app/**",
+                        "/assets/**");
     }
 
     @Bean
@@ -61,7 +65,11 @@ public class SecurityConfig {
                 .httpBasic(hbasic -> hbasic.disable())
                 .authorizeHttpRequests(authorize -> authorize
                         .dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.ASYNC).permitAll()
-                        .requestMatchers("/", "/login", "/accessError", "/.well-known/**", "/admin/**", "/api/**").permitAll()
+                        .requestMatchers("/",
+                                "/login",
+                                "/accessError",
+                                "/.well-known/**",
+                                "/admin/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .requestCache(cache -> cache.requestCache(requestCache))
