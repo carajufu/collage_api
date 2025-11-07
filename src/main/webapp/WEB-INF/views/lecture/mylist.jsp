@@ -67,6 +67,10 @@
 	        </div>
 	    </div>
     </div>
+<<<<<<< HEAD
+=======
+</main>
+>>>>>>> 26a4290 (please)
 
 <div class="modal" tabindex="-1" id="modalPlan">
   <div class="modal-dialog modal-lg">

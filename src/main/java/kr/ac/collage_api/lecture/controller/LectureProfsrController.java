@@ -46,7 +46,7 @@ public class LectureProfsrController {
 		log.info("mylist()->profsrNo : {}", profsrNo);
 		map.put("profsrNo", profsrNo);
 		
-		List<EstblCourseVO> estblCourseVOList = lectureService.mylist(map);	//여기 나중에 mylist로 수정해야함
+		List<EstblCourseVO> estblCourseVOList = lectureService.mylist(map);
 //		log.info("mylist()->estblCourseVOList : ", estblCourseVOList);
 		
 		model.addAttribute("estblCourseVOList", estblCourseVOList);

@@ -17,6 +17,10 @@
         })
     </script>
 
+<<<<<<< HEAD
+=======
+    <div id="main-container" class="container-fluid">
+>>>>>>> 26a4290 (please)
         <div class="flex-grow-1 overflow-hidden mx-5">
             <h1>로그인성공</h1>
             <p>${lectureList}</p>
@@ -32,5 +36,10 @@
                 </c:forEach>
             </div>
         </div>
+<<<<<<< HEAD
+=======
+    </div>
+</main>
+>>>>>>> 26a4290 (please)
 
 <%@ include file="../../footer.jsp" %>

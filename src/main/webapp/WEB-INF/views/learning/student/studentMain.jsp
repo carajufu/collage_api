@@ -1,12 +1,58 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
 <%@ include file="../../header.jsp" %>
+<<<<<<< HEAD
     <style>
         .blog-post-meta { font-size: 85%; margin-top: 0.5rem; font-style: italic; }
     </style>
     <script type="text/javascript" src="/js/wtModal.js"></script>
     <script type="text/javascript">
 
+=======
+    <script type="text/javascript" src="/js/wtModal.js"></script>
+    <script type="text/javascript">
+        function taskDetail() {
+
+        }
+
+        /**
+         * 과제 목록을 생성해 모달 바디에 주입
+         * @param {string} modalId - 과제 목록이 주입될 모달의 id
+         * @param {Array<Object>} tasks - 응답 받은 과제의 배열
+         * @return {void} This function does not return a value.
+         */
+        function renderList(modalId, tasks) {
+            const container = document.createElement("div");
+            container.className = "container";
+
+            const group = document.createElement("div");
+            group.className = "list-group shadow-sm rounded-3";
+
+            // group list의 header
+            const groupHeader = document.createElement("div");
+            groupHeader.className = "list-group-item d-flex active";
+            groupHeader.style = "-bs-list-group-active-bg: var(--bs-primary); --bs-list-group-active-border-color: var(--bs-primary);"
+            groupHeader.innerHTML = "과제";
+
+            group.appendChild(groupHeader);
+
+            // 과제 배열의 각 요소 마다 a 태그 생성해 group list의 요소로 등록
+            tasks.forEach(task => {
+                let anchor = document.createElement("a");
+                anchor.className = "list-group-item list-group-item-action";
+                anchor.style = "cursor: pointer";
+                anchor.innerHTML = task.taskSj;
+                anchor.setAttribute("data-task-no", );
+                anchor.onClick = taskDetail;
+
+                group.appendChild(anchor);
+            });
+
+            container.appendChild(group);
+
+            changeModalBody(modalId, container);
+        }
+>>>>>>> 26a4290 (please)
 
         document.addEventListener("DOMContentLoaded", () => {
             document.querySelector("body").innerHTML += modal;
@@ -54,6 +100,7 @@
             tModal.querySelector("#cont").addEventListener("click", e => e.stopPropagation());
         });
 
+<<<<<<< HEAD
         /**
          * 과제 목록을 생성해 모달 바디에 주입
          * @param {string} modalId - 과제 목록이 주입될 모달의 id
@@ -354,6 +401,11 @@
         }
     </script>
 
+=======
+    </script>
+
+    <div id="main-container" class="container-fluid overflow-scroll">
+>>>>>>> 26a4290 (please)
         <div class="flex-grow-1 mx-5">
             <!-- 반복문을 통해 아코디언 리스트 생성 -->
             <div class="accordion accordion-flush" id="accordionFlush">
@@ -378,5 +430,10 @@
                 </c:forEach>
             </div>
         </div>
+<<<<<<< HEAD
+=======
+    </div>
+</main>
+>>>>>>> 26a4290 (please)
 
 <%@ include file="../../footer.jsp" %>

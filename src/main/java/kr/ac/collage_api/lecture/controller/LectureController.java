@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import jakarta.servlet.http.HttpServletResponse;
-import kr.ac.collage_api.common.attach.service.BeanController;
+import kr.ac.collage_api.common.config.BeanController;
 import kr.ac.collage_api.lecture.service.LectureService;
 import kr.ac.collage_api.vo.EstblCourseVO;
 import kr.ac.collage_api.vo.FileDetailVO;
@@ -37,7 +37,7 @@ public class LectureController {
 	LectureService lectureService;
 	
 	@Autowired
-    BeanController beanController;
+	BeanController beanController;
 	
 	// 개설 강의 조회
 	@GetMapping("/list")
@@ -45,11 +45,10 @@ public class LectureController {
 					   @RequestParam(value="keyword", required=false, defaultValue="") String keyword,
 					   @RequestParam(value="complSe", required=false, defaultValue="") String complSe) {
 		
-		Map<String, Object> map = new HashMap<>();
-		map.put("keyword", keyword);
-		map.put("complSe", complSe);
+		estblCourseVO.setKeyword(keyword);
+		estblCourseVO.setComplSe(complSe);
 		
-		List<EstblCourseVO> estblCourseVOList = lectureService.list(map);
+		List<EstblCourseVO> estblCourseVOList = lectureService.list(estblCourseVO);
 		log.info("list()->estblCourseVOList : {}", estblCourseVOList);
 		
 		model.addAttribute("estblCourseVOList", estblCourseVOList);
@@ -58,12 +57,12 @@ public class LectureController {
 	}
 	
 	// 강의 세부 정보
-	@GetMapping("/detailAjax/{estbllctreCode}")
+	@GetMapping("/detail/{estbllctreCode}")
 	@ResponseBody
-	public Map<String,Object> detailAjax(@PathVariable String estbllctreCode) {
-		log.info("detailAjax()->estbllctreCode : {}", estbllctreCode);
-		EstblCourseVO estblCourseVO = lectureService.detailAjax(estbllctreCode);
-		log.info("detailAjax()->estblCourseVO : {}", estblCourseVO);
+	public Map<String,Object> detail(@PathVariable String estbllctreCode) {
+		log.info("detail()->estbllctreCode : {}", estbllctreCode);
+		EstblCourseVO estblCourseVO = lectureService.detail(estbllctreCode);
+		log.info("detail()->estblCourseVO : {}", estblCourseVO);
 		
 		int result = 0;
 		
@@ -78,7 +77,7 @@ public class LectureController {
 		return map;
 	}
 	
-	// 강의 계획서 다운로드
+	// 강의계획서 다운로드
 	@GetMapping("/downloadFile")
 	public void DownloadFile (@RequestParam("fileGroupNo") long fileGroupNo,
 							  HttpServletResponse response) {

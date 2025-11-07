@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.multipart.MultipartFile;
 
-import kr.ac.collage_api.common.attach.service.BeanController;
+import kr.ac.collage_api.common.config.BeanController;
 import kr.ac.collage_api.lecture.mapper.LectureMapper;
 import kr.ac.collage_api.vo.FileDetailVO;
 import kr.ac.collage_api.vo.FileGroupVO;
@@ -19,7 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 public class PlanUploadController {
 
 	@Autowired
-    BeanController beanController;
+	BeanController beanController;
 	
 	@Autowired
 	LectureMapper lectureMapper;

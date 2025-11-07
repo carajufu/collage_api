@@ -6,6 +6,7 @@
 	    <div class="card card-custom p-4">
 			<h5 class="card-title mb-3">개설 강의</h5>
 	        <div class="flex-grow-1 p-1 overflow-visible">
+<<<<<<< HEAD
 	       		<div class="container-fluid"> 
 	       			<nav class="navbar navbar-expand-lg bg-body-tertiary">
 					  <div class="container-fluid">
@@ -14,6 +15,17 @@
 					      <form class="d-flex" role="search">
 					        <select class="form-select" aria-label="Default select example" name="complSe" value="${param.complSe}">
 							  <option value="" selected>이수구분</option>
+=======
+	       		<div class="container-fluid p-0"> 
+	       			<nav class="navbar navbar-expand-lg bg-body-tertiary p-0">
+					  <div class="container-fluid p-0">
+					    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+					    <a class="navbar-brand">강의 검색</a>
+					      <form class="d-flex ms-auto" role="search">
+						    <a class="navbar-brand">이수구분</a>
+					        <select class="form-select" aria-label="Default select example" name="complSe" value="${param.complSe}">
+							  <option value="" selected>---</option>
+>>>>>>> 26a4290 (please)
 							  <option value="전필">전필</option>
 							  <option value="전선">전선</option>
 							  <option value="교필">교필</option>
@@ -28,12 +40,17 @@
 					  </div>
 					</nav>
 	       				
+<<<<<<< HEAD
 	       			</div>
+=======
+       			</div>
+>>>>>>> 26a4290 (please)
 	       		</div>
 	       		<div id="form">
 	       			<form>
 	       				<input type="hidden" name="stdntNo" value="${stdntNo}">
 	       				<div id="courseTable">
+<<<<<<< HEAD
 						<table class="table">
 						  <thead class="table-light">
 						  	<tr>
@@ -44,6 +61,18 @@
 					  			<tr><td colspan="9">강의 목록을 불러오는 중...</td></tr>
 				  			</tbody>
 						</table>
+=======
+							<table class="table">
+							  <thead class="table-light">
+							  	<tr>
+							  		<th>선택</th><th>교과목ID</th><th>이수구분</th><th>강의명</th><th>교수명</th><th>취득학점</th><th>강의실</th><th>강의시간</th><th>신청인원</th><th></th>
+							  	</tr>
+						  		</thead>   
+						  		<tbody id="courseTbody" class="align-middle">
+						  			<tr><td colspan="9">강의 목록을 불러오는 중...</td></tr>
+					  			</tbody>
+							</table>
+>>>>>>> 26a4290 (please)
 						</div>
 						<button type="submit" class="btn btn-primary" id="addCartBtn" style="margin-top: 20px">선택 담기</button>
 					</form>
@@ -75,6 +104,7 @@
 <script type="text/javascript">
 const courseTbody = document.getElementById("courseTbody");
 	
+<<<<<<< HEAD
 	fetch("/atnlc/load", {
 		method: "get",
 		headers: {"Content-Type":"application/json;charset=UTF-8"}
@@ -127,13 +157,92 @@ const courseTbody = document.getElementById("courseTbody");
 		courseTbody.innerHTML = html;
 	}
 	
+=======
+	function loadCourseList(keyword="", complSe="") {
+		
+		const url = `/atnlc/load?keyword=\${keyword}&complSe=\${complSe}`;
+		console.log("url : ", url);
+		
+		fetch(url, {
+			method: "get",
+			headers: {"Content-Type":"application/json;charset=UTF-8"}
+		})
+		.then(response => {
+			if(!response.ok) {
+				throw new Error("오류 발생...");
+			}
+			return response.json();
+		})
+		.then(data => {
+			console.log(data);
+			loadCourseData(data.estblCourseVOList);
+		})
+		.catch(error => {
+			console.error("강의 목록을 불러오지 못했습니다...", error);
+			courseTbody.innerHTML = "<tr><td colspan='9'>강의 목록을 불러오지 못했습니다...</td></tr>";
+		});
+		
+		
+		// 강의 목록 로드 함수
+		function loadCourseData(list) { 
+			courseTbody.innerHTML = "";
+			
+			if(list == null) {
+				courseTbody.innerHTML = "<tr><td colspan='9'>개설된 강의가 없습니다.</td></tr>";
+				return;
+			}
+			
+			let html = "";
+			
+			list.forEach(l=>{
+				
+				const timeInfo = `\${l.timetable.lctreDfk} \${l.timetable.beginTm},\${l.timetable.endTm}`;
+				html += `
+						<tr>
+							<td><input type="checkbox" name="listCheck" value="\${l.estbllctreCode}"></td>
+				  			<td>\${l.estbllctreCode}</td>
+				  			<td>\${l.complSe}</td>
+				  			<td>\${l.allCourse.lctreNm}</td>
+				  			<td>\${l.sklstf.sklstfNm}</td>
+				  			<td>\${l.acqsPnt}</td>
+				  			<td>\${l.lctrum}</td>
+				  			<td>\${timeInfo}</td>
+				  			<td>\${l.totalReqst}/\${l.atnlcNmpr}</td>
+				  		</tr>
+				`; 
+			});
+			
+			courseTbody.innerHTML = html;
+		}
+
+	}
+	
+	
+	document.querySelector("nav form").addEventListener("submit", function(event) {
+		event.preventDefault();
+		
+		const form = event.target;
+		const keyword = form.querySelector("input[name='keyword']").value;
+		const complSe = form.querySelector("select[name='complSe']").value;
+		
+		console.log("keyword : ", keyword);
+		console.log("complSe : ", complSe);
+		loadCourseList(keyword, complSe);
+	});
+	
+	
+>>>>>>> 26a4290 (please)
 
 	// 장바구니 담기
 	$("#addCartBtn").on("click",(event)=>{
 		event.preventDefault();
 		console.log("담기 버튼 click");
 		
+<<<<<<< HEAD
 		const selectedCodes = getCourseCodes();
+=======
+		const selectedCodes = getListCourseCodes();
+>>>>>>> 26a4290 (please)
 		const stdntNo = document.getElementsByName("stdntNo")[0].value;
 		
 		
@@ -148,6 +257,7 @@ const courseTbody = document.getElementById("courseTbody");
 		};
 		
 		
+<<<<<<< HEAD
 		fetch("/atnlc/mycart/add", {
 			method: "post",
 			headers: {"Content-Type":"application/json;charset-UTF-8"},
@@ -176,6 +286,80 @@ const courseTbody = document.getElementById("courseTbody");
 			
 			return courseCodes;
 	}
+=======
+		if(confirm("선택한 강의를 장바구니에 담으시겠습니까?")) {
+			
+			fetch("/atnlc/mycart/add", {
+				method: "post",
+				headers: {"Content-Type":"application/json;charset-UTF-8"},
+				body: JSON.stringify(data)
+			})
+			.then(response => {
+				if(!response.ok) {
+					throw new Error("서버 오류 발생");
+				}
+				return response.json();
+			})
+			.then(data => {
+				
+				const result = data.result;
+				
+				if(!result.success) {
+					let failMsg = "";
+					let hasConflict = false;
+					
+					// 중복 강의
+					const alreadyLecCodes = result.alreadyLecCodes; 
+					if(alreadyLecCodes && alreadyLecCodes.length > 0) {
+						failMsg += "이미 장바구니에 담은 강의입니다.\n";
+						failMsg += " - " + alreadyLecCodes.join('\n - ') + "\n\n";
+						hasConflict = true;
+					}
+					
+					// 중복 시간표
+					const perLecCodes = result.perLecCodes;
+					if(perLecCodes && perLecCodes.length > 0) {
+						failMsg += "시간표가 겹치는 강의입니다.\n";
+						failMsg += " - " + perLecCodes.join('\n - ') + "\n\n";
+						hasConflict = true;
+					}
+					
+					// 실패 메세지 출력
+					if(hasConflict) {
+						alert(failMsg);
+					} else {
+						alert("알 수 없는 오류로 강의 담기에 실패했습니다.");
+					}
+					
+				} else {
+					
+					// 장바구니 담기 성공
+					alert(`총 \${result.insertCnt}개의 강의가 장바구니에 담겼습니다.`);
+					
+				}
+				
+				loadMyCart();
+				loadCourseList();
+				
+			})
+			.catch(error => {
+				console.error("강의 담기 실패 : ", error);
+				alert("강의 담기에 실패했습니다...");
+			});
+		}
+		
+	})
+	
+
+	function getListCourseCodes() {
+		const checkboxs = document.querySelectorAll("input[name='listCheck']:checked");
+		const listCourseCodes = Array.from(checkboxs).map(checkbox => checkbox.value);
+		
+		return listCourseCodes;
+	}
+	
+	loadCourseList();
+>>>>>>> 26a4290 (please)
 </script>
 
 <%@ include file="../footer.jsp" %>
