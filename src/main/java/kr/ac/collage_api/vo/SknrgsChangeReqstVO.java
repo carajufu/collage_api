@@ -9,10 +9,7 @@ import lombok.Data;
 public class SknrgsChangeReqstVO {
 	private int sknrgsChangeInnb;          //학적변동고유번호(PK)	SKNRGS_CHANGE_INNB(PK)
 	private String stdntNo;                //학생번호(FK)	STDNT_NO(FK)
-<<<<<<< HEAD
 	private Long fileGroupNo;                 //파일그룹번호(FK)	FILE_GROUP_NO(FK)
-=======
->>>>>>> 26a4290 (please)
 	private String changeTy;                 //변경 유형  휴학신청인지, 복학신청인지
 	private String tmpabssklTy;				//휴학유형   휴학할때 군휴학인지, 일반휴학인지..
 	private String efectOccrrncSemstr;     //효력발생학기	EFECT_OCCRRNC_SEMSTR
@@ -22,11 +19,8 @@ public class SknrgsChangeReqstVO {
 	private Date confmComptDt;             //승인완료일시	CONFM_COMPT_DT
 	private String returnResn;             //반려사유	RETURN_RESN
 	private Date lastUpdtTm;               //최종수정일시	LAST_UPDT_TM
-<<<<<<< HEAD
-	
+
 	private StdntVO stdntVO;	//학생
-=======
->>>>>>> 26a4290 (please)
 }
 
 

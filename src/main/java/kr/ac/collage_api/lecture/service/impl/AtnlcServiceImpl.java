@@ -80,11 +80,4 @@ public class AtnlcServiceImpl implements AtnlcService {
 	public int editMyCart(AtnlcReqstVO atnlcReqstVO) {
 		return this.atnlcMapper.editMyCart(atnlcReqstVO);
 	}
-
-	// 장바구니 인원 계산
-	@Override
-	public String countTotalReqst(EstblCourseVO estblCourseVO) {
-		return this.atnlcMapper.countTotalReqts(estblCourseVO);
-	}
-
 }
