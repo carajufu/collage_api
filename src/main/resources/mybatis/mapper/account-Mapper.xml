@@ -70,8 +70,6 @@
 	        FILE_GROUP_NO = #{fileGroupNo}
 	        AND ROWNUM = 1
 	</select>
-
-
 </mapper>
 
 

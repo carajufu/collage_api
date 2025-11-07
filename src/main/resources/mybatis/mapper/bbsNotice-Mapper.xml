@@ -55,7 +55,6 @@
 	
 	</delete>
 	
-	
 	<!--
 	****************************
 	
@@ -105,13 +104,4 @@
 	INSERT INTO BBS (BBSCTT_NO, ACNT_ID, BBSCTT_SJ, BBSCTT_CN, BBSCTT_WRITNG_DE, BBSCTT_RDCNT, BBSCTT_TY)
 	VALUES(#{bbscttNo},#{acntId},#{bbscttSj},#{bbscttCn},SYSDATE,0,'1')
 	</insert>
-	
-	
-	
-	
-	
-	
-	
-	
-	
 </mapper>
