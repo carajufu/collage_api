@@ -5,8 +5,13 @@
 	<!-- //교수아이디가 포함된 상담_가능_여부 테이블 List 가져오기
 	public List<CnsltAtVO> getCnsltAtVOList(String profsrNo); -->
 	<select id="getCnsltAtVOList" parameterType="String" resultType="cnsltAtVO">
+<<<<<<< HEAD
 		SELECT CNSLT_INNB, CNSLT_BEGIN_DE, STTUS, CNSLT_MTHD
 			 , CNSLT_RESULT, REGIST_DT, PROFSR_NO, CNSLT_BEGIN_TIME, CNSLT_END_TIME
+=======
+		SELECT CNSLT_INNB, CNSLT_BEGIN_DE, CNSLT_POSBL_TIME, STTUS, CNSLT_MTHD
+			 , CNSLT_RESULT, REGIST_DT, PROFSR_NO
+>>>>>>> 26a4290 (please)
 		  FROM CNSLT_AT
 		 WHERE PROFSR_NO = #{profsrNo}
 	</select>
@@ -19,6 +24,7 @@
 		</selectKey>
 	
 		INSERT INTO CNSLT_AT 
+<<<<<<< HEAD
 			(CNSLT_INNB, CNSLT_BEGIN_DE, STTUS, CNSLT_MTHD
 		   , REGIST_DT, PROFSR_NO, CNSLT_BEGIN_TIME, CNSLT_END_TIME)
 		VALUES (#{cnsltInnb},#{cnsltBeginDe},1,#{cnsltMthd}
@@ -137,5 +143,12 @@
 	
 
 	
+=======
+			(CNSLT_INNB, CNSLT_BEGIN_DE, CNSLT_POSBL_TIME, STTUS, CNSLT_MTHD
+		   , REGIST_DT, PROFSR_NO)
+		VALUES (#{cnsltInnb},#{cnsltBeginDe},#{cnsltPosblTime},1,#{cnsltMthd}
+		,SYSDATE,#{profsrNo})
+	</insert>
+>>>>>>> 26a4290 (please)
 
 </mapper>

@@ -2,6 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.ac.collage_api.enrollment.mapper.EnrollmentMapper">
 
+<<<<<<< HEAD
 	<resultMap id="stdntSubjectMap" type="kr.ac.collage_api.vo.StdntVO" autoMapping="true">
 		<id property="stdntNo" column="STDNT_NO" />
 		
@@ -178,4 +179,6 @@
 	</insert>
 	
 	
+=======
+>>>>>>> 26a4290 (please)
 </mapper>

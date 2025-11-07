@@ -57,6 +57,7 @@ function changeModalBody(modalId, cont) {
 
     modalBody.innerHTML = "";
     modalBody.append(cont);
+<<<<<<< HEAD
 }
 
 // todo: 뒤로가기 방지 기능 고치기
@@ -70,3 +71,6 @@ function changeModalBody(modalId, cont) {
 // history.pushState({ isModalOpen: true}, '');
 // isModalOpen = false;
 // history.pushState({ isModalOpen: false }, '');
+=======
+}
+>>>>>>> 26a4290 (please)

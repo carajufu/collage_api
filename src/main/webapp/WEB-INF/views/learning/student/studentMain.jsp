@@ -6,8 +6,6 @@
     </style>
     <script type="text/javascript" src="/js/wtModal.js"></script>
     <script type="text/javascript">
-
-
         document.addEventListener("DOMContentLoaded", () => {
             document.querySelector("body").innerHTML += modal;
 
