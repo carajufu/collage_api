@@ -1,14 +1,10 @@
-<<<<<<< HEAD
 @charset "UTF-8";
 
-=======
->>>>>>> 26a4290 (please)
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
-
 
 #wrapper {
     width: 100%;
@@ -23,11 +19,7 @@ header {
 }
 
 main {
-<<<<<<< HEAD
     width: 100%;
-=======
-    width: 99vw;
->>>>>>> 26a4290 (please)
     height: 100%;
 }
 
@@ -44,7 +36,6 @@ main {
 footer {
     width: 100vw;
     height: 9%;
-<<<<<<< HEAD
 }
 
 
@@ -80,6 +71,4 @@ footer {
 .section-title {
     font-weight: 600;
     margin-bottom: 20px;
-=======
->>>>>>> 26a4290 (please)
 }

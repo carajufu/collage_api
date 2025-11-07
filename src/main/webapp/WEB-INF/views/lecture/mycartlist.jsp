@@ -5,19 +5,6 @@
 			<h5 class="card-title mb-3">나의 장바구니</h5>
 	       		<div id="mycart-section">
 	       			<form>
-<<<<<<< HEAD
-						<table class="table">
-						  <thead class="table-light">
-						  	<tr>
-						  		<th>교과목ID</th><th>이수구분</th><th>강의명</th><th>교수명</th><th>취득학점</th><th>강의실</th><th>강의시간</th><th>수강인원</th><th></th>
-						  	</tr>
-						  </thead>   
-						  <tbody id="mycartTbody" class="align-middle">
-						  	<tr><td colspan="9">장바구니 목록을 불러오는 중...</td></tr>
-						  </tbody>
-						</table>
-						<button type="submit" class="btn btn-danger" id="delBtn">삭제</button>
-=======
 	       				<div id="cartTable">
 							<table class="table">
 							  <thead class="table-light">
@@ -31,16 +18,11 @@
 							</table>
 						</div>
 						<button type="submit" class="btn btn-danger" id="editCartBtn">삭제</button>
->>>>>>> 26a4290 (please)
 					</form>
 				</div>
       	  </div>
 	    </div>
     </div>
-<<<<<<< HEAD
-=======
-</main>
->>>>>>> 26a4290 (please)
 
 <script>
 const mycartTbody = document.getElementById("mycartTbody");
@@ -67,10 +49,6 @@ const mycartTbody = document.getElementById("mycartTbody");
 		});
 	}	
 	
-<<<<<<< HEAD
-=======
-	
->>>>>>> 26a4290 (please)
 	// 장바구니 목록 로드 함수
 	function loadCartList(list) {
 		mycartTbody.innerHTML = "";
@@ -88,10 +66,7 @@ const mycartTbody = document.getElementById("mycartTbody");
 			
 			html += `
 					<tr>
-<<<<<<< HEAD
-=======
 						<td><input type="checkbox" name="cartCheck" value="\${l.estbllctreCode}"></td>
->>>>>>> 26a4290 (please)
 			  			<td>\${l.estbllctreCode}</td>
 			  			<td>\${l.estblCourse.complSe}</td>
 			  			<td>\${l.allCourse.lctreNm}</td>
@@ -100,22 +75,12 @@ const mycartTbody = document.getElementById("mycartTbody");
 			  			<td>\${l.estblCourse.lctrum}</td>
 			  			<td>\${timeInfo}</td>
 			  			<td>\${l.estblCourse.atnlcNmpr}</td>
-<<<<<<< HEAD
-			  			<td>
-				  			<button class="btn btn-outline-danger d-inline-flex align-items-center" type="button">
-							삭제</button>
-						</td>
-=======
->>>>>>> 26a4290 (please)
 			  		</tr>
 			`;
 		});
 		
 		mycartTbody.innerHTML = html;
 	}
-	
-<<<<<<< HEAD
-=======
 	
 	// 장바구니 담기 취소
 	$("#editCartBtn").on("click",(event)=>{
@@ -167,25 +132,17 @@ const mycartTbody = document.getElementById("mycartTbody");
 	}
 	
 	
->>>>>>> 26a4290 (please)
 	loadMyCart();
 
 </script>
 <style>
-<<<<<<< HEAD
-#courseTable {
-=======
 #courseTable, #cartTable {
->>>>>>> 26a4290 (please)
 	max-height: 270px;
 	overflow-y: auto;
 }
 thead {
 position: sticky;
-<<<<<<< HEAD
-=======
 top: 0;
->>>>>>> 26a4290 (please)
 }
 </style>
 

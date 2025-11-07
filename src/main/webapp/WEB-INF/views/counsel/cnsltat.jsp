@@ -69,10 +69,6 @@
 
         </div>
     </div>
-<<<<<<< HEAD
-=======
-</main>
->>>>>>> 26a4290 (please)
 
 <%@ include file="../footer.jsp" %>
 
