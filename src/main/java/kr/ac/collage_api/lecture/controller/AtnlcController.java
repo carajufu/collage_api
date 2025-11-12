@@ -46,28 +46,27 @@ public class AtnlcController {
 		return "lecture/atnlc";
 	}
 	
-	// 개설 강의 조회
+	// 개설 강의 불러오기
 	@ResponseBody
 	@GetMapping("/load")
 	public Map<String, Object> list(EstblCourseVO estblCourseVO,
 			   @RequestParam(value="keyword", required=false, defaultValue="") String keyword,
 			   @RequestParam(value="complSe", required=false, defaultValue="") String complSe) {
+
+		Map<String, Object> map = new HashMap<>();
+		map.put("keyword", keyword);
+		map.put("complSe", complSe);
 		
-		log.info("list()->keyword : {}", keyword);
-		log.info("list()->complSe : {}", complSe);
-		estblCourseVO.setKeyword(keyword);
-		estblCourseVO.setComplSe(complSe);
-		
-		List<EstblCourseVO> estblCourseVOList = lectureService.list(estblCourseVO);
+		List<EstblCourseVO> estblCourseVOList = lectureService.list(map);
 		log.info("list()->estblCourseVOList : {}", estblCourseVOList);
 		
-		Map<String, Object> map = new HashMap<>();
 		map.put("estblCourseVOList", estblCourseVOList);
+//		model.addAttribute("estblCourseVOList", estblCourseVOList);
 		
 		return map;
 	}
 	
-	// 나의 장바구니 목록 조회
+	// 나의 장바구니 목록 불러오기
 	@ResponseBody
 	@GetMapping("/mycart")
 	public Map<String, Object> myCartList(AtnlcReqstVO atnlcReqstVO)  {
@@ -91,21 +90,9 @@ public class AtnlcController {
 	@PostMapping("/mycart/add")
 	public Map<String, Object> addMyCart(@RequestBody AtnlcReqstVO atnlcReqstVO) {
 		
-		log.info("addMyCart()->stdntNo : {}", atnlcReqstVO.getStdntNo());
-		
-		Map<String, Object> result = atnlcService.addMyCart(atnlcReqstVO);
-		log.info("addMyCart()->result : {}", result);
-		
 		Map<String, Object> map = new HashMap<>();
-		map.put("result", result);
 		
-		return map;
-	}
-	
-	// 장바구니 강의 담기 취소
-	@ResponseBody
-	@PostMapping("/mycart/edit")
-	public Map<String, Object> editMyCart(@RequestBody AtnlcReqstVO atnlcReqstVO) {
+		log.info("addMyCart()->stdntNo : {}", atnlcReqstVO.getStdntNo());
 		
 		List<String> codes = atnlcReqstVO.getEstbllctreCodes();
 		int result = 0;
@@ -113,13 +100,13 @@ public class AtnlcController {
 		if(codes != null && !codes.isEmpty()) {
 			for(String code: codes) {
 				atnlcReqstVO.setEstbllctreCode(code);
-				
-				// 취소 실행
-				result += atnlcService.editMyCart(atnlcReqstVO);
+				result += atnlcService.addMyCart(atnlcReqstVO);
 			}
 		}
 		
-		Map<String, Object> map = new HashMap<>();
+//		int result = atnlcService.addMyCart(atnlcReqstVO);
+		log.info("addMyCart()->result : {}", result);
+		
 		map.put("result", result);
 		
 		return map;

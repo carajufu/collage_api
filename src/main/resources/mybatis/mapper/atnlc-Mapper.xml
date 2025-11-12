@@ -98,55 +98,28 @@
 	</select>
 	
 	<!-- 장바구니에 강의 담기 -->
+<!-- 	<insert id="addMyCart" parameterType="atnlcReqstVO"> -->
+<!-- 		<selectKey resultType="int" order="BEFORE" keyProperty="atnlcReqstNo"> -->
+<!-- 			select nvl(max(atnlc_reqst_no),0) +1 from atnlc_reqst -->
+<!-- 		</selectKey> -->
+		
+<!-- 		insert into atnlc_reqst(ATNLC_REQST_NO, STDNT_NO, ESTBLLCTRE_CODE, REQST_YEAR, REQST_SEMSTR, REQST_STTUS, REQST_DE, RECENT_UPDT_DT, REGIST_CT_NO) -->
+<!-- 		values (#{atnlcReqstNo}, #{stdntNo}, #{estbllctreCode}, #{reqstYear}, #{reqstSemstr}, '신청중', #{reqstDe}, #{recentUpdtDt}, null) -->
+<!-- 	</insert> -->
+	
 	<insert id="addMyCart" parameterType="atnlcReqstVO">
-	    INSERT INTO ATNLC_REQST (
-	        ATNLC_REQST_NO, STDNT_NO, ESTBLLCTRE_CODE, REQST_YEAR, REQST_SEMSTR, REQST_STTUS, REQST_DE, RECENT_UPDT_DT
-	    )
-	    SELECT 
-	        'AR'||LPAD((SELECT NVL(MAX(TO_NUMBER(SUBSTR(ATNLC_REQST_NO,3))),0)+1 
-	        			FROM   ATNLC_REQST 
-	        			WHERE  ATNLC_REQST_NO LIKE 'AR%'),7,'0'), 
-	        #{stdntNo}, #{estbllctreCode}, '2025', '2학기', '신청중', TO_CHAR(SYSDATE, 'YYYYMMDD'), SYSDATE
-			FROM    ESTBL_COURSE E
-		    LEFT JOIN ALL_COURSE A ON (E.LCTRE_CODE = A.LCTRE_CODE)
+    INSERT INTO ATNLC_REQST (
+        ATNLC_REQST_NO, STDNT_NO, ESTBLLCTRE_CODE, REQST_YEAR, REQST_SEMSTR, REQST_STTUS, REQST_DE, RECENT_UPDT_DT
+    )
+    SELECT 
+        'AR'||LPAD((SELECT NVL(MAX(TO_NUMBER(SUBSTR(ATNLC_REQST_NO,3))),0)+1 
+        			FROM   ATNLC_REQST 
+        			WHERE  ATNLC_REQST_NO LIKE 'AR%'),7,'0'), 
+        #{stdntNo}, #{estbllctreCode}, '2025', '2학기', '신청중', TO_CHAR(SYSDATE, 'YYYYMMDD'), SYSDATE
+		FROM    ESTBL_COURSE E
+	    LEFT JOIN ALL_COURSE A ON (E.LCTRE_CODE = A.LCTRE_CODE)
 	    
-	  		WHERE   E.ESTBLLCTRE_CODE = #{estbllctreCode}
-	</insert>
-	
-	<!-- 1. 중복 강의 검사 -->
-	<select id="checkLec" parameterType="atnlcReqstVO" resultType="String">
-		select ESTBLLCTRE_CODE
-		from   atnlc_reqst
-		where  stdnt_no = #{stdntNo}
-		and	   reqst_sttus = '신청중'
-		and	   estbllctre_code in
-			   <foreach collection="estbllctreCodes" item="code" open="(" separator="," close=")">
-			   	 #{code}
-			   </foreach>
-	</select>
-	
-	<!-- 2. 중복 시간표 검사 -->
-	<select id="checkTime" parameterType="atnlcReqstVO" resultType="String">
-		select s.estbllctre_code
-		from   lctre_timetable s
-		inner join lctre_timetable o on ( s.lctre_dfk = o.lctre_dfk 
-									  and  s.begin_tm &lt; o.end_tm 
-									  and  s.end_tm &gt; o.begin_tm )
-		inner join atnlc_reqst a on ( o.estbllctre_code = a.estbllctre_code )
-		where a.stdnt_no = #{stdntNo}
-		and   a.reqst_sttus = '신청중'
-		and   s.estbllctre_code in
-			  <foreach collection="estbllctreCodes" item="code" open="(" separator="," close=")">
-			    #{code}
-			  </foreach>
-	</select>
-	
-	<!-- 장바구니 강의 담기 취소 -->
-	<update id="editMyCart" parameterType="atnlcReqstVO">
-		update ATNLC_REQST
-		set    REQST_STTUS = '취소'
-		where  STDNT_NO = #{stdntNo}
-		and	   ESTBLLCTRE_CODE = #{estbllctreCode}
-	</update>
-	
+	    WHERE   E.ESTBLLCTRE_CODE = #{estbllctreCode}
+</insert>
+
 </mapper>

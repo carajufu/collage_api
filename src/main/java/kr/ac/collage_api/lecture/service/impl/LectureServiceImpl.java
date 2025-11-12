@@ -27,8 +27,8 @@ public class LectureServiceImpl implements LectureService {
 	
 	// 개설 강의 조회
 	@Override
-	public List<EstblCourseVO> list(EstblCourseVO estblCourseVO) {
-		return this.lectureMapper.list(estblCourseVO);
+	public List<EstblCourseVO> list(Map<String, Object> map) {
+		return this.lectureMapper.list(map);
 	}
 
 	// 로그인한 계정의 교수 번호 검증
@@ -43,10 +43,16 @@ public class LectureServiceImpl implements LectureService {
 		return this.lectureMapper.mylist(map);
 	}
 
+	// 강의 세부 정보
+	@Override
+	public EstblCourseVO detail(EstblCourseVO estblCourseVO) {
+		return this.lectureMapper.detail(estblCourseVO);
+	}
+
 	// 강의 세부 정보(ajax)
 	@Override
-	public EstblCourseVO detail(String estbllctreCode) {
-		return this.lectureMapper.detail(estbllctreCode);
+	public EstblCourseVO detailAjax(String estbllctreCode) {
+		return this.lectureMapper.detailAjax(estbllctreCode);
 	}
 
 	// 강의 세부 정보 수정(교수)

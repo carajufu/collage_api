@@ -6,11 +6,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import kr.ac.collage_api.common.attach.service.BeanController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import jakarta.servlet.http.HttpServletResponse;
+import kr.ac.collage_api.common.attach.service.BeanController;
 import kr.ac.collage_api.lecture.service.LectureService;
 import kr.ac.collage_api.vo.EstblCourseVO;
 import kr.ac.collage_api.vo.FileDetailVO;
@@ -43,10 +45,11 @@ public class LectureController {
 					   @RequestParam(value="keyword", required=false, defaultValue="") String keyword,
 					   @RequestParam(value="complSe", required=false, defaultValue="") String complSe) {
 		
-		estblCourseVO.setKeyword(keyword);
-		estblCourseVO.setComplSe(complSe);
+		Map<String, Object> map = new HashMap<>();
+		map.put("keyword", keyword);
+		map.put("complSe", complSe);
 		
-		List<EstblCourseVO> estblCourseVOList = lectureService.list(estblCourseVO);
+		List<EstblCourseVO> estblCourseVOList = lectureService.list(map);
 		log.info("list()->estblCourseVOList : {}", estblCourseVOList);
 		
 		model.addAttribute("estblCourseVOList", estblCourseVOList);
@@ -55,12 +58,12 @@ public class LectureController {
 	}
 	
 	// 강의 세부 정보
-	@GetMapping("/detail/{estbllctreCode}")
+	@GetMapping("/detailAjax/{estbllctreCode}")
 	@ResponseBody
-	public Map<String,Object> detail(@PathVariable String estbllctreCode) {
-		log.info("detail()->estbllctreCode : {}", estbllctreCode);
-		EstblCourseVO estblCourseVO = lectureService.detail(estbllctreCode);
-		log.info("detail()->estblCourseVO : {}", estblCourseVO);
+	public Map<String,Object> detailAjax(@PathVariable String estbllctreCode) {
+		log.info("detailAjax()->estbllctreCode : {}", estbllctreCode);
+		EstblCourseVO estblCourseVO = lectureService.detailAjax(estbllctreCode);
+		log.info("detailAjax()->estblCourseVO : {}", estblCourseVO);
 		
 		int result = 0;
 		
@@ -75,7 +78,7 @@ public class LectureController {
 		return map;
 	}
 	
-	// 강의계획서 다운로드
+	// 강의 계획서 다운로드
 	@GetMapping("/downloadFile")
 	public void DownloadFile (@RequestParam("fileGroupNo") long fileGroupNo,
 							  HttpServletResponse response) {

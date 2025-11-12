@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 
 import kr.ac.collage_api.vo.AtnlcReqstVO;
-import kr.ac.collage_api.vo.EstblCourseVO;
 
 public interface AtnlcService {
 
@@ -15,9 +14,6 @@ public interface AtnlcService {
 	List<AtnlcReqstVO> myCartList(String stdntNo);
 
 	// 장바구니에 강의 담기
-	Map<String, Object> addMyCart(AtnlcReqstVO atnlcReqstVO);
-
-	// 장바구니 강의 담기 취소
-	int editMyCart(AtnlcReqstVO atnlcReqstVO);
+	int addMyCart(AtnlcReqstVO atnlcReqstVO);
 
 }

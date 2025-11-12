@@ -1,10 +1,11 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+       <%-- 페이지별 컨텐츠 영역 끝 --%>
+        </main>
+    </div> <%-- .layout --%>
 
-</div>
-</main>
-    <footer>
-        <div class="py-3 my-4">
-            <ul class="nav justify-content-center border-bottom pb-3 mb-3">
+    <footer class="page-footer border-top bg-light">
+        <div class="container-fluid py-3 d-flex flex-wrap justify-content-between align-items-center">
+            <ul class="nav mb-2 mb-md-0">
                 <li class="nav-item">
                     <a href="#" class="nav-link px-2 text-body-secondary">Home</a>
                 </li>
@@ -21,10 +22,10 @@
                     <a href="#" class="nav-link px-2 text-body-secondary">About</a>
                 </li>
             </ul>
-            <p class="text-center text-body-secondary">© 2025 Company, Inc</p>
+            <p class="mb-0 text-body-secondary">© 2025 Company, Inc</p>
         </div>
     </footer>
-</div>
 
+</div> <%-- #wrapper --%>
 </body>
 </html>

@@ -9,11 +9,11 @@
 	       		<div class="container-fluid"> 
 	       			<nav class="navbar navbar-expand-lg bg-body-tertiary">
 					  <div class="container-fluid">
-					    <a class="navbar-brand">이수구분</a>
+					    <a class="navbar-brand">구분</a>
 					    <div class="collapse navbar-collapse" id="navbarSupportedContent">
 					      <form class="d-flex" role="search">
 					        <select class="form-select" aria-label="Default select example" name="complSe" value="${param.complSe}">
-							  <option value="" selected>---</option>
+							  <option value="" selected>이수구분</option>
 							  <option value="전필">전필</option>
 							  <option value="전선">전선</option>
 							  <option value="교필">교필</option>
@@ -84,6 +84,7 @@
   </div>
 </div>
 
+
 <script type="text/javascript">
 const modalDetail = document.getElementById("modalDetail");
 
@@ -115,7 +116,7 @@ $("#modalDetail").on("show.bs.modal",(event)=>{
 	
 	console.log("체크 : ", estbllctreCode);
 	
-	fetch("/lecture/detail/"+estbllctreCode)
+	fetch("/lecture/detailAjax/"+estbllctreCode)
 		.then(response => {
 			if(!response.ok) {
 				throw new Error("오류 발생...");

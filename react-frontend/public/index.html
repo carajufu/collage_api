@@ -1,0 +1,10 @@
+<script>
+(function () {
+  if (!location.hash) return;
+  const params = new URLSearchParams(location.hash.slice(1));
+  const t = params.get("accessToken");
+  if (!t) return;
+  try { localStorage.setItem("accessToken", t); } catch(_) {}
+  history.replaceState(null, "", location.pathname + location.search); // 해시 제거
+})();
+</script>

@@ -14,6 +14,7 @@ public class LctreTimetableVO {
 	//상담할때 필요함
 	private String profsrNo;    //교수_번호(PK)
 	private String sklstfNm;     //교직원명	SKLSTF_NM
+
 }
 
 

@@ -1,0 +1,40 @@
+/* ======================================================================
+
+1) 코드 의도
+   - 헤더 정렬과 사이드바 폭을 고정하여 버튼 이탈과 좌측 과여백을 제거.
+   - JSP 구간 전용 기본 레이아웃 유틸.
+
+2) 핵심 규칙
+   - .header-bar: 최소 높이 확보.
+   - #sidebar: 고정 폭과 전체 높이.
+   - main.d-flex > section.container: 남은 영역을 채우고 여백 정리.
+   - .header .brand: 줄바꿈 방지.
+
+3) 계약·보안
+   - 순수 스타일 규칙. 스크립트나 저장소 접근 없음.
+====================================================================== */
+
+.header .header-bar { min-height: 56px; }
+
+#sidebar {
+  flex: 0 0 240px;
+  width: 240px;
+  min-height: 100vh;
+}
+
+main.d-flex > section.container {
+  flex: 1 1 auto;
+  max-width: 100%;
+  padding: 24px;
+}
+
+.header .brand { white-space: nowrap; }
+/* 로그인 레이아웃 보정: 중앙 카드, 과도한 여백 제거 */
+#main-container { padding: 32px 24px; }
+
+.auth-wrap { min-height: calc(100vh - 120px); align-items: flex-start; }
+@media (min-width: 992px) { .auth-wrap { align-items: center; } }
+
+.auth-card { width: 100%; max-width: 420px; }
+.auth-card .form-control { padding-top: 0.6rem; padding-bottom: 0.6rem; }
+.auth-card .btn { height: 44px; }

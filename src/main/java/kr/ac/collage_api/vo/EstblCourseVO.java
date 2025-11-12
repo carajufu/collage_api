@@ -27,15 +27,14 @@ public class EstblCourseVO {
 	private int trmendTestScoreReflctRate;   //기말시험점수반영비율	TRMEND_TEST_SCORE_REFLCT_RATE
 	private String estblYear;                //개설년도	ESTBL_YEAR
 	private String estblSemstr;              //개설학기	ESTBL_SEMSTR
-	private String keyword;					 // 강의 검색 키워드
-	private String totalReqst;				 // 총 신청인원
-	
+
 	private LctreTimetableVO timetable;		//lctreDfk(LCTRE_DFK), beginTm(BEGIN_TM), endTm(END_TM)
 	private AllCourseVO allCourse;			//lctreNm(LCTRE_NM)
 	private SklstfVO sklstf;				//sklstfNm(SKLSTF_NM), cttpc(CTTPC)
 	private ProfsrVO profsr;				//labrumLc(LABRUM_LC)
 	private FileDetailVO file;				//FILE_NO, FILE_GROUP_NO, FILE_NM, FILE_STRE_NM, FILE_STREPLACE, FILE_STRE_DE
 
+	
 	private List<EstblCourseVO> estblCourseVOlist;
 	private MultipartFile[] uploadFile;
 }

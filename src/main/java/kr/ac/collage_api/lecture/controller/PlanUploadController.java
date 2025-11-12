@@ -4,11 +4,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
 
-import kr.ac.collage_api.common.attach.service.BeanController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.multipart.MultipartFile;
 
+import kr.ac.collage_api.common.attach.service.BeanController;
 import kr.ac.collage_api.lecture.mapper.LectureMapper;
 import kr.ac.collage_api.vo.FileDetailVO;
 import kr.ac.collage_api.vo.FileGroupVO;
