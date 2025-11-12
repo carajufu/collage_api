@@ -1,0 +1,330 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.ac.mapper.StudentDocxMapper">
+
+    <!--
+      StudentDocxMap
+      목적
+        - StudentDocxVO 에 DB 컬럼을 매핑
+        - 증명서 4종 재학 휴학 졸업 성적 에서 공통으로 사용
+        
+      컬럼 설명
+        STDNT_NO           학번
+        STDNT_NM           한글 이름
+        STDNT_NM_ENG       영문 이름. 없으면 NULL AS STDNT_NM_ENG 로 채워도 됨
+        SUBJCT_NM          전공명
+     	BIRTH_DE_KOR      (YYYY.MM.DD. 형태로 가공된 생년월일)
+        SKNRGS_STTUS       학적 상태 코드. 재학 휴학 졸업 등
+      	ENTRANCE_DE_KOR   (입학일자)
+        GRDTN_DE           졸업일자
+        SUBJCT_LC         단과대 명칭. 전공 테이블에서 올리는 것을 권장
+        DEGREE_NM          학위명. 서비스에서 세팅하므로 DB에 없으면 NULL AS DEGREE_NM
+        TOTAL_CREDITS      누적 취득 학점
+        TOTAL_GPA          누적 평점
+        LEAVE_START_DE     휴학 시작일
+        RETURN_DUE_DE      복학 예정일
+        LEAVE_REASON_NM    휴학 사유 명칭
+    -->
+	<!--
+	  StudentDocxMap
+	  목적
+	    - StudentDocxVO 에 DB 결과 매핑
+	    - 재학 / 휴학 / 졸업 / 성적 공통 조회용
+	  주의
+	    - BRTHDY, ENTSCH_DE, GRDTN_DE 는 STDNT 테이블 실제 컬럼명
+	    - birthDeKor / entranceDeKor 는 여기서 가공된 alias 로 내려야 VO에 매핑 가능
+	-->
+	<resultMap id="StudentDocxMap" type="kr.ac.vo.StudentDocxVO">
+	    <result property="studentNo"        column="STDNT_NO"/>
+	    <result property="studentNameKor"   column="STDNT_NM"/>
+	    <result property="studentNameEng"   column="STDNT_NM_ENG"/>
+	    <result property="majorName"        column="SUBJCT_NM"/>
+	    <result property="status"           column="SKNRGS_STTUS"/>
+	
+	    <result property="collegeName"      column="SUBJCT_LC"/>
+	
+	    <result property="degreeName"       column="DEGREE_NM"/>
+	
+	    <result property="birthDeKor"       column="BIRTH_DE_KOR"/>
+	    <result property="entranceDeKor"    column="ENTRANCE_DE_KOR"/>
+	
+	    <result property="graduationDate"   column="GRDTN_DE"/>
+	
+	    <result property="totalCredits"     column="TOTAL_CREDITS"/>
+	    <result property="totalGpa"         column="TOTAL_GPA"/>
+	
+	    <result property="leaveStartDate"   column="LEAVE_START_DE"/>
+	    <result property="returnDueDate"    column="RETURN_DUE_DE"/>
+	    <result property="leaveReason"      column="LEAVE_REASON_NM"/>
+	</resultMap>
+	
+	
+	<!--
+	  selectStudentBasic
+	  목적
+	    - 재학증명서 헤더 / 마이페이지 기본 정보
+	  매핑 근거
+	    - STDNT.BRTHDY (varchar2(8) yyyymmdd)
+	      → birthDeKor 로 포맷 가공
+	    - STDNT.ENTSCH_DE (varchar2(8) 입학일 yyyymmdd)
+	      → entranceDeKor 로 포맷 가공
+	    - STDNT.GRDTN_DE 그대로 graduationDate 로 들어감
+	  주의
+	    - degreeName / totalCredits / totalGpa / 휴학필드는 여기선 NULL alias
+	    - collegeName 은 전공 테이블 SUBJCT.SUBJCT_LC 사용 가정
+	    - 로그인 기반 조회라 WHERE S.ACNT_ID = #{stdntNo} 로 두고 있음 (지금은 stdntNo 파라미터에 acct_id를 넣는 임시 정책)
+	-->
+	<select id="selectStudentBasic"
+	        parameterType="string"
+	        resultMap="StudentDocxMap">
+	    SELECT
+	        S.STDNT_NO,
+	        S.STDNT_NM,
+	        NULL AS STDNT_NM_ENG,  -- 영문명 없으면 NULL
+	        J.SUBJCT_NM,
+	        S.SKNRGS_STTUS,
+	        S.GRDTN_DE,
+	        J.SUBJCT_LC                 AS SUBJCT_LC,
+	
+	        NULL                        AS DEGREE_NM,
+	
+	        -- 생년월일 BRTHDY = 'YYYYMMDD' → 'YYYY.MM.DD.'
+	        TO_CHAR(
+	            TO_DATE(S.BRTHDY, 'YYYYMMDD'),
+	            'YYYY.MM.DD.'
+	        )                           AS BIRTH_DE_KOR,
+	
+	        -- 입학일 ENTSCH_DE = 'YYYYMMDD' → 'YYYY.MM.DD.'
+	        TO_CHAR(
+	            TO_DATE(S.ENTSCH_DE, 'YYYYMMDD'),
+	            'YYYY.MM.DD.'
+	        )                           AS ENTRANCE_DE_KOR,
+	
+	        NULL                        AS TOTAL_CREDITS,
+	        NULL                        AS TOTAL_GPA,
+	
+	        NULL                        AS LEAVE_START_DE,
+	        NULL                        AS RETURN_DUE_DE,
+	        NULL                        AS LEAVE_REASON_NM
+	    FROM STDNT S
+	    JOIN SUBJCT J
+	      ON S.SUBJCT_CODE = J.SUBJCT_CODE
+	    WHERE S.ACNT_ID = #{stdntNo}
+	</select>
+	
+	
+	<!--
+	  selectGraduationInfo
+	  목적
+	    - 졸업증명서 본문
+	  근거
+	    - GRDTN_DE 는 STDNT.GRDTN_DE 그대로 사용
+	    - degreeName 은 DB에 없으므로 NULL AS DEGREE_NM. 서비스에서 DEFAULT_DEGREE_NAME 주입 예정
+	    - birthDeKor / entranceDeKor 동일 포맷 생성
+	-->
+	<select id="selectGraduationInfo"
+	        parameterType="string"
+	        resultMap="StudentDocxMap">
+	    SELECT
+	        S.STDNT_NO,
+	        S.STDNT_NM,
+	        NULL AS STDNT_NM_ENG,
+	        J.SUBJCT_NM,
+	        S.SKNRGS_STTUS,
+	        S.GRDTN_DE,
+	        J.SUBJCT_LC                 AS SUBJCT_LC,
+	
+	        NULL                        AS DEGREE_NM,
+	
+	        TO_CHAR(
+	            TO_DATE(S.BRTHDY, 'YYYYMMDD'),
+	            'YYYY.MM.DD.'
+	        )                           AS BIRTH_DE_KOR,
+	
+	        TO_CHAR(
+	            TO_DATE(S.ENTSCH_DE, 'YYYYMMDD'),
+	            'YYYY.MM.DD.'
+	        )                           AS ENTRANCE_DE_KOR,
+	
+	        NULL                        AS TOTAL_CREDITS,
+	        NULL                        AS TOTAL_GPA,
+	
+	        NULL                        AS LEAVE_START_DE,
+	        NULL                        AS RETURN_DUE_DE,
+	        NULL                        AS LEAVE_REASON_NM
+	    FROM STDNT S
+	    JOIN SUBJCT J
+	      ON S.SUBJCT_CODE = J.SUBJCT_CODE
+	    WHERE S.STDNT_NO = #{stdntNo}
+	</select>
+	
+	
+	<!--
+	  selectLeaveInfo
+	  목적
+	    - 휴학증명서 본문
+	  근거
+	    - 휴학 기간 / 사유: STDNT_LEAVE.LEAVE_START_DE, RETURN_DUE_DE, LEAVE_REASON_NM
+	    - status = S.SKNRGS_STTUS 그대로
+	    - birthDeKor / entranceDeKor 동일 포맷
+	  주의
+	    - STDNT_LEAVE 는 활성 휴학만 ACTIVE_YN='Y' 라는 가정
+	-->
+	<select id="selectLeaveInfo"
+	        parameterType="string"
+	        resultMap="StudentDocxMap">
+	    SELECT
+	        S.STDNT_NO,
+	        S.STDNT_NM,
+	        NULL AS STDNT_NM_ENG,
+	        J.SUBJCT_NM,
+	        S.SKNRGS_STTUS,
+	        S.GRDTN_DE,
+	        J.SUBJCT_LC                 AS SUBJCT_LC,
+	
+	        NULL                        AS DEGREE_NM,
+	
+	        TO_CHAR(
+	            TO_DATE(S.BRTHDY, 'YYYYMMDD'),
+	            'YYYY.MM.DD.'
+	        )                           AS BIRTH_DE_KOR,
+	
+	        TO_CHAR(
+	            TO_DATE(S.ENTSCH_DE, 'YYYYMMDD'),
+	            'YYYY.MM.DD.'
+	        )                           AS ENTRANCE_DE_KOR,
+	
+	        NULL                        AS TOTAL_CREDITS,
+	        NULL                        AS TOTAL_GPA,
+	
+	        L.LEAVE_START_DE            AS LEAVE_START_DE,
+	        L.RETURN_DUE_DE             AS RETURN_DUE_DE,
+	        L.LEAVE_REASON_NM           AS LEAVE_REASON_NM
+	    FROM STDNT S
+	    JOIN SUBJCT J
+	      ON S.SUBJCT_CODE = J.SUBJCT_CODE
+	    JOIN STDNT_LEAVE L
+	      ON S.STDNT_NO = L.STDNT_NO
+	    WHERE S.STDNT_NO = #{stdntNo}
+	      AND L.ACTIVE_YN = 'Y'
+	</select>
+	
+	
+	<!--
+	  ScoreRowMap
+	  목적
+	    - 성적증명서 tbody 반복 행
+	  ScoreRowVO 필드명 정합성에 맞춰라
+	  (term, subjectName, subjectCode, credit, grade)
+	-->
+	<resultMap id="ScoreRowMap" type="kr.ac.vo.ScoreRowVO">
+	    <result property="term"         column="TERM_NM"/>
+	    <result property="subjectName"  column="SUBJECT_NM"/>
+	    <result property="subjectCode"  column="SUBJECT_CD"/>
+	    <result property="credit"       column="CREDIT"/>
+	    <result property="grade"        column="GRADE"/>
+	</resultMap>
+	
+	
+	<!--
+	  selectScoreRows
+	  목적
+	    - 성적증명서 교과목 리스트
+	  정렬
+	    - 연도 → 학기 → 과목코드
+	  주의
+	    - 여기서는 STDNT 테이블의 날짜/상태 등은 안 끌어옴
+	-->
+	<select id="selectScoreRows"
+	        parameterType="string"
+	        resultMap="ScoreRowMap">
+	    SELECT
+	        (SS.YEAR || ' ' || SS.SEMSTR) AS TERM_NM,
+	        AC.LCTRE_NM                   AS SUBJECT_NM,
+	        EC.LCTRE_CODE                 AS SUBJECT_CD,
+	        EC.ACQS_PNT                   AS CREDIT,
+	        SB.PNT_GRAD                   AS GRADE
+	    FROM SBJECT_SCRE SB
+	    JOIN SEMSTR_SCRE SS
+	      ON SB.SEMSTR_SCRE_INNB = SS.SEMSTR_SCRE_INNB
+	    JOIN ATNLC_REQST R
+	      ON SB.ATNLC_REQST_NO = R.ATNLC_REQST_NO
+	    JOIN ESTBL_COURSE EC
+	      ON R.ESTBLLCTRE_CODE = EC.ESTBLLCTRE_CODE
+	    JOIN ALL_COURSE AC
+	      ON EC.LCTRE_CODE = AC.LCTRE_CODE
+	    WHERE SS.STDNT_NO = #{stdntNo}
+	    ORDER BY SS.YEAR, SS.SEMSTR, EC.LCTRE_CODE
+	</select>
+	
+	
+	<!--
+	  selectScoreSummary
+	  목적
+	    - 성적증명서 하단 요약 블록
+	    - 누적 학점 totalCredits
+	    - 누적 평점 totalGpa
+	  근거
+	    - STDNT 테이블 실제 컬럼명 사용 (BRTHDY, ENTSCH_DE, GRDTN_DE)
+	    - birthDeKor / entranceDeKor 포맷 alias 유지
+	    - leave* 관련 값은 NULL alias
+	    - degreeName 은 여기서도 NULL AS DEGREE_NM. 서비스에서 DEFAULT_DEGREE_NAME 등 주입
+	-->
+	<select id="selectScoreSummary"
+	        parameterType="string"
+	        resultMap="StudentDocxMap">
+	    SELECT
+	        S.STDNT_NO,
+	        S.STDNT_NM,
+	        NULL AS STDNT_NM_ENG,
+	        J.SUBJCT_NM,
+	        S.SKNRGS_STTUS,
+	        S.GRDTN_DE,
+	        J.SUBJCT_LC                 AS SUBJCT_LC,
+	
+	        NULL                        AS DEGREE_NM,
+	
+	        TO_CHAR(
+	            TO_DATE(S.BRTHDY, 'YYYYMMDD'),
+	            'YYYY.MM.DD.'
+	        )                           AS BIRTH_DE_KOR,
+	
+	        TO_CHAR(
+	            TO_DATE(S.ENTSCH_DE, 'YYYYMMDD'),
+	            'YYYY.MM.DD.'
+	        )                           AS ENTRANCE_DE_KOR,
+	
+	        /* 누적 취득 학점 */
+	        SUM(SS.TOT_ACQS_PNT)        AS TOTAL_CREDITS,
+	
+	        /* 누적 GPA 가중 평균. 0 나누기 방지 */
+	        ROUND(
+	            SUM(SS.SEMSTR_TOTPOINT)
+	            / NULLIF(SUM(SS.TOT_REQST_PNT), 0),
+	            2
+	        )                           AS TOTAL_GPA,
+	
+	        NULL                        AS LEAVE_START_DE,
+	        NULL                        AS RETURN_DUE_DE,
+	        NULL                        AS LEAVE_REASON_NM
+	    FROM STDNT S
+	    JOIN SUBJCT J
+	      ON S.SUBJCT_CODE = J.SUBJCT_CODE
+	    JOIN SEMSTR_SCRE SS
+	      ON S.STDNT_NO = SS.STDNT_NO
+	    WHERE S.STDNT_NO = #{stdntNo}
+	    GROUP BY
+	        S.STDNT_NO,
+	        S.STDNT_NM,
+	        J.SUBJCT_NM,
+	        S.SKNRGS_STTUS,
+	        S.GRDTN_DE,
+	        J.SUBJCT_LC,
+	        TO_CHAR(TO_DATE(S.BRTHDY,   'YYYYMMDD'), 'YYYY.MM.DD.'),
+	        TO_CHAR(TO_DATE(S.ENTSCH_DE,'YYYYMMDD'), 'YYYY.MM.DD.')
+	</select>
+
+</mapper>

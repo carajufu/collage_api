@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.mapper.RefreshTokenMapper">
+	<!-- 현재 미사용 리프레시 토큰 관련 매퍼.xml
+	RefreshTokenVO findbyUserId(Long userId);
+	RefreshTokenVO findbyRefreshToken(String refreshToken);
+	int save(RefreshTokenVO refreshTokenVO);
+	 -->
+	<select id="findbyUserId" parameterType="long" 
+			resultType="RefreshTokenVO">
+		SELECT TOKEN_ID, ACNT_ID, REFRESH_TOKEN
+		FROM   REFRESH_TOKEN
+		WHERE  ACNT_ID = #{acntId}
+	</select>
+	
+	<!-- 
+	refreshToken=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.e..
+	 -->
+	<select id="findbyRefreshToken" parameterType="String" 
+			resultType="RefreshTokenVO">
+		SELECT TOKEN_ID, ACNT_ID, REFRESH_TOKEN
+		FROM   REFRESH_TOKEN
+		WHERE  REFRESH_TOKEN = #{refreshToken}
+	</select>
+	
+	<insert id="save" parameterType="RefreshTokenVO">
+		<selectKey resultType="long" order="BEFORE" 
+					keyProperty="id">
+			SELECT NVL(MAX(ID),0)+1 FROM REFRESH_TOKEN
+		</selectKey>
+	
+		INSERT INTO REFRESH_TOKEN(TOKEN_ID,ACNT_ID,REFRESH_TOKEN)
+		VALUES(#{tokenId},#{acntId},#{refreshToken})
+	</insert>
+</mapper>
