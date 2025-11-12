@@ -117,10 +117,10 @@ public class CertDocxServiceImpl implements CertDocxService {
     @Override
     public String resolveDownloadFileName(String crtfKndNo) {
         String key = (crtfKndNo == null ? "" : crtfKndNo.trim().toUpperCase());
-        if (key.startsWith("ENROLL")) return "재학증명서.pdf";
-        if (key.startsWith("GRAD"))   return "졸업증명서.pdf";
-        if (key.startsWith("LEAVE"))  return "휴학증명서.pdf";
-        if (key.startsWith("SCORE"))  return "성적증명서.pdf";
+        if (key.startsWith("D03")) return "재학증명서.pdf";
+        if (key.startsWith("D04"))   return "졸업증명서.pdf";
+        if (key.startsWith("D02"))  return "휴학증명서.pdf";
+        if (key.startsWith("D01"))  return "성적증명서.pdf";
         throw new IllegalArgumentException("Unknown crtfKndNo: " + crtfKndNo);
     }
 
@@ -150,10 +150,10 @@ public class CertDocxServiceImpl implements CertDocxService {
 
     private String resolveTemplateFile(String crtfKndNo) {
         String key = (crtfKndNo == null ? "" : crtfKndNo.trim().toUpperCase());
-        if (key.startsWith("ENROLL")) return "ENROLL_V1.html";
-        if (key.startsWith("GRAD"))   return "GRAD_V1.html";
-        if (key.startsWith("LEAVE"))  return "LEAVE_V1.html";
-        if (key.startsWith("SCORE"))  return "SCORE_V2.html";
+        if (key.startsWith("D03")) return "ENROLL_V1.html";
+        if (key.startsWith("D04"))   return "GRAD_V1.html";
+        if (key.startsWith("D02"))  return "LEAVE_V1.html";
+        if (key.startsWith("D01"))  return "SCORE_V2.html";
         throw new IllegalArgumentException("Unknown crtfKndNo: " + crtfKndNo);
     }
 

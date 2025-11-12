@@ -235,7 +235,7 @@ public class CertDocxController {
     // ==== 내부 유틸 메소드 ====
 
     private static boolean isLeaveCert(String crtfKndNo) {
-        return "LEAVE".equalsIgnoreCase(crtfKndNo);
+        return "D02".equalsIgnoreCase(crtfKndNo);
     }
 
     private static boolean notBlank(String s) {

@@ -148,7 +148,7 @@
         }
 
         try {
-            const url = '/cert/verify?docNo=' + encodeURIComponent(raw);
+            const url = '/certificates/verify?docNo=' + encodeURIComponent(raw);
             const res = await fetch(url, { method: 'GET' });
 
             if (!res.ok) {
