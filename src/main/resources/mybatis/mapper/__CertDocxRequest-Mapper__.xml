@@ -3,7 +3,7 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="kr.ac.mapper.CertDocxRequestMapper">
+<mapper namespace="kr.ac.collage_api.mapper.CertDocxRequestMapper">
 
     <!--
         블록: resultMap (CrtfIssuRequestMap)
@@ -23,7 +23,7 @@
            - CrtfIssuRequestVO 필드명은
              crtfIssuInnb, crtfKndNo, fileGroupNo, stdntNo, reqstDt, issuDt, issuSttus, crtfKnd
              로 정의돼 있어야 함
-           - 내부 association 대상 VO는 kr.ac.vo.CrtfKndVO 여야 함
+           - 내부 association 대상 VO는 kr.ac.collage_api.vo.CrtfKndVO 여야 함
            - reqstDt, issuDt는 LocalDateTime 변환이 가능해야 함
              MyBatis가 Oracle TIMESTAMP → java.time.LocalDateTime 변환 가능한 typeHandler를 이미 가지고 있지 않으면 직접 handler 필요
 
@@ -38,7 +38,7 @@
            - CRTF_ISSU_REQUEST 테이블명이 과거 설계안에서 CRTF_ISSU_REQUST로 쓰인 적 있음
              철자 혼용은 DBA와 반드시 정합해야 한다. 오라클에 실제로 존재하는 테이블명을 따라야 한다
     -->
-    <resultMap id="CrtfIssuRequestMap" type="kr.ac.vo.CrtfIssuRequestVO">
+    <resultMap id="CrtfIssuRequestMap" type="kr.ac.collage_api.vo.CrtfIssuRequestVO">
 
         <!--
             crtfIssuInnb
@@ -164,7 +164,7 @@
             5) 유지보수
                - 이 association을 없애면 프런트는 별도 추가 쿼리로 마스터를 또 조회해야 하므로 N+1 문제 발생 가능
         -->
-        <association property="crtfKnd" javaType="kr.ac.vo.CrtfKndVO">
+        <association property="crtfKnd" javaType="kr.ac.collage_api.vo.CrtfKndVO">
             <result property="crtfKndNo"    column="CRTF_KND_NO"/>
             <result property="crtfNm"       column="CRTF_NM"/>
             <result property="crtfDc"       column="CRTF_DC"/>
@@ -212,7 +212,7 @@
            - CERT_ISSU_REQ_SEQ 명칭도 DBA와 고정해야 한다
              이름 바뀌면 PK 생성 로직 전부 깨짐
     -->
-    <insert id="insertIssueRequest" parameterType="kr.ac.vo.CrtfIssuRequestVO">
+    <insert id="insertIssueRequest" parameterType="kr.ac.collage_api.vo.CrtfIssuRequestVO">
 
         <selectKey keyProperty="crtfIssuInnb"
                    resultType="string"

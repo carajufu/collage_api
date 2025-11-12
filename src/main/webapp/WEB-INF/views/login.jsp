@@ -42,7 +42,7 @@
 <%@ include file="footer.jsp"%>
 
 <script>
-const WELCOME_URL = "/user/welcome";
+const WELCOME_URL = "/debug/debuging";
 
 // 서버 세션 존재 여부를 JSP에서 직접 주입
 const serverAuthenticated = <%= (request.getUserPrincipal() != null) ? "true" : "false" %>;

@@ -32,12 +32,12 @@
 - 성적 조인 경로 검증: SEMSTR_SCRE → SBJECT_SCRE → ATNLC_REQST → ESTBL_COURSE → ALL_COURSE
 -->
 
-<mapper namespace="kr.ac.mapper.CertDocxMapper">
+<mapper namespace="kr.ac.collage_api.mapper.CertDocxMapper">
 
   <!-- ===== ResultMap 정의 ===== -->
 
   <!-- 증명서 종류 -->
-  <resultMap id="CrtfKndMap" type="kr.ac.vo.CrtfKndVO">
+  <resultMap id="CrtfKndMap" type="kr.ac.collage_api.vo.CrtfKndVO">
     <id     property="crtfKndNo"    column="CRTF_KND_NO"/>
     <result property="crtfNm"       column="CRTF_NM"/>
     <result property="crtfDc"       column="CRTF_DC"/>
@@ -46,7 +46,7 @@
   </resultMap>
 
   <!-- 학생 정보 출력용 -->
-  <resultMap id="StudentDocxMap" type="kr.ac.vo.StudentDocxVO">
+  <resultMap id="StudentDocxMap" type="kr.ac.collage_api.vo.StudentDocxVO">
     <result property="studentNo"        column="STUDENT_NO"/>
     <result property="studentNameKor"   column="STUDENT_NAME_KOR"/>
     <result property="studentNameEng"   column="STUDENT_NAME_ENG"/>
@@ -63,7 +63,7 @@
   </resultMap>
 
   <!-- 발급 이력 -->
-  <resultMap id="CrtfIssuRequestMap" type="kr.ac.vo.CrtfIssuRequestVO">
+  <resultMap id="CrtfIssuRequestMap" type="kr.ac.collage_api.vo.CrtfIssuRequestVO">
     <id     property="crtfIssuInnb" column="CRTF_ISSU_INNB"/>
     <result property="crtfKndNo"    column="CRTF_KND_NO"/>
     <result property="fileGroupNo"  column="FILE_GROUP_NO"/>
@@ -71,11 +71,11 @@
     <result property="reqstDt"      column="REQST_DT"/>
     <result property="issuDt"       column="ISSU_DT"/>
     <result property="issuSttus"    column="ISSU_STTUS"/>
-    <association property="crtfKnd" javaType="kr.ac.vo.CrtfKndVO" resultMap="CrtfKndMap"/>
+    <association property="crtfKnd" javaType="kr.ac.collage_api.vo.CrtfKndVO" resultMap="CrtfKndMap"/>
   </resultMap>
 
 	<!-- 성적표 행 -->
-	<resultMap id="transcriptRowMap" type="kr.ac.vo.TranscriptRowVO">
+	<resultMap id="transcriptRowMap" type="kr.ac.collage_api.vo.TranscriptRowVO">
 	  <result property="yearNo"      column="YEAR_NO"/>
 	  <result property="semNo"       column="SEM_NO"/>
 	  <result property="complSe"     column="COMPL_SE"/>
@@ -87,7 +87,7 @@
 
 
   <!-- 성적 합계 -->
-  <resultMap id="TranscriptSummaryMap" type="kr.ac.vo.TranscriptSummaryVO">
+  <resultMap id="TranscriptSummaryMap" type="kr.ac.collage_api.vo.TranscriptSummaryVO">
     <result property="totalCredits" column="TOTAL_CREDITS"/>
     <result property="totalGpa"     column="TOTAL_GPA"/>
   </resultMap>
@@ -131,7 +131,7 @@
   </select>
 
   <!-- 발급요청 INSERT -->
-  <insert id="insertCrtfIssuRequest" parameterType="kr.ac.vo.CrtfIssuRequestVO">
+  <insert id="insertCrtfIssuRequest" parameterType="kr.ac.collage_api.vo.CrtfIssuRequestVO">
     INSERT INTO CRTF_ISSU_REQUST (
       CRTF_ISSU_INNB, CRTF_KND_NO, FILE_GROUP_NO, STDNT_NO, REQST_DT, ISSU_STTUS
     ) VALUES (
@@ -140,7 +140,7 @@
   </insert>
 
   <!-- 발급완료 UPDATE -->
-  <update id="updateCrtfIssuStatus" parameterType="kr.ac.vo.CrtfIssuRequestVO">
+  <update id="updateCrtfIssuStatus" parameterType="kr.ac.collage_api.vo.CrtfIssuRequestVO">
     UPDATE CRTF_ISSU_REQUST
     SET ISSU_DT = #{issuDt}, ISSU_STTUS = #{issuSttus}
     WHERE CRTF_ISSU_INNB = #{crtfIssuInnb}
@@ -159,7 +159,7 @@
   </select>
 
   <!-- 학번별 발급 이력 -->
-  <select id="stdntNoSelectALL" parameterType="string" resultType="kr.ac.vo.CrtfIssuRequestVO">
+  <select id="stdntNoSelectALL" parameterType="string" resultType="kr.ac.collage_api.vo.CrtfIssuRequestVO">
     SELECT CRTF_ISSU_INNB, CRTF_KND_NO, FILE_GROUP_NO, STDNT_NO, REQST_DT, ISSU_DT, ISSU_STTUS
     FROM CRTF_ISSU_REQUST
     WHERE STDNT_NO = #{stdntNo}

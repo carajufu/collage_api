@@ -3,7 +3,7 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="kr.ac.mapper.StudentDocxMapper">
+<mapper namespace="kr.ac.collage_api.mapper.StudentDocxMapper">
 
     <!--
       StudentDocxMap
@@ -37,7 +37,7 @@
 	    - BRTHDY, ENTSCH_DE, GRDTN_DE 는 STDNT 테이블 실제 컬럼명
 	    - birthDeKor / entranceDeKor 는 여기서 가공된 alias 로 내려야 VO에 매핑 가능
 	-->
-	<resultMap id="StudentDocxMap" type="kr.ac.vo.StudentDocxVO">
+	<resultMap id="StudentDocxMap" type="kr.ac.collage_api.vo.StudentDocxVO">
 	    <result property="studentNo"        column="STDNT_NO"/>
 	    <result property="studentNameKor"   column="STDNT_NM"/>
 	    <result property="studentNameEng"   column="STDNT_NM_ENG"/>
@@ -220,7 +220,7 @@
 	  ScoreRowVO 필드명 정합성에 맞춰라
 	  (term, subjectName, subjectCode, credit, grade)
 	-->
-	<resultMap id="ScoreRowMap" type="kr.ac.vo.ScoreRowVO">
+	<resultMap id="ScoreRowMap" type="kr.ac.collage_api.vo.ScoreRowVO">
 	    <result property="term"         column="TERM_NM"/>
 	    <result property="subjectName"  column="SUBJECT_NM"/>
 	    <result property="subjectCode"  column="SUBJECT_CD"/>

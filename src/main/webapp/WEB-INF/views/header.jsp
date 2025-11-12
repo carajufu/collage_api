@@ -51,7 +51,7 @@
         }
 
         #sidebar {
-            width: 210px;
+            width: 220px;
             flex: 0 0 220px;
             padding: 24px 16px;
             background: #0d6efd;

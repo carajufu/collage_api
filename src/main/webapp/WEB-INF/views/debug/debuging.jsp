@@ -29,8 +29,7 @@
    - Spring Security 6: 세션 인증, CSRF 기본 활성
    - JSP/JSTL 3.0: jakarta.tags.* 사용
 ===================================================================== --%>
-
-<%@ page language="java" contentType="text/html; charset=UTF-8"%>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ include file="../header.jsp" %>
 
 <section class="container mt-5">
@@ -105,6 +104,6 @@
 /* 디버그 콘솔 로그: 세션 여부만 기록. 토큰 접근 금지 */
 (function(){
   var acntPresent = ${not empty acntVO ? 'true' : 'false'};
-  console.log("[welcome.jsp] 세션 인증:", acntPresent ? "OK" : "없음");
+  console.log("[debuging.jsp] 세션 인증:", acntPresent ? "OK" : "없음");
 })();
 </script>

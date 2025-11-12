@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="kr.or.ddit.mapper.RefreshTokenMapper">
+<mapper namespace="kr.ac.collage_api.mapper.RefreshTokenMapper">
 	<!-- 현재 미사용 리프레시 토큰 관련 매퍼.xml
 	RefreshTokenVO findbyUserId(Long userId);
 	RefreshTokenVO findbyRefreshToken(String refreshToken);
