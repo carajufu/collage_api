@@ -18,7 +18,8 @@
 	        ,S.SKNRGS_STTUS
 	        ,S.GRADE
 	        ,S.SUBJCT_CODE
-	        ,B.SUBJCT_NM     
+	        ,B.SUBJCT_NM  
+	        , S.ENTSCH_DE   
 	    FROM
 	        STDNT S 
 	        LEFT JOIN SUBJCT B ON S.SUBJCT_CODE = B.SUBJCT_CODE
@@ -68,7 +69,8 @@
         	, TMPABSSKL_TY
         	, REQST_RESN
         	, CHANGE_REQST_DT
-        	, REQST_STTUS )
+        	, REQST_STTUS
+        	, FILE_GROUP_NO )
         	
     	VALUES (
         	SKNRGS_CHANGE_REQST_SEQ.NEXTVAL
@@ -78,7 +80,8 @@
         	, #{tmpabssklTy}
         	, #{reqstResn}
         	, SYSDATE
-        	, '신청' )
+        	, '신청' 
+        	, #{fileGroupNo} )
 	</insert>
 	
 	<!-- ///////////////////////////관리자//////////////////////////////// -->	
@@ -88,6 +91,7 @@
 		
 		<association property="stdntVO" javaType="kr.ac.collage_api.vo.StdntVO">
 			<result property="stdntNm" column="STDNT_NM" />
+			<result property="fileNm" column="FILE_NM"/>
 		</association>
 	</resultMap>
 	
@@ -104,6 +108,7 @@
 	        ,A.CONFM_COMPT_DT
 	        ,A.RETURN_RESN
 	        ,A.TMPABSSKL_TY
+	        ,A.FILE_GROUP_NO
 	        ,B.STDNT_NM  
         FROM
         	SKNRGS_CHANGE_REQST A
@@ -125,10 +130,13 @@
 	        ,A.CONFM_COMPT_DT
 	        ,A.RETURN_RESN
 	        ,A.TMPABSSKL_TY
-	        ,B.STDNT_NM  
+	        ,A.FILE_GROUP_NO
+	        ,B.STDNT_NM 
+	        ,C.FILE_NM 
 	    FROM
 	        SKNRGS_CHANGE_REQST A
 	        LEFT JOIN STDNT B ON A.STDNT_NO = B.STDNT_NO
+	        LEFT JOIN FILE_DETAIL C ON A.FILE_GROUP_NO = C.FILE_GROUP_NO
 	    WHERE
 	        A.SKNRGS_CHANGE_INNB = #{reqId}
 	</select>
@@ -137,8 +145,10 @@
 	<update id="updateStatusOnly">
 		UPDATE SKNRGS_CHANGE_REQST
 	    SET 
-	        REQST_STTUS = #{reqstSttus},
-	        RETURN_RESN = #{returnResn}
+	        REQST_STTUS = #{reqstSttus}
+	        ,RETURN_RESN = #{returnResn}
+	        ,CONFM_COMPT_DT = #{confmComptDt}
+	        ,LAST_UPDT_TM = #{lastUpdtTm}
 	    WHERE 
 	    	SKNRGS_CHANGE_INNB = #{reqId}
 	</update>

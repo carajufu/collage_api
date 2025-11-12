@@ -6,8 +6,6 @@
     </style>
     <script type="text/javascript" src="/js/wtModal.js"></script>
     <script type="text/javascript">
-
-
         document.addEventListener("DOMContentLoaded", () => {
             document.querySelector("body").innerHTML += modal;
 
@@ -354,7 +352,6 @@
         }
     </script>
 
-    <div id="main-container" class="container-fluid overflow-scroll">
         <div class="flex-grow-1 mx-5">
             <!-- 반복문을 통해 아코디언 리스트 생성 -->
             <div class="accordion accordion-flush" id="accordionFlush">
@@ -379,7 +376,5 @@
                 </c:forEach>
             </div>
         </div>
-    </div>
-</main>
 
 <%@ include file="../../footer.jsp" %>

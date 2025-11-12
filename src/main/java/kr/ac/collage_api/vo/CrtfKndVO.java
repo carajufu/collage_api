@@ -10,7 +10,6 @@ public class CrtfKndVO {
 	private String crtfDc;         //증명서설명	CRTF_DC
 	private int issuFee;           //발급수수료	ISSU_FEE
 	private String crtfIssuForm;   //증명서발급양식	CRTF_ISSU_FORM
-	
 }
 
 

@@ -468,6 +468,7 @@
                 <i class="ri-record-circle-line"></i>
             </button>
         </div>
+        <div id="main-container" class="container-fluid">
 
         <sec:authorize access="hasRole('ROLE_STUDENT')">
         <div id="scrollbar">

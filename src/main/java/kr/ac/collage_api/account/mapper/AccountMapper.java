@@ -14,6 +14,13 @@ import kr.ac.collage_api.vo.UnivVO;
 
 @Mapper
 public interface AccountMapper {
+	
+	//파일 그룹 생성
+	public int insertFileGroup(FileGroupVO fileGroupVO);
+
+	//파일 디테일 생성
+	public int insertFileDetail(FileDetailVO fileDetailVO);
+	
 	//계정아이디로 교수 아이디 가져오기
 	public String getProfsrNo(String acntId);
 
@@ -46,4 +53,6 @@ public interface AccountMapper {
 
 	//학생(stdnt 테이블) 업데이트
 	public int updateStdAccount(StdntVO stdntVO);
+	//파일 상세정보 조회
+	public FileDetailVO getFileDetailByGroupNo(Long fileGroupNo);
 }
