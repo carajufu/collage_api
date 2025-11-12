@@ -26,7 +26,7 @@ public class StdntVO {
 	private Date lastUpdatedTime;//최근수정일시	LAST_UPDATED_TIME
 	
 	private SubjctVO subjctVO;	 //학과
+	
+	private String univCode; //대학코드
 }
-
-
 

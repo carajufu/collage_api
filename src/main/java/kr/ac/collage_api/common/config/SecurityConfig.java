@@ -55,7 +55,7 @@ public class SecurityConfig {
                 .httpBasic(hbasic -> hbasic.disable())
                 .authorizeHttpRequests(authorize -> authorize
                         .dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.ASYNC).permitAll()
-                        .requestMatchers("/", "/login", "/accessError", "/.well-known/**", "/admin/**").permitAll()
+                        .requestMatchers("/", "/login", "/accessError", "/.well-known/**", "/admin/**","/20*/**", "/assets/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .requestCache(cache -> cache.requestCache(requestCache))

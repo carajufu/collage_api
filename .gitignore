@@ -55,6 +55,9 @@ files/
 storage/
 tmp/
 temp/
+**/static/assets/**
+!custom.css
+!custom.min.css
 
 ### --- Security & Environment ---
 # 환경변수 파일 (필요 시 샘플은 커밋: .env.example)
