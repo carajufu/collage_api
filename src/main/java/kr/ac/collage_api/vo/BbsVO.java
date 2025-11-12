@@ -15,7 +15,7 @@ public class BbsVO {
 	private int bbscttRdcnt;         //게시글_조회수
 	private String bbscttTy;         //게시글_유형
 	private int parntsBbscttNo;      //부모_게시글_번호
-	private int fileGroupNo;         //파일_그룹_번호(FK)
+	private long fileGroupNo;         //파일_그룹_번호(FK)
 	private String acntId;           //계정_ID(FK)
 	
 	//페이징하면 rnum 가져옴

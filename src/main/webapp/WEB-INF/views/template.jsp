@@ -2,10 +2,10 @@
 
 <%@ include file="../header.jsp" %>
 
-    <div id="main-container" class="container-fluid">
-        <div class="flex-grow-1 overflow-hidden mx-5">
-
-        </div>
+<div class="row p-5">
+    <div class="col-12">
+        <h3>안녕 안녕 안녕 안녕</h3>
     </div>
+</div>
 
 <%@ include file="../footer.jsp" %>
