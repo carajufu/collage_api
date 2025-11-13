@@ -105,6 +105,7 @@ build/
 /.metadata/
 
 ### velzon ###
-/src/main/resources/static/assets
 /src/main/resources/static/assets/**
+!/src/main/resources/static/assets/
+!/src/main/resources/static/assets/css/
 !/src/main/resources/static/assets/css/custom*

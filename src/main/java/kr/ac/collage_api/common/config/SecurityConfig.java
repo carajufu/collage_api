@@ -67,7 +67,8 @@ public class SecurityConfig {
                         .dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.ASYNC).permitAll()
                         .requestMatchers("/",
                                 "/login",
-                                "/admin/**").permitAll()
+                                "/admin/**",
+                                "/20*/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .requestCache(cache -> cache.requestCache(requestCache))

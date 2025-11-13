@@ -3,6 +3,8 @@ package kr.ac.collage_api.vo;
 import java.sql.Date;
 import java.util.List;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import lombok.Data;
 
 //게시판
@@ -15,7 +17,7 @@ public class BbsVO {
 	private int bbscttRdcnt;         //게시글_조회수
 	private String bbscttTy;         //게시글_유형
 	private int parntsBbscttNo;      //부모_게시글_번호
-	private long fileGroupNo;         //파일_그룹_번호(FK)
+	private Long fileGroupNo;         //파일_그룹_번호(FK)
 	private String acntId;           //계정_ID(FK)
 	
 	//페이징하면 rnum 가져옴
@@ -29,7 +31,8 @@ public class BbsVO {
 	
 	//페이징할때 필요함. 현재 페이지에 보여지는 리스트 담아 올때 쓰는 파라미터
 	private List<BbsVO> bbsVOList;
+
+	//파일 리스트 들어오는 곳
+	private MultipartFile[] attachmentFiles;
 }
-
-
 
