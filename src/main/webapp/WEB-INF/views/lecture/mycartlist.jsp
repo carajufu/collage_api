@@ -17,12 +17,8 @@
 							  </tbody>
 							</table>
 						</div>
-						<button type="submit" class="btn btn-danger" id="editCartBtn">삭제</button>
 					</form>
 				</div>
-      	  </div>
-	    </div>
-    </div>
 
 <script>
 const mycartTbody = document.getElementById("mycartTbody");
@@ -49,7 +45,7 @@ const mycartTbody = document.getElementById("mycartTbody");
 		});
 	}	
 	
-
+	
 	// 장바구니 목록 로드 함수
 	function loadCartList(list) {
 		mycartTbody.innerHTML = "";
@@ -84,17 +80,17 @@ const mycartTbody = document.getElementById("mycartTbody");
 		mycartTbody.innerHTML = html;
 	}
 	
-
+	
 	// 장바구니 담기 취소
 	$("#mycart-section").on("click","#editBtn",(event)=>{
 		event.preventDefault();
 		console.log("취소 버튼 click");
-
+		
 		const stdntNo = document.getElementsByName("stdntNo")[0].value;
 		const estbllctreCode = $(event.currentTarget).data("code");
-
+		
 		console.log("선택 강의 코드 : " + estbllctreCode + " / 학생ID : " + stdntNo);
-
+		
 		const data = {
 				stdntNo : stdntNo,
 				estbllctreCode : estbllctreCode
@@ -128,19 +124,19 @@ const mycartTbody = document.getElementById("mycartTbody");
 	$("#mycart-section").on("click","#submitBtn",(event)=>{
 		event.preventDefault();
 		console.log("신청 버튼 click");
-
+		
 		const stdntNo = document.getElementsByName("stdntNo")[0].value;
 		const estbllctreCode = $(event.currentTarget).data("code");
-
+		
 		console.log("선택 강의 코드 : " + estbllctreCode + " / 학생ID : " + stdntNo);
-
+		
 		const data = {
 				stdntNo : stdntNo,
 				estbllctreCode : estbllctreCode
 		};
-
+		
 		if(confirm("선택한 강의를 신청하시겠습니까?")) {
-
+			
 			fetch("/atnlc/cart/mycart/submit", {
 				method: "post",
 				headers: {"Content-Type":"application/json;charset=UTF-8"},
@@ -153,23 +149,23 @@ const mycartTbody = document.getElementById("mycartTbody");
 				return response.json();
 			})
 			.then(data => {
-
+				
 				const result = data.result;
-
+				
 				alert(`강의가 신청되었습니다.`);
-
+				
 				loadMyCart();
 				loadCourseList();
 			})
 			.catch(error => {
-
+				
 				console.error("fetch 요청 오류 발생 : ", error);
 			});
-
+			
 		}
-
+		
 	})
-
+	
 	function getCartCourseCodes() {
 		const checkboxs = document.querySelectorAll("input[name='cartCheck']:checked");
 		const cartCourseCodes = Array.from(checkboxs).map(checkbox => checkbox.value);

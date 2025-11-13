@@ -12,7 +12,7 @@
 
 	<!-- 계정 아이디로 학생 아이디 가져오기
 	public String selectStdntNo(String acntId); -->
-	
+
 	<select id="selectStdntNo" parameterType="String" resultType="String" >
 		SELECT S.STDNT_NO
 		  FROM STDNT S

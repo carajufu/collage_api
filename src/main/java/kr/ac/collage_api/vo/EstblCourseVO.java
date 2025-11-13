@@ -1,7 +1,5 @@
 package kr.ac.collage_api.vo;
 
-import lombok.Data;
-
 import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;

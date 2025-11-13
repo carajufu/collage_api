@@ -80,8 +80,7 @@ public class AtnlcController {
 		
 		List<AtnlcReqstVO> atnlcReqstVOList = atnlcService.myCartList(stdntNo);
 		log.info("myCartList()->atnlcReqstVOList : {}", atnlcReqstVOList);
-		
-		log.info("myCartList()->atnlcReqstVOList : {}", atnlcReqstVOList);
+
 		map.put("atnlcReqstVOList", atnlcReqstVOList);
 		
 		return map;
