@@ -5,28 +5,30 @@
 			<h5 class="card-title mb-3">나의 장바구니</h5>
 	       		<div id="mycart-section">
 	       			<form>
-						<table class="table">
-						  <thead class="table-light">
-						  	<tr>
-						  		<th>교과목ID</th><th>이수구분</th><th>강의명</th><th>교수명</th><th>취득학점</th><th>강의실</th><th>강의시간</th><th>수강인원</th><th></th>
-						  	</tr>
-						  </thead>   
-						  <tbody id="mycartTbody" class="align-middle">
-						  	<tr><td colspan="9">장바구니 목록을 불러오는 중...</td></tr>
-						  </tbody>
-						</table>
-						<button type="submit" class="btn btn-danger" id="delBtn">삭제</button>
+	       				<div id="cartTable">
+							<table class="table">
+							  <thead class="table-light">
+							  	<tr>
+							  		<th>교과목ID</th><th>이수구분</th><th>강의명</th><th>교수명</th><th>취득학점</th><th>강의실</th><th>강의시간</th><th>수강인원</th><th>신청/취소</th>
+							  	</tr>
+							  </thead>   
+							  <tbody id="mycartTbody" class="align-middle">
+							  	<tr><td colspan="9">장바구니 목록을 불러오는 중...</td></tr>
+							  </tbody>
+							</table>
+						</div>
 					</form>
 				</div>
       	  </div>
 	    </div>
     </div>
+</main>
 
 <script>
 const mycartTbody = document.getElementById("mycartTbody");
 
 	function loadMyCart() {
-		fetch("/atnlc/mycart?stdntNo=${stdntNo}", {
+		fetch("/atnlc/cart/mycart?stdntNo=${stdntNo}", {
 			method: "get",
 			headers: {"Content-Type":"application/json;charset=UTF-8"},
 		})
@@ -46,6 +48,7 @@ const mycartTbody = document.getElementById("mycartTbody");
 			mycartTbody.innerHTML = "<tr><td colspan='9'>장바구니 데이터를 불러오지 못했습니다...</td></tr>"
 		});
 	}	
+	
 	
 	// 장바구니 목록 로드 함수
 	function loadCartList(list) {
@@ -72,10 +75,8 @@ const mycartTbody = document.getElementById("mycartTbody");
 			  			<td>\${l.estblCourse.lctrum}</td>
 			  			<td>\${timeInfo}</td>
 			  			<td>\${l.estblCourse.atnlcNmpr}</td>
-			  			<td>
-				  			<button class="btn btn-outline-danger d-inline-flex align-items-center" type="button">
-							삭제</button>
-						</td>
+						<td><button type="button" class="btn btn-primary single-submit-btn" id="submitBtn" data-code="\${l.estbllctreCode}">신청</button>
+						<button type="button" class="btn btn-danger  single-submit-btn" id="editBtn" data-code="\${l.estbllctreCode}">취소</button></td>
 			  		</tr>
 			`;
 		});
@@ -83,16 +84,111 @@ const mycartTbody = document.getElementById("mycartTbody");
 		mycartTbody.innerHTML = html;
 	}
 	
+	
+	// 장바구니 담기 취소
+	$("#mycart-section").on("click","#editBtn",(event)=>{
+		event.preventDefault();
+		console.log("취소 버튼 click");
+		
+		const stdntNo = document.getElementsByName("stdntNo")[0].value;
+		const estbllctreCode = $(event.currentTarget).data("code");
+		
+		console.log("선택 강의 코드 : " + estbllctreCode + " / 학생ID : " + stdntNo);
+		
+		const data = {
+				stdntNo : stdntNo,
+				estbllctreCode : estbllctreCode
+		};
+		
+		if(confirm("선택한 강의를 장바구니에서 삭제하시겠습니까?")) {
+
+			fetch("/atnlc/cart/mycart/edit", {
+				method: "post",
+				headers: {"Content-Type":"application/json;charset=UTF-8"},
+				body: JSON.stringify(data)
+			})
+			.then(response => {
+				if(!response.ok) {
+					throw new Error("서버 오류 발생");
+				}
+				return response.json();
+			})
+			.then(data => {
+				alert("장바구니에서 삭제되었습니다.");
+				loadMyCart();
+			})
+			.catch(error => {
+				console.error("fetch 요청 오류 발생 : ", error);
+			});
+		}
+	});
+	
+	
+	// 장바구니 강의 수강신청
+	$("#mycart-section").on("click","#submitBtn",(event)=>{
+		event.preventDefault();
+		console.log("신청 버튼 click");
+		
+		const stdntNo = document.getElementsByName("stdntNo")[0].value;
+		const estbllctreCode = $(event.currentTarget).data("code");
+		
+		console.log("선택 강의 코드 : " + estbllctreCode + " / 학생ID : " + stdntNo);
+		
+		const data = {
+				stdntNo : stdntNo,
+				estbllctreCode : estbllctreCode
+		};
+		
+		if(confirm("선택한 강의를 신청하시겠습니까?")) {
+			
+			fetch("/atnlc/cart/mycart/submit", {
+				method: "post",
+				headers: {"Content-Type":"application/json;charset=UTF-8"},
+				body: JSON.stringify(data)
+			})
+			.then(response => {
+				if(!response.ok) {
+					throw new Error("서버 오류 발생");
+				}
+				return response.json();
+			})
+			.then(data => {
+				
+				const result = data.result;
+				
+				alert(`강의가 신청되었습니다.`);
+				
+				loadMyCart();
+				loadCourseList();
+			})
+			.catch(error => {
+				
+				console.error("fetch 요청 오류 발생 : ", error);
+			});
+			
+		}
+		
+	})
+	
+	function getCartCourseCodes() {
+		const checkboxs = document.querySelectorAll("input[name='cartCheck']:checked");
+		const cartCourseCodes = Array.from(checkboxs).map(checkbox => checkbox.value);
+		
+		return cartCourseCodes;
+	}
+	
+	
 	loadMyCart();
 
 </script>
 <style>
-#courseTable {
+#courseTable, #cartTable {
 	max-height: 270px;
 	overflow-y: auto;
 }
 thead {
 position: sticky;
+top: 0;
 }
 </style>
 

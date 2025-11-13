@@ -12,6 +12,7 @@ public class ProfsrVO {
 	private String clsf;        //직급
 	private String labrumLc;    //연구실_위치
 	private String nlty;        //국적
+	private String emailAdres;	//이메일_주소
 	
 	//교직원VO에 있는거 가져옴 교수명임
 	private String sklstfNm;     //교직원명	SKLSTF_NM

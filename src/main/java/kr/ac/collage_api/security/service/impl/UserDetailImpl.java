@@ -20,6 +20,19 @@ public class UserDetailImpl implements UserDetailsService {
         AcntVO acntVO = securityMapper.findAcnt(username);
         log.info("chkng acntVO >> {}", acntVO);
 
+        String id = acntVO.getAcntId();
+        String userType = acntVO.getAcntTy();
+
+        if(userType.equals("1")) {
+            acntVO.setName(securityMapper.findStudentName(id));
+            acntVO.setAffiliation(securityMapper.findStudentSubjct(id));
+        }
+        if(userType.equals("2")) {
+            acntVO.setName(securityMapper.findStaffName(id));
+            acntVO.setAffiliation(securityMapper.findProfSubjct(id));
+        }
+        if(userType.equals("3")) { acntVO.setName(securityMapper.findStaffName(id)); }
+
         return acntVO == null ? null : new CustomUser(acntVO);
     }
 }

@@ -14,6 +14,8 @@ import java.util.stream.Collectors;
 @Setter
 public class CustomUser extends User {
     private AcntVO acntVO;
+    private String name;
+    private String affiliation;
 
     public CustomUser(String username, String password, Collection<? extends GrantedAuthority> authorities) {
         super(username, password, authorities);
@@ -27,5 +29,7 @@ public class CustomUser extends User {
         );
 
         this.acntVO = acntVO;
+        this.name = acntVO.getName();
+        this.affiliation = acntVO.getAffiliation();
     }
 }

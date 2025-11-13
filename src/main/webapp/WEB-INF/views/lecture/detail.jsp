@@ -170,6 +170,7 @@
 		</div>
 	</div>
 </div>
+</main>
 
 
 <script type="text/javascript">
