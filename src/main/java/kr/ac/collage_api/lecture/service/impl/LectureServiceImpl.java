@@ -112,8 +112,8 @@ public class LectureServiceImpl implements LectureService {
 
 	// 개설 강의 목록 조회
 	@Override
-	public List<EstblCourseVO> mngList(EstblCourseVO estblCourseVO) {
-		return this.lectureMapper.mngList(estblCourseVO);
+	public List<EstblCourseVO> allList(EstblCourseVO estblCourseVO) {
+		return this.lectureMapper.allList(estblCourseVO);
 	}
 
 	

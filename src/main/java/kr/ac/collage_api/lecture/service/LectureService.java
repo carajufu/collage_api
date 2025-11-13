@@ -39,7 +39,7 @@ public interface LectureService {
 	// 강의 생성
 	public int createCourse(AllCourseVO allCourseVO);
 
-	// 개설 강의 목록 조회
-	public List<EstblCourseVO> mngList(EstblCourseVO estblCourseVO);
+	// 전체 강의 목록 조회
+	public List<EstblCourseVO> allList(EstblCourseVO estblCourseVO);
 
 }
