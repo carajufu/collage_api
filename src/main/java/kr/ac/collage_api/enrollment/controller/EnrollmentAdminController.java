@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
+import kr.ac.collage_api.common.attach.service.BeanController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -20,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import kr.ac.collage_api.account.mapper.AccountMapper;
-import kr.ac.collage_api.common.attach.service.BeanController;
 import kr.ac.collage_api.enrollment.service.EnrollmentService;
 import kr.ac.collage_api.vo.FileDetailVO;
 import kr.ac.collage_api.vo.SknrgsChangeReqstVO;

@@ -11,6 +11,10 @@ File: Custom Css File
     /* 헤더 */
     --vz-header-item-sub-color: var(--vz-primary);
 
+    .topbar-user {
+        background-color: white;
+    }
+
     /* 사이드바 */
     --vz-vertical-menu-bg: #222E83;
     --vz-vertical-menu-item-color: #ffffff;

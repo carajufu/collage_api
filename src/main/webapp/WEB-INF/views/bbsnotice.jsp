@@ -57,7 +57,6 @@
 <!-- body 끝 -->
         </div>
     </div>
-</main>
 
 
 <%@ include file="footer.jsp" %>

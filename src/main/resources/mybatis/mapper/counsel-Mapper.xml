@@ -5,8 +5,8 @@
 	<!-- //교수아이디가 포함된 상담_가능_여부 테이블 List 가져오기
 	public List<CnsltAtVO> getCnsltAtVOList(String profsrNo); -->
 	<select id="getCnsltAtVOList" parameterType="String" resultType="cnsltAtVO">
-		SELECT CNSLT_INNB, CNSLT_BEGIN_DE, CNSLT_POSBL_TIME, STTUS, CNSLT_MTHD
-			 , CNSLT_RESULT, REGIST_DT, PROFSR_NO
+		SELECT CNSLT_INNB, CNSLT_BEGIN_DE, STTUS, CNSLT_MTHD
+			 , CNSLT_RESULT, REGIST_DT, PROFSR_NO, CNSLT_BEGIN_TIME, CNSLT_END_TIME
 		  FROM CNSLT_AT
 		 WHERE PROFSR_NO = #{profsrNo}
 	</select>
@@ -19,10 +19,10 @@
 		</selectKey>
 	
 		INSERT INTO CNSLT_AT 
-			(CNSLT_INNB, CNSLT_BEGIN_DE, CNSLT_POSBL_TIME, STTUS, CNSLT_MTHD
-		   , REGIST_DT, PROFSR_NO)
-		VALUES (#{cnsltInnb},#{cnsltBeginDe},#{cnsltPosblTime},1,#{cnsltMthd}
-		,SYSDATE,#{profsrNo})
+			(CNSLT_INNB, CNSLT_BEGIN_DE, STTUS, CNSLT_MTHD
+		   , REGIST_DT, PROFSR_NO, CNSLT_BEGIN_TIME, CNSLT_END_TIME)
+		VALUES (#{cnsltInnb},#{cnsltBeginDe},1,#{cnsltMthd}
+		,SYSDATE,#{profsrNo},#{cnsltBeginTime},#{cnsltEndTime})
 	</insert>
 	
 	<!-- //학생NO로 상담VOList 가져오기

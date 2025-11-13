@@ -519,8 +519,6 @@
                 </div>
             </div>
         </div>
-    </div>
-</main>
 
     <div id="preview-template" style="display:none;">
         <div class="dz-preview dz-file-preview border rounded p-2">

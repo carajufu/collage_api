@@ -115,8 +115,8 @@ public class LectureServiceImpl implements LectureService {
 	public List<EstblCourseVO> allList(EstblCourseVO estblCourseVO) {
 		return this.lectureMapper.allList(estblCourseVO);
 	}
+
 	
-	
-	
+
 
 }
