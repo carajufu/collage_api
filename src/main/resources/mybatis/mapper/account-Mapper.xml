@@ -158,24 +158,23 @@
    </insert>
 	
 	<!-- 파일 다운로드 -->
-	<select id="getFileDetailByGroupNo" parameterType="Long"
-		resultType="FileDetailVO">
+	<select id="getFileDetailByGroupNo" parameterType="Long" resultType="FileDetailVO">
 		SELECT
-		FILE_NO
-		,FILE_GROUP_NO
-		,FILE_NM
-		,FILE_STRE_NM
-		,FILE_STREPLACE
-		,FILE_MG
-		,FILE_EXTSN
-		,FILE_TY
-		,FILE_STRE_DE
-		,FILE_DWLD_CO
-		FROM
-		FILE_DETAIL
-		WHERE
-		FILE_GROUP_NO = #{fileGroupNo}
-		AND ROWNUM = 1
+	        FILE_NO
+	        ,FILE_GROUP_NO
+	        ,FILE_NM
+	        ,FILE_STRE_NM
+	        ,FILE_STREPLACE
+	        ,FILE_MG
+	        ,FILE_EXTSN
+	        ,FILE_TY
+	        ,FILE_STRE_DE
+	        ,FILE_DWLD_CO
+	    FROM
+	        FILE_DETAIL
+	    WHERE
+	        FILE_GROUP_NO = #{fileGroupNo}
+	        AND ROWNUM = 1
 	</select>
 </mapper>
 
