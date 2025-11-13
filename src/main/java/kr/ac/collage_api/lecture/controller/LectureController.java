@@ -35,7 +35,7 @@ public class LectureController {
 	LectureService lectureService;
 	
 	@Autowired
-    BeanController beanController;
+	BeanController beanController;
 	
 	// 개설 강의 조회
 	@GetMapping("/list")
@@ -51,7 +51,7 @@ public class LectureController {
 		
 		model.addAttribute("estblCourseVOList", estblCourseVOList);
 		
-		return "lecture/list";
+		return "lecture/stdntLctreSubmit";
 	}
 	
 	// 강의 세부 정보

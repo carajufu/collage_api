@@ -3,6 +3,7 @@ package kr.ac.collage_api.lecture.service;
 import java.util.List;
 import java.util.Map;
 
+import kr.ac.collage_api.vo.AllCourseVO;
 import kr.ac.collage_api.vo.EstblCourseVO;
 import kr.ac.collage_api.vo.FileDetailVO;
 
@@ -31,5 +32,14 @@ public interface LectureService {
 	
 	// 강의 계획서 다운로드
 	public FileDetailVO getFileDetail(long fileGroupNo);
+
+
+	// -------- <관리자> --------
+
+	// 강의 생성
+	public int createCourse(AllCourseVO allCourseVO);
+
+	// 개설 강의 목록 조회
+	public List<EstblCourseVO> mngList(EstblCourseVO estblCourseVO);
 
 }

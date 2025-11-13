@@ -19,7 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 public class PlanUploadController {
 
 	@Autowired
-    BeanController beanController;
+	BeanController beanController;
 	
 	@Autowired
 	LectureMapper lectureMapper;

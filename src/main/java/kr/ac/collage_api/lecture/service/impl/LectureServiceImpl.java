@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 import kr.ac.collage_api.lecture.controller.PlanUploadController;
 import kr.ac.collage_api.lecture.mapper.LectureMapper;
 import kr.ac.collage_api.lecture.service.LectureService;
+import kr.ac.collage_api.vo.AllCourseVO;
 import kr.ac.collage_api.vo.EstblCourseVO;
 import kr.ac.collage_api.vo.FileDetailVO;
 import lombok.extern.slf4j.Slf4j;
@@ -100,7 +101,21 @@ public class LectureServiceImpl implements LectureService {
 		return this.lectureMapper.getFileDetail(fileGroupNo);
 	}
 
-	
+
+	// -------- <관리자> --------
+
+	// 강의 생성
+	@Override
+	public int createCourse(AllCourseVO allCourseVO) {
+		return this.lectureMapper.createCourse(allCourseVO);
+	}
+
+	// 개설 강의 목록 조회
+	@Override
+	public List<EstblCourseVO> mngList(EstblCourseVO estblCourseVO) {
+		return this.lectureMapper.mngList(estblCourseVO);
+	}
+
 	
 
 }

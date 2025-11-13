@@ -14,7 +14,7 @@ public class EstblCourseVO {
 	private String estbllctreCode;           //개설강의코드(PK)	ESTBLLCTRE_CODE(PK)
 	private String lctreCode;                //강의코드(FK)	LCTRE_CODE(FK)
 	private String profsrNo;                 //교수번호(FK)	PROFSR_NO(FK)
-	private long fileGroupNo;                 //파일그룹번호(FK)	FILE_GROUP_NO(FK)
+	private long fileGroupNo;                //파일그룹번호(FK)	FILE_GROUP_NO(FK)
 	private int acqsPnt;                     //취득학점	ACQS_PNT
 	private String lctrum;                   //강의실	LCTRUM
 	private String complSe;                  //이수구분	COMPL_SE
@@ -27,14 +27,17 @@ public class EstblCourseVO {
 	private int trmendTestScoreReflctRate;   //기말시험점수반영비율	TRMEND_TEST_SCORE_REFLCT_RATE
 	private String estblYear;                //개설년도	ESTBL_YEAR
 	private String estblSemstr;              //개설학기	ESTBL_SEMSTR
+
 	private String keyword;					 // 강의 검색 키워드
-	private String totalReqst;				 // 총 신청인원
+	private int totalReqst;				 	 // 총 신청중 인원(=장바구니)
+	private int totalSubmit;				 // 총 신청완료 인원(=수강신청)
 	
 	private LctreTimetableVO timetable;		//lctreDfk(LCTRE_DFK), beginTm(BEGIN_TM), endTm(END_TM)
 	private AllCourseVO allCourse;			//lctreNm(LCTRE_NM)
 	private SklstfVO sklstf;				//sklstfNm(SKLSTF_NM), cttpc(CTTPC)
 	private ProfsrVO profsr;				//labrumLc(LABRUM_LC)
 	private FileDetailVO file;				//FILE_NO, FILE_GROUP_NO, FILE_NM, FILE_STRE_NM, FILE_STREPLACE, FILE_STRE_DE
+
 
 	private List<EstblCourseVO> estblCourseVOlist;
 	private MultipartFile[] uploadFile;
