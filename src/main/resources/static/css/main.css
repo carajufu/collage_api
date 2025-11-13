@@ -28,11 +28,6 @@ main {
     height: 100%;
 }
 
-#main-container {
-    height: 100%;
-    border-color: gold;
-}
-
 footer {
     width: 100vw;
     height: 9%;

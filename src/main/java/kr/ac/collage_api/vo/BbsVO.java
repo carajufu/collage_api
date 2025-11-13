@@ -31,7 +31,7 @@ public class BbsVO {
 	
 	//페이징할때 필요함. 현재 페이지에 보여지는 리스트 담아 올때 쓰는 파라미터
 	private List<BbsVO> bbsVOList;
-	
+
 	//파일 리스트 들어오는 곳
 	private MultipartFile[] attachmentFiles;
 }

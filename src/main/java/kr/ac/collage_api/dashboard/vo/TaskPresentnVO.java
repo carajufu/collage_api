@@ -14,7 +14,7 @@ public class TaskPresentnVO {
     private String taskPresentnNo;
     private String stdntNo;
     private String taskNo;
-    private int fileGroupNo;
+    private long fileGroupNo;
     private String taskPresentnDe;
     private String presentnAt;
 

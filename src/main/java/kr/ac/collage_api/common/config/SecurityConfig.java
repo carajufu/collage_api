@@ -38,7 +38,7 @@ public class SecurityConfig {
                 .requestMatchers("/css/**",
                         "/js/**",
                         "favicon.ico",
-                        "/app/**",
+                        "/.well-known/**",
                         "/assets/**");
     }
 
@@ -65,7 +65,10 @@ public class SecurityConfig {
                 .httpBasic(hbasic -> hbasic.disable())
                 .authorizeHttpRequests(authorize -> authorize
                         .dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.ASYNC).permitAll()
-                        .requestMatchers("/", "/login", "/accessError", "/.well-known/**", "/admin/**","/20*/**", "/assets/**").permitAll()
+                        .requestMatchers("/",
+                                "/login",
+                                "/admin/**",
+                                "/20*/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .requestCache(cache -> cache.requestCache(requestCache))

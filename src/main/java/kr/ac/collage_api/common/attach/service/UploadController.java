@@ -69,8 +69,8 @@ public class UploadController {
 
             fileDetailVO = new FileDetailVO();
 
-            fileDetailVO.setFileNo(seq++);
-            fileDetailVO.setFileGroupNo(fileGroupVO.getFileGroupNo());
+//            fileDetailVO.setFileNo(seq++);
+            fileDetailVO.setFileGroupNo(fileGroupNo);
             fileDetailVO.setFileNm(multipartFile.getOriginalFilename());
             fileDetailVO.setFileStreNm(uploadFileName);
             fileDetailVO.setFileStreplace(fileUrl);
