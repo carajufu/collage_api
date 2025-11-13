@@ -29,11 +29,11 @@ public class LectureAdminController {
 	LectureService lectureService;
 	
 	// 전체 강의 목록 조회
-	@GetMapping("/list")
-	public ResponseEntity<List<EstblCourseVO>> mnglist(EstblCourseVO estblCourseVO) {
+	@GetMapping("/allList")
+	public ResponseEntity<List<EstblCourseVO>> allList(EstblCourseVO estblCourseVO) {
 		
-		List<EstblCourseVO> list = lectureService.mngList(estblCourseVO);
-		log.info("mngList()->estblCourseVO : {}", estblCourseVO);
+		List<EstblCourseVO> list = lectureService.allList(estblCourseVO);
+		log.info("allList()->estblCourseVO : {}", estblCourseVO);
 		
 		return ResponseEntity.ok(list);
 	}
@@ -51,7 +51,7 @@ public class LectureAdminController {
 	
 	// 개설 강의 목록 조회
 	@GetMapping("/mng/list")
-	public ResponseEntity<List<EstblCourseVO>> mngList(EstblCourseVO estblCourseVO) {
+	public ResponseEntity<List<EstblCourseVO>> list(EstblCourseVO estblCourseVO) {
 		
 		List<EstblCourseVO> list = lectureService.list(estblCourseVO);
 		log.info("mngList()->list : {}", list);

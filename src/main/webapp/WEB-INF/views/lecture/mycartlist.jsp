@@ -67,7 +67,6 @@ const mycartTbody = document.getElementById("mycartTbody");
 			
 			html += `
 					<tr>
-						<td><input type="checkbox" name="cartCheck" value="\${l.estbllctreCode}"></td>
 			  			<td>\${l.estbllctreCode}</td>
 			  			<td>\${l.estblCourse.complSe}</td>
 			  			<td>\${l.allCourse.lctreNm}</td>
