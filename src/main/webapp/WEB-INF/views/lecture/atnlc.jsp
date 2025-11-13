@@ -2,7 +2,6 @@
 
 <%@ include file="../header.jsp" %>
 
-    <div id="main-container" class="container-fluid">
 	    <div class="card card-custom p-4">
 			<h5 class="card-title mb-3">개설 강의</h5>
 	        <div class="flex-grow-1 p-1 overflow-visible">

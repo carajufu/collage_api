@@ -18,11 +18,53 @@
     </resultMap>
 
     <select id="findAcnt" parameterType="String" resultMap="acntMap">
-        SELECT ac.acnt_id, ac.password, ac.acnt_ty,
-            auth.author_nm, auth.ALWNC_DE
+        SELECT                                  /* kr.ac.collage_api.security.mapper.SecurityMapper.findAcnt */
+            ac.acnt_id,                         /* 계정 id */
+            ac.password,                        /* 비밀번호 */
+            ac.acnt_ty,                         /* 계정 유형 */
+            auth.author_nm,                     /* 권한 명 */
+            auth.ALWNC_DE                       /* 부여일자 */
         FROM acnt ac
         INNER JOIN author auth
             ON ac.acnt_id = auth.acnt_id
         WHERE ac.acnt_id = #{username}
-        </select>
+    </select>
+
+    <select id="findStudentName" resultType="String">
+        SELECT                      /* kr.ac.collage_api.security.mapper.SecurityMapper.findStudentName */
+            stdnt_nm                /* 학생 명 */
+        FROM stdnt
+        WHERE stdnt_no = #{id}
+    </select>
+
+    <select id="findStaffName" resultType="String">
+        SELECT                      /* kr.ac.collage_api.security.mapper.SecurityMapper.findStudentName */
+            sklstf_nm               /* 교직원 명 */
+        FROM sklstf
+        WHERE sklstf_id = #{id}
+    </select>
+
+    <select id="findStudentSubjct" resultType="String">
+        SELECT                      /* kr.ac.collage_api.security.mapper.SecurityMapper.findStudentSubjct */
+            subjct_nm               /* 학과 명 */
+        FROM subjct
+        WHERE subjct_code = (
+            SELECT
+                subjct_code
+            FROM stdnt
+            WHERE STDNT_NO = #{id}
+            )
+    </select>
+
+    <select id="findProfSubjct" resultType="String">
+        SELECT                  /* kr.ac.collage_api.security.mapper.SecurityMapper.findProfSubjct */
+            subjct_nm           /* 학과 명 */
+        FROM subjct
+        WHERE subjct_code = (
+            SELECT
+                subjct_code
+            FROM profsr
+            WHERE profsr_no = #{id}
+            )
+    </select>
 </mapper>

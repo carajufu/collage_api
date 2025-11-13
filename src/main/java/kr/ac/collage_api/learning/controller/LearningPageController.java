@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import java.io.IOException;
 import java.security.Principal;
@@ -94,8 +95,19 @@ public class LearningPageController {
 
     @ResponseBody
     @PostMapping("/student/fileUpload")
-    public Map<String, Object> taskFileUpload(@RequestPart MultipartFile[] uploadFiles,
-                                              String taskPresentnNo) {
+    public Map<String, Object> taskFileUpload(MultipartHttpServletRequest req,
+                                              @RequestParam  String taskPresentnNo) {
+
+        List<MultipartFile> files = new ArrayList<>();
+
+        req.getMultiFileMap().forEach((key, list) -> {
+            if("uploadFiles".equals(key) || "uploadFiles[]".equals(key) || key.startsWith("uploadFiles[")){
+                files.addAll(list);
+            }
+        });
+
+        MultipartFile[] uploadFiles = files.toArray(new MultipartFile[0]);
+
         log.debug("chkng taskFileUpload (uploadFiles > {}) (taskPresentnNo > {} )", uploadFiles, taskPresentnNo);
 
         int rslt = learningPageService.taskFileUpload(taskPresentnNo, uploadFiles);
