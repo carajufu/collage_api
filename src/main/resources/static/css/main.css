@@ -6,35 +6,74 @@
     box-sizing: border-box;
 }
 
-
+/* 화면 높이 */
 #wrapper {
     width: 100%;
-    height: 110vh;
+    height: 100vh; /* 110vh가 아닌 100vh */
     display: flex;
     flex-direction: column;
+    overflow: hidden; /* 페이지 전체 스크롤 방지 */
 }
 
+/* 헤더 */
 header {
     width: 100%;
-    height: 5%;
+    height: 5%; /* 기존 설정 유지 */
+    flex-shrink: 0; /* 줄어들지 않음 */
 }
 
+/* 메인 */
 main {
     width: 100%;
-    height: 100%;
+    flex-grow: 1;
+    overflow: hidden; 
+/
 }
 
+/* 사이드 바 */
 #sidebar {
-    width: 280px;
-    height: 100%;
-}
-
-#main-container {
-    height: 100%;
-    border-color: gold;
+    width: 230px;
+    height: 100%; 
+    flex-shrink: 0;
+    overflow-y: auto;
 }
 
 footer {
-    width: 100vw;
-    height: 9%;
+    width: 100%;
+    height: 5%;
+    flex-shrink: 0; 
+}
+
+
+.btn-toggle-nav a {
+    display: block;
+    padding: 5px 0 5px 15px;
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 0.95rem;
+}
+
+.btn-toggle-nav a:hover,
+.active-link {
+    background-color: #1b2836;
+    color: #fff !important;
+    border-radius: 6px;
+}
+
+.content-area {
+    background-color: #ffffff;
+    flex-grow: 1;
+    padding: 40px;
+    height: 100%; 
+    overflow-y: auto; 
+}
+
+.card-custom {
+    border-radius: 15px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.08);
+}
+
+.section-title {
+    font-weight: 600;
+    margin-bottom: 20px;
 }

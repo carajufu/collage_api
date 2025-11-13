@@ -86,11 +86,6 @@
 		            <fmt:formatDate value="${admissionDate}" pattern="yyyy-MM-dd" />
 		        </td>
 		    </tr>                
-                <c:if test="${empty officialList}">
-                    <tr>
-                        <td colspan="3" class="py-5">공식 학적 변동 내역이 없습니다.</td>
-                    </tr>
-                </c:if>
             </tbody>
         </table>
     </div>

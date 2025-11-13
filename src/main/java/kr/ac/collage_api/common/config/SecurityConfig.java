@@ -20,7 +20,10 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.util.Arrays;
+import jakarta.servlet.DispatcherType;
+import jakarta.servlet.http.HttpServletRequest;
+import kr.ac.collage_api.security.service.impl.CustomLoginSuccessHandler;
+import kr.ac.collage_api.security.service.impl.CustomLogoutSuccessHandler;
 
 @Configuration
 @EnableWebSecurity
@@ -33,7 +36,7 @@ public class SecurityConfig {
     public WebSecurityCustomizer configure() {
         return web -> web.debug(false)
                 .ignoring()
-                .requestMatchers("/css/**", "/js/**", "favicon.ico");
+                .requestMatchers("/css/**", "/js/**", "favicon.ico", "/assets/**");
     }
 
     @Bean

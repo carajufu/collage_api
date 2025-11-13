@@ -59,6 +59,14 @@
 		ORDER BY EFECT_OCCRRNC_SEMSTR DESC
 	</select>
 	
+	<!-- 중복 내역 -->
+	<select id="activeRequestByStdntNo" parameterType="String" resultType="int">
+		SELECT COUNT(*)
+    	  FROM SKNRGS_CHANGE_REQST
+    	 WHERE STDNT_NO = #{stdntNo}
+      	   AND REQST_STTUS = '신청중'
+	</select>
+	
 	<!-- 제출 -->
 	<insert id="submitRequest" parameterType="kr.ac.collage_api.vo.SknrgsChangeReqstVO">
 		INSERT INTO SKNRGS_CHANGE_REQST (
