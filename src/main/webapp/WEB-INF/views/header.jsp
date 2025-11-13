@@ -505,17 +505,19 @@
                         <div class="collapse menu-dropdown" id="sidebarLecture">
                             <ul class="nav nav-sm flex-column">
                                 <li class="nav-item">
-                                    <a href="/atnlc" class="nav-link" data-key="">
+                                    <a href="/atnlc/submit" class="nav-link" data-key="">
                                         수강 신청
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="/atnlc" class="nav-link" data-key="">
+                                    <a href="/atnlc/cart" class="nav-link" data-key="">
                                         장바구니
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="apps-chat.html" class="nav-link" data-key=""> 신청 내역 조회 </a>
+                                    <a href="/atnlc/stdntLctreList" class="nav-link" data-key=""> 
+                                        신청 내역 조회 
+                                    </a>
                                 </li>
                             </ul>
                         </div>
