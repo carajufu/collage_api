@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -21,7 +22,14 @@ public class LearningPageServiceImpl {
     UploadController uploadController;
 
     public List<Map<String, Object>> getLearningPage(String lecNo) {
-        return learningPageMapper.getLearningPage(lecNo);
+        List<Map<String, Object>> weekInfoList = learningPageMapper.getLearningPage(lecNo);
+
+        weekInfoList.add(learningPageMapper.getLectureInfo(lecNo));
+
+//        todo: estbl_course의 profsr_no로 교수 정보 검색하기 null 체크 구현 필 estbl이 list에 어떻게 담기는지 확인 필요
+//        weekInfoList.add(learningPageMapper.getProfInfo())
+
+        return weekInfoList;
     }
 
     public List<TaskVO> taskList(String lecNo, String weekNo) {

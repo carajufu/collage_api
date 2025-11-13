@@ -12,7 +12,7 @@
     </nav>
     <div class="col-12 page-title mt-2">
         <div class="display-6 fw-semibold">캠퍼스맵</div>
-        <div class="mt-4 p-0 bg-primary" style="width: 100px; height:6px;"></div>
+        <div class="my-4 p-0 bg-primary" style="width: 100px; height:6px;"></div>
     </div>
 </div>
 

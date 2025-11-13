@@ -115,8 +115,8 @@ public class LectureServiceImpl implements LectureService {
 	public List<EstblCourseVO> mngList(EstblCourseVO estblCourseVO) {
 		return this.lectureMapper.mngList(estblCourseVO);
 	}
+
 	
-	
-	
+
 
 }

@@ -33,9 +33,9 @@ public interface LectureService {
 	// 강의 계획서 다운로드
 	public FileDetailVO getFileDetail(long fileGroupNo);
 
-	
+
 	// -------- <관리자> --------
-	
+
 	// 강의 생성
 	public int createCourse(AllCourseVO allCourseVO);
 
