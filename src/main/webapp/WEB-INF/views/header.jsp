@@ -515,8 +515,8 @@
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="/atnlc/stdntLctreList" class="nav-link" data-key=""> 
-                                        신청 내역 조회 
+                                    <a href="/atnlc/stdntLctreList" class="nav-link" data-key="">
+                                        신청 내역 조회
                                     </a>
                                 </li>
                             </ul>

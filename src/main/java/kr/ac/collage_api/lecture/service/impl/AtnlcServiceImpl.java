@@ -39,7 +39,7 @@ public class AtnlcServiceImpl implements AtnlcService {
 	@Override
 	// 장바구니에 강의 담기
 	public Map<String, Object> addMyCart(AtnlcReqstVO atnlcReqstVO) {
-		
+
 		// 1. 중복 강의 검사
 		List<String> alreadyLec = atnlcMapper.checkLecCart(atnlcReqstVO);
 		// 2. 중복 시간표 검사
@@ -78,27 +78,27 @@ public class AtnlcServiceImpl implements AtnlcService {
 	@Transactional
 	@Override
 	public Map<String, Object> submitMyCart(AtnlcReqstVO atnlcReqstVO) {
-		
+
 		// 수강정원, 현재 신청중 인원 가져오기 (장바구니)
 		EstblCourseVO estblCourseVO = atnlcMapper.getSubmitInfo(atnlcReqstVO);
-		
+
 		int totalSubmit = estblCourseVO.getTotalSubmit();
 		int atnlcNmpr = estblCourseVO.getAtnlcNmpr();
-		
+
 		if(totalSubmit > atnlcNmpr) {
 			Map<String, Object> map = new HashMap<>();
-			
+
 			map.put("submitCnt", 0);
 			map.put("success", false);
 			return map;
 		}
-		
+
 		int submitCnt = atnlcMapper.submitMyCart(atnlcReqstVO);
-		
+
 		Map<String, Object> map = new HashMap<>();
 		map.put("submitCnt", submitCnt);
 		map.put("success", true);
-		
+
 		return map;
 	}
 
@@ -106,7 +106,7 @@ public class AtnlcServiceImpl implements AtnlcService {
 	@Transactional
 	@Override
 	public Map<String, Object> submitCourse(AtnlcReqstVO atnlcReqstVO) {
-		
+
 		String code = atnlcReqstVO.getEstbllctreCode();
 		log.info("submitCourse()->code : {}", code);
 		EstblCourseVO alreadyLec = atnlcMapper.checkLec(atnlcReqstVO);
@@ -116,25 +116,25 @@ public class AtnlcServiceImpl implements AtnlcService {
 		EstblCourseVO estblCourseVO = atnlcMapper.getSubmitInfo(atnlcReqstVO);
 		int totalSubmit = estblCourseVO.getTotalSubmit();
 		int atnlcNmpr = estblCourseVO.getAtnlcNmpr();
-		
+
 		if(alreadyLec != null || perLec != null || totalSubmit > atnlcNmpr) {
 			Map<String, Object> map = new HashMap<>();
 			map.put("insertCnt", 0);
 			map.put("alreadyLec", alreadyLec);
 			map.put("perLec", perLec);
 			map.put("success", false);
-			
+
 			return map;
 		}
-		
+
 		atnlcReqstVO.setEstbllctreCode(code);
 		int insertCnt = atnlcMapper.submitCourse(atnlcReqstVO);
-		
+
 		Map<String, Object> map = new HashMap<>();
 		map.put("insertCnt", insertCnt);
 		map.put("success", true);
 		log.info("submitCourse()->map : {}", map);
-		
+
 		return map;
 	}
 

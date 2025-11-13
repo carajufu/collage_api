@@ -15,6 +15,21 @@
         ORDER BY week
     </select>
 
+    <select id="getLectureInfo" parameterType="String" resultType="HashMap">
+        SELECT
+            ec.profsr_no
+            , ec.acqs_pnt
+            , ec.lctrum
+            , ec.compl_se
+            , ec.atnlc_nmpr
+            , ec.lctre_use_lang
+            , ec.evl_mthd
+            , ec.estbl_year
+            , ec.estbl_semstr
+        FROM estbl_course ec
+        WHERE estbllctre_code = #{lecNo}
+    </select>
+
     <select id="taskList" resultType="taskVO">
         SELECT                      /* kr.ac.collage_api.learning.mapper.LearningPageMapper.taskList */
             task_no                 /* 과제 번호 */
