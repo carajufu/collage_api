@@ -96,13 +96,7 @@ public class AccountController {
 		return this.accountService.selectOneStdntInfo(stdntNo);
 	}
 	
-	/*
-	export const updateStdAccount = async(stdntVO: StdntVO):Promise<number> => {
-    const{data} = await API.put<number>("/admin/acnt/updatestd",stdntVO);
-    return data;
-}
 
-	*/
 	@PutMapping("/updatestd")
 	public int updateStdAccount(@RequestBody StdntVO stdntVO) {
 		
