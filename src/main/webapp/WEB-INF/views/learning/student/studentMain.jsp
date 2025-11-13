@@ -464,6 +464,17 @@
     </script>
 
         <div class="row p-5">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="#"><i class="las la-home"></i></a></li>
+                    <li class="breadcrumb-item"><a href="#">학교 소개</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">캠퍼스맵</li>
+                </ol>
+            </nav>
+            <div class="col-12 page-title mt-2">
+                <h1>캠퍼스맵</h1>
+                <div class="my-4 p-0 bg-primary" style="width: 100px; height:6px;"></div>
+            </div>
             <div class="col-xxl-9">
             <!-- 반복문을 통해 아코디언 리스트 생성 -->
                 <div class="card card-height-100 shadow rounded-3">
