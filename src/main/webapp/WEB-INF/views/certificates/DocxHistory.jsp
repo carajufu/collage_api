@@ -88,79 +88,132 @@
 <%@ include file="../footer.jsp" %>
 
 <script>
-    const MAX_DOCNO = 20;
+  /* 통합 스크립트: 문서번호 필터·검증 + 종류/파일명 매핑 후 테이블 보강 */
 
-    function filterByDocNo() {
-        const kw = (document.getElementById('searchDocNo').value || '').trim().toUpperCase();
-        const rows = document.querySelectorAll('#issueTableBody tr');
+  /* 1) 상수 */
+  const MAX_DOCNO = 20;
+  const DOC_KIND = Object.freeze({
+    D03: "재학증명서",
+    D04: "졸업증명서",
+    D02: "휴학증명서",
+    D01: "성적증명서"
+  });
+  const DOC_PDF_NAME = Object.freeze({
+    D03: "재학증명서.pdf",
+    D04: "졸업증명서.pdf",
+    D02: "휴학증명서.pdf",
+    D01: "성적증명서.pdf"
+  });
 
-        rows.forEach(row => {
-            const cell = row.querySelector('td[data-col="docNo"]');
-            if (!cell) return;
-            const txt = (cell.textContent || '').trim().toUpperCase();
-
-            // "발급 이력이 없습니다." 행 유지
-            if (!txt && row.cells.length === 1) {
-                row.style.display = kw ? 'none' : '';
-            }
-
-            row.style.display = (!kw || txt.includes(kw)) ? '' : 'none';
-        });
+  /* 2) 매핑 유틸 */
+  function docKindFromKey(key) {
+    const k = (key ?? "").toString().trim().toUpperCase();
+    for (const p of Object.keys(DOC_KIND)) {
+      if (k.startsWith(p)) return DOC_KIND[p];
     }
-
-    function handleDocNoInput() {
-        const el  = document.getElementById('searchDocNo');
-        const msg = document.getElementById('docNoMsg');
-        const len = el.value.length;
-
-        if (len > MAX_DOCNO) {
-            el.value = el.value.slice(0, MAX_DOCNO);
-        }
-
-        if (len === 0) {
-            msg.textContent = '';
-            msg.style.color = '#6c757d';
-        } else if (len < MAX_DOCNO) {
-            msg.textContent = len + ' / 20자';
-            msg.style.color = '#6c757d';
-        } else { // len == MAX_DOCNO
-            msg.textContent = '20자 입력 완료';
-            msg.style.color = '#0d6efd';
-        }
-
-        filterByDocNo();
+    return "기타";
+  }
+  function docPdfNameFromKey(key) {
+    const k = (key ?? "").toString().trim().toUpperCase();
+    for (const p of Object.keys(DOC_PDF_NAME)) {
+      if (k.startsWith(p)) return DOC_PDF_NAME[p];
     }
+    return "문서.pdf";
+  }
 
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Enter' && document.activeElement.id === 'searchDocNo') {
-            e.preventDefault();
-            verifyDocNo();
-        }
+  /* 3) 테이블 보강: 종류 미기재 시 문서번호로 추론, 행에 pdfName 데이터 부여 */
+  document.addEventListener('DOMContentLoaded', () => {
+    const rows = document.querySelectorAll('#issueTableBody tr');
+    rows.forEach(row => {
+      const docCell = row.querySelector('td[data-col="docNo"]');
+      if (!docCell) return;
+
+      const key = (docCell.textContent || '').trim();
+      const kindCell = row.cells[1]; // 2번째 컬럼: "증명서 종류"
+      const curKind = (kindCell?.textContent || '').trim();
+
+      if (kindCell && !curKind) {
+        kindCell.textContent = docKindFromKey(key);
+      }
+      row.dataset.pdfName = docPdfNameFromKey(key);
     });
+  });
 
-    async function verifyDocNo() {
-        const input = document.getElementById('searchDocNo');
-        const raw = (input.value || '').trim().toUpperCase();
+  /* 4) 필터 */
+  function filterByDocNo() {
+    const kw = (document.getElementById('searchDocNo').value || '').trim().toUpperCase();
+    const rows = document.querySelectorAll('#issueTableBody tr');
 
-        if (!/^[A-Z0-9]{20}$/.test(raw)) {
-            alert('형식 오류: 20자 영문/숫자만 허용');
-            return;
-        }
+    rows.forEach(row => {
+      const cell = row.querySelector('td[data-col="docNo"]');
+      if (!cell) return;
+      const txt = (cell.textContent || '').trim().toUpperCase();
 
-        try {
-            const url = '/certificates/verify?docNo=' + encodeURIComponent(raw);
-            const res = await fetch(url, { method: 'GET' });
+      // "발급 이력이 없습니다." 행 유지
+      if (!txt && row.cells.length === 1) {
+        row.style.display = kw ? 'none' : '';
+      }
 
-            if (!res.ok) {
-                alert('검증 실패: 서버 응답 오류');
-                return;
-            }
+      row.style.display = (!kw || txt.includes(kw)) ? '' : 'none';
+    });
+  }
 
-            const data = await res.json();
-            alert(data.valid ? '검증 결과: 유효 (등록 이력 확인)' : '검증 결과: 무효 (등록 이력 없음)');
-        } catch (e) {
-            console.error(e);
-            alert('검증 실패: 네트워크 또는 시스템 오류');
-        }
+  /* 5) 입력 핸들러 */
+  function handleDocNoInput() {
+    const el  = document.getElementById('searchDocNo');
+    const msg = document.getElementById('docNoMsg');
+    const len = el.value.length;
+
+    if (len > MAX_DOCNO) {
+      el.value = el.value.slice(0, MAX_DOCNO);
     }
+
+    if (len === 0) {
+      msg.textContent = '';
+      msg.style.color = '#6c757d';
+    } else if (len < MAX_DOCNO) {
+      msg.textContent = len + ' / 20자';
+      msg.style.color = '#6c757d';
+    } else { // len == MAX_DOCNO
+      msg.textContent = '20자 입력 완료';
+      msg.style.color = '#0d6efd';
+    }
+
+    filterByDocNo();
+  }
+
+  /* 6) Enter 제출 → 진위 확인 */
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && document.activeElement.id === 'searchDocNo') {
+      e.preventDefault();
+      verifyDocNo();
+    }
+  });
+
+  /* 7) 진위 확인 */
+  async function verifyDocNo() {
+    const input = document.getElementById('searchDocNo');
+    const raw = (input.value || '').trim().toUpperCase();
+
+    if (!/^[A-Z0-9]{20}$/.test(raw)) {
+      alert('형식 오류: 20자 영문/숫자만 허용');
+      return;
+    }
+
+    try {
+      const url = '/certificates/verify?docNo=' + encodeURIComponent(raw);
+      const res = await fetch(url, { method: 'GET' });
+
+      if (!res.ok) {
+        alert('검증 실패: 서버 응답 오류');
+        return;
+      }
+
+      const data = await res.json();
+      alert(data.valid ? '검증 결과: 유효 (등록 이력 확인)' : '검증 결과: 무효 (등록 이력 없음)');
+    } catch (e) {
+      console.error(e);
+      alert('검증 실패: 네트워크 또는 시스템 오류');
+    }
+  }
 </script>

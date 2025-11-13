@@ -173,7 +173,8 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
                 || uri.startsWith("/api/login")
                 || uri.startsWith("/api/check")
                 || uri.startsWith("/api/token")
-                || uri.equals("/api/admin/exchange") // 교환 엔드포인트 간섭 금지
+                || uri.equals("/api/admin/exchange") 
+                	// 교환 엔드포인트 간섭 금지
                 || uri.startsWith("/error");
     }
 }

@@ -163,6 +163,47 @@ public class AuthViewController {
      * 세션에서도 접근 가능:
      *   ${sessionScope.acntVO.acntId}
      */
+
+    @GetMapping("/account/find-id")
+    public String findIdModal() {
+        return "account/find-id";
+    }
+
+    @GetMapping("/account/reset-pw")
+    public String resetPwModal() {
+        return "account/reset-pw";
+    }
+    /**
+     * GET /debug/debuging
+     *
+     * 세션 인증된 사용자의 대시보드 화면.
+     *
+     * 동작:
+     * 1) TokenAuthenticationFilter 가 Authorization 헤더의 JWT 검사
+     *    → 유효하면 SecurityContextHolder.getContext().setAuthentication(auth) 수행
+     *
+     * 2) 여기서 SecurityContextHolder 로부터 Authentication을 읽는다.
+     *    principal 은 org.springframework.security.core.userdetails.User
+     *    또는 UserDetails 구현체이고 username = acntId.
+     *
+     * 3) 그 acntId 로 DB에서 AcntVO (계정 + 권한목록 포함)를 조회.
+     *
+     * 4) JSP에서 쓰도록 model 에 acntVO 로 넣고,
+     *    header.jsp 등 다른 JSP에서도 재사용 가능하도록 session 에도 acntVO 저장.
+     *
+     * 5) 인증이 없거나 principal 을 UserDetails 로 캐스팅할 수 없으면 로그인 화면으로 리다이렉트.
+     *
+     * 반환 JSP
+     *   /WEB-INF/views/user/welcome.jsp
+     *
+     * JSP 사용 예:
+     *   ${acntVO.acntId}
+     *   ${acntVO.authorList[0].authorNm}  // ROLE_STUDENT 등
+     *
+     * 세션에서도 접근 가능:
+     *   ${sessionScope.acntVO.acntId}
+     */
+
     @GetMapping("/debug/debuging")
     public String welcomePage(Model model, HttpSession session) {
 

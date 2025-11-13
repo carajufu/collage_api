@@ -204,12 +204,28 @@
             ACNT_ID = #{acntId}
     </select>
     
-     <!-- ACNT_ID로 교수번호 조회 (실제 교수 테이블명/컬럼에 맞게 수정 필요) -->
+     <!-- ACNT_ID로 교수번호 조회 -->
 	<select id="findProfsrNoByAcntId" parameterType="string" resultType="string">
 	    SELECT p.PROFSR_NO
 	    FROM PROFSR p
 	         JOIN SKLSTF s ON s.SKLSTF_ID = p.SKLSTF_ID
 	    WHERE s.ACNT_ID = #{acntId}
+	</select>
+	
+     <!-- 학생 테이블의 성명과 생년월일로 로그인 아이디 조회 -->
+	<select id="findByNameAndBirth"  parameterType="string" resultType="string">
+		SELECT ACNT_ID
+		  FROM STDNT
+		 WHERE STDNT_NM = #{name}
+		   AND BRTHDY = #{birth}
+	</select>
+	
+	<!-- ACNT 테이블에서 아이디 + 이메일 일치 여부 확인 -->
+	<select id="existsByAcntIdAndEmail" resultType="int">
+	    SELECT COUNT(1)
+	    FROM ACNT
+	    WHERE ACNT_ID = #{acntId}
+	      AND EMAIL   = #{email}
 	</select>
   <!--
       블록: selectStdntNoByAcntId
@@ -340,4 +356,7 @@
 	      SYSDATE              -- 발급 시각
 	  )
 	</insert>
+	
+	
+	
 </mapper>

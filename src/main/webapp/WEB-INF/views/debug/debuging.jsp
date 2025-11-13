@@ -29,76 +29,84 @@
    - Spring Security 6: 세션 인증, CSRF 기본 활성
    - JSP/JSTL 3.0: jakarta.tags.* 사용
 ===================================================================== --%>
-<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%@ include file="../header.jsp" %>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ include file="../header.jsp"%>
 
 <section class="container mt-5">
-  <h2>디버깅 페이지</h2>
+	<h2>디버깅 페이지</h2>
 
-  <!-- 디버그 패널: 세션만 표기 -->
-  <div class="mb-4 p-3 border rounded bg-light">
-    <h5>디버그 상태</h5>
-    <p id="debugSessionStatus">
-      <c:choose>
-        <c:when test="${not empty acntVO}">
+	<!-- 디버그 패널: 세션만 표기 -->
+	<div class="mb-4 p-3 border rounded bg-light">
+		<h5>디버그 상태</h5>
+		<p id="debugSessionStatus">
+			<c:choose>
+				<c:when test="${not empty acntVO}">
           세션 상태: OK (acntVO 모델 바인딩 존재)
         </c:when>
-        <c:otherwise>
+				<c:otherwise>
           세션 상태: 없음 (acntVO 미존재)
         </c:otherwise>
-      </c:choose>
-    </p>
-    <p id="debugTokenStatus">JWT 상태: 사용 안 함(JSP 구간 폐지)</p>
-  </div>
+			</c:choose>
+		</p>
+		<p id="debugTokenStatus">JWT 상태: 사용 안 함(JSP 구간 폐지)</p>
+	</div>
 
-  <!-- 사용자 정보 렌더 -->
-  <c:choose>
-    <c:when test="${not empty acntVO}">
-      <h4>세션 인증 사용자 정보</h4>
-      <ul>
-        <li>아이디: <c:out value="${acntVO.acntId}" /></li>
-        <li>계정타입: <c:out value="${acntVO.acntTy}" /></li>
-        <li>권한:
-          <c:forEach var="auth" items="${acntVO.authorList}">
-            <c:out value="${auth.authorNm}" />
-          </c:forEach>
-        </li>
-        <li>Principal: <sec:authentication property="principal.username"/></li>
-      </ul>
-    </c:when>
-    <c:otherwise>
-      <div class="alert alert-warning" role="alert">
-        세션 정보 없음. 다시 로그인 필요. <a href="/login" class="alert-link">/login</a>
-      </div>
-    </c:otherwise>
-  </c:choose>
+	<!-- 사용자 정보 렌더 -->
+	<c:choose>
+		<c:when test="${not empty acntVO}">
+			<h4>세션 인증 사용자 정보</h4>
+			<ul>
+				<li>아이디: <c:out value="${acntVO.acntId}" /></li>
+				<li>계정타입: <c:out value="${acntVO.acntTy}" /></li>
+				<li>권한: <c:forEach var="auth" items="${acntVO.authorList}">
+						<c:out value="${auth.authorNm}" />
+					</c:forEach>
+				</li>
+				<li>Principal: <sec:authentication
+						property="principal.username" /></li>
+			</ul>
+		</c:when>
+		<c:otherwise>
+			<div class="alert alert-warning" role="alert">
+				세션 정보 없음. 다시 로그인 필요. <a href="/login" class="alert-link">/login</a>
+			</div>
+		</c:otherwise>
+	</c:choose>
 
-  <!-- 액션 영역 -->
-  <div class="mt-4 d-flex gap-2">
-	
-	<%-- 인증 사용자에게만 로그아웃 버튼 노출, 디버깅 및 개발 편의성 --%>
-	<sec:authorize access="isAuthenticated()">
-		<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
-		<%-- 계약: 기본 Spring Security 6는 POST /logout. GET 링크 사용 시 SecurityConfig에서 허용 필요 --%>
-		<a href="/logout"><button class="btn btn-outline-danger">로그아웃</button></a>
-	</sec:authorize>
-	
-    <!-- 증명서 발급: GET 이동, 디버깅 및 개발 편의성 -->
-    <form id="certDocxForm" action="/certificates/DocxForm" method="get" class="m-0">
-      <button type="submit" class="btn btn-primary">증명서 발급</button>
-    </form>
-    <!-- 학사일정: GET 이동, 디버깅 및 개발 편의성 -->
-    <form action="/schedule" method="get" class="m-0">
-      <button type="submit" class="btn btn-info">학사일정</button>
-    </form>
-    <!-- 학사일정: GET 이동, 디버깅 및 개발 편의성 -->
-    <form action="/schedule/timetable" method="get" class="m-0">
-      <button type="submit" class="btn btn-outline-success">수강 시간표</button>
-    </form>
-  </div>
+	<!-- 액션 영역 -->
+	<div class="mt-4 d-flex gap-2">
+
+		<%-- 인증 사용자에게만 로그아웃 버튼 노출, 디버깅 및 개발 편의성 --%>
+		<sec:authorize access="isAuthenticated()">
+			<input type="hidden" name="${_csrf.parameterName}"
+				value="${_csrf.token}">
+			<%-- 계약: 기본 Spring Security 6는 POST /logout. GET 링크 사용 시 SecurityConfig에서 허용 필요 --%>
+			<a href="/logout"><button class="btn btn-outline-danger">로그아웃</button></a>
+		</sec:authorize>
+
+		<!-- 증명서 발급: GET 이동, 디버깅 및 개발 편의성 -->
+		<%-- 학생(STDNT)만 증명서 발급 버튼 노출 --%>
+		<c:forEach var="auth" items="${acntVO.authorList}">
+			<c:if test="${not empty acntVO and auth.authorNm eq 'ROLE_STUDENT'}">
+				<form id="certDocxForm" action="/certificates/DocxForm" method="get"
+					class="m-0">
+					<button type="submit" class="btn btn-primary">증명서 발급</button>
+				</form>
+			</c:if>
+		</c:forEach>
+
+		<!-- 학사일정: GET 이동, 디버깅 및 개발 편의성 -->
+		<form action="/schedule" method="get" class="m-0">
+			<button type="submit" class="btn btn-info">학사일정</button>
+		</form>
+		<!-- 학사일정: GET 이동, 디버깅 및 개발 편의성 -->
+		<form action="/schedule/timetable" method="get" class="m-0">
+			<button type="submit" class="btn btn-outline-success">수강 시간표</button>
+		</form>
+	</div>
 </section>
 
-<%@ include file="../footer.jsp" %>
+<%@ include file="../footer.jsp"%>
 
 <script>
 /* 디버그 콘솔 로그: 세션 여부만 기록. 토큰 접근 금지 */

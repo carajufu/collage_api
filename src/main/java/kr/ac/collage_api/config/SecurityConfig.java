@@ -192,7 +192,10 @@ public class SecurityConfig implements WebMvcConfigurer {
                         .dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.ASYNC).permitAll() // FORWARD/ASYNC
                                                                                                           // 디스패처 요청은
                                                                                                           // 무조건 허용
-                        .requestMatchers("/login", "/signup", "/error").permitAll() // 로그인/회원가입/에러 페이지 공개
+                        .requestMatchers("/login", "/signup"
+                        		,"/account/find-id" // 비로그인, 아이디 찾기
+                        		,"/account/reset-pw" // 비로그인, 비밀번호 재설정
+                        		,"/error").permitAll() // 로그인/회원가입/에러 페이지 공개
                         .requestMatchers( // 공개 API 블록 시작
                                 "/api/**",
                                 "/api/login", // JWT 발급 API 공개

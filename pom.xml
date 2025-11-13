@@ -113,7 +113,12 @@
             <version>${jjwt.version}</version>
             <scope>runtime</scope>
         </dependency>
-
+		<!-- Apache HttpClient 5, 비밀번호 재설정 코드 발송 -->
+		<dependency>
+		  <groupId>org.apache.httpcomponents.client5</groupId>
+		  <artifactId>httpclient5</artifactId>
+		</dependency>
+		
         <!-- ========================================================= -->
         <!-- JSP / JSTL (Jakarta)                                      -->
         <!-- ========================================================= -->

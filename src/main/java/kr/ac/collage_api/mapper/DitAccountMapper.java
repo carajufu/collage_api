@@ -44,12 +44,19 @@ public interface DitAccountMapper {
      */
     String findAuthoritiesByAcntId(@Param("acntId") String acntId);
 
-    /**
-     * ACNT_ID 기준 학생 학번(STDNT_NO) 조회.
-     * - 테이블: STDNT
-     * - ROLE_STUDENT 인 경우 ScheduleSearchCondition.stdntNo 세팅에 사용.
-     */
+    //----------------------------------------------------------
+    // 학생용, 학번(STDNT_NO) 조회.
     String findStdntNoByAcntId(@Param("acntId") String acntId);
-    // 교수용
+    
+    // 교수용, 교번(PROFSR_NO) 조회.
     String findProfsrNoByAcntId(@Param("acntId") String acntId);
+
+    // 아이디 찾기: 성명 + 생년월일(YYYYMMDD)
+	String findByNameAndBirth(String name, String birth);
+	 
+	// ACNT 테이블에서 아이디 + 이메일 일치 여부 확인
+	int existsByAcntIdAndEmail(String acntId, String email);
+	
+	// 비밀번호 재설정 
+	int updatePasswordByAcntIdAndEmail(String acntId, String email, String encoded);
 }

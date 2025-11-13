@@ -1,116 +1,246 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-	pageEncoding="UTF-8"%>
+    pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ include file="header.jsp"%>
 
-<%-- 
-목적
-- 단일 로그인 화면에서 JWT 발급 + 세션 로그인 동시 확보.
-- 관리자 분기는 CustomLoginSuccessHandler에서 처리.
+<%--
+  [뷰 목적]
+  - 하나의 로그인 화면에서 세션(formLogin) + JWT 상태를 동시에 관리.
+  - 비밀번호 UX 팁(보기/숨기기, Caps/Num 표시, 규칙 안내)을 적용해 로그인 오류를 줄이고 사용자가 스스로 검증할 수 있게 함.
 
-흐름
-1) 사용자가 아이디·비밀번호 제출
-2) /api/login 로 JWT 요청 → 성공 시 localStorage.accessToken 저장
-3) 즉시 같은 자격으로 /login(formLogin) 제출 → 세션 생성
-4) SavedRequest 또는 /user/welcome 으로 이동
+  [동작 흐름]
+  1) 초기 진입
+     - 서버 세션 존재(serverAuthenticated=true) 시: 바로 /debug/debuging 로 이동.
+     - 세션 없으면 localStorage.accessToken 확인 → /api/check2 로 검증 후 유효하면 /app 으로 자동 이동.
+  2) 로그인 시도
+     - 사용자가 아이디(acntId), 비밀번호(password)를 입력.
+     - HTML5 checkValidity로 클라이언트 검증 → 실패 시 Bootstrap invalid-feedback 표시.
+     - 성공 시 /login 으로 form 제출 → 세션 생성.
+  3) 오류 처리
+     - /login?error 파라미터 존재 시: 상단 경고 메시지 노출.
+  4) 보조 기능
+     - “아이디 찾기”: /account/find-id 팝업 오픈.
+     - “비밀번호 재설정”: /account/reset-pw 팝업 오픈.
+     - 비밀번호 입력: 보기/숨기기 + Caps/Num 표시 + 규칙 안내.
 
-부트스트랩
-- 서버 세션 있으면 즉시 /user/welcome
-- 세션 없고 localStorage 토큰 유효하면 /user/welcome
+  [원리/구조]
+  - 인증 구조
+    · JWT: React SPA(/app) 용, /api/check2 로 유효성 검증 후 자동 리다이렉트.
+    · 세션: JSP 기반 화면(/debug/debuging) 용, /login formLogin 처리.
+  - 비밀번호 UX 구조
+    · 규칙 텍스트(PASSWORD_RULE_TEXT)를 로그인 화면에서도 항상 노출.
+    · 보기/숨기기(toggleLoginPassword)로 오타 검증 가능.
+    · Caps/Num 상태 표시(capsIndicator, numIndicator)로 비의도 입력 방지.
 --%>
 
+<!-- 로그인 폼 영역 -->
 <div id="main-container" class="container-fluid">
-	<div class="auth-wrap d-flex justify-content-center">
-		<form id="sessionLoginForm" method="post" action="/login"
-			autocomplete="off"
-			class="card shadow-sm rounded-4 p-4 auth-card needs-validation"
-			novalidate>
-			<input type="hidden" name="${_csrf.parameterName}"
-				value="${_csrf.token}" />
-			<h3 class="mb-2 fw-semibold text-center">로그인</h3>
-			<p class="text-secondary small text-center mb-3">서비스를 사용하려면 로그인해
-				주세요</p>
+  <div class="auth-wrap d-flex justify-content-center">
+    <!-- 계약: POST /login, CSRF 필수, 파라미터 acntId·password -->
+    <form
+      id="sessionLoginForm"
+      class="card shadow-sm rounded-4 p-4 auth-card needs-validation"
+      action="/login"
+      method="post"
+      role="form"
+      aria-label="세션 로그인 폼"
+      autocomplete="off"
+      novalidate
+    >
+      <!-- CSRF 토큰 -->
+      <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
 
-			<!-- 서버 측 인증 실패 경고 -->
-			<div id="login-alert" class="alert alert-danger py-2 small d-none"
-				role="alert"></div>
+      <h3 class="mb-2 fw-semibold text-center">로그인</h3>
+      <p class="text-secondary small text-center mb-3">
+        서비스를 사용하려면 로그인하세요
+      </p>
 
-			<div class="mb-3">
-				<label class="form-label">아이디</label> <input type="text"
-					class="form-control" name="acntId" placeholder="학번 또는 아이디" required>
-				<div class="invalid-feedback">아이디를 입력하세요.</div>
-			</div>
+      <!-- 서버측 인증 실패 경고: SPRING_SECURITY_LAST_EXCEPTION 또는 errorMessage 사용 가능 -->
+      <%-- JSTL 사용 시:
+      <c:if test="${not empty SPRING_SECURITY_LAST_EXCEPTION or not empty errorMessage}">
+        <div id="login-alert" class="alert alert-danger py-2 small" role="alert">
+          <c:out value="${errorMessage != null ? errorMessage : SPRING_SECURITY_LAST_EXCEPTION.message}" />
+        </div>
+      </c:if>
+      --%>
+      <div id="login-alert" class="alert alert-danger py-2 small d-none" role="alert"></div>
 
-			<div class="mb-3">
-				<label class="form-label">비밀번호</label> <input type="password"
-					class="form-control" name="password" placeholder="비밀번호" required>
-				<div class="invalid-feedback">비밀번호를 입력하세요.</div>
-			</div>
+      <!-- 아이디 -->
+      <div class="mb-3">
+        <label for="acntId" class="form-label">아이디</label>
+        <input
+          id="acntId"
+          name="acntId"
+          type="text"
+          class="form-control"
+          placeholder="학번 또는 아이디"
+          required
+          autofocus
+          inputmode="text"
+          autocapitalize="none"
+          spellcheck="false"
+          autocomplete="username"
+          aria-describedby="acntIdFeedback"
+        />
+        <div id="acntIdFeedback" class="invalid-feedback">아이디를 입력하세요</div>
+      </div>
 
-			<button type="submit" id="login-btn" class="btn btn-primary w-100">로그인</button>
-		</form>
-	</div>
+      <!-- 비밀번호 (보기/숨기기 + Caps/Num + 규칙 안내) -->
+      <div class="mb-3">
+        <label for="password" class="form-label">비밀번호</label>
+
+        <div class="input-group">
+          <input
+            id="password"
+            name="password"
+            type="password"
+            class="form-control"
+            placeholder="비밀번호"
+            required
+            autocomplete="current-password"
+            aria-describedby="passwordFeedback passwordRuleText capsIndicator numIndicator"
+          />
+          <button type="button"
+                  class="btn btn-outline-secondary"
+                  id="toggleLoginPassword"
+                  tabindex="-1">
+            보기
+          </button>
+        </div>
+
+        <div id="passwordFeedback" class="invalid-feedback">
+          비밀번호를 입력하세요
+        </div>
+
+        <div class="small mt-1">
+          <span id="capsIndicator" class="text-danger d-none">Caps Lock 켜짐</span>
+          </div>
+      </div>
+
+      <!-- 보조 링크 -->
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <div class="small">
+          <a href="javascript:void(0)"
+             class="text-primary text-decoration-underline"
+             onclick="openFindIdPopup()"
+             role="button">아이디 찾기</a>
+
+          <span class="text-secondary mx-1">|</span>
+
+          <a href="javascript:void(0)"
+             class="text-primary text-decoration-underline"
+             onclick="openResetPwPopup()"
+             role="button">비밀번호 재설정</a>
+        </div>
+      </div>
+
+      <!-- 제출 -->
+      <button type="submit" id="login-btn" class="btn btn-primary w-100">
+        로그인
+      </button>
+    </form>
+  </div>
 </div>
 </main>
 
+<!-- JWT 오버레이 -->
 <div id="auth-overlay"
-	class="position-fixed top-0 start-0 vw-100 vh-100 d-none bg-body bg-opacity-75"
-	style="z-index: 1050;">
-	<div
-		class="h-100 d-flex flex-column justify-content-center align-items-center text-center">
-		<div class="card shadow-sm rounded-4 p-4" style="min-width: 320px;">
-			<div class="mb-3">
-				<div class="spinner-border" role="status" aria-hidden="true"></div>
-			</div>
-			<h6 id="overlay-title" class="mb-1">토큰 확인 중</h6>
-			<p id="overlay-desc" class="small text-secondary mb-0">잠시만 기다려주세요</p>
-		</div>
-	</div>
+     class="position-fixed top-0 start-0 vw-100 vh-100 d-none bg-body bg-opacity-75"
+     style="z-index: 1050;">
+  <div
+    class="h-100 d-flex flex-column justify-content-center align-items-center text-center">
+    <div class="card shadow-sm rounded-4 p-4" style="min-width: 320px;">
+      <div class="mb-3">
+        <div class="spinner-border" role="status" aria-hidden="true"></div>
+      </div>
+      <h6 id="overlay-title" class="mb-1">토큰 확인 중</h6>
+      <p id="overlay-desc" class="small text-secondary mb-0">잠시만 기다려주세요</p>
+    </div>
+  </div>
 </div>
 
 <%@ include file="footer.jsp"%>
 <script>
 /*
-[목적/의도]
-- 단일 로그인 jsp 화면에서 세션(formLogin)과 JWT 상태를 동시에 처리.
-- JWT 유효 시 로딩 오버레이와 5초 카운트다운 후 React SPA(/app)로 자동 이동.
-- 세션 인증만 존재 시 기존 페이지(/debug/debuging)로 유지 이동.
-- 관리자 페이지 이동시 "리액트 서버 작동"해야하는 제반사항 존재.
+  [비밀번호 입력 헬퍼]
+  - 보기/숨기기 토글 + Caps/Num Lock 상태 표시를 한 번에 처리.
+  - 동일 패턴을 비밀번호 재설정 팝업에서도 재사용 가능.
+*/
+function setupPasswordHelpers(pwInputId, toggleBtnId, capsId, numId) {
+  const input = document.getElementById(pwInputId);
+  const toggleBtn = document.getElementById(toggleBtnId);
+  const caps = document.getElementById(capsId);
+  const num = document.getElementById(numId);
 
-[데이터 흐름]
-1) 초기 진입: 서버 세션 여부(serverAuthenticated) 확인 → 있으면 /debug/debuging 이동.
-2) JWT 확인: localStorage.accessToken 존재 시 /api/check2 POST로 유효성 검증 → valid면 오버레이 표시·카운트다운 후 /app 이동, invalid면 토큰 제거.
-3) 폼 제출: HTML5 제약검사 통과 시 /login 제출로 세션 생성.
-4) 서버 오류: /login?error 쿼리 감지 시 상단 경고 표시.
+  if (!input) return;
 
-[계약]
-- /api/check2
-  입력: { "barer": string }  // 오탈자 포함 계약을 그대로 유지
-  헤더: Content-Type: application/json;charset=UTF-8
-  반환: "valid" | 기타 텍스트
-  오류: 네트워크 또는 4xx/5xx → 토큰 유지 불가 시 제거.
-- /login
-  입력: form-urlencoded(acntId, password, _csrf)
-  반환: 성공 시 SavedRequest 또는 /user/welcome로 리다이렉트(서버 정책에 따름).
+  // 보기/숨기기 토글
+  if (toggleBtn) {
+    toggleBtn.addEventListener("click", () => {
+      const isPassword = input.type === "password";
+      input.type = isPassword ? "text" : "password";
+      toggleBtn.textContent = isPassword ? "숨기기" : "보기";
+      input.focus();
+    });
+  }
 
-[파라미터 명세]
-- localStorage.key: "accessToken" (string, 필수 아님, JWT 원문)
-- WELCOME_URL: string, 세션 인증 성공 시 이동 경로. 기본 "/debug/debuging".
-- REACT_APP_URL: string, SPA 루트. 기본 "/app".
-- REDIRECT_DELAY_MS: number, 카운트다운 총 지연. 기본 5000.
+  // Caps/Num Lock 표시
+  const updateModifierState = (e) => {
+    try {
+      if (caps) {
+        const capsOn = e.getModifierState && e.getModifierState("CapsLock");
+        caps.classList.toggle("d-none", !capsOn);
+      }
+      if (num) {
+        const numOn = e.getModifierState && e.getModifierState("NumLock");
+        num.classList.toggle("d-none", !numOn);
+      }
+    } catch (_e) {
+      // 일부 브라우저에서 getModifierState 비지원이면 조용히 무시
+    }
+  };
 
-[보안·안전 전제]
-- JWT는 로컬 저장소에 존재. XSS 방지 전제 필요. 모든 텍스트 삽입은 textContent로만 처리.
-- CSRF는 세션 로그인 경로에만 적용. /api/**는 JWT 검증으로 한정.
-- 실패 시 토큰 정리(localStorage.removeItem)로 유효하지 않은 세션 상태 방치 금지.
+  input.addEventListener("keydown", updateModifierState);
+  input.addEventListener("keyup", updateModifierState);
+  input.addEventListener("focus", (e) => updateModifierState(e));
+  input.addEventListener("blur", () => {
+    if (caps) caps.classList.add("d-none");
+    // Num Lock 안내는 blur 시 유지해도 되지만 여기서는 그대로 둠
+  });
+}
 
-[유지보수자 가이드]
-- /api/check2 계약이 바뀌면 body 필드명("barer")와 응답 파싱 로직을 함께 수정.
-- 오버레이 텍스트는 i18n 대상. DOM id 변경 시 showOverlay, updateCountdown, hideOverlay 내 선택자 함께 수정.
-- 네트워크 실패 시 침묵 실패를 유지. UX 정책 변경 시 catch 블록에 사용자 메시지 추가 가능.
+/*
+  [로그인/토큰 처리 메타]
 
-[근거]
-- HTML5 form.checkValidity와 Bootstrap .invalid-feedback로 클라이언트 제약검사 구현.
-- Spring Security 표준 오류 쿼리 /login?error 감지로 실패 안내.
+  [목적/의도]
+  - 하나의 jsp에서 세션 로그인(/login)과 JWT 유지(/api/check2)를 동시에 관리.
+  - JWT가 이미 유효하면 굳이 로그인 폼을 다시 입력시키지 않고 React SPA(/app)로 바로 전환.
+
+  [데이터 흐름]
+  1) 초기 로드
+     - serverAuthenticated=true → /debug/debuging 로 즉시 이동.
+     - serverAuthenticated=false → localStorage.accessToken 확인.
+  2) JWT 체크
+     - accessToken 존재 → /api/check2 로 POST { "barer": token } 전송.
+     - 응답이 "valid" 이면 오버레이 + 카운트다운 후 /app 이동.
+     - 그 외(에러/invalid)면 accessToken 삭제 후 로그인 폼 유지.
+  3) 폼 제출
+     - HTML5 checkValidity 통과 시 /login 으로 제출.
+     - 실패 시 .was-validated 부여 → Bootstrap invalid-feedback 노출.
+  4) 오류 안내
+     - /login?error 쿼리 있으면 상단 경고 문구 출력.
+
+  [계약]
+  - /api/check2
+    · 요청 body: { "barer": string } (오탈자 포함 계약 유지).
+    · 응답: HTTP 200 + "valid" 텍스트이면 성공, 그 외는 실패로 간주.
+  - /login
+    · 요청: acntId, password, _csrf (form-urlencoded).
+    · 응답: SavedRequest 또는 /user/welcome 등으로 리다이렉트(서버 정책).
+
+  [보안·안전 전제]
+  - JWT는 localStorage 에 저장되므로 XSS 방지 전제가 필요. DOM 삽입은 textContent 사용.
+  - CSRF는 세션 로그인(/login)에만 적용, /api/** 는 JWT 인증 경로로 분리.
 */
 
 const WELCOME_URL = "/debug/debuging";
@@ -164,7 +294,6 @@ async function checkJwtAndRedirect() {
       body: JSON.stringify({ "barer": token }) // 서버 계약 유지
     });
 
-    // 200이 아닌 경우도 실패 처리
     const text = await res.text();
     const result = text.trim();
 
@@ -191,11 +320,14 @@ function handleSessionLoginSubmit(e) {
     return;
   }
   $("login-btn").disabled = true;
-  form.submit(); // 기본 form 제출. submit 이벤트 재발생 없음
+  form.submit();
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
-  // 서버 세션만 존재할 때
+  // 비밀번호 UX 헬퍼 활성화
+  setupPasswordHelpers("password", "toggleLoginPassword", "capsIndicator", "numIndicator");
+
+  // 서버 세션만 존재할 때: JSP/세션 기반 화면으로 이동
   if (serverAuthenticated) {
     location.replace(WELCOME_URL);
     return;
@@ -212,5 +344,34 @@ document.addEventListener("DOMContentLoaded", async () => {
   // 폼 제출 바인딩
   $("sessionLoginForm").addEventListener("submit", handleSessionLoginSubmit);
 });
+
+// 아이디 찾기 팝업
+window.openFindIdPopup = function() {
+  const width = 500;
+  const height = 600;
+  const left = (window.screen.width / 2) - (width / 2);
+  const top = (window.screen.height / 2) - (height / 2);
+
+  window.open(
+    "/account/find-id",
+    "findIdPopup",
+    `width=${width},height=${height},left=${left},top=${top},scrollbars=no,resizable=no`
+  );
+};
+
+// 비밀번호 재설정 팝업
+window.openResetPwPopup = function() {
+  const width = 500;
+  const height = 600;
+  const left = (window.screen.width / 2) - (width / 2);
+  const top = (window.screen.height / 2) - (height / 2);
+
+  window.open(
+    "/account/reset-pw",
+    "resetPwPopup",
+    `width=${width},height=${height},left=${left},top=${top},scrollbars=no,resizable=no`
+  );
+};
 </script>
 
+::contentReference[oaicite:0]{index=0}

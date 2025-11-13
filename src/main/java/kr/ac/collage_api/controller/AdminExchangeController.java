@@ -79,7 +79,9 @@ public class AdminExchangeController {
             return ResponseEntity.badRequest().build();
         }
 
-        // 1) HTML 브릿지 모드: 동일 오리진 JSON 교환 → 해시로 토큰 전달 → 프런트로 이동
+        // 1) HTML 브릿지 모드: 동일 오리진 JSON 교환 
+        //						→ 해시로 토큰 전달 
+        //							→ 프런트로 이동
         if (ui) {
             final String redirectBase = resolveTarget(target);
             final String html = """
