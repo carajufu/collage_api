@@ -6,12 +6,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URLEncoder;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import kr.ac.collage_api.common.attach.service.BeanController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import jakarta.servlet.http.HttpServletResponse;
-import kr.ac.collage_api.common.attach.service.BeanController;
 import kr.ac.collage_api.lecture.service.LectureService;
 import kr.ac.collage_api.vo.EstblCourseVO;
 import kr.ac.collage_api.vo.FileDetailVO;

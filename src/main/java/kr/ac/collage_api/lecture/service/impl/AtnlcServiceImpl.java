@@ -144,4 +144,9 @@ public class AtnlcServiceImpl implements AtnlcService {
 		return this.atnlcMapper.stdntLctreList(stdntNo);
 	}
 
+	// 장바구니 강의 담기 취소
+	@Override
+	public int editMyCart(AtnlcReqstVO atnlcReqstVO) {
+		return this.atnlcMapper.editMyCart(atnlcReqstVO);
+	}
 }

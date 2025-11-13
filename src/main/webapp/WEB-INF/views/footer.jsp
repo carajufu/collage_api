@@ -806,13 +806,11 @@
     </div>
 </div>
 
-<!-- JAVASCRIPT -->
-<script src="/assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
-<script src="/assets/libs/simplebar/simplebar.min.js"></script>
-<script src="/assets/libs/node-waves/waves.min.js"></script>
+
+
+
+<!-- 아마 필요 없을 거 같은디 -->
 <script src="/assets/libs/feather-icons/feather.min.js"></script>
-<script src="/assets/js/pages/plugins/lord-icon-2.1.0.js"></script>
-<script src="/assets/js/plugins.js"></script>
 
 <!-- apexcharts -->
 <script src="/assets/libs/apexcharts/apexcharts.min.js"></script>
@@ -823,9 +821,6 @@
 
 <!-- Dashboard init -->
 <script src="/assets/js/pages/dashboard-analytics.init.js"></script>
-
-<!-- App js -->
-<script src="/assets/js/app.js"></script>
 
 </body>
 </html>

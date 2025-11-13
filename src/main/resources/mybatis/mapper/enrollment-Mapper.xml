@@ -184,6 +184,4 @@
 	        ,#{changeResn}
 	    )
 	</insert>
-	
-	
 </mapper>

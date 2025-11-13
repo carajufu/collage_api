@@ -10,6 +10,10 @@ public class LctreTimetableVO {
 	private String lctreDfk;          //강의요일	LCTRE_DFK
 	private int beginTm;              //시작시각	BEGIN_TM
 	private int endTm;                //종료시각	END_TM
+
+	//상담할때 필요함
+	private String profsrNo;    //교수_번호(PK)
+	private String sklstfNm;     //교직원명	SKLSTF_NM
 }
 
 

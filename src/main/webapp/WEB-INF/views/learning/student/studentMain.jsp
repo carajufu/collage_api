@@ -1,52 +1,23 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
 <%@ include file="../../header.jsp" %>
+    <style>
+        .blog-post-meta { font-size: 85%; margin-top: 0.5rem; font-style: italic; }
+    </style>
+
+    <!-- dropzone -->
+    <link type="text/css" href="/assets/libs/dropzone/basic.css" />
+    <link type="text/css" href="/assets/libs/dropzone/dropzone.css" />
+    <script type="text/javascript" src="/assets/libs/dropzone/dropzone-min.js"></script>
+
+    <!-- sweetalert2 -->
+    <link href="/assets/libs/sweetalert2/sweetalert2.min.css" rel="stylesheet" type="text/css" />
+    <script type="text/javascript" src="/assets/libs/sweetalert2/sweetalert2.min.js"></script>
+
     <script type="text/javascript" src="/js/wtModal.js"></script>
     <script type="text/javascript">
-        function taskDetail() {
-
-        }
-
-        /**
-         * 과제 목록을 생성해 모달 바디에 주입
-         * @param {string} modalId - 과제 목록이 주입될 모달의 id
-         * @param {Array<Object>} tasks - 응답 받은 과제의 배열
-         * @return {void} This function does not return a value.
-         */
-        function renderList(modalId, tasks) {
-            const container = document.createElement("div");
-            container.className = "container";
-
-            const group = document.createElement("div");
-            group.className = "list-group shadow-sm rounded-3";
-
-            // group list의 header
-            const groupHeader = document.createElement("div");
-            groupHeader.className = "list-group-item d-flex active";
-            groupHeader.style = "-bs-list-group-active-bg: var(--bs-primary); --bs-list-group-active-border-color: var(--bs-primary);"
-            groupHeader.innerHTML = "과제";
-
-            group.appendChild(groupHeader);
-
-            // 과제 배열의 각 요소 마다 a 태그 생성해 group list의 요소로 등록
-            tasks.forEach(task => {
-                let anchor = document.createElement("a");
-                anchor.className = "list-group-item list-group-item-action";
-                anchor.style = "cursor: pointer";
-                anchor.innerHTML = task.taskSj;
-                anchor.setAttribute("data-task-no", );
-                anchor.onClick = taskDetail;
-
-                group.appendChild(anchor);
-            });
-
-            container.appendChild(group);
-
-            changeModalBody(modalId, container);
-        }
-
         document.addEventListener("DOMContentLoaded", () => {
-            document.querySelector("body").innerHTML += modal;
+            document.querySelector("body").appendChild(frag);
 
             // 선택한 주차의 과제 리스트를 보여주는 모달
             const tModal = document.querySelector("#modal");
@@ -82,43 +53,494 @@
                       })
                       .catch(err => console.error(err));
 
-                popModal(modalId);
+                // popModal(modalId);
               });
            });
 
            // 모달 외부 영역에만 한정해 closeModal 호출
-            tModal.addEventListener("click", () => closeModal(tModal.id));
-            tModal.querySelector("#cont").addEventListener("click", e => e.stopPropagation());
+           //  tModal.addEventListener("click", () => closeModal(tModal.id));
+           //  tModal.querySelector("#cont").addEventListener("click", e => e.stopPropagation());
         });
 
+        /**
+         * 과제 목록을 생성해 모달 바디에 주입
+         * @param {string} modalId - 과제 목록이 주입될 모달의 id
+         * @param {Array<Object>} tasks - 응답 받은 과제의 배열
+         * @return {void} This function does not return a value.
+         */
+        function renderList(modalId, tasks) {
+            const container = document.createElement("div");
+            container.className = "container";
+
+            const group = document.createElement("div");
+            group.className = "list-group shadow-sm rounded-3";
+            group.id = "listGroup";
+
+            // group list의 header
+            // const groupHeader = document.createElement("div");
+            // groupHeader.className = "list-group-item d-flex active";
+            // groupHeader.style = "-bs-list-group-active-bg: var(--bs-primary); --bs-list-group-active-border-color: var(--bs-primary);"
+            // groupHeader.textContent = "과제";
+
+            // group.appendChild(groupHeader);
+
+            // 과제 배열의 각 요소 마다 a 태그 생성해 group list의 요소로 등록
+            tasks.forEach((task, idx) => {
+                let anchor = document.createElement("a");
+                anchor.className = "list-group-item list-group-item-action";
+                anchor.style = "cursor: pointer";
+                anchor.textContent = task.taskSj;
+
+                anchor.addEventListener("click", e => {
+                    e.preventDefault();
+
+                    renderTaskDetail(modalId, tasks, idx);
+                });
+
+                group.appendChild(anchor);
+            });
+
+            container.appendChild(group);
+
+            changeModalBody(modalId, "과제 목록", container);
+        }
+
+        /**
+         * <p>과제별 상세 내용을 담은 요소를 동적으로 생성해 해당 요소를 화면에 그리는 메서드</p>
+         *
+         * @param modalId  요소가 나타날 모달의 id
+         * @param tasks  해당 주차의 과제 배열
+         * @param idx  과제 배열 인덱스
+         */
+        function renderTaskDetail(modalId, tasks, idx) {
+            const chkRoot = document.querySelector("#taskBodyRoot");
+            if(chkRoot) { chkRoot.remove(); }
+
+            const root = document.createElement("div");
+            root.className = "container mt-4";
+            root.id = "taskBodyRoot";
+
+            const grid = document.createElement("div");
+            grid.className = "row";
+            root.appendChild(grid);
+
+            const side = document.createElement("div");
+            side.className = "col-3";
+            side.id = "side"
+            grid.appendChild(side);
+
+            let group = document.createElement("div");
+            group.className = "list-group shadow-sm rounded-3";
+            side.appendChild(group);
+
+
+            let titles = [];            // 선택한 주차의 과제 목록 제목을 담은 배열
+            const listGroup = document.querySelector("#listGroup");
+            titles = listGroup.querySelectorAll(".list-group-item-action");
+
+            let body = document.createElement("div");
+            body.className = "col d-flex flex-column border shadow-sm rounded-3 me-2";
+            body.id = "body";
+            grid.appendChild(body);
+
+            // 과제 갯수만큼 제목 리스트를 만듬
+            for(let i = 0; i < titles.length; i++) {
+                let element = document.createElement("button");
+                element.className = "list-group-item list-group-item-action";
+                element.textContent = titles[i].textContent;
+
+                if(i == idx) { element.classList.add("active"); }
+
+                element.addEventListener("click", () => {
+                    side.querySelectorAll(".list-group-item").forEach(el => el.classList.remove("active"));
+                    element.classList.add("active");
+
+                    taskDetail(body, tasks[i]);
+                });
+
+                group.appendChild(element);
+            }
+
+            console.log("chkng before change body >  ", root);
+            changeModalBody(modalId, "과제 상세", root);
+
+            if (Array.isArray(tasks) && tasks.length && idx >= 0 && idx < tasks.length) {
+                taskDetail(body, tasks[idx]);
+            }
+        }
+
+        /**
+         * <p>선택된 과제의 상세 내용을 본문 영역에 렌더링한다.<br>
+         * 기존 본문 요소를 비우고(article 재구성) 제목, 등록/수정 일시, 과제 기간, 본문 내용을 순서대로 추가한다.<br>
+         * 날짜는 Asia/Seoul 타임존 기준 로컬 포맷으로 표기한다.
+         * @param {HTMLElement} body  상세 내용을 렌더링할 컨테이너 요소
+         * @param {Object} detail  상세 내용을 렌더링할 컨테이너 요소
+         *  {string} detail.taskSj - 과제 제목 <br>
+         *  {string} detail.taskCn - 과제 내용 <br>
+         *  {string} detail.taskBeginDe - 과제 시작 일자 <br>
+         *  {string} detail.taskClosDe - 과제 종료 일자 <br>
+         *  {string} detail.registDt - 등록 일시(ISO/타임스탬프) <br>
+         *  {string} [detail.updtDt] - 수정 일시(선택) <br>
+         * @returns {void}
+         */
+        async function taskDetail(body, detail) {
+            if(!body || !detail) return;
+
+            body.replaceChildren();
+
+            const article = document.createElement("article");
+            article.className = "blog-post p-3";
+            article.id = "article";
+
+            const taskRow = document.createElement("div");
+            taskRow.className = "row";
+            taskRow.id = "taskRow";
+            article.appendChild(taskRow);
+
+            const tCol = document.createElement("div");
+            tCol.className = "col";
+            taskRow.appendChild(tCol);
+
+            const title = document.createElement("h3");
+            title.textContent = detail.taskSj;
+            tCol.appendChild(title);
+
+            const meta = document.createElement("p");
+
+            let registTime = new Date(detail.registDt).toLocaleString("ko-KR", {timeZone: "Asia/Seoul"});
+            let registMsg = "작성 일시 : " + registTime;
+
+            let updateTime = "";
+            if(detail.updtDt) {
+                updateTime = new Date(detail.updtDt).toLocaleString("ko-KR", {timeZone: "Asia/Seoul"});
+            }
+            let updateMsg = updateTime ? "수정 일시 : " + updateTime : "";
+
+            meta.className = "blog-post-meta";
+            meta.textContent = registMsg + updateMsg;
+            tCol.appendChild(meta);
+
+            const deadLine = document.createElement("p");
+            deadLine.className = "blog-post-meta";
+            deadLine.textContent = detail.taskBeginDe + " ~ " + detail.taskClosDe;
+            tCol.appendChild(deadLine);
+
+            article.appendChild(document.createElement("hr"));
+
+            const content = detail.taskCn;
+            const pContent = document.createElement("p");
+            pContent.className = "my-4";
+            pContent.textContent = content;
+            article.appendChild(pContent);
+
+            article.appendChild( await renderSubmitBtn(detail.taskNo) );
+
+            body.appendChild(article);
+        }
+
+        /**
+         * <p>
+         * 현재 학생이 부여된 과제를 제출 했는지 제출 여부를 체크하는 메서드 <br>
+         * 제출 데이터를 JSON 형식으로 응답받는 비동기 GET 요청을 서버에 전송한다 <br>
+         * 응답 받은 데이터가 존재하지 않으면 null을 반환하고, <br>
+         * 데이터가 존재하고 제출 여부 필드가 1이라면 JSON 객체인 데이터를 반환한다 <br>
+         * </p>
+         * @param { string | number } taskNo 제출 여부를 검색하기 위한 과제 번호
+         * @returns {Promise<null>} 데이터 존재 여부에 따라 null 또는 제출 데이터
+         */
+        async function isSubmit(taskNo) {
+            let data = null;
+            let resp, rslt;
+
+            try {
+                resp = await fetch("/learning/student/isSubmit?taskNo=" + taskNo,
+                    { method: "GET" });
+                rslt = await resp.json();
+
+                if(!rslt.data) { return data; }
+                if(rslt.data.presentnAt === "1") { data = rslt.data; }
+            } catch(err) {
+                console.error("failed get response reason > {}", resp.status);
+            }
+
+            return data;
+        }
+
+         async function renderSubmitBtn(taskNo) {
+            const container = document.createElement("div");
+            container.className = "container d-flex justify-content-center gap-3 my-3";
+            container.id = "btnContainer";
+
+            const submit = await isSubmit(taskNo);
+
+            const state = { mode: "form" };
+            if(!submit) {
+                const dz = document.createElement("div");
+                dz.className = "dropzone dz-clickable d-flex align-items-center justify-content-center mb-3";
+                dz.setAttribute("style", "min-height: 240px");
+                dz.id = "taskDz";
+
+                const dzMsg = document.createElement("div");
+                dzMsg.className = "dz-message needsclick d-flex flex-column align-items-center text-center";
+                dz.appendChild(dzMsg);
+
+                const dzWrapper = document.createElement("div");
+                dzMsg.appendChild(dzWrapper);
+
+                const dzIcon = document.createElement("i");
+                dzIcon.className = "display-4 text-muted ri-upload-cloud-2-fill";
+                dzWrapper.appendChild(dzIcon);
+
+                const dzMent = document.createElement("h4");
+                dzMent.textContent = "파일을 업로드 하세요";
+                dzMsg.appendChild(dzMent);
+
+                const dzPreview = document.createElement("ul");
+                dzPreview.id = "dropzone-preview";
+                dzPreview.className = "list-unstyled mb-0";
+
+                const btnContainer = document.createElement("div");
+                btnContainer.className = "m-3 fs-6";
+
+                const submitBtn = document.createElement("button");
+                submitBtn.className = "btn btn-primary w-xs";
+                submitBtn.textContent = "제출";
+                submitBtn.id = "submitBtn";
+
+                const cancleBtn = document.createElement("button");
+                cancleBtn.className = "btn btn-danger w-xs";
+                cancleBtn.id = "submitCanBtn";
+                cancleBtn.textContent = "취소";
+
+                let taskDz;
+                // todo: (Level 5) 제출한 파일 목록 보기 및 수정
+                submitBtn.addEventListener("click", () => {
+                    if(state.mode === "form") {
+                        const exist = document.querySelector("#taskDz");
+                        if(exist) { exist.remove(); }
+
+                        if(taskDz) {
+                            taskDz.destroy();
+                            taskDz = null;
+                        }
+
+                        const oldTitle = document.querySelector("#submitTitle");
+                        if(oldTitle) { oldTitle.remove(); }
+
+                        console.log("submit btn clicked");
+
+                        const submitTitle = document.createElement("h4");
+                        submitTitle.className = "m-3"
+                        submitTitle.id = "submitTitle";
+                        submitTitle.textContent = "제출하기";
+                        container.before(submitTitle);
+
+                        container.before(dz);
+                        container.before(dzPreview);
+
+                        const template = document.querySelector("#preview-template");
+                        Dropzone.autoDiscover = false;
+                        taskDz = new Dropzone("#taskDz", {
+                            url: "/learning/student/fileUpload",
+                            paramName: "uploadFiles",
+                            previewsContainer: "#dropzone-preview",
+                            previewTemplate: template.innerHTML,
+                            autoProcessQueue: false,
+                            uploadMultiple: true,
+                            parallelUploads: 100,
+                            maxFilesize: 10,
+                            timeout: 0
+                        });
+
+                        taskDz.on("addedfile", () => state.mode = "upload");
+                        taskDz.on("sendingmultiple", (file, xhr, formData) => {
+                            formData.append("taskPresentnNo", taskNo);
+                        });
+                        taskDz.on("successmultiple", (file, resp) => {
+                            Swal.fire({
+                                icon: "success",
+                                title: "제출이 완료 되었어요",
+                                showConfirmButton: !1,
+                                showCloseButton: !0,
+                                timer: 1000
+                            });
+                        });
+                        taskDz.on("errormultiple", (files, resp) => {
+                           Swal.fire({
+                               icon: "error",
+                               title: "제출이 실패 되었어요",
+                               timer: 1000,
+                               text: String(msg)
+                           });
+                        });
+                        taskDz.on("queuecomplete", () => {
+                            const dzEl = document.querySelector("#taskDz");
+                            if(dzEl) { dzEl.remove(); }
+
+                            const title = document.querySelector("#submitTitle");
+                            if(title) { title.remove(); }
+
+                            if(taskDz) {
+                                taskDz.removeAllFiles(true);
+                                taskDz.destroy();
+                                taskDz = null;
+                            }
+
+                            document.querySelector("#submitBtn").remove();
+                            document.querySelector("#submitCanBtn").remove();
+
+                            const updateBtn = document.createElement("button");
+                            updateBtn.className = "btn btn-outline-primary w-xs";
+                            updateBtn.textContent = "수정";
+
+                            let upFrag = {
+                                title: submitTitle,
+                                body: dz,
+                                dzObj: taskDz,
+                                btnContainer: container
+                            }
+                            updateBtn.addEventListener("click",upFrag => upHandler(upFrag));
+
+                            container.appendChild(updateBtn);
+                        });
+                    }
+
+                    container.appendChild(cancleBtn);
+
+                    if(state.mode === "upload") {
+                        console.log("upload btn clicked")
+                        fileSubmit(taskDz);
+
+                        state.mode = "form";
+                    }
+                });
+
+                cancleBtn.addEventListener("click", e => {
+                    const dzEl = document.querySelector("#taskDz");
+                    if(dzEl) { dzEl.remove(); }
+
+                    const title = document.querySelector("#submitTitle");
+                    if(title) { title.remove(); }
+
+                    const prev = document.querySelector("#dropzone-preview");
+                    if (prev) prev.remove();
+
+                    if(taskDz) {
+                        taskDz.removeAllFiles(true);
+                        taskDz.destroy();
+                        taskDz = null;
+                    }
+
+                    state.mode = "form";
+
+                   e.target.remove();
+                });
+
+                container.appendChild(submitBtn);
+            }
+
+            if(submit) {
+                const updateBtn = document.createElement("button");
+                updateBtn.className = "btn btn-outline-primary w-xs";
+                updateBtn.textContent = "수정";
+                //todo : 수정 이벤트 핸들러 작성
+                updateBtn.addEventListener("click", upHandler)
+                container.appendChild(updateBtn);
+            }
+
+            return container;
+        }
+
+        // todo: 수정 버튼 클릭 시 dropzone 레이아웃 화면에 출력 및 Dropzone.displayExistingFile() 이용해 업로드 되었떤 파일 목록 출력
+        function upHandler(upFrag) {
+            const container = document.querySelector("#btnContainer");
+
+            Dropzone.options.myDropzone
+        }
+
+        function fileSubmit(dz) {
+            dz.processQueue();
+        }
     </script>
 
-    <div id="main-container" class="container-fluid overflow-scroll">
-        <div class="flex-grow-1 mx-5">
+        <div class="row p-5">
+            <div class="col-xxl-9">
             <!-- 반복문을 통해 아코디언 리스트 생성 -->
-            <div class="accordion accordion-flush" id="accordionFlush">
-                <c:forEach var="week" items="${weekList}">
-                        <div class="accordion-item shadow rounded-3">
-                            <h2 class="accordion-header" id="flush-heading${week.WEEK}">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse${week.WEEK}" aria-expanded="false" aria-controls="flush-collapse${week.WEEK}">
-                                    <strong>#${week.WEEK}</strong>${week.LRN_THEMA}
-                                </button>
-                            </h2>
-                            <div id="flush-collapse${week.WEEK}" class="accordion-collapse collapse p-4" aria-labelledby="flush-heading${week.WEEK}" data-bs-parent="#accordionFlush">
-                                <p>${week.LRN_CN}</p>
-                                <!-- 부여 여부에 따른 요소 출력 -->
-                                <c:if test="${week.TASK_AT eq '0'}">
-                                    <span class="badge rounded-pill bg-primary task" style="cursor: pointer;" data-week-no="${week.WEEK}">과제</span>
-                                </c:if>
-                                <c:if test="${week.TASK_AT eq '1'}">
-                                    <span class="badge rounded-pill bg-secondary">과제</span>
-                                </c:if>
+                <div class="card card-height-100 shadow rounded-3">
+                    <div class="card-header">
+                        <h5 class="fs-3 fw-bold">강의 목록</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div data-simplebar="init" style="max-height: 330px;" class="px-3 simplebar-scrollable-y">
+                            <div class="simplebar-wrapper" style="margin: 0px -16px;">
+                                <div class="simplebar-height-auto-observer-wrapper">
+                                    <div class="simplebar-height-auto-observer"></div>
+                                </div>
+                                <div class="simplebar-mask">
+                                    <div class="simplebar-offset" style="right: 0px; bottom: 0px;">
+                                        <div class="simplebar-content-wrapper" tabindex="0" role="region" aria-label="scrollable content" style="height: auto; overflow: hidden scroll;">
+                                            <div class="simplebar-content" style="padding: 0px 16px;">
+                                                <div class="accordion accordion-flush" id="accordionFlush">
+                                                    <c:forEach var="week" items="${weekList}">
+                                                        <div class="accordion-item ">
+                                                            <h2 class="accordion-header" id="flush-heading${week.WEEK}">
+                                                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse${week.WEEK}" aria-expanded="false" aria-controls="flush-collapse${week.WEEK}">
+                                                                    <span class="fw-bold fs-5 mx-1">#${week.WEEK}</span><span class="fs-5">${week.LRN_THEMA}</span>
+                                                                </button>
+                                                            </h2>
+                                                            <div id="flush-collapse${week.WEEK}" class="accordion-collapse collapse p-4" aria-labelledby="flush-heading${week.WEEK}" data-bs-parent="#accordionFlush">
+                                                                <p>${week.LRN_CN}</p>
+                                                                <!-- 부여 여부에 따른 요소 출력 -->
+                                                                <c:if test="${week.TASK_AT eq '0'}">
+                                                                    <span class="badge rounded-pill border boder-light text-body">과제</span>
+                                                                </c:if>
+                                                                <c:if test="${week.TASK_AT eq '1'}">
+                                                                    <span class="badge rounded-pill bg-primary task" style="cursor: pointer;" data-week-no="${week.WEEK}" data-bs-toggle="modal" data-bs-target="#modal">과제</span>
+                                                                </c:if>
+                                                            </div>
+                                                        </div>
+                                                    </c:forEach>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="simplebar-placeholder" style="width: 792px; height: 274px;"></div>
+                            </div>
+                            <div class="simplebar-track simplebar-horizontal" style="visibility: hidden;">
+                                <div class="simplebar-scrollbar" style="width: 0px; display: none;"></div>
+                            </div>
+                            <div class="simplebar-track simplebar-vertical" style="visibility: visible;">
+                                <div class="simplebar-scrollbar" style="height: 176px; transform: translate3d(0px, 0px, 0px); display: block;"></div>
                             </div>
                         </div>
-                </c:forEach>
+
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </main>
+
+    <div id="preview-template" style="display:none;">
+        <div class="dz-preview dz-file-preview border rounded p-2">
+            <div class="d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center">
+                    <div class="flex-shrink-0 me-3">
+                        <div class="avatar-sm bg-light rounded">
+                            <img data-dz-thumbnail class="img-fluid rounded d-block" alt="">
+                        </div>
+                    </div>
+                    <div class="flex-grow-1">
+                        <h5 class="fs-14 mb-1" data-dz-name>File Name</h5>
+                        <p class="fs-13 text-muted mb-1" data-dz-size></p>
+                    </div>
+                </div>
+                <div class="flex-shrink-0 ms-3 d-flex align-items-center">
+                    <button data-dz-remove class="btn btn-sm btn-danger">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
 <%@ include file="../../footer.jsp" %>

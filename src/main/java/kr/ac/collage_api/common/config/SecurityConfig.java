@@ -38,7 +38,7 @@ public class SecurityConfig {
                 .requestMatchers("/css/**",
                         "/js/**",
                         "favicon.ico",
-                        "/app/**",
+                        "/.well-known/**",
                         "/assets/**");
     }
 
@@ -67,9 +67,8 @@ public class SecurityConfig {
                         .dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.ASYNC).permitAll()
                         .requestMatchers("/",
                                 "/login",
-                                "/accessError",
-                                "/.well-known/**",
-                                "/admin/**").permitAll()
+                                "/admin/**",
+                                "/20*/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .requestCache(cache -> cache.requestCache(requestCache))
