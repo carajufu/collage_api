@@ -39,7 +39,7 @@
 			      <th scope="row">${bbsVO.rnum}</th>
 			      <td><a href="/bbs/detail?bbscttNo=${bbsVO.bbscttNo}">${bbsVO.bbscttSj}</a></td>
 			      <td>${bbsVO.acntId}</td>
-			      <td>${bbsVO.bbscttWritngdt}</td>
+			      <td>${bbsVO.bbscttWritngDe}</td>
 			      <td>${bbsVO.bbscttRdcnt}</td>
 			    </tr>
 		   
@@ -57,7 +57,6 @@
 <!-- body 끝 -->
         </div>
     </div>
-</main>
 
 
 <%@ include file="footer.jsp" %>

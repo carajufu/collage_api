@@ -19,7 +19,7 @@ public class SknrgsChangeReqstVO {
 	private Date confmComptDt;             //승인완료일시	CONFM_COMPT_DT
 	private String returnResn;             //반려사유	RETURN_RESN
 	private Date lastUpdtTm;               //최종수정일시	LAST_UPDT_TM
-	
+
 	private StdntVO stdntVO;	//학생
 }
 

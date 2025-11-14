@@ -67,7 +67,6 @@
 	        </div>
 	    </div>
     </div>
-</main>
 
 <div class="modal" tabindex="-1" id="modalPlan">
   <div class="modal-dialog modal-lg">
@@ -189,18 +188,18 @@ $("#modalPlan").on("show.bs.modal",(event)=>{
 				const fileStreplace = vo.file.fileStreplace;
 				modalBody.innerHTML = `
 										<div class="col-sm-4"> 
-											<label for="address2" class="form-label"> 강의계획서 </label> 
+											<label for="planFile" class="form-label"> 강의계획서 </label>
 											<button class="btn btn-outline-primary" id="fileDownload"  data-filegroupno="\${fileGroupNo}">\${fileName}</button>
 											<input type="file" class="form-control" id="planFile" placeholder="Apartment or suite" style="display:none">
 										</div>
 				`
 			} else {
 				modalBody.innerHTML = `
-											<div class="col-sm-4"> 
-												<label for="planFile" class="form-label"> 강의계획서 </label> 
-												<a class="btn btn-outline-secondary"  id="fileDownload"  data-filegroupno="0" readonly>파일 없음</a>
-												<input type="file" class="form-control" id="planFile" placeholder="Apartment or suite" style="display:none">
-											</div>
+										<div class="col-sm-4">
+											<label for="planFile" class="form-label"> 강의계획서 </label>
+											<a class="btn btn-outline-secondary"  id="fileDownload"  data-filegroupno="0" readonly>파일 없음</a>
+											<input type="file" class="form-control" id="planFile" placeholder="Apartment or suite" style="display:none">
+										</div>
 				`
 			} 
 		})

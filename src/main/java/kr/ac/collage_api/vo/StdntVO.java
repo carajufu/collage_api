@@ -24,12 +24,10 @@ public class StdntVO {
 	private String bankNm;       //은행명	BANK_NM
 	private String acnutno;      //계좌번호	ACNUTNO
 	private Date lastUpdatedTime;//최근수정일시	LAST_UPDATED_TIME
-	
 	private String fileNm;	//파일 이름
 	
 	private SubjctVO subjctVO;	 //학과
 
+	private String univCode; //대학코드
 }
-
-
 

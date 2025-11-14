@@ -18,4 +18,6 @@ public interface LearningPageMapper {
 
     int taskFileUpload(@Param("taskpresentnNo") String taskpresentnNo,
                           @Param("fileGroupNo") Long fileGroupNo);
+
+    Map<String, Object> getLectureInfo(String lecNo);
 }

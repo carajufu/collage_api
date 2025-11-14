@@ -11,6 +11,10 @@ File: Custom Css File
     /* 헤더 */
     --vz-header-item-sub-color: var(--vz-primary);
 
+    .topbar-user {
+        background-color: white;
+    }
+
     /* 사이드바 */
     --vz-vertical-menu-bg: #222E83;
     --vz-vertical-menu-item-color: #ffffff;
@@ -36,9 +40,9 @@ File: Custom Css File
     --vz-primary-rgb: 34, 46, 131;
 
     /* 보조색 */
-    --vz-secondary: #E8A937;
+    --vz-secondary: #3CCE88;
     --vz-secondary-rgb: 60, 206, 136;
 
-    --vz-success : #E8A937;
+    --vz-success : #3CCE88;
     --vz-success-rgb: 60, 206, 136;
 }

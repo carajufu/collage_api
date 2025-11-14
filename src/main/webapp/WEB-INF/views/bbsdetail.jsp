@@ -21,7 +21,7 @@
                     </span>
                     <span class="text-muted">
                         <i class="bi bi-clock-history"></i> 작성일시: 
-                        <fmt:formatDate value="${bbsVO.bbscttWritngdt}" pattern="yyyy-MM-dd HH:mm" />
+                        <fmt:formatDate value="${bbsVO.bbscttWritngDe}" pattern="yyyy-MM-dd HH:mm" />
                     </span>
                 </div>
             </div>
@@ -80,7 +80,5 @@
 
     </div>
         </div>
-  
-</main>
 
 <%@ include file="footer.jsp" %>

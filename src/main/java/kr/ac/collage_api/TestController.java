@@ -15,4 +15,7 @@ public class TestController {
     public String testMain2(){
         return "regist/stdnt_regist";
     }
+
+    @GetMapping("/oho")
+    public String testMain3() { return "oho"; }
 }

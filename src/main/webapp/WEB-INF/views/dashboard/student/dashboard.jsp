@@ -17,23 +17,21 @@
         })
     </script>
 
-    <div id="main-container" class="container-fluid">
-        <div class="flex-grow-1 overflow-hidden mx-5">
-            <h1>로그인성공</h1>
-            <p>${lectureList}</p>
-            <div class="row row-cols-4 px-3 gap-2">
-                <c:forEach items="${lectureList}" var="lecture">
-                        <div class="col card rounded-3 shadow-sm" data-lec-no="${lecture.estbllctreCode}">
-                            <div class="card-body">
+        <div class="row p-5">
+            <div class="col-12">
+                <div class="row row-cols-xxl-4 row-cols-lg-2 row-cols-1">
+                    <c:forEach items="${lectureList}" var="lecture">
+                    <div class="col">
+                        <div class="card card-body rounded-3 shadow-sm" data-lec-no="${lecture.estbllctreCode}">
                                 <h4 class="card-title">${lecture.lctreNm}</h4>
                                 <p class="card-subtitle">${lecture.lctrum}</p>
                                 <p class="card-subtitle">${lecture.sklstfNm}</p>
-                            </div>
                         </div>
-                </c:forEach>
+                    </div>
+                    </c:forEach>
+
+                </div>
             </div>
         </div>
-    </div>
-</main>
 
 <%@ include file="../../footer.jsp" %>
