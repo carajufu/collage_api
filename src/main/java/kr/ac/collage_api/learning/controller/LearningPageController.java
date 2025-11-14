@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 @Controller
-@RequestMapping("/learning")
+@RequestMapping("/learning/student")
 @Slf4j
 public class LearningPageController {
     @Autowired
@@ -31,7 +31,7 @@ public class LearningPageController {
      * @param lecNo
      * @return
      */
-    @GetMapping("/student")
+    @GetMapping
     public String getLearningPage(Model model,
                                   Principal principal,
                                   @RequestParam String lecNo) {
@@ -47,7 +47,7 @@ public class LearningPageController {
      * @param reqMap
      * @return
      */
-    @PostMapping("student/task")
+    @PostMapping("/task")
     @ResponseBody
     public Map<String, Object> taskList(@RequestBody Map<String, Object> reqMap) {
         log.debug("chkng taskList > {}", reqMap);
@@ -75,7 +75,7 @@ public class LearningPageController {
         return respMap;
     }
 
-    @GetMapping("/student/isSubmit")
+    @GetMapping("/isSubmit")
     @ResponseBody
     public Map<String, Object> getSubmitTask(String taskNo,
                                              Principal principal) {
@@ -92,7 +92,7 @@ public class LearningPageController {
     }
 
     @ResponseBody
-    @PostMapping("/student/fileUpload")
+    @PostMapping("/fileUpload")
     public Map<String, Object> taskFileUpload(MultipartHttpServletRequest req,
                                               @RequestBody String taskPresentnNo,
                                               @RequestBody String[] retainedExisting,

@@ -591,7 +591,7 @@
                     <li class="menu-title"><span data-key="">학습</span></li>
 
                     <li class="nav-item">
-                        <a class="nav-link menu-link" href="ui-alerts.html" data-key="">
+                        <a class="nav-link menu-link" href="/dashboard/student" data-key="">
                             <i class="las la-university"></i> <span data-key="">학습 관리</span>
                         </a>
                     </li>

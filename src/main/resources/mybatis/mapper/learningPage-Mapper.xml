@@ -10,6 +10,7 @@
             , task_at               /* 과제 여부 */
             , lrn_thema             /* 학습 주제 */
             , lrn_cn                /* 학습 내용 */
+            , quiz_at               /* 퀴즈 여부 */
         FROM week_accto_lrn         /* 주 별 학습 */
         WHERE estbllctre_code = #{lecNo}
         ORDER BY week

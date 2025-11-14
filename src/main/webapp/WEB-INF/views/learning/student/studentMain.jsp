@@ -1,10 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
 <%@ include file="../../header.jsp" %>
-    <style>
-        .blog-post-meta { font-size: 85%; margin-top: 0.5rem; font-style: italic; }
-    </style>
-
     <!-- dropzone -->
     <link type="text/css" href="/assets/libs/dropzone/basic.css" />
     <link type="text/css" href="/assets/libs/dropzone/dropzone.css" />
@@ -189,7 +185,7 @@
             body.replaceChildren();
 
             const article = document.createElement("article");
-            article.className = "blog-post p-3";
+            article.className = "p-3";
             article.id = "article";
 
             const taskRow = document.createElement("div");
@@ -205,7 +201,7 @@
             title.textContent = detail.taskSj;
             tCol.appendChild(title);
 
-            const meta = document.createElement("p");
+            const meta = document.createElement("div");
 
             let registTime = new Date(detail.registDt).toLocaleString("ko-KR", {timeZone: "Asia/Seoul"});
             let registMsg = "작성 일시 : " + registTime;
@@ -216,13 +212,13 @@
             }
             let updateMsg = updateTime ? "수정 일시 : " + updateTime : "";
 
-            meta.className = "blog-post-meta";
+            meta.className = "text-muted fw-lighter";
             meta.textContent = registMsg + updateMsg;
             tCol.appendChild(meta);
 
-            const deadLine = document.createElement("p");
-            deadLine.className = "blog-post-meta";
-            deadLine.textContent = detail.taskBeginDe + " ~ " + detail.taskClosDe;
+            const deadLine = document.createElement("div");
+            deadLine.className = "text-muted fw-lighter mb-3";
+            deadLine.textContent = "제출기간 : " + detail.taskBeginDe + " ~ " + detail.taskClosDe;
             tCol.appendChild(deadLine);
 
             article.appendChild(document.createElement("hr"));
@@ -666,6 +662,10 @@
         }
     </script>
 
+    <script type="text/javascript">
+
+    </script>
+
         <div class="row py-3 px-5">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
@@ -703,14 +703,22 @@
                                                                 </button>
                                                             </h2>
                                                             <div id="flush-collapse${week.WEEK}" class="accordion-collapse collapse p-4" aria-labelledby="flush-heading${week.WEEK}" data-bs-parent="#accordionFlush">
-                                                                <p>${week.LRN_CN}</p>
+                                                                <p class="fs-5">${week.LRN_CN}</p>
                                                                 <!-- 부여 여부에 따른 요소 출력 -->
-                                                                <c:if test="${week.TASK_AT eq '0'}">
-                                                                    <span class="badge rounded-pill border boder-light text-body">과제</span>
-                                                                </c:if>
-                                                                <c:if test="${week.TASK_AT eq '1'}">
-                                                                    <span class="badge rounded-pill bg-primary task" style="cursor: pointer;" data-week-no="${week.WEEK}" data-bs-toggle="modal" data-bs-target="#modal">과제</span>
-                                                                </c:if>
+                                                                <div class="d-flex gap-2">
+                                                                    <c:if test="${week.TASK_AT eq '0'}">
+                                                                        <span class="badge rounded-pill border boder-light text-body">과제</span>
+                                                                    </c:if>
+                                                                    <c:if test="${week.TASK_AT eq '1'}">
+                                                                        <span class="badge rounded-pill bg-primary task" style="cursor: pointer;" data-week-no="${week.WEEK}" data-bs-toggle="quizModal" data-bs-target="#modal">과제</span>
+                                                                    </c:if>
+                                                                    <c:if test="${week.QUIZ_AT eq '0'}">
+                                                                        <span class="badge rounded-pill border boder-light text-body">퀴즈</span>
+                                                                    </c:if>
+                                                                    <c:if test="${week.QUIZ_AT eq '1'}">
+                                                                        <span class="badge rounded-pill bg-primary task" style="cursor: pointer;" data-week-no="${week.WEEK}" data-bs-toggle="quizModal" data-bs-target="#modal">퀴즈</span>
+                                                                    </c:if>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </c:forEach>
