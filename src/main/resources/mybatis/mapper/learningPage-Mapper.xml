@@ -26,7 +26,10 @@
             , ec.evl_mthd
             , ec.estbl_year
             , ec.estbl_semstr
+            , ac.lctre_nm
         FROM estbl_course ec
+            INNER JOIN all_course ac
+                ON ec.lctre_code = ac.lctre_code
         WHERE estbllctre_code = #{lecNo}
     </select>
 
@@ -48,17 +51,50 @@
             )
     </select>
 
-    <select id="getSubmitTask" resultType="taskPresentnVO">
+    <resultMap id="taskPresentnMap" type="taskPresentnVO">
+        <result property="taskPresentnNo" column="TASK_PRESENTN_NO"/>
+        <result property="stdntNo" column="STDNT_NO"/>
+        <result property="taskNo" column="TASK_NO"/>
+        <result property="fileGroupNo" column="FILE_GROUP_NO"/>
+        <result property="taskPresentnDe" column="TASK_PRESENTN_DE"/>
+        <result property="presentnAt" column="PRESENTN_AT"/>
+        <collection property="fileDetailVOList" resultMap="taskDetailMap"></collection>
+    </resultMap>
+
+    <resultMap id="taskDetailMap" type="fileDetailVO">
+        <result property="fileNo" column="FILE_NO"/>
+        <result property="fileGroupNo" column="FILE_GROUP_NO"/>
+        <result property="fileNm" column="FILE_NM"/>
+        <result property="fileStreNm" column="FILE_STRE_NM"/>
+        <result property="fileStreplace" column="FILE_STREPLACE"/>
+        <result property="fileMg" column="FILE_MG"/>
+        <result property="fileExtsn" column="FILE_EXTSN"/>
+        <result property="fileTy" column="FILE_TY"/>
+        <result property="fileStreDe" column="FILE_STRE_DE"/>
+        <result property="fileDwldCo" column="FILE_DWLD_CO"/>
+    </resultMap>
+
+    <select id="getSubmitTask" resultType="taskPresentnVO" resultMap="taskPresentnMap">
         SELECT                      /* kr.ac.collage_api.learning.mapper.LearningPageMapper.getSubmitTask */
-            task_presentn_no        /* 과제 제출 번호 */
-            , stdnt_no              /* 학생 번호 */
-            , task_no               /* 과제 번호 */
-            , file_group_no         /* 파일 그룹 번호 */
-            , task_presentn_de      /* 과제 제출 일자 */
-            , presentn_at           /* 제출 여부 */
-        FROM task_presentn
-        WHERE task_no = #{taskNo}
-            AND stdnt_no = #{studentNo}
+            tp.task_presentn_no        /* 과제 제출 번호 */
+             , tp.stdnt_no              /* 학생 번호 */
+             , tp.task_no               /* 과제 번호 */
+             , tp.file_group_no         /* 파일 그룹 번호 */
+             , tp.task_presentn_de      /* 과제 제출 일자 */
+             , tp.presentn_at           /* 제출 여부 */
+             , fd.file_no
+             , fd.file_nm
+             , fd.file_streplace
+             , fd.file_mg
+             , fd.file_extsn
+             , fd.file_ty
+             , fd.file_stre_de
+             , fd.file_dwld_co
+        FROM task_presentn tp
+                 INNER JOIN file_detail fd
+                            ON tp.file_group_no = fd.file_group_no
+        WHERE tp.task_no = #{taskNo}
+          AND tp.stdnt_no = #{studentNo}
     </select>
 
     <update id="taskFileUpload">

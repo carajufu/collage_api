@@ -45,4 +45,10 @@ File: Custom Css File
 
     --vz-success : #3CCE88;
     --vz-success-rgb: 60, 206, 136;
+
+    /* list.group */
+    .list-group {
+        --vz-list-group-active-bg: var(--vz-primary);
+        --vz-list-group-active-border-color: var(--vz-primary);
+    }
 }
