@@ -27,6 +27,11 @@
          · 인증코드 검증(백엔드 /api/account/email/verify 성공) 전까지 새 비밀번호/확인 필드는 readonly 유지.
          · 새 비밀번호와 확인 입력이 서로 일치하지 않으면 안내 텍스트로 즉시 피드백.
          · 둘이 일치하고 전체 검증을 통과하면 submit 직전에 confirm 창으로 최종 동의 확인.
+         · 확인 이후에는 form 기본 submit 을 막고(fetch 사용),
+           /api/account/password/reset 으로 비동기 POST 전송.
+         · 백엔드에서 ResponseEntity.ok("OK") 응답을 받으면
+           "비밀번호가 변경되었습니다" 메시지를 2초간 노출 후 자동으로 숨기고,
+           추가로 1초 뒤에 팝업 창(window.close)을 자동으로 닫음.
 
     2) 데이터 흐름
        - 사용자가 이메일(email), 아이디(acntId), 인증코드(code),
@@ -44,12 +49,16 @@
          · "OK" 수신 시:
            - codeVerified = true
            - 새 비밀번호/확인 입력 필드 readonly 해제 + 포커스 + 스크롤 다운.
-
        - [비밀번호 변경 버튼]
          · HTML5 checkValidity() + Bootstrap .was-validated 로 클라이언트 검증.
          · 비밀번호/확인 불일치 시 setCustomValidity 로 실패 처리 + 안내 텍스트 노출.
          · 인증코드 미검증(codeVerified=false)인 경우 submit 차단 + 안내 메시지 출력.
-         · 위 조건을 모두 통과하면 window.confirm("비밀번호를 변경하시겠습니까?") 로 최종 확인 후 submit.
+         · 위 조건을 모두 통과하면 window.confirm("비밀번호를 변경하시겠습니까?") 로 최종 확인.
+         · 확인 이후에는 form 기본 submit 을 막고(fetch 사용),
+           /api/account/password/reset 으로 비동기 POST 전송.
+         · 백엔드에서 "OK" 응답을 받으면
+           "비밀번호가 변경되었습니다" 메시지를 2초간 노출 후 자동 숨김,
+           그로부터 1초 뒤 팝업 창을 자동으로 닫음.
 
     3) 계약(Contract)
        - POST /api/account/email/send
@@ -63,9 +72,11 @@
        - POST /api/account/password/reset
          · Content-Type: application/x-www-form-urlencoded
          · Form: email, acntId, code, newPassword, _csrf
-         · Response: 컨트롤러에서 반환하는 문자열 코드("OK", "INVALID_PARAM" 등).
-           현재 구현은 ResponseEntity<String> 기반 REST 응답이므로,
-           팝업에서는 비밀번호 변경 성공 후 "OK" 텍스트 페이지로 전환됨.
+         · Response: ResponseEntity<String> 기반 단순 문자열 응답.
+           · "OK"  : 비밀번호 변경 성공
+                    → 프론트에서 "비밀번호가 변경되었습니다" 2초 노출
+                    → 알림 숨긴 뒤 1초 후 팝업 자동 종료.
+           · 그 외: 실패로 간주, 화면에 오류 메시지 표시, 팝업 유지.
 
     4) 파라미터 명세(프론트 기준)
        - rpwEmail (input[name=email], type=email)
@@ -79,7 +90,7 @@
        - rpwNewConfirm (비밀번호 확인용, readonly 초기화)
          · 필수, rpwNew 와 값이 동일해야 함.
        - resetPwResult (div)
-         · 선택, 이메일 발송/검증 결과 메시지 표시용.
+         · 선택, 이메일 발송/검증 및 비밀번호 변경 결과 메시지 표시용.
        - pwMismatchHelp (div)
          · 선택, 비밀번호/확인 불일치 시 텍스트 안내 표시.
 
@@ -90,10 +101,10 @@
        - 필요 시 AJAX 요청에도 CSRF 헤더 추가(X-CSRF-TOKEN) 권장.
 
     6) 유지보수자 가이드
-       - URL 변경 시: form action, fetch URL("/api/account/email/send", "/api/account/email/verify") 모두 동시에 수정.
+       - URL 변경 시: form action, fetch URL("/api/account/email/send", "/api/account/email/verify", "/api/account/password/reset") 모두 동시에 수정.
        - PASSWORD_RULE_TEXT 변경 시: 백엔드 검증 로직과 동일하게 유지해야 함.
        - resetPwResult / pwMismatchHelp 영역은 향후 서버-side 메시지 렌더링에도 재사용 가능.
-  --%>
+--%>
 
 <style>
 body {
@@ -243,7 +254,7 @@ body {
           <div class="invalid-feedback">인증코드를 입력하세요.</div>
         </div>
 
-        <!-- 결과 메시지 (메일 발송/검증 결과 표시용) -->
+        <!-- 결과 메시지 (메일 발송/검증 및 비밀번호 변경 결과 표시용) -->
         <div id="resetPwResult"
              class="alert alert-info py-2 small mt-3 d-none"
              role="status"></div>
@@ -288,7 +299,12 @@ body {
             새 비밀번호와 동일하게 입력해 주세요.
           </div>
         </div>
-
+        
+        <!-- 결과 메시지 비밀번호 변경 완료 여부 -->
+        <div id="resetPwResult2"
+             class="alert alert-info py-2 small mt-3 d-none"
+             role="status"></div>
+             
         <!-- 버튼 영역 -->
         <div class="d-grid gap-2 mt-3">
           <button type="submit" class="btn btn-primary">비밀번호 변경</button>
@@ -324,6 +340,9 @@ body {
          · pwMismatchHelp 텍스트를 통해 불일치 안내
        - 둘이 일치하고 전체 검증 통과 후:
          · submit 직전에 window.confirm 으로 "비밀번호를 변경하시겠습니까?" 확인.
+         · 확인 이후에는 기본 submit 을 막고 fetch 로 /api/account/password/reset 호출.
+         · 응답이 "OK" 인 경우, 2초간 "비밀번호가 변경되었습니다" 알림 표시 후 숨기고,
+           추가로 1초 뒤 팝업 창(window.close)을 자동으로 닫음.
 
     2) 데이터 흐름(프론트)
        - window.load =>> resizeTo / moveTo 로 팝업 440x630 중앙 정렬.
@@ -331,7 +350,8 @@ body {
          · validatePasswordMatch() 로 일치 여부 갱신
          · checkValidity()
          · 인증코드 미검증(codeVerified=false) 시 submit 차단
-         · 모든 검증 통과 후 confirm 창에서 취소 시 submit 차단.
+         · 모든 검증을 통과한 뒤 confirm 창에서 취소 시 submit 차단.
+         · confirm 후에는 fetch 로 /api/account/password/reset 비동기 호출.
        - setupPasswordHelpers =>> keydown/keyup/focus/blur 이벤트로 Caps 상태 UI 반영.
        - btnSendCode.click =>>
          · 1차: /api/account/email/send 로 JSON POST, 성공 시 codeSent=true + 버튼/메시지 업데이트.
@@ -366,7 +386,7 @@ body {
       - pwInputId : 비밀번호 input 요소의 id (필수)
       - toggleBtnId : 보기/숨기기 버튼 id (옵션, 없으면 토글 기능 생략)
       - capsId : CapsLock 상태를 표시할 span id (옵션)
-      - numId : NumLock 상태를 표시할 span id (옵션, 현재 화면에서는 사용하지 않음)
+      - numId : NumLock 상태를 표시할 span id (옵션)
 
       [계약]
       - 지정된 id 요소가 없으면 해당 기능은 조용히 skip.
@@ -432,6 +452,7 @@ body {
         · HTML5 checkValidity() + .was-validated 로 기본 검증 수행.
         · codeVerified=false 이면 submit 차단 후 안내.
         · 모든 검증을 통과한 뒤 confirm 창에서 사용자가 "취소" 선택 시 submit 차단.
+        · confirm 이후에는 기본 submit 을 막고 fetch 로 /api/account/password/reset 호출.
       - "코드 발송" 버튼에 비동기 fetch 핸들러 부착.
       - codeSent, codeVerified 플래그로 "발송 전/후", "인증 성공 여부" 상태를 구분.
       - 비밀번호/확인 input 은 초기 readonly=true, verify 성공 시 readonly=false 로 전환.
@@ -440,6 +461,7 @@ body {
     const form           = document.getElementById("resetPwForm");
     const btnSendCode    = document.getElementById("btnSendCode");
     const resultBox      = document.getElementById("resetPwResult");
+    const resultBox2      = document.getElementById("resetPwResult2");
     const pwInput        = document.getElementById("rpwNew");
     const pwConfirmInput = document.getElementById("rpwNewConfirm");
     const pwMismatchHelp = document.getElementById("pwMismatchHelp");
@@ -502,8 +524,8 @@ body {
       pwConfirmInput.addEventListener("input", validatePasswordMatch);
     }
 
-    // 3-1. 폼 검증 + 이메일 인증 여부 + 최종 확인창
-    form.addEventListener("submit", function (e) {
+    // 3-1. 폼 검증 + 이메일 인증 여부 + 최종 확인창 + 비동기 비밀번호 변경 요청
+    form.addEventListener("submit", async function (e) {
       // 먼저 비밀번호/확인 일치 여부 customValidity 반영
       validatePasswordMatch();
 
@@ -553,7 +575,87 @@ body {
         return;
       }
 
+      // 기본 form submit 막고 비동기 요청으로 전환
+      e.preventDefault();
+      e.stopPropagation();
       form.classList.add("was-validated");
+
+      try {
+        // form 데이터를 x-www-form-urlencoded 로 직렬화
+        const formData = new FormData(form);
+        const params = new URLSearchParams();
+        formData.forEach((value, key) => {
+          params.append(key, value);
+        });
+
+        const res = await fetch(form.action || "/api/account/password/reset", {
+          method: form.method || "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+            "Accept": "text/plain, text/html, */*"
+          },
+          body: params.toString()
+        });
+
+        const text = (await res.text()).trim();
+        console.log(
+          "[reset-pw] /api/account/password/reset =>> status",
+          res.status,
+          "body:",
+          text
+        );
+
+        if (res.ok && text === "OK") {
+          // 비밀번호 변경 성공
+          if (resultBox2) {
+        	  resultBox2.textContent = "비밀번호가 변경되었습니다";
+        	  resultBox2.className = "alert alert-success py-2 small mt-3";
+        	  resultBox2.classList.remove("d-none");
+          }
+
+          // 재전송 방지용으로 submit 버튼 비활성화
+          const submitBtn = form.querySelector('button[type="submit"]');
+          if (submitBtn) {
+            submitBtn.disabled = true;
+          }
+
+          // 2초 동안 알림 표시 후 숨기고, 그로부터 1초 뒤 팝업 자동 종료
+          setTimeout(() => {
+            if (resultBox2) {
+            	resultBox2.classList.add("d-none");
+            }
+            setTimeout(() => {
+              try {
+                window.close();
+              } catch (err) {
+                console.warn("[reset-pw] window.close blocked:", err);
+              }
+            }, 0); // 비밀번호 성공 알림 출력 후 즉시 팝업 닫기
+          }, 5000);   // 5초 동안 알림 노출
+
+        } else {
+          // 비밀번호 변경 실패
+          if (resultBox2) {
+        	  resultBox2.textContent =
+              "비밀번호 변경에 실패했습니다. 잠시 후 다시 시도해 주세요.";
+        	  resultBox2.className = "alert alert-danger py-2 small mt-3";
+        	  resultBox2.classList.remove("d-none");
+          }
+          console.warn(
+            "[reset-pw] password reset failed:",
+            res.status,
+            text
+          );
+        }
+      } catch (err) {
+        console.error("[reset-pw] password reset request error:", err);
+        if (resultBox2) {
+        	resultBox2.textContent =
+            "네트워크 오류로 비밀번호 변경에 실패했습니다.";
+        	resultBox2.className = "alert alert-danger py-2 small mt-3";
+        	resultBox2.classList.remove("d-none");
+        }
+      }
     });
 
     // 3-2. 비밀번호 보기/숨기기 + Caps 상태 표시
@@ -653,7 +755,7 @@ body {
               // 새 비밀번호 / 확인 입력 필드 readonly 해제 + 포커스 + 스크롤 이동
               if (pwInput) {
                 pwInput.readOnly = false;
-                pwInput.focus();
+                pwConfirmInput.focus();
               }
               if (pwConfirmInput) {
                 pwConfirmInput.readOnly = false;

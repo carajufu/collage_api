@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -142,7 +143,11 @@ public class AccountRecoveryController {
 	private static final long RESET_CODE_TTL_SECONDS = 600L;
 
 	private final DitAccountMapper ditAccountMapper;
-	private final PasswordEncoder passwordEncoder;
+	// private final PasswordEncoder passwordEncoder; 
+	// =>> bCryptPasswordEncoder 으로 대체 일관성 확보
+    private final BCryptPasswordEncoder bCryptPasswordEncoder; 
+    // BCryptPasswordEncoder(전문용어(단방향 해시 알고리즘 구현체))
+
 
 	/* ======================================================================
 	 * 요청 DTO 정의
@@ -527,7 +532,7 @@ public class AccountRecoveryController {
 	}
 
 	/* ======================================================================
-	 * 2-1. 비밀번호 재설정용 인증코드 검증 (프론트에서 입력한 코드 대조)
+	 * 2-1. 비밀번호 재설정용 인증코드 검증 (프론트에서 입력한 인증 코드 대조)
 	 * ==================================================================== */
 
 	/*
@@ -763,8 +768,8 @@ public class AccountRecoveryController {
 			clearResetSession(session);
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("NO_MATCH");
 		}
-
-		String encoded = passwordEncoder.encode(newPassword);
+		
+		String encoded = bCryptPasswordEncoder.encode(newPassword);
 		log.info("[AccountRecoveryController] encoded(resetPassword) :: "+ encoded);
 		
 		int updated = ditAccountMapper.updatePasswordByAcntIdAndEmail(acntId, email, encoded);

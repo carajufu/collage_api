@@ -212,21 +212,68 @@
 	    WHERE s.ACNT_ID = #{acntId}
 	</select>
 	
-     <!-- 학생 테이블의 성명과 생년월일로 로그인 아이디 조회 -->
-	<select id="findByNameAndBirth"  parameterType="string" resultType="string">
-		SELECT ACNT_ID
-		  FROM STDNT
-		 WHERE STDNT_NM = #{name}
-		   AND BRTHDY = #{birth}
+     <!-- 계정 복구 관련 -->     
+     <!-- 계정 복구: 학생 + 교직원 성명/생년월 통합으로 (로그인 아이디)ACNT_ID 조회 -->
+     <select id="findByNameAndBirth"
+		        parameterType="map"
+		        resultType="string">
+		  SELECT t.ACNT_ID
+		  FROM (
+		      -- 교직원 쪽
+		      SELECT s."ACNT_ID"   AS ACNT_ID,
+		             s."SKLSTF_NM" AS NAME,
+		             s."BRTHDY"    AS BRTHDY
+		      FROM   "SKLSTF" s
+		
+		      UNION ALL
+		
+		      -- 학생 쪽
+		      SELECT st."ACNT_ID"  AS ACNT_ID,
+		             st."STDNT_NM" AS NAME,
+		             st."BRTHDY"   AS BRTHDY
+		      FROM   "STDNT" st
+		  ) t
+		  WHERE t.NAME   = #{name}
+		    AND t.BRTHDY = #{birth}
+     </select>
+
+		
+	<!-- 계정 복구: 교직원(=교수)/학생 아이디 + 이메일 일치 여부 확인 -->
+	<select id="existsByAcntIdAndEmail"
+		        parameterType="map"
+		        resultType="int">
+		  SELECT COUNT(1)
+		  FROM (
+		    -- 학생: ACNT 테이블 이메일
+		    SELECT
+		           a.ACNT_ID AS ACNT_ID,
+		           a.EMAIL   AS EMAIL
+		    FROM   ACNT a
+		
+		    UNION ALL
+		
+		    -- 교수: SKLSTF.ACNT_ID + PROFSR.EMAIL_ADRES
+		    SELECT
+		           s.ACNT_ID     AS ACNT_ID,
+		           p.EMAIL_ADRES AS EMAIL
+		    FROM   PROFSR p
+		    JOIN   SKLSTF s
+		      ON   p.SKLSTF_ID = s.ACNT_ID   
+		      	-- PROFSR.SKLSTF_ID == SKLSTF.ACNT_ID 전재
+		  	) x
+		  WHERE x.ACNT_ID = #{acntId}
+		    AND x.EMAIL   = #{email}
 	</select>
 	
-	<!-- ACNT 테이블에서 아이디 + 이메일 일치 여부 확인 -->
-	<select id="existsByAcntIdAndEmail" resultType="int">
-	    SELECT COUNT(1)
-	    FROM ACNT
-	    WHERE ACNT_ID = #{acntId}
-	      AND EMAIL   = #{email}
-	</select>
+	<!-- 계정 복구 : ACNT 테이블 내 PASSWORD 칼럼 update -->
+	<update id="updatePasswordByAcntIdAndEmail"
+	        parameterType="map">
+	  UPDATE ACNT
+	  SET    "PASSWORD" = #{encoded}
+	  WHERE  "ACNT_ID"  = #{acntId}
+	  AND    "EMAIL"    = #{email}
+	</update>
+  
   <!--
       블록: selectStdntNoByAcntId
 
