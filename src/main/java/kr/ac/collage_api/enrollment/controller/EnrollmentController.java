@@ -159,7 +159,7 @@ public class EnrollmentController {
 			} catch (IllegalStateException e) {
 				log.info("이미 처리중인 학적. 학번: {}", stdntNo);
 				return ResponseEntity.badRequest().body("처리 중인 신청 내역이 있습니다.");
-			    
+
 			} catch (Exception e) {
 			    log.error("학적 변동 신청 처리 중 오류 발생. 학번: {}", stdntNo, e);
 	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("처리 중 오류가 발생했습니다. 관리자에게 문의해주세요.");

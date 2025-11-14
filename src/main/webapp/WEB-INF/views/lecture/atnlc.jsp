@@ -133,6 +133,20 @@ const courseTbody = document.getElementById("courseTbody");
 	}
 	
 
+	document.querySelector("nav form").addEventListener("submit", function(event) {
+		event.preventDefault();
+
+		const form = event.target;
+		const keyword = form.querySelector("input[name='keyword']").value;
+		const complSe = form.querySelector("select[name='complSe']").value;
+
+		console.log("keyword : ", keyword);
+		console.log("complSe : ", complSe);
+		loadCourseList(keyword, complSe);
+	});
+
+
+
 	// 장바구니 담기
 	$("#addCartBtn").on("click",(event)=>{
 		event.preventDefault();

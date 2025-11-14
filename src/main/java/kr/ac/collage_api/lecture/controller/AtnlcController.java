@@ -64,7 +64,6 @@ public class AtnlcController {
 		
 		Map<String, Object> map = new HashMap<>();
 		map.put("estblCourseVOList", estblCourseVOList);
-//		model.addAttribute("estblCourseVOList", estblCourseVOList);
 		
 		return map;
 	}
@@ -218,13 +217,10 @@ public class AtnlcController {
 			// 취소 실행
 			result = atnlcService.editMyCart(atnlcReqstVO);
 		}
-		
-//		int result = atnlcService.addMyCart(atnlcReqstVO);
-		log.info("addMyCart()->result : {}", result);
-		
 
-        map.put("result", result);
-		
+		Map<String, Object> map = new HashMap<>();
+		map.put("result", result);
+
 		return map;
 	}
 	
