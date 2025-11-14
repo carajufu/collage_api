@@ -17,9 +17,9 @@ public class SubjctVO {
 	private int operSttus;        //운영상태	OPER_STTUS
 	private Date recentUpdtDt;    //최근수정일시	RECENT_UPDT_DT
 	private String subjctChpt;	  //학과장
-	
+
 	private List<ProfsrVO> profsr; //교수목록
-	
+
 	private String deanNm;		  //학과장 이름 (SKLSTF_NM)
 	private String buldNm; 	  	  //단과대 이름 (CODE_NM)
 }

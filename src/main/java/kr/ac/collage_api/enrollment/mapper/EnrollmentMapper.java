@@ -20,7 +20,7 @@ public interface EnrollmentMapper {
 
 	//신청내역
 	List<SknrgsChangeReqstVO> selectHistoryList(String stdntNo);
-	
+
 	//중복내역
 	int activeRequestByStdntNo(String stdntNo);
 
