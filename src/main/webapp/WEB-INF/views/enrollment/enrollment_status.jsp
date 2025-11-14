@@ -85,7 +85,7 @@
 		        <td>
 		            <fmt:formatDate value="${admissionDate}" pattern="yyyy-MM-dd" />
 		        </td>
-		    </tr>                
+		    </tr>
             </tbody>
         </table>
     </div>

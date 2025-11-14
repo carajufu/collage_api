@@ -13,7 +13,6 @@ public class FileGroupVO {
 	
 	//FILE_GROUP : FILE_DETAIL = 1:N
 	private List<FileDetailVO> fileDetailVOList;
-	
 }
 
 

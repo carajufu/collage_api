@@ -3,7 +3,10 @@ package kr.ac.collage_api.admin.service;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import kr.ac.collage_api.vo.BbsVO;
+import kr.ac.collage_api.vo.FileDetailVO;
 
 public interface BbsNoticeService {
 
@@ -27,5 +30,13 @@ public interface BbsNoticeService {
 	public int adminDeleteDetail(int bbscttNo);
 
 	public int adminPostDetail(BbsVO bbsVO);
+
+	public BbsVO adminDetail(int bbscttNo);
+
+	//파일 그룹으로 디테일 리스트 가져오기
+	public List<FileDetailVO> getFileDetailList(Long fileGroupNo);
+
+	//파일수정
+	public int adminPutDetail(BbsVO bbsVO, List<MultipartFile> files, List<Integer> deletedFileSns);
 
 }

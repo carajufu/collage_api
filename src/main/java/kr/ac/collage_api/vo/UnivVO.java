@@ -16,10 +16,10 @@ public class UnivVO {
 	private String fondYear;   //설립년도	FOND_YEAR
 	private int operSttus;     //운영상태	OPER_STTUS
 	private Date recentUpdtDt; //최근수정일시	RECENT_UPDT_DT
-	
+
 	private List<SubjctVO> children; //학과목록
 	private List<ProfsrVO> profsr; //교수목록
-	
+
 	private String prexNm; 		//학장 이름 (SKLSTF_NM)
 	private String buldNm;		//단과대 이름 (CODE_NM)
 }

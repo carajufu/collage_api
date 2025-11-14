@@ -1,7 +1,9 @@
 package kr.ac.collage_api.common.config;
 
-import java.util.Arrays;
-
+import jakarta.servlet.DispatcherType;
+import jakarta.servlet.http.HttpServletRequest;
+import kr.ac.collage_api.security.service.impl.CustomLoginSuccessHandler;
+import kr.ac.collage_api.security.service.impl.CustomLogoutSuccessHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,10 +22,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import jakarta.servlet.DispatcherType;
-import jakarta.servlet.http.HttpServletRequest;
-import kr.ac.collage_api.security.service.impl.CustomLoginSuccessHandler;
-import kr.ac.collage_api.security.service.impl.CustomLogoutSuccessHandler;
+import java.util.Arrays;
 
 @Configuration
 @EnableWebSecurity
@@ -36,7 +35,11 @@ public class SecurityConfig {
     public WebSecurityCustomizer configure() {
         return web -> web.debug(false)
                 .ignoring()
-                .requestMatchers("/css/**", "/js/**", "favicon.ico", "/assets/**");
+                .requestMatchers("/css/**",
+                        "/js/**",
+                        "favicon.ico",
+                        "/.well-known/**",
+                        "/assets/**");
     }
 
     @Bean
@@ -62,7 +65,10 @@ public class SecurityConfig {
                 .httpBasic(hbasic -> hbasic.disable())
                 .authorizeHttpRequests(authorize -> authorize
                         .dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.ASYNC).permitAll()
-                        .requestMatchers("/", "/login", "/accessError", "/.well-known/**", "/admin/**", "/api/**").permitAll()
+                        .requestMatchers("/",
+                                "/login",
+                                "/admin/**",
+                                "/20*/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .requestCache(cache -> cache.requestCache(requestCache))

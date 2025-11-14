@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 
+import kr.ac.collage_api.vo.AllCourseVO;
 import kr.ac.collage_api.vo.EstblCourseVO;
 import kr.ac.collage_api.vo.FileDetailVO;
 import kr.ac.collage_api.vo.FileGroupVO;
@@ -13,19 +14,13 @@ import kr.ac.collage_api.vo.FileGroupVO;
 public interface LectureMapper {
 
 	// 개설 강의 조회
-	public List<EstblCourseVO> list(Map<String, Object> map);
+	public List<EstblCourseVO> list(EstblCourseVO estblCourseVO);
 
 	// 담당 강의 목록 조회(교수)
 	public List<EstblCourseVO> mylist(Map<String, Object> map);
 
 	// 강의 세부 정보
-	public EstblCourseVO detail(EstblCourseVO estblCourseVO);
-
-	// // 강의 세부 정보(ajax)
-	public EstblCourseVO detailAjax(String estbllctreCode);
-
-//	// 강의 세부 정보 수정(교수)
-//	public void edit(EstblCourseVO estblCourseVO);
+	public EstblCourseVO detail(String estbllctreCode);
 
 	// 강의 세부 정보 수정(교수)
 	public int editEstbl(EstblCourseVO estblCourseVO);
@@ -46,6 +41,16 @@ public interface LectureMapper {
 
 	// 강의 계획서 다운로드
 	public FileDetailVO getFileDetail(long fileGroupNo);
+
+	
+	// -------- <관리자> --------
+	
+	
+	// 강의 생성
+	public int createCourse(AllCourseVO allCourseVO);
+
+	// 전체 강의 목록 조회
+	public List<EstblCourseVO> allList(EstblCourseVO estblCourseVO);
 
 
 

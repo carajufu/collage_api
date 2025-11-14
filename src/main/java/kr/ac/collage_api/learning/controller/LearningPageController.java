@@ -1,6 +1,6 @@
 package kr.ac.collage_api.learning.controller;
 
-import kr.ac.collage_api.dashboard.vo.TaskPresentnVO;
+import kr.ac.collage_api.learning.vo.TaskPresentnVO;
 import kr.ac.collage_api.learning.vo.TaskVO;
 import kr.ac.collage_api.learning.service.impl.LearningPageServiceImpl;
 import lombok.extern.slf4j.Slf4j;
@@ -9,8 +9,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
-import java.io.IOException;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,10 +35,9 @@ public class LearningPageController {
     public String getLearningPage(Model model,
                                   Principal principal,
                                   @RequestParam String lecNo) {
-        List<Map<String, Object>> studentLearningWeek;
-        studentLearningWeek = learningPageService.getLearningPage(lecNo);
+        Map<String, Object> studentLearningWeek = learningPageService.getLearningPage(lecNo);
 
-        model.addAttribute("weekList", studentLearningWeek);
+        model.addAttribute("learnInfo", studentLearningWeek);
 
         return "learning/student/studentMain";
     }
@@ -94,8 +93,21 @@ public class LearningPageController {
 
     @ResponseBody
     @PostMapping("/student/fileUpload")
-    public Map<String, Object> taskFileUpload(@RequestPart MultipartFile[] uploadFiles,
-                                              String taskPresentnNo) {
+    public Map<String, Object> taskFileUpload(MultipartHttpServletRequest req,
+                                              @RequestBody String taskPresentnNo,
+                                              @RequestBody String[] retainedExisting,
+                                              @RequestBody String[] deletedExisting)
+    {
+        List<MultipartFile> files = new ArrayList<>();
+
+        req.getMultiFileMap().forEach((key, list) -> {
+            if("uploadFiles".equals(key) || "uploadFiles[]".equals(key) || key.startsWith("uploadFiles[")){
+                files.addAll(list);
+            }
+        });
+
+        MultipartFile[] uploadFiles = files.toArray(new MultipartFile[0]);
+
         log.debug("chkng taskFileUpload (uploadFiles > {}) (taskPresentnNo > {} )", uploadFiles, taskPresentnNo);
 
         int rslt = learningPageService.taskFileUpload(taskPresentnNo, uploadFiles);
