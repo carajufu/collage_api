@@ -144,7 +144,7 @@
 		and	   reqst_sttus = '신청완료'
 		and	   estbllctre_code = #{estbllctreCode}
 	</select>
-	
+
 	<!-- 2. 중복 시간표 검사(수강신청) -->
 	<select id="checkTime" parameterType="atnlcReqstVO" resultType="EstblCourseVO">
 		select s.estbllctre_code
