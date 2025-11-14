@@ -18,7 +18,8 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler{
 	                   AccessDeniedException ex) throws IOException, ServletException {
 	    String uri = request.getRequestURI();
 	    if (uri.startsWith("/api/")) {
-	        // API(전문용어(브라우저가 아닌 프로그램 호출) 경로) → JSON/상태코드 기대, 리다이렉트 금지
+	        // API((브라우저가 아닌 프로그램 호출) 경로) 
+	    	//	-> JSON/상태코드 기대, 리다이렉트 금지
 	        response.sendError(HttpServletResponse.SC_FORBIDDEN);
 	        return;
 	    }

@@ -18,7 +18,7 @@ RequestTokenResolver
         3) 비어 있지 않은 bodyToken 대체
 - 출력: 추출된 토큰 문자열 또는 null.
 
-[계약(전제·에러·성공조건)]
+[계약(전제/에러/성공조건)]
 - 전제: Bearer 토큰 형식은 "Authorization: Bearer <JWT>".
 - 성공: 첫 유효 소스에서 토큰 1개 반환.
 - 실패: 세 소스 모두 비어 있으면 null 반환. 예외 던지지 않음.
@@ -41,8 +41,10 @@ RequestTokenResolver
 - NPE 방지: req는 컨트롤러 진입 시점에 null 아님을 보장.
 
 [전문용어 첫 등장 풀이]
-- 베어러 토큰(Bearer token, HTTP 인증 토큰 전달 규격): Authorization 헤더에 토큰을 담아 전송하는 방식.
-- JWT(JSON Web Token, 서명된 클레임 토큰): 서버가 서명한 JSON 클레임 집합. 여기서는 포맷만 가정하고 검증은 상위 계층이 수행.
+- 베어러 토큰(Bearer token, HTTP 인증 토큰 전달 규격)
+				: Authorization 헤더에 토큰을 담아 전송하는 방식.
+- JWT(JSON Web Token, 서명된 클레임 토큰)
+				: 서버가 서명한 JSON 클레임 집합. 여기서는 포맷만 가정하고 검증은 상위 계층이 수행.
 
 [근거]
 - HTTP Authorization 스킴 관례 및 베어러 토큰 사용 관례.

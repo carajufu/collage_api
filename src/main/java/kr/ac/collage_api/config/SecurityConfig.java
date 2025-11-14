@@ -70,14 +70,14 @@ import kr.ac.collage_api.security.CustomLoginSuccessHandler;
  * 4) URL 접근 정책
  * - /login, /signup 등 화면 라우트와 토큰 발급/검증 API는 permitAll
  * - 그 외 anyRequest() 는 인증 필요
- * → 인증은 "세션 기반" 또는 "Bearer JWT 기반" 둘 중 하나로 충족 가능
+ * 		-> 인증은 "세션 기반" 또는 "Bearer JWT 기반" 둘 중 하나로 충족 가능
  *
  * 5) 필터 순서
  * - TokenAuthenticationFilter 를 UsernamePasswordAuthenticationFilter 앞에 둠
  * [근거] 요청에 JWT가 오면 먼저 Authentication 세팅해서 이후 체인에서 이미 인증된 상태로 처리
  *
  * 6) CSRF(Cross-Site Request Forgery: 사용자의 세션을 악용해 의도치 않은 요청을 보내게 만드는 공격임)
- * - [수정 추가: 목적] JSP 폼 보호는 유지하되, /api/** 는 헤더 기반이므로 CSRF 검사 제외
+ * - [목적] JSP 폼 보호는 유지하되, /api/** 는 헤더 기반이므로 CSRF 검사 제외
  * - [근거] 세션/쿠키 경로만 CSRF 위험. Authorization 헤더 기반 요청은 타 도메인서 임의 설정 불가.
  *
  * 정리
@@ -209,11 +209,11 @@ public class SecurityConfig implements WebMvcConfigurer {
                         .anyRequest().authenticated() // 나머지 모든 요청은 인증 필요(세션 또는 JWT)
                 )
 
-                // [수정 변경] JWT 필터를 UsernamePasswordAuthenticationFilter 앞에 추가
+                // JWT 필터를 UsernamePasswordAuthenticationFilter 앞에 추가
                 // 주의: 공개 경로는 필터 내부에서 BYPASS 처리
                 .addFilterBefore(tokenAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
 
-                // [수정 변경] 경로 기반 예외 처리 분기 적용
+                // 경로 기반 예외 처리 분기 적용
                 .exceptionHandling(e -> e
                         .authenticationEntryPoint(delegating) // /api/** → 401, 그 외 → /login
                         .accessDeniedHandler((req, res, ex) -> {
@@ -230,7 +230,7 @@ public class SecurityConfig implements WebMvcConfigurer {
                         .loginProcessingUrl("/login") // POST /login -> 스프링 시큐리티가 직접 인증
                         .usernameParameter("acntId") // login.jsp <input name="acntId">
                         .passwordParameter("password") // login.jsp <input name="password">
-                        .failureUrl("/login?error")
+                        .failureUrl("/login?error") // 로그인 실패시
                         .successHandler(customLoginSuccessHandler) // 관리자 핸드오버 분기 연결
                         .permitAll())
 
@@ -301,8 +301,8 @@ public class SecurityConfig implements WebMvcConfigurer {
      *
      * DaoAuthenticationProvider 기반.
      * - detailServiceImpl (UserDetailsService 구현) 사용
-     * -> DB에서 acntId로 사용자 조회
-     * -> BCrypt로 저장된 패스워드 리턴
+     * 		-> DB에서 acntId로 사용자 조회
+     * 		-> BCrypt로 저장된 패스워드 리턴
      * - bCryptPasswordEncoder() 로 raw password vs 해시 비교
      *
      * 사용처:

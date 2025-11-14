@@ -25,8 +25,8 @@ public class CustomLoginSuccessHandler extends SavedRequestAwareAuthenticationSu
 	        HttpServletResponse res,
 	        Authentication auth
 	) throws ServletException, IOException {
-	    this.setDefaultTargetUrl("/debug/debuging");                // SavedRequest 없을 때 기본 경로
-	    // 
+	    this.setDefaultTargetUrl("/debug/debuging");                
+	    // SavedRequest 없을 때 기본 경로
 	    boolean isAdmin = auth.getAuthorities().stream()
 	            .anyMatch(a -> "ROLE_ADMIN".equals(a.getAuthority())); // 관리자 여부
 	    if (!isAdmin) {

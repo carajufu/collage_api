@@ -18,57 +18,46 @@ import lombok.extern.slf4j.Slf4j;
  * AuthViewController
  *
  * 목적
- * - JSP 뷰 반환 전용 컨트롤러.
- * - Spring Security + JWT(jjwt 0.12.x) 
- * 						+ 세션을 충돌 없이 공존시키는 진입점.
+ * - JSP 기반 "일반 사용자" 프론트엔드(학생/교수/일반 계정)의 화면 매핑 전용 컨트롤러.
+ * - 관리자용 React + JWT 기반 관리자 콘솔과는 역할이 분리된 진입점.
  *
- * 역할 분리 원칙
- * 1) 실제 인증(아이디/비번 확인)과 JWT 발급은 REST API(TokenApiController)에서 처리.
- *    이 컨트롤러는 직접 인증 로직 수행하지 않음. 비밀번호도 비교하지 않음.
+ * 역할
+ * 1) 로그인, 회원가입, 아이디 찾기, 비밀번호 재설정 등 계정 관련 JSP의 뷰 이름만 반환한다.
+ *    - 실제 인증(아이디/비밀번호 검증), 이메일 인증, 비밀번호 재설정 처리 로직은
+ *      별도의 REST API(예: AccountApiController)와 서비스 레이어에서 수행한다.
+ *    - 이 컨트롤러는 "인증 상태를 읽어서 화면에 전달"만 하고, 인증 결과를 직접 만들지 않는다.
  *
- * 2) 요청 시 JWT가 Authorization: Bearer <토큰> 헤더로 전달되면
- *    TokenAuthenticationFilter 가 토큰 검증 후 SecurityContextHolder 에 Authentication 주입.
- *    이 컨트롤러는 SecurityContextHolder 를 읽어 현재 사용자 정보를 가져와서 JSP에 전달.
+ * 2) Spring Security 세션 기반 인증과 JSP를 연결하는 뷰 어댑터 역할을 한다.
+ *    - 로그인 성공 후 SecurityContextHolder 에 저장된 Authentication 을 읽어서
+ *      현재 로그인한 사용자 식별자(acntId)를 가져온다.
+ *    - acntId 로 DB에서 AcntVO 를 조회하고, Model/HttpSession 에 넣어 JSP 에서 사용할 수 있게 한다.
  *
- * 3) JSP는 모델(Model)과 세션(HttpSession) 둘 다 사용 가능.
- *    - model.addAttribute("acntVO", ...) 로 단발 렌더링 데이터 제공
- *    - session.setAttribute("acntVO", ...) 로 header.jsp 등 공통 레이아웃에서 재사용
+ * 3) 관리자용 JWT 구조와의 관계
+ *    - JWT(Authorization: Bearer <토큰>)는 "관리자 전용 React 프론트엔드"에서만 사용한다.
+ *    - React 관리자는 /api/admin/** 등의 REST API 에 JSON 형태로 로그인 요청을 보내고,
+ *      응답으로 accessToken/refreshToken 이 담긴 JSON 을 수신하여 localStorage 등에 저장한다.
+ *    - 이 컨트롤러는 그러한 JWT 발급/응답을 다루지 않으며, 관리자 화면도 반환하지 않는다.
  *
- * 4) 민감정보(평문 비밀번호 등)는 로그/모델/세션 어디에도 넣지 않음.
+ * 4) 공통 로그인 JSP + CustomLoginSuccessHandler + React 이관 흐름
+ *    - /login JSP 는 학생/교수/관리자 모두가 사용하는 "공통 로그인 화면"이다.
+ *    - POST /login 요청은 Spring Security formLogin().loginProcessingUrl("/login") 에 의해 처리된다.
+ *    - 인증이 성공하면 CustomLoginSuccessHandler 가 호출되어, 사용자 권한을 기반으로 분기한다.
+ *      예:
+ *        - ROLE_ADMIN 포함  → 관리자 전용 React SPA 엔트리(예: /app/admin)로 리다이렉트
+ *        - 그 외(학생/교수 등) → JSP 기반 기본 화면(예: / 혹은 /debug/debuging)으로 리다이렉트
+ *    - CustomLoginSuccessHandler 는 "어느 프론트엔드로 보낼지"만 결정하며,
+ *      관리자 JWT 토큰 발급 자체는 담당하지 않는다.
+ *    - 관리자 React 쪽에서는 리다이렉트 이후, 별도의 관리자 로그인 API
+ *      (예: POST /api/admin/login 또는 /api/admin/exchange 등)를 호출해서
+ *      JSON 응답으로 accessToken/refreshToken 을 수신한 뒤, localStorage 등에 저장한다.
  *
- * 엔드포인트
- * - GET  /login
- *      로그인 화면만 반환.
- *      실제 로그인은 JS에서 /api/login 호출 → JWT 발급 → localStorage 저장 흐름.
+ * 경계(이 컨트롤러가 하지 않는 일)
+ * - JWT 생성·검증, 계정 잠금/해제, 권한 변경 등 핵심 인증 로직은 다루지 않는다.
+ * - 평문 비밀번호, 토큰 값 등 민감정보는 로그/모델/세션 어디에도 저장하지 않는다.
  *
- * - GET  /signup
- *      회원가입 화면 반환.
- *
- * - POST /signup
- *      회원가입 처리 후 /login 으로 리다이렉트.
- *      여기서 DitAccountService.userSave() 가 비밀번호 해시(BCrypt) 포함 처리를 책임짐.
- *      컨트롤러는 비밀번호 원문을 로그로 남기지 않음.
- *
- * - GET  /user/welcome
- *      "인증된 사용자" 전용 대시보드 화면.
- *      동작 순서:
- *        1) SecurityContextHolder 에서 Authentication 읽음
- *        2) principal(username=acntId) 추출
- *        3) DB에서 계정 상세(AcntVO) 조회
- *        4) model 과 session 에 담고 JSP 렌더링
- *
- * 보안 모델
- * - SecurityConfig 에서 /user/** 는 permitAll 로 열 수 있음(개발 단계).
- *   이 컨트롤러는 내부적으로 Authentication 없으면 redirect:/login 으로 돌려보내어
- *   "화면 접근 가드" 역할을 수행.
- *   운영 단계에서 /user/** 를 authenticated 로 바꾸면 redirect 대신 Spring Security 가 401/403 응답을 주게 할 수도 있음.
- *
- * 제거된 것
- * - POST /login        (취약. 비밀번호 검증 없이 통과시키던 경로였음)
- * - POST /user/welcome (취약. 비밀번호를 로그에 남기던 경로였음)
- *
- * 결과
- * - JWT(Authorization 헤더 기반) + SecurityContextHolder + JSP(Model/Session)까지 모두 일관된 흐름으로 정리됨.
+ * URL 책임 범위
+ * - /login, /signup, /account/**, /debug/** 등 JSP 기반 일반 사용자/디버그 화면.
+ * - React 관리자 콘솔(/app/** 등)은 별도 컨트롤러/리소스에서 처리한다.
  */
 @Slf4j
 @Controller
@@ -80,13 +69,13 @@ public class AuthViewController {
     /**
      * GET /login
      *
-     * 로그인 화면만 반환.
-     * 실제 인증/토큰 발급은 JS -> /api/login (TokenApiController) 호출로 처리됨.
-     * /api/login 성공 시 프론트는 accessToken 을 localStorage 등에 저장하고
-     * 이후 요청에서 Authorization: Bearer <token> 을 붙여 보냄.
+     * 일반 사용자(학생/교수/관리자 포함) 공통 로그인 화면 반환.
      *
-     * 반환 JSP
-     *   /WEB-INF/views/login.jsp
+     * 인증 흐름
+     * - 화면: /WEB-INF/views/login.jsp
+     * - 실제 로그인 처리(아이디/비밀번호 검증, 세션 생성)는
+     *   Spring Security 설정(formLogin().loginProcessingUrl("/login") 등)에 의해 수행된다.
+     * - 이 메서드는 화면만 반환하고, 인증 로직에는 관여하지 않는다.
      */
     @GetMapping("/login")
     public String loginPage() {
@@ -96,9 +85,10 @@ public class AuthViewController {
     /**
      * GET /signup
      *
-     * 회원가입 화면 반환.
+     * 일반 사용자 회원가입 화면 반환.
+     *
      * 반환 JSP
-     *   /WEB-INF/views/signup.jsp
+     * - /WEB-INF/views/signup.jsp
      */
     @GetMapping("/signup")
     public String signupPage() {
@@ -108,18 +98,22 @@ public class AuthViewController {
     /**
      * POST /signup
      *
-     * 회원가입 처리 후 /login 으로 리다이렉트.
+     * 일반 사용자 회원가입 처리 후 /login 으로 리다이렉트.
      *
-     * 흐름:
-     * - 클라이언트에서 전달한 폼 파라미터(acntId, password 등)가 AcntVO 로 바인딩됨.
-     *   주의: 폼의 input name 은 AcntVO 필드명과 정확히 일치해야 한다.
-     *         예) <input name="acntId">  -> AcntVO.acntId
-     *             <input name="password">-> AcntVO.password
+     * 흐름
+     * - 클라이언트 폼 파라미터(acntId, password 등)가 AcntVO 에 바인딩된다.
+     *   주의: 폼 input name 은 AcntVO 필드명과 정확히 일치해야 한다.
+     *     예) <input name="acntId">   -> AcntVO.acntId
+     *         <input name="password"> -> AcntVO.password
      *
-     * - DitAccountService.userSave(acntVO)가 내부에서 BCrypt 해싱 후 DB INSERT 및 기본 권한 부여까지 처리.
+     * - DitAccountService.userSave(acntVO)가 내부에서
+     *   1) 비밀번호 해시(BCrypt)
+     *   2) DB INSERT
+     *   3) 기본 권한 부여
+     *   를 처리한다.
      *
-     * 보안:
-     * - 비밀번호 평문은 여기에 로그로 남기지 않는다.
+     * 보안
+     * - 비밀번호 평문은 여기서 로그로 남기지 않는다.
      * - DB 저장 전 해시는 서비스 레이어에서 보장해야 한다.
      */
     @PostMapping("/signup")
@@ -134,76 +128,76 @@ public class AuthViewController {
     }
 
     /**
-     * GET /debug/debuging
+     * GET /account/find-id
      *
-     * 세션 인증된 사용자의 대시보드 화면.
-     *
-     * 동작:
-     * 1) TokenAuthenticationFilter 가 Authorization 헤더의 JWT 검사
-     *    → 유효하면 SecurityContextHolder.getContext().setAuthentication(auth) 수행
-     *
-     * 2) 여기서 SecurityContextHolder 로부터 Authentication을 읽는다.
-     *    principal 은 org.springframework.security.core.userdetails.User
-     *    또는 UserDetails 구현체이고 username = acntId.
-     *
-     * 3) 그 acntId 로 DB에서 AcntVO (계정 + 권한목록 포함)를 조회.
-     *
-     * 4) JSP에서 쓰도록 model 에 acntVO 로 넣고,
-     *    header.jsp 등 다른 JSP에서도 재사용 가능하도록 session 에도 acntVO 저장.
-     *
-     * 5) 인증이 없거나 principal 을 UserDetails 로 캐스팅할 수 없으면 로그인 화면으로 리다이렉트.
+     * 아이디 찾기 모달(팝업) JSP 반환.
      *
      * 반환 JSP
-     *   /WEB-INF/views/user/welcome.jsp
+     * - /WEB-INF/views/account/find-id.jsp
      *
-     * JSP 사용 예:
-     *   ${acntVO.acntId}
-     *   ${acntVO.authorList[0].authorNm}  // ROLE_STUDENT 등
-     *
-     * 세션에서도 접근 가능:
-     *   ${sessionScope.acntVO.acntId}
+     * 실제 아이디 찾기 로직(이메일/휴대폰 검증 등)은
+     * 별도 REST API 가 담당하며, 이 메서드는 화면만 열어준다.
      */
-
     @GetMapping("/account/find-id")
     public String findIdModal() {
         return "account/find-id";
     }
 
+    /**
+     * GET /account/reset-pw
+     *
+     * 비밀번호 재설정 모달(팝업) JSP 반환.
+     *
+     * 반환 JSP
+     * - /WEB-INF/views/account/reset-pw.jsp
+     *
+     * 실제 재설정 흐름
+     * - 1단계: 사용자 식별(아이디/이메일) → 비밀번호 재설정 메일 발송 API 호출
+     * - 2단계: 메일 링크 클릭 → 토큰 검증 API 호출
+     * - 3단계: 새 비밀번호 설정 API 호출
+     *
+     * 이 메서드는 위 플로우를 위한 UI 틀만 제공하고,
+     * 검증/갱신 로직은 REST 컨트롤러에서 처리한다.
+     */
     @GetMapping("/account/reset-pw")
     public String resetPwModal() {
         return "account/reset-pw";
     }
+
     /**
      * GET /debug/debuging
      *
-     * 세션 인증된 사용자의 대시보드 화면.
+     * 세션 인증이 완료된 사용자의 디버그용 대시보드 화면.
+     * (운영 사용자용 정식 대시보드가 아니라, 현재 인증/세션/계정 매핑이
+     *  정상 동작하는지 확인하기 위한 개발·검증용 화면)
      *
-     * 동작:
-     * 1) TokenAuthenticationFilter 가 Authorization 헤더의 JWT 검사
-     *    → 유효하면 SecurityContextHolder.getContext().setAuthentication(auth) 수행
+     * 동작
+     * 1) SecurityContextHolder 에서 Authentication 을 읽는다.
+     *    - 일반 사용자 로그인은 Spring Security 세션 기반 인증으로 Authentication 이 세팅된다.
+     *    - 관리자용 React + JWT 흐름은 별도 REST API 에서만 사용하며,
+     *      이 뷰 컨트롤러는 JWT를 직접 다루지 않는다.
      *
-     * 2) 여기서 SecurityContextHolder 로부터 Authentication을 읽는다.
-     *    principal 은 org.springframework.security.core.userdetails.User
-     *    또는 UserDetails 구현체이고 username = acntId.
+     * 2) Authentication.principal 이 UserDetails(또는 구현체) 인 경우
+     *    username 을 acntId 로 간주한다.
      *
-     * 3) 그 acntId 로 DB에서 AcntVO (계정 + 권한목록 포함)를 조회.
+     * 3) acntId 로 DB에서 AcntVO(계정 정보 + 권한 목록 포함)를 조회한다.
      *
-     * 4) JSP에서 쓰도록 model 에 acntVO 로 넣고,
-     *    header.jsp 등 다른 JSP에서도 재사용 가능하도록 session 에도 acntVO 저장.
+     * 4) JSP에서 사용하도록 model 에 acntVO 를 담고,
+     *    header.jsp 등 공통 레이아웃에서도 재사용할 수 있도록 session 에도 acntVO 를 저장한다.
      *
-     * 5) 인증이 없거나 principal 을 UserDetails 로 캐스팅할 수 없으면 로그인 화면으로 리다이렉트.
+     * 5) Authentication 이 없거나 principal 이 UserDetails 타입이 아니면
+     *    "로그인 상태가 아니거나 비정상"으로 판단하고 redirect:/login 으로 돌려보낸다.
      *
      * 반환 JSP
-     *   /WEB-INF/views/user/welcome.jsp
+     * - /WEB-INF/views/debug/debuging.jsp
      *
-     * JSP 사용 예:
+     * JSP 사용 예
      *   ${acntVO.acntId}
-     *   ${acntVO.authorList[0].authorNm}  // ROLE_STUDENT 등
+     *   ${acntVO.authorList[0].authorNm}  // ROLE_STUDENT, ROLE_PROF 등
      *
-     * 세션에서도 접근 가능:
+     * 세션 예
      *   ${sessionScope.acntVO.acntId}
      */
-
     @GetMapping("/debug/debuging")
     public String welcomePage(Model model, HttpSession session) {
 
@@ -212,17 +206,17 @@ public class AuthViewController {
 
         // 인증이 없거나 예상 타입이 아니면 로그인 페이지로 돌려보냄
         if (authentication == null || !(authentication.getPrincipal() instanceof UserDetails)) {
-            log.info("[AuthViewController:/user/welcome] no valid authentication -> redirect:/login");
+            log.info("[AuthViewController:/debug/debuging] no valid authentication -> redirect:/login");
             return "redirect:/login";
         }
 
-        // principal 은 TokenAuthenticationFilter -> TokenProvider.getAuthentication() 에서 세팅한 UserDetails
+        // principal 은 Spring Security 가 세션 기반 인증 후 세팅한 UserDetails
         UserDetails principal = (UserDetails) authentication.getPrincipal();
-        String acntId = principal.getUsername(); // JWT의 subject 로 들어간 값과 동일
+        String acntId = principal.getUsername();
         log.info("[AuthViewController:/debug/debuging] authenticated acntId={}", acntId);
 
         // DB에서 계정 상세(권한 목록 포함)를 다시 읽어온다.
-        // DitAccountMapper.findById() 는 ACNT + AUTHOR 조인으로 authorList 채우는 구조여야 한다.
+        // DitAccountService.findById() 는 ACNT + AUTHOR 조인으로 authorList 를 채우는 구조여야 한다.
         AcntVO acntVO = this.ditAccountService.findById(acntId);
         log.info("[AuthViewController:/debug/debuging] acntVO ={}", acntVO);
 
@@ -232,7 +226,7 @@ public class AuthViewController {
         // 세션에도 저장해서 header.jsp 등 공통 레이아웃에서도 접근 가능하게 함
         session.setAttribute("acntVO", acntVO);
 
-        // /WEB-INF/views/user/welcome.jsp 렌더
+        // /WEB-INF/views/debug/debuging.jsp 렌더
         return "debug/debuging";
     }
 }
