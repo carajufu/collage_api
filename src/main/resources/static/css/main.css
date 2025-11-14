@@ -35,7 +35,7 @@ footer {
 
 
 /* syw */
-.btn-toggle-nav a {
+/* .btn-toggle-nav a {
     display: block;
     padding: 5px 0 5px 15px;
     color: #ffffff;
@@ -51,7 +51,7 @@ footer {
 }
 
 /* ✅ 메인 콘텐츠 */
-.content-area {
+/* .content-area {
     background-color: #ffffff;
     flex-grow: 1;
     padding: 40px;
@@ -66,4 +66,4 @@ footer {
 .section-title {
     font-weight: 600;
     margin-bottom: 20px;
-} */
+}  */
