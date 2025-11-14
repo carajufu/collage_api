@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -50,4 +51,8 @@ public class UnivController {
         List<ProfsrVO> candidates = univService.findDeptHeadCandidates(subjctCode);
         return ResponseEntity.ok(candidates);
     }
+    
+    //단과대 수정정보 업데이트
+    //@PutMapping("/update/{id}")
+    //public List<ProfsrVO> 
 }
