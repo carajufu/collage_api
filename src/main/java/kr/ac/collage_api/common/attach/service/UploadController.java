@@ -90,7 +90,7 @@ public class UploadController {
         log.debug("chkng fileUpload (fileUrl > {} ) \n (fileGroupVO > {}) \n(result > {}) \n(uploadPath > {}) \n(fileDetailVO > {}) \n (fileGroupNo > {})", fileUrl, fileGroupVO, result, uploadPath, fileDetailVO, fileGroupNo);
         return fileGroupNo;
     }
-    
+
     //파일그룹넘버가 있을때
     @Transactional
 	public long fileUpload(Long fileGroupNo, int seq, MultipartFile[] multipartFiles) {
@@ -130,7 +130,7 @@ public class UploadController {
 
             fileDetailVO = new FileDetailVO();
 
-            fileDetailVO.setFileNo(seq++); 
+            fileDetailVO.setFileNo(seq++);
             fileDetailVO.setFileGroupNo(fileGroupNo);
             fileDetailVO.setFileNm(multipartFile.getOriginalFilename());
             fileDetailVO.setFileStreNm(uploadFileName);
@@ -147,17 +147,17 @@ public class UploadController {
             result += uploadMapper.insertFileDetail(fileDetailVO);
         }
 
-        
+
         return fileGroupNo;
     }
-    
-    
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
+
+
     //서비스에서 이 컨트롤러 이 메서드를 실행하면 fileList를 가져올 수 있당!
     @Transactional
 	public List<FileDetailVO> getFileDetailList(Long fileGroupNo) {

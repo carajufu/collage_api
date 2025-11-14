@@ -57,7 +57,7 @@
 	                <label for="leave-reason" class="form-label">휴학 유형</label>
 	                <select class="form-select" id="leave-reason" name="tmpabssklTy">
 	                    <option value="" selected>유형을 선택하세요...</option>
-	                    <option value="일N반">개인 사유</option>
+	                    <option value="일반">개인 사유</option>
 	                    <option value="질병">질병</option>
 	                    <option value="군입대">군입대</option>
 	                    <option value="기타">기타</option>

@@ -48,6 +48,14 @@ public class EnrollmentServiceImpl implements EnrollmentService {
 	//제출
 	@Override
 	public void submitRequest(SknrgsChangeReqstVO sknrgsChangeReqstVO) {
+		
+		//처리중인 신청내역 확인
+		int activeRequestCount = enrollmentMapper.activeRequestByStdntNo(sknrgsChangeReqstVO.getStdntNo());
+		
+		if( activeRequestCount > 0) {
+			throw new IllegalStateException("처리 중인 신청 내역이 있습니다.");
+		}
+		
 		enrollmentMapper.submitRequest(sknrgsChangeReqstVO);
 	}
 

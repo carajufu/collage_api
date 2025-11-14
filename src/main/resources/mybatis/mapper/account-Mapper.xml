@@ -22,34 +22,34 @@
 
 	<!-- //대학 코드 이름 가져오기
 	public UnivVO selectUnivCNinfo(); -->
-	
+
 	<select id="selectUnivCNinfo" resultType="UnivVO">
 	SELECT UNIV_CODE, UNIV_NM
 	FROM UNIV
 	</select>
-	
+
 	<!-- //학과코드에 맞는 대학 코드, 이름 가져오기
 	public List<SubjctVO> selectSubjctCNinfo(String univCode); -->
-	
+
 	<select id="selectSubjctCNinfo" parameterType="string" resultType="SubjctVO">
-	
+
 	SELECT SUBJCT_NM, SUBJCT_CODE
 	FROM SUBJCT
 	WHERE UNIV_CODE = #{univCode}
 	</select>
-	
+
 	<!-- //학번 뒤에 붙일 3자리 시퀀스 찾기
 	public String findStdntSeq(String stdntFrontNo); -->
-	
+
 	<select id="findStdntSeq" parameterType="string" resultType="string">
 	SELECT NVL(MAX(STDNT_NO),0)
 	FROM STDNT
 	WHERE STDNT_NO like #{stdntFrontNo} || '___'
-	</select>	
-	
+	</select>
+
 	<!-- //계정생성
 	public void insertAcnt(AcntVO acntVO); -->
-	
+
 	<insert id="insertAcnt" parameterType="acntVO">
 		INSERT INTO ACNT (ACNT_ID, PASSWORD, ACNT_TY)
 		VALUES(#{acntId},#{password},#{acntTy})
@@ -57,7 +57,7 @@
 
 	<!-- //학생계정생성
 	public void insertStdAccount(StdntVO stdntVO); -->
-	
+
 	<insert id="insertStdAccount" parameterType="stdntVO">
 		INSERT INTO STDNT (STDNT_NO, ACNT_ID, SUBJCT_CODE, STDNT_NM, BRTHDY
 				 		 , BASS_ADRES, DETAIL_ADRES, ZIP, CTTPC, EMGNC_CTTPC
@@ -68,29 +68,29 @@
 			  ,#{grade},#{sknrgsSttus},#{entschDe},#{bankNm}
 			  ,#{acnutno},SYSDATE)
 	</insert>
-	
+
 	<!-- //권한 생성 계정
 	public int insertAuthor(AuthorVO authorVO); -->
  	<insert id="insertAuthor" parameterType="authorVO">
 		<selectKey resultType="string" order="BEFORE" keyProperty="authorId">
 			SELECT NVL(TO_CHAR(MAX(TO_NUMBER(AUTHOR_ID))+1), 0)
-			FROM AUTHOR		
+			FROM AUTHOR
 		</selectKey>
 		INSERT INTO AUTHOR (ALWNC_DE, AUTHOR_ID, AUTHOR_NM, AUTHOR_DC, ACNT_ID)
 		VALUES (
 				SYSDATE,#{authorId},#{authorNm},#{authorDc},#{acntId})
 	</insert>
-	
+
 	<!-- //검색 키워드로 학번, 학생이름 찾기
 	public List<StdntVO> selectStdntInfo(String keyword); -->
-	
+
 	<select id="selectStdntInfo" parameterType="string" resultType="stdntVO">
 		SELECT STDNT_NO, STDNT_NM, BRTHDY, CTTPC
 		FROM STDNT
 		WHERE STDNT_NO LIKE '%' || #{keyword} || '%'
 		  OR STDNT_NM LIKE '%' || #{keyword} || '%'
 	</select>
-	
+
 	<!-- //학번으로 stdntVO 한행 읽어오기
 	public List<StdntVO> selectOneStdntInfo(String stdntNo); -->
 	<select id="selectOneStdntInfo" parameterType="string" resultType="stdntVO">
@@ -102,10 +102,10 @@
 			JOIN SUBJCT J ON S.SUBJCT_CODE = J.SUBJCT_CODE
 		WHERE S.STDNT_NO = #{stdntNo}
 	</select>
-	
+
 	<!-- 	//학생(stdnt 테이블) 업데이트
 	public int updateStdAccount(StdntVO stdntVO); -->
-	
+
 	<update id="updateStdAccount" parameterType="stdntVO">
 	UPDATE STDNT
 	SET
@@ -116,7 +116,7 @@
 		, DETAIL_ADRES = #{detailAdres}
 		, ZIP = #{zip}
 		, CTTPC = #{cttpc}
-		, EMGNC_CTTPC = #{emgncCttpc} 
+		, EMGNC_CTTPC = #{emgncCttpc}
 		, GRADE = #{grade}
 		, ENTSCH_DE = #{entschDe}
 		, GRDTN_DE = #{grdtnDe}
@@ -124,7 +124,7 @@
 		, ACNUTNO = #{acnutno}
 	WHERE STDNT_NO = #{stdntNo}
 	</update>
-	
+
 
 	<!--//파일 그룹 생성 public int insertFileGroup(FileGroupVO fileGroupVO); -->
    <insert id="insertFileGroup" parameterType="fileGroupVO">
