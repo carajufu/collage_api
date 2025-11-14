@@ -53,7 +53,7 @@ public class AtnlcController {
 	public Map<String, Object> list(EstblCourseVO estblCourseVO,
 			   @RequestParam(value="keyword", required=false, defaultValue="") String keyword,
 			   @RequestParam(value="complSe", required=false, defaultValue="") String complSe) {
-		
+
 		log.info("list()->keyword : {}", keyword);
 		log.info("list()->complSe : {}", complSe);
 		estblCourseVO.setKeyword(keyword);
@@ -92,21 +92,21 @@ public class AtnlcController {
 	public Map<String, Object> addMyCart(@RequestBody AtnlcReqstVO atnlcReqstVO) {
 		
 		log.info("addMyCart()->stdntNo : {}", atnlcReqstVO.getStdntNo());
-		
+
 		Map<String, Object> result = atnlcService.addMyCart(atnlcReqstVO);
 		log.info("addMyCart()->result : {}", result);
-		
+
 		Map<String, Object> map = new HashMap<>();
 		map.put("result", result);
-		
+
 		return map;
 	}
-	
+
 	// 장바구니 강의 담기 취소
 	@ResponseBody
 	@PostMapping("/cart/mycart/edit")
 	public Map<String, Object> editMyCart(@RequestBody AtnlcReqstVO atnlcReqstVO) {
-		
+
 		log.info("editMyCart()->estbllctreCode : {}", atnlcReqstVO.getEstbllctreCode());
 
 		int result = atnlcService.editMyCart(atnlcReqstVO);
@@ -217,10 +217,10 @@ public class AtnlcController {
 			// 취소 실행
 			result = atnlcService.editMyCart(atnlcReqstVO);
 		}
-		
+
 		Map<String, Object> map = new HashMap<>();
 		map.put("result", result);
-		
+
 		return map;
 	}
 	

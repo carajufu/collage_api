@@ -44,27 +44,27 @@ public class AtnlcServiceImpl implements AtnlcService {
 		List<String> alreadyLec = atnlcMapper.checkLecCart(atnlcReqstVO);
 		// 2. 중복 시간표 검사
 		List<String> perLec = atnlcMapper.checkTimeCart(atnlcReqstVO);
-		
+
 		Set<String> alreadySet = new HashSet<>(alreadyLec);
 		Set<String> perSet = new HashSet<>(perLec);
-		
+
 		if(!alreadySet.isEmpty() || !perSet.isEmpty()) {
 			Map<String, Object> map = new HashMap<>();
 			map.put("insertCnt", 0);
 			map.put("alreadyLecCode", alreadyLec);
 			map.put("perLecCode", perLec);
 			map.put("success", false);
-			
+
 			return map;
 		}
-		
+
 		int insertCnt = atnlcMapper.addMyCart(atnlcReqstVO);
-		
+
 		Map<String, Object> map = new HashMap<>();
 		map.put("insertCnt", insertCnt);
 		map.put("success", true);
 		log.info("addMyCart()->map : {}", map);
-		
+
 		return map;
 	}
 
