@@ -14,6 +14,7 @@
     <script type="text/javascript">
         document.addEventListener("DOMContentLoaded", () => {
             document.querySelector("body").appendChild(frag);
+            document.querySelector("body").appendChild(quizFrag);
 
             // 선택한 주차의 과제 리스트를 보여주는 모달
             const tModal = document.querySelector("#modal");
@@ -21,6 +22,7 @@
 
             // .task : 과제 여부 알려주는 뱃지
            const taskBadge = document.querySelectorAll(".task");
+           const quizBadge = document.querySelectorAll(".quiz");
 
            // 각 과제 badge의 popModal 호출하는 클릭 이벤트 리스너 등록
            taskBadge.forEach(e => {
@@ -48,10 +50,35 @@
                             renderList(modalId, rslt.result);
                       })
                       .catch(err => console.error(err));
-
-                // popModal(modalId);
               });
            });
+
+          quizBadge.forEach(e => {
+              e.addEventListener("click", () => {
+                  const currentUrl = new URL(window.location.href);
+                  let lecNo = currentUrl.searchParams.get("lecNo");
+                  let weekNo = e.dataset.weekNo;
+                  console.log("lecNo, weekNo > ", lecNo, ", ", weekNo);
+
+                  // 해당 주차의 과제 목록 조회하는 post 요청
+                  fetch("/learning/student/quiz", {
+                      method: "POST",
+                      headers: {
+                          "Content-Type": "application/json;charset=UTF-8"
+                      },
+                      body: JSON.stringify({
+                          "lecNo": lecNo,
+                          "weekNo": weekNo
+                      })
+                  })
+                      .then(resp => resp.json())
+                      .then(rslt => {
+                          console.log("chkng rslt > ", rslt);
+                          renderList(modalId, rslt.result);
+                      })
+                      .catch(err => console.error(err));
+              });
+          });
 
            // 모달 외부 영역에만 한정해 closeModal 호출
            //  tModal.addEventListener("click", () => closeModal(tModal.id));
@@ -300,7 +327,7 @@
 
                 const submitBtn = document.createElement("button");
                 submitBtn.className = "btn btn-primary w-xs";
-                submitBtn.textContent = "제출";
+                submitBtn.textContent = "등록";
                 submitBtn.id = "submitBtn";
 
                 const cancleBtn = document.createElement("button");
@@ -377,13 +404,6 @@
 
                             const title = document.querySelector("#submitTitle");
                             if(title) { title.remove(); }
-
-                            let upFrag = {
-                                title: submitTitle,
-                                body: dz,
-                                dzObj: taskDz,
-                                btnContainer: container
-                            }
 
                             if(taskDz) {
                                 taskDz.removeAllFiles(true);
@@ -710,13 +730,13 @@
                                                                         <span class="badge rounded-pill border boder-light text-body">과제</span>
                                                                     </c:if>
                                                                     <c:if test="${week.TASK_AT eq '1'}">
-                                                                        <span class="badge rounded-pill bg-primary task" style="cursor: pointer;" data-week-no="${week.WEEK}" data-bs-toggle="quizModal" data-bs-target="#modal">과제</span>
+                                                                        <span class="badge rounded-pill bg-primary task" style="cursor: pointer;" data-week-no="${week.WEEK}" data-bs-toggle="modal" data-bs-target="#modal">과제</span>
                                                                     </c:if>
                                                                     <c:if test="${week.QUIZ_AT eq '0'}">
                                                                         <span class="badge rounded-pill border boder-light text-body">퀴즈</span>
                                                                     </c:if>
                                                                     <c:if test="${week.QUIZ_AT eq '1'}">
-                                                                        <span class="badge rounded-pill bg-primary task" style="cursor: pointer;" data-week-no="${week.WEEK}" data-bs-toggle="quizModal" data-bs-target="#modal">퀴즈</span>
+                                                                        <span class="badge rounded-pill bg-primary quiz" style="cursor: pointer;" data-week-no="${week.WEEK}" data-bs-toggle="modal" data-bs-target="#quizModal">퀴즈</span>
                                                                     </c:if>
                                                                 </div>
                                                             </div>

@@ -1,10 +1,13 @@
 package kr.ac.collage_api.learning.controller;
 
+import kr.ac.collage_api.learning.vo.QuizExVO;
+import kr.ac.collage_api.learning.vo.QuizVO;
 import kr.ac.collage_api.learning.vo.TaskPresentnVO;
 import kr.ac.collage_api.learning.vo.TaskVO;
 import kr.ac.collage_api.learning.service.impl.LearningPageServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -94,9 +97,9 @@ public class LearningPageController {
     @ResponseBody
     @PostMapping("/fileUpload")
     public Map<String, Object> taskFileUpload(MultipartHttpServletRequest req,
-                                              @RequestBody String taskPresentnNo,
-                                              @RequestBody String[] retainedExisting,
-                                              @RequestBody String[] deletedExisting)
+                                              @RequestParam String taskPresentnNo,
+                                              @RequestParam String[] retainedExisting,
+                                              @RequestParam String[] deletedExisting)
     {
         List<MultipartFile> files = new ArrayList<>();
 
@@ -114,6 +117,39 @@ public class LearningPageController {
 
         Map<String, Object> respMap = new HashMap<>();
         respMap.put("status", "success");
+
+        return respMap;
+    }
+
+    @ResponseBody
+    @PostMapping("/quiz")
+    public Map<String, Object> quizList(@RequestBody Map<String, Object> reqMap) {
+        log.debug("chkng taskList > {}", reqMap);
+
+        Map<String, Object> respMap = new HashMap<>();
+
+        // TODO: 인자가 둘 중 하나만 와도 통과 될 수 있으므로 개별 널 체크 필요
+        if(reqMap.isEmpty()) {
+            respMap.put("status", "error");
+            respMap.put("message", "invalid request");
+
+            return respMap;
+        }
+
+        String lecNo = reqMap.get("lecNo").toString();
+        String weekNo = reqMap.get("weekNo").toString();
+
+        List<QuizVO> quizByWeekList = learningPageService.quizList(lecNo, weekNo);
+
+        for(QuizVO quiz : quizByWeekList) {
+            List<QuizExVO> quizExByQuiz = learningPageService.quizExList(quiz.getQuizCode());
+            quiz.setQuizeExVOList(quizExByQuiz);
+        }
+
+        respMap.put("status", "success");
+        respMap.put("result", quizByWeekList);
+
+        log.debug("chkng taskByWeekList > {}", quizByWeekList);
 
         return respMap;
     }

@@ -1,6 +1,8 @@
 package kr.ac.collage_api.learning.service.impl;
 
 import kr.ac.collage_api.common.attach.service.UploadController;
+import kr.ac.collage_api.learning.vo.QuizExVO;
+import kr.ac.collage_api.learning.vo.QuizVO;
 import kr.ac.collage_api.learning.vo.TaskPresentnVO;
 import kr.ac.collage_api.learning.vo.TaskVO;
 import kr.ac.collage_api.learning.mapper.LearningPageMapper;
@@ -51,5 +53,13 @@ public class LearningPageServiceImpl {
         Long fileGroupNo = uploadController.fileUpload(files);
 
         return learningPageMapper.taskFileUpload(taskpresentnNo, fileGroupNo);
+    }
+
+    public List<QuizVO> quizList(String lecNo, String weekNo) {
+        return learningPageMapper.quizList(lecNo, weekNo);
+    }
+
+    public List<QuizExVO> quizExList(String quizCode) {
+        return learningPageMapper.quizExList(quizCode);
     }
 }

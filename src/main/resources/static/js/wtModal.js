@@ -30,6 +30,8 @@ const quizModal = `
     </div>
 `;
 
+const quizFrag = document.createRange().createContextualFragment(quizModal);
+
 
 /**
  * 모달의 display css 속성의 값을 block으로 변경해 모달을 화면에 표시하는 함수

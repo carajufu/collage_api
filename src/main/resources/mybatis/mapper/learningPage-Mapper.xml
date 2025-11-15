@@ -105,4 +105,28 @@
             , presentn_at = 1                                       /* 제철 여부 */
         WHERE task_presentn_no = #{taskpresentnNo}                  /* 과제 제출 번호 */
     </update>
+
+    <select id="quizList" parameterType="quizVO">
+        SELECT                      /* kr.ac.collage_api.learning.mapper.LearningPageMapper.quizList */
+            quiz_code               /* 퀴즈 코드 */
+            , week_accto_lrn_no     /* 주 별 학습 번호 */
+            , ques_cn               /* 문제 내용 */
+        FROM quiz
+        WHERE week_accto_lrn_no = (
+            SELECT week_accto_lrn_no
+            FROM week_accto_lrn
+            WHERE estbllctre_code = #{lecNo}
+              AND week = #{weekNo}
+        )
+    </select>
+
+    <select id="quizExList" parameterType="String">
+        SELECT                  /* kr.ac.collage_api.learning.mapper.LearningPageMapper.quizExList */
+            quiz_ex_code        /* 퀴즈 보기 코드 */
+            , quiz_code         /* 퀴즈 코드 */
+            , ex_no             /* 보기 번호 */
+            , ex_cn             /* 보기 내용 */
+        FROM quiz_ex
+        WHERE quiz_code = #{quizCode}
+    </select>
 </mapper>
