@@ -1,5 +1,6 @@
 package kr.ac.collage_api.lecture.service.impl;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -14,6 +15,7 @@ import kr.ac.collage_api.lecture.service.LectureService;
 import kr.ac.collage_api.vo.AllCourseVO;
 import kr.ac.collage_api.vo.EstblCourseVO;
 import kr.ac.collage_api.vo.FileDetailVO;
+import kr.ac.collage_api.vo.ProfsrVO;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -105,15 +107,58 @@ public class LectureServiceImpl implements LectureService {
 	// -------- <관리자> --------
 
 	// 강의 생성
+	@Transactional
 	@Override
 	public int createCourse(AllCourseVO allCourseVO) {
-		return this.lectureMapper.createCourse(allCourseVO);
+		
+		int resultA = lectureMapper.createCourseA(allCourseVO);
+		int resultE = lectureMapper.createCourseE(allCourseVO);
+		
+		if (resultA>0 && resultE>0) {
+			return 1;
+		} else {
+			throw new RuntimeException("강의 생성 중 DB 오류 발생 (부분 실패)");
+		}
 	}
 
 	// 개설 강의 목록 조회
 	@Override
 	public List<EstblCourseVO> allList(EstblCourseVO estblCourseVO) {
 		return this.lectureMapper.allList(estblCourseVO);
+	}
+
+	// 전체 학과 목록 가져오기
+	@Override
+	public List<AllCourseVO> getSubjct() {
+		return this.lectureMapper.getSubjct();
+	}
+
+	// 개설 강의 목록 조회
+	@Override
+	public List<EstblCourseVO> mngList(EstblCourseVO estblCourseVO) {
+		return this.lectureMapper.mngList(estblCourseVO);
+	}
+
+	// 선택학과 데이터 가져오기
+	@Transactional
+	@Override
+	public Map<String, Object> getData(String subjctCode) {
+		
+		log.info("getData()->subjctCode : {}", subjctCode);
+		
+		// 선수강의 목록 가져오기
+		List<EstblCourseVO> preLec = lectureMapper.getPreLec(subjctCode);
+		log.info("getData()->preLec : {}", preLec);
+		
+		// 학과교수 목록 가져오기
+		List<ProfsrVO> profsr = lectureMapper.getProfsr(subjctCode);
+		log.info("getData()->profsr : {}", profsr);
+		
+		Map<String, Object> result = new HashMap<>();
+		result.put("preLecture", preLec);
+		result.put("professor", profsr);
+		
+		return result;
 	}
 
 	

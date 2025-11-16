@@ -96,6 +96,7 @@
 		left join SKLSTF S on (S.SKLSTF_ID = P.SKLSTF_ID)
 		where  R.STDNT_NO = #{stdntNo}
 		and	   R.REQST_STTUS = '신청중'
+		order by R.RECENT_UPDT_DT
 	</select>
 	
 	<!-- 장바구니에 강의 담기 -->
@@ -233,6 +234,7 @@
 		left join SKLSTF S on (S.SKLSTF_ID = P.SKLSTF_ID)
 		where  R.STDNT_NO = #{stdntNo}
 		and	   R.REQST_STTUS = '신청완료'
+		order by R.RECENT_UPDT_DT
 	</select>
 
 </mapper>

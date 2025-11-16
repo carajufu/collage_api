@@ -9,6 +9,7 @@ import kr.ac.collage_api.vo.AllCourseVO;
 import kr.ac.collage_api.vo.EstblCourseVO;
 import kr.ac.collage_api.vo.FileDetailVO;
 import kr.ac.collage_api.vo.FileGroupVO;
+import kr.ac.collage_api.vo.ProfsrVO;
 
 @Mapper
 public interface LectureMapper {
@@ -47,10 +48,24 @@ public interface LectureMapper {
 	
 	
 	// 강의 생성
-	public int createCourse(AllCourseVO allCourseVO);
+	public int createCourseA(AllCourseVO allCourseVO);
+	public int createCourseE(AllCourseVO allCourseVO);
 
 	// 전체 강의 목록 조회
 	public List<EstblCourseVO> allList(EstblCourseVO estblCourseVO);
+
+	// 전체 학과 목록 가져오기
+	public List<AllCourseVO> getSubjct();
+	
+	// 개설 강의 목록 조회
+	public List<EstblCourseVO> mngList(EstblCourseVO estblCourseVO);
+
+	// 선수강의 목록 가져오기
+	public List<EstblCourseVO> getPreLec(String subjctCode);
+
+	// 학과교수 목록 가져오기
+	public List<ProfsrVO> getProfsr(String subjctCode);
+
 
 
 

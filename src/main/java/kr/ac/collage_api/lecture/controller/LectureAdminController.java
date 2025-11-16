@@ -1,5 +1,6 @@
 package kr.ac.collage_api.lecture.controller;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -51,17 +53,18 @@ public class LectureAdminController {
 	
 	// 개설 강의 목록 조회
 	@GetMapping("/mng/list")
-	public ResponseEntity<List<EstblCourseVO>> list(EstblCourseVO estblCourseVO) {
+	public ResponseEntity<List<EstblCourseVO>> mngList(EstblCourseVO estblCourseVO) {
 		
-		List<EstblCourseVO> list = lectureService.list(estblCourseVO);
+		List<EstblCourseVO> list = lectureService.mngList(estblCourseVO);
 		log.info("mngList()->list : {}", list);
 		
 		return ResponseEntity.ok(list);
 	}
 	
 	// 강의 생성
-	@PostMapping("/create")
-	public ResponseEntity<AllCourseVO> createCourse(AllCourseVO allCourseVO) {
+//	@ResponseBody
+	@PostMapping("/mng/create")
+	public ResponseEntity<AllCourseVO> createCourse(@RequestBody AllCourseVO allCourseVO) {
 		
 		log.info("createCourse()->allCourseVO : {}", allCourseVO);
 		
@@ -69,6 +72,28 @@ public class LectureAdminController {
 		
 		return ResponseEntity.ok(allCourseVO);
 	}
+	
+		// 전체 학과 목록 가져오기
+//		@ResponseBody
+		@GetMapping("/mng/create/getSubjct")
+		public ResponseEntity<List<AllCourseVO>> getSubjct(String subjctCode) {
+			
+			List<AllCourseVO> subjcts = lectureService.getSubjct();
+			log.info("getSubjct()->subjcts : {}", subjcts);
+			
+			return ResponseEntity.ok(subjcts);
+		}
+		
+		// 선택학과 데이터 가져오기
+		@GetMapping("/mng/create/getData")
+		public ResponseEntity<Map<String, Object>> getData(@RequestParam("subjctCode") String subjctCode) {
+			
+			Map<String, Object> map = lectureService.getData(subjctCode);
+			
+			log.info("getData()->map : {}", map);
+			
+			return ResponseEntity.ok(map);
+		}
 	
 	
 }

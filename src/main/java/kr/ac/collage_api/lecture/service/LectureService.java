@@ -41,5 +41,14 @@ public interface LectureService {
 
 	// 전체 강의 목록 조회
 	public List<EstblCourseVO> allList(EstblCourseVO estblCourseVO);
+	
+	// 개설 강의 목록 조회
+	public List<EstblCourseVO> mngList(EstblCourseVO estblCourseVO);
+
+	// 전체 학과 목록 가져오기
+	public List<AllCourseVO> getSubjct();
+
+	// 선수과목 목록 가져오기
+	public Map<String, Object> getData(String subjctCode);
 
 }
