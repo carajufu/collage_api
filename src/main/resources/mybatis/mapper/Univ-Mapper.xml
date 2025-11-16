@@ -85,4 +85,28 @@
 	  	P.SUBJCT_CODE = #{subjctCode}
 	  AND P.CLSF = '부교수'
 	</select>
+	
+	<!-- 단과대 정보 업데이트 -->
+	<update id="updateUniv" parameterType="kr.ac.collage_api.admin.dto.UnivUpdateRequestDto">
+        UPDATE UNIV SET
+            UNIV_NM         = #{univNm},
+            BULD_LC         = #{buldLc},
+            PROFSR_NO       = #{profsrNo},
+            UNIV_TELNO      = #{univTelno},
+            OPER_STTUS      = #{operSttus},
+            RECENT_UPDT_DT  = SYSDATE  WHERE
+            UNIV_CODE = #{univCode}
+    </update>
+	
+	<!-- 학과 정보 업데이트 -->
+	<update id="updateSubjct" parameterType="kr.ac.collage_api.admin.dto.SubjctUpdateRequestDto">
+        UPDATE SUBJCT SET
+            SUBJCT_NM       = #{subjctNm},
+            SUBJCT_LC       = #{subjctLc},
+            SUBJCT_CHPT     = #{subjctChpt},
+            SUBJCT_TELNO    = #{subjctTelno},
+            OPER_STTUS      = #{operSttus},
+            RECENT_UPDT_DT  = SYSDATE  WHERE
+            SUBJCT_CODE = #{subjctCode}
+    </update>
 </mapper>

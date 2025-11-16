@@ -114,43 +114,50 @@
             </thead>
             <tbody>
                 <c:forEach items="${historyList}" var="history">
-                    <tr>
-                        <td>${history.changeTy} (${history.tmpabssklTy})</td>
-                        <td>${history.efectOccrrncSemstr.split('-')[0]}년 ${history.efectOccrrncSemstr.split('-')[1]}학기</td>
-                        <td><fmt:formatDate value="${history.changeReqstDt}" pattern="yyyy-MM-dd" /></td>
-                        <td>
-                            <c:choose>
-							    <c:when test="${history.reqstSttus == '승인'}">
-							        <span class="badge bg-success">승인</span>
-							    </c:when>
-							    <c:when test="${history.reqstSttus == '반려'}">
-							        <span class="badge bg-danger">반려</span>
-							    </c:when>
-							    <c:when test="${history.reqstSttus == '처리중'}"> 
-							        <span class="badge bg-warning text-dark">처리중</span>
-							    </c:when>
-							    <c:otherwise>
-							        <span class="badge bg-secondary">신청</span>
-							    </c:otherwise>
-							</c:choose>	
-                        </td>
-                        <td>
-                            <button type="button" class="btn btn-sm btn-outline-secondary" 
-                                    data-bs-toggle="modal" data-bs-target="#detailsModal"
-                                    data-reqst-resn="${history.reqstResn}"
-                                    data-return-resn="${history.returnResn}"
-                                    data-status="${history.reqstSttus}"
-                                    data-change-ty="${history.changeTy} (${history.tmpabssklTy})"
-                                    data-semester="${history.efectOccrrncSemstr.split('-')[0]}년 ${history.efectOccrrncSemstr.split('-')[1]}학기">
-                                자세히 보기
-                            </button>
-                            
-                            <c:if test="${history.reqstSttus == '신청'}">
-                                <a href="/enrollment/cancel?reqId=${history.sknrgsChangeInnb}" class="btn btn-sm btn-outline-danger">신청 취소</a>
-                            </c:if>
-                        </td>
-                    </tr>
-                </c:forEach>
+
+    <c:if test="${history.reqstSttus != '신청취소'}">
+    
+        <tr>
+            <td>${history.changeTy} (${history.tmpabssklTy})</td>
+            <td>${history.efectOccrrncSemstr.split('-')[0]}년 ${history.efectOccrrncSemstr.split('-')[1]}학기</td>
+            <td><fmt:formatDate value="${history.changeReqstDt}" pattern="yyyy-MM-dd" /></td>
+            <td>
+                <c:choose>
+                    <c:when test="${history.reqstSttus == '승인'}">
+                        <span class="badge bg-success">승인</span>
+                    </c:when>
+                    <c:when test="${history.reqstSttus == '반려'}">
+                        <span class="badge bg-danger">반려</span>
+                    </c:when>
+                    <c:when test="${history.reqstSttus == '처리중'}"> 
+                        <span class="badge bg-warning text-dark">처리중</span>
+                    </c:when>
+                    <c:otherwise>
+                        <%-- '신청' 상태일 때 --%>
+                        <span class="badge bg-secondary">신청</span>
+                    </c:otherwise>
+                </c:choose>	
+            </td>
+            <td>
+                <button type="button" class="btn btn-sm btn-outline-secondary" 
+                        data-bs-toggle="modal" data-bs-target="#detailsModal"
+                        data-reqst-resn="${history.reqstResn}"
+                        data-return-resn="${history.returnResn}"
+                        data-status="${history.reqstSttus}"
+                        data-change-ty="${history.changeTy} (${history.tmpabssklTy})"
+                        data-semester="${history.efectOccrrncSemstr.split('-')[0]}년 ${history.efectOccrrncSemstr.split('-')[1]}학기">
+                    자세히 보기
+                </button>
+                
+                <%-- '신청' 상태일 때만 취소 버튼 보임 --%>
+                <c:if test="${history.reqstSttus == '신청'}">
+                    <a href="/enrollment/cancel?reqId=${history.sknrgsChangeInnb}" class="btn btn-sm btn-outline-danger">신청 취소</a>
+                </c:if>
+            </td>
+        </tr>
+        
+    </c:if>
+</c:forEach>
                 
                 <c:if test="${empty historyList}">
                     <tr>
