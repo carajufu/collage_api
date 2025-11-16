@@ -40,9 +40,15 @@ File: Custom Css File
     --vz-primary-rgb: 34, 46, 131;
 
     /* 보조색 */
-    --vz-secondary: #E8A937;
+    --vz-secondary: #3CCE88;
     --vz-secondary-rgb: 60, 206, 136;
 
-    --vz-success : #E8A937;
+    --vz-success : #3CCE88;
     --vz-success-rgb: 60, 206, 136;
+
+    /* list.group */
+    .list-group {
+        --vz-list-group-active-bg: var(--vz-primary);
+        --vz-list-group-active-border-color: var(--vz-primary);
+    }
 }

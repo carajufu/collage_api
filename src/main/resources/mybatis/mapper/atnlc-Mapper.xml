@@ -105,17 +105,17 @@
 							        ATNLC_REQST_NO, STDNT_NO, ESTBLLCTRE_CODE, REQST_YEAR,
 							        REQST_SEMSTR, REQST_STTUS, REQST_DE, RECENT_UPDT_DT
 							    )
-	    SELECT 
-	        'AR'||LPAD((SELECT NVL(MAX(TO_NUMBER(SUBSTR(ATNLC_REQST_NO,3))),0)+1 
-	        			FROM   ATNLC_REQST 
-	        			WHERE  ATNLC_REQST_NO LIKE 'AR%'),7,'0'), 
+	    SELECT
+	        'AR'||LPAD((SELECT NVL(MAX(TO_NUMBER(SUBSTR(ATNLC_REQST_NO,3))),0)+1
+	        			FROM   ATNLC_REQST
+	        			WHERE  ATNLC_REQST_NO LIKE 'AR%'),7,'0'),
 	        #{stdntNo}, #{estbllctreCode}, '2025', '2학기', '신청중', TO_CHAR(SYSDATE, 'YYYYMMDD'), SYSDATE
 			FROM    ESTBL_COURSE E
 		    LEFT JOIN ALL_COURSE A ON (E.LCTRE_CODE = A.LCTRE_CODE)
-	    
+
 	  		WHERE   E.ESTBLLCTRE_CODE = #{estbllctreCode}
 	</insert>
-	
+
 	<!-- 1. 중복 강의 검사(장바구니) -->
 	<select id="checkLecCart" parameterType="atnlcReqstVO" resultType="atnlcReqstVO">
 		select estbllctre_code, reqst_sttus
@@ -145,20 +145,20 @@
 		and	   reqst_sttus = '신청완료'
 		and	   estbllctre_code = #{estbllctreCode}
 	</select>
-	
+
 	<!-- 2. 중복 시간표 검사(수강신청) -->
 	<select id="checkTime" parameterType="atnlcReqstVO" resultType="EstblCourseVO">
 		select s.estbllctre_code
 		from   lctre_timetable s
-		inner join lctre_timetable o on ( s.lctre_dfk = o.lctre_dfk 
-									  and  s.begin_tm &lt; o.end_tm 
+		inner join lctre_timetable o on ( s.lctre_dfk = o.lctre_dfk
+									  and  s.begin_tm &lt; o.end_tm
 									  and  s.end_tm &gt; o.begin_tm )
 		inner join atnlc_reqst a on ( o.estbllctre_code = a.estbllctre_code )
 		where a.stdnt_no = #{stdntNo}
 		and   a.reqst_sttus = '신청완료'
 		and   s.estbllctre_code = #{estbllctreCode}
 	</select>
-	
+
 	<!-- 중복  -->
 
 	<!-- 장바구니 강의 담기 취소 -->
@@ -168,7 +168,7 @@
 		where  STDNT_NO = #{stdntNo}
 		and	   ESTBLLCTRE_CODE = #{estbllctreCode}
 	</update>
-	
+
 	<!-- 장바구니 강의 수강신청 -->
 	<update id="submitMyCart">
 		update ATNLC_REQST

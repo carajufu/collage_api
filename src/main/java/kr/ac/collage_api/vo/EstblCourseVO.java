@@ -29,7 +29,7 @@ public class EstblCourseVO {
 	private String keyword;					 // 강의 검색 키워드
 	private int totalReqst;				 	 // 총 신청중 인원(=장바구니)
 	private int totalSubmit;				 // 총 신청완료 인원(=수강신청)
-	
+
 	private LctreTimetableVO timetable;		//lctreDfk(LCTRE_DFK), beginTm(BEGIN_TM), endTm(END_TM)
 	private AllCourseVO allCourse;			//lctreNm(LCTRE_NM)
 	private SklstfVO sklstf;				//sklstfNm(SKLSTF_NM), cttpc(CTTPC)

@@ -1,10 +1,9 @@
-package kr.ac.collage_api.dashboard.vo;
+package kr.ac.collage_api.learning.vo;
 
 import kr.ac.collage_api.vo.FileDetailVO;
 import kr.ac.collage_api.vo.FileGroupVO;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
