@@ -1,10 +1,7 @@
 package kr.ac.collage_api.learning.service.impl;
 
 import kr.ac.collage_api.common.attach.service.UploadController;
-import kr.ac.collage_api.learning.vo.QuizExVO;
-import kr.ac.collage_api.learning.vo.QuizVO;
-import kr.ac.collage_api.learning.vo.TaskPresentnVO;
-import kr.ac.collage_api.learning.vo.TaskVO;
+import kr.ac.collage_api.learning.vo.*;
 import kr.ac.collage_api.learning.mapper.LearningPageMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,8 +22,19 @@ public class LearningPageServiceImpl {
 
     public Map<String, Object> getLearningPage(String lecNo) {
         List<Map<String, Object>> weekInfoList = learningPageMapper.getLearningPage(lecNo);
-
         Map<String, Object> lectureInfo = learningPageMapper.getLectureInfo(lecNo);
+
+        for(Map<String, Object> week : weekInfoList){
+            Object weekNoObj = week.get("WEEK");
+            if(weekNoObj != null) {
+                String weekNo = String.valueOf(weekNoObj);
+                List<TaskVO> taskList = taskList(lecNo, weekNo);
+                List<QuizVO> quizList = quizList(lecNo, weekNo);
+
+                week.put("taskList", taskList);
+                week.put("quizList", quizList);
+            }
+        }
 
         Map<String, Object> infoMap = new HashMap<>();
         infoMap.put("weekList", weekInfoList);
@@ -56,10 +64,24 @@ public class LearningPageServiceImpl {
     }
 
     public List<QuizVO> quizList(String lecNo, String weekNo) {
-        return learningPageMapper.quizList(lecNo, weekNo);
+        List<QuizVO> quizVOList = learningPageMapper.quizList(lecNo, weekNo);
+
+        for(QuizVO quiz : quizVOList) {
+            String quizCode = quiz.getQuizCode();
+            if(quizCode != null) {
+                List<QuizExVO> quizExVOList = quizExList(quizCode);
+                quiz.setQuizeExVOList(quizExVOList);
+            }
+        }
+
+        return quizVOList;
     }
 
     public List<QuizExVO> quizExList(String quizCode) {
         return learningPageMapper.quizExList(quizCode);
+    }
+
+    public QuizPresentnVO getSubmitQuiz(String quizCode, String name) {
+        return learningPageMapper.getSubmitQuiz(quizCode, name);
     }
 }

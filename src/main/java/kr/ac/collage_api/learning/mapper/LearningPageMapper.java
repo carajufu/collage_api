@@ -1,9 +1,6 @@
 package kr.ac.collage_api.learning.mapper;
 
-import kr.ac.collage_api.learning.vo.QuizExVO;
-import kr.ac.collage_api.learning.vo.QuizVO;
-import kr.ac.collage_api.learning.vo.TaskPresentnVO;
-import kr.ac.collage_api.learning.vo.TaskVO;
+import kr.ac.collage_api.learning.vo.*;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -26,4 +23,6 @@ public interface LearningPageMapper {
     List<QuizVO> quizList(String lecNo, String weekNo);
 
     List<QuizExVO> quizExList(String quizCode);
+
+    QuizPresentnVO getSubmitQuiz(String quizCode, String name);
 }

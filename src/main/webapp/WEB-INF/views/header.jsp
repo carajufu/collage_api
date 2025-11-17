@@ -32,7 +32,7 @@
     <script src="/assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="/assets/js/pages/plugins/lord-icon-2.1.0.js"></script>
     <script src="/assets/js/plugins.js"></script>
-    <script src="/assets/js/app.js"></script>
+    <script src="/assets/js/app.js" defer></script>
     <script src="/assets/js/layout.js"></script>
 
     <script src="/assets/libs/simplebar/simplebar.min.js"></script>
@@ -40,6 +40,9 @@
 
     <!-- jQuery-3.6.0.min -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
+    <!-- axios -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
 </head>
 <body>
@@ -406,7 +409,7 @@
                         <div class="dropdown-menu dropdown-menu-end" style="width: 300px">
                             <!-- item-->
                             <h6 class="dropdown-header">${user.affiliation}</h6>
-                            <h6 class="dropdown-header">${userc.username}</h6>
+                            <h6 class="dropdown-header">${user.username}</h6>
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item" href="pages-profile.html"><i class="mdi mdi-account-circle text-muted fs-16 align-middle me-1"></i> <span class="align-middle">개인 정보 수정</span></a>
                             <a class="dropdown-item" href="apps-chat.html"><i class="mdi mdi-message-text-outline text-muted fs-16 align-middle me-1"></i> <span class="align-middle">메세지</span></a>

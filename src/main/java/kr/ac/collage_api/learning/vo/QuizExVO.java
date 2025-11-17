@@ -10,4 +10,5 @@ public class QuizExVO {
     private String quizCode;
     private String exNo;
     private String exCn;
+    private String cnslAt;
 }

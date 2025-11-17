@@ -1,9 +1,6 @@
 package kr.ac.collage_api.learning.controller;
 
-import kr.ac.collage_api.learning.vo.QuizExVO;
-import kr.ac.collage_api.learning.vo.QuizVO;
-import kr.ac.collage_api.learning.vo.TaskPresentnVO;
-import kr.ac.collage_api.learning.vo.TaskVO;
+import kr.ac.collage_api.learning.vo.*;
 import kr.ac.collage_api.learning.service.impl.LearningPageServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -94,12 +91,25 @@ public class LearningPageController {
         return respMap;
     }
 
+    @GetMapping("/isQuizSubmit")
+    @ResponseBody
+    public Map<String, Object> getSubmitQuiz(String quizCode,
+                                             Principal principal) {
+        QuizPresentnVO quizPresentnVO = learningPageService.getSubmitQuiz(quizCode, principal.getName());
+        Map<String, Object> respMap = new HashMap<>();
+
+        respMap.put("status", "success");
+        respMap.put("data", quizPresentnVO);
+
+        return respMap;
+    }
+
     @ResponseBody
     @PostMapping("/fileUpload")
     public Map<String, Object> taskFileUpload(MultipartHttpServletRequest req,
                                               @RequestParam String taskPresentnNo,
-                                              @RequestParam String[] retainedExisting,
-                                              @RequestParam String[] deletedExisting)
+                                              @RequestParam(required = false) String[] retainedExisting,
+                                              @RequestParam(required = false) String[] deletedExisting)
     {
         List<MultipartFile> files = new ArrayList<>();
 
@@ -152,5 +162,25 @@ public class LearningPageController {
         log.debug("chkng taskByWeekList > {}", quizByWeekList);
 
         return respMap;
+    }
+
+    @ResponseBody
+    @GetMapping("/quizSubmit")
+    public Map<String, Object> quizSubmit(@RequestParam String quizExCode,
+                                          @RequestParam String quizCode) {
+        int rslt = 0;
+        // todo: 제출 데이터 db insert 후 정답인지 아닌지 알려주는 응답 바디 작성하기
+        if(quizCode != null && quizExCode != null) {
+            rslt = learningPageService.quizSubmit(quizCode, quizExCode);
+        }
+
+        Map<String, Object> respMap = new HashMap<>();
+        if(rslt <= 0) {
+            respMap.put("status", "error");
+            return respMap;
+        }
+        else {
+            respMap.put("status", "success");
+        }
     }
 }

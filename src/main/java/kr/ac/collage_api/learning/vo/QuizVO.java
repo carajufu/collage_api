@@ -11,6 +11,8 @@ public class QuizVO {
     private String quizCode;
     private String weekAcctoLrnNo;
     private String quesCn;
+    private String quizBeginDe;
+    private String quizClosDe;
 
     private List<QuizExVO> quizeExVOList;
 }
