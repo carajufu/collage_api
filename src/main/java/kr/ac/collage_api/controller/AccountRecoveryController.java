@@ -120,7 +120,7 @@ import java.time.format.DateTimeFormatter;
      - 인증코드, 이메일, 아이디는 세션에만 저장, DB에는 인증코드를 남기지 않음.
      - 비밀번호는 PasswordEncoder를 통해 해시 후 저장.
      - IP는 완전 노출 대신 maskIpForLog 로 일부 마스킹.
-     - 브루트포스 방지를 위한 시도 횟수 제한, 레이트 리밋은 상위 레이어에서 추가 가능.
+     - 브루트포스(무작위 패턴) 입력 방지를 위한 시도 횟수 제한, 레이트 리밋은 상위 레이어에서 추가 가능.
 
   5) 유지보수자 가이드
      - DitAccountMapper 쿼리 및 시그니처 변경 시 이 컨트롤러의 계약을 먼저 확인.
@@ -146,7 +146,7 @@ public class AccountRecoveryController {
 	// private final PasswordEncoder passwordEncoder; 
 	// =>> bCryptPasswordEncoder 으로 대체 일관성 확보
     private final BCryptPasswordEncoder bCryptPasswordEncoder; 
-    // BCryptPasswordEncoder(전문용어(단방향 해시 알고리즘 구현체))
+    // BCryptPasswordEncoder(단방향 해시 알고리즘 구현체)
 
 
 	/* ======================================================================
@@ -243,7 +243,7 @@ public class AccountRecoveryController {
            의미     메일로 발행된 인증코드
          - newPassword
            타입     String
-           제약     @NotBlank, @Size(8~20)
+           제약     @NotBlank, @Size(8~20), 데모용임을 감안하여 기준 완화
            의미     새 비밀번호(구체 정책은 isValidPasswordPolicy와 동기화)
 
       4) 유지보수자 가이드

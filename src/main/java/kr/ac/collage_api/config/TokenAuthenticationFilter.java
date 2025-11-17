@@ -118,7 +118,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
                 log.debug("[TAF] token validation error: {}", ex.toString());
             }
         }
-
+        // 이거 있어야 JWT 체인 동작
         filterChain.doFilter(request, response);
     }
 

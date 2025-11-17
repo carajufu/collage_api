@@ -39,7 +39,7 @@ public class TimetableServiceImpl implements TimetableService {
      * [계약]
      * - 이 서비스는 "조회 전용"이다.
      *   - @Transactional(readOnly = true)로 명시, DB 변경 금지.
-     * - 전달받는 profsrNo/stdntNo는 유효한 주체 식별자라고 가정한다.
+     * 	- 전달받는 profsrNo/stdntNo는 유효한 주체 식별자라고 가정한다.
      *   - 유효성 검증과 권한 검증은 컨트롤러 및 상위 인증 계층에서 수행.
      *
      * [보안·안전 전제]

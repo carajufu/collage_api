@@ -1,8 +1,43 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+         pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ include file="header.jsp"%>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
 
+<%@ include file="index-header.jsp"%>
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>대덕대학교-로그인</title>
+
+    <!-- Pretendard + Bootstrap -->
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/pretendard/dist/web/static/pretendard.css" />
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+
+    <!-- 메인 포털 전용 CSS -->
+    <link rel="stylesheet"
+          href="${pageContext.request.contextPath}/css/main-portal.css" />
+</head>
+<body>
+
+<style>
+/* 고정 헤더 – 항상 불투명 탑바 */
+header.main-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1050;
+
+    background-color: #0f172a;      /* 완전히 불투명한 네이비 톤 */
+    box-shadow: 0 2px 12px rgba(15, 23, 42, 0.45);
+
+    /* 기존 padding, 기타 스타일 있으면 그대로 유지 */
+}
+</style>
 <%--
   [뷰 목적]
   - 하나의 로그인 화면에서 세션(formLogin) + JWT 상태를 동시에 관리.
@@ -33,133 +68,134 @@
     · Caps/Num 상태 표시(capsIndicator, numIndicator)로 비의도 입력 방지.
 --%>
 
-<!-- 로그인 폼 영역 -->
-<div id="main-container" class="container-fluid">
-  <div class="auth-wrap d-flex justify-content-center">
-    <!-- 계약: POST /login, CSRF 필수, 파라미터 acntId·password -->
-    <form
-      id="sessionLoginForm"
-      class="card shadow-sm rounded-4 p-4 auth-card needs-validation"
-      action="/login"
-      method="post"
-      role="form"
-      aria-label="세션 로그인 폼"
-      autocomplete="off"
-      novalidate
-    >
-      <!-- CSRF 토큰 -->
-      <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
-
-      <h3 class="mb-2 fw-semibold text-center">로그인</h3>
-      <p class="text-secondary small text-center mb-3">
-        서비스를 사용하려면 로그인하세요
-      </p>
-
-      <!-- 서버측 인증 실패 경고: SPRING_SECURITY_LAST_EXCEPTION 또는 errorMessage 사용 가능 -->
-      <%-- JSTL 사용 시:
-      <c:if test="${not empty SPRING_SECURITY_LAST_EXCEPTION or not empty errorMessage}">
-        <div id="login-alert" class="alert alert-danger py-2 small" role="alert">
-          <c:out value="${errorMessage != null ? errorMessage : SPRING_SECURITY_LAST_EXCEPTION.message}" />
-        </div>
-      </c:if>
-      --%>
-      <div id="login-alert" class="alert alert-danger py-2 small d-none" role="alert"></div>
-
-      <!-- 아이디 -->
-      <div class="mb-3">
-        <label for="acntId" class="form-label">아이디</label>
-        <input
-          id="acntId"
-          name="acntId"
-          type="text"
-          class="form-control"
-          placeholder="학번 또는 아이디"
-          required
-          autofocus
-          inputmode="text"
-          autocapitalize="none"
-          spellcheck="false"
-          autocomplete="username"
-          aria-describedby="acntIdFeedback"
-        />
-        <div id="acntIdFeedback" class="invalid-feedback">아이디를 입력하세요</div>
-      </div>
-
-      <!-- 비밀번호 (보기/숨기기 + Caps/Num + 규칙 안내) -->
-      <div class="mb-3">
-        <label for="password" class="form-label">비밀번호</label>
-
-        <div class="input-group">
-          <input
-            id="password"
-            name="password"
-            type="password"
-            class="form-control"
-            placeholder="비밀번호"
-            required
-            autocomplete="current-password"
-            aria-describedby="passwordFeedback passwordRuleText capsIndicator numIndicator"
-          />
-          <button type="button"
-                  class="btn btn-outline-secondary"
-                  id="toggleLoginPassword"
-                  tabindex="-1">
-            보기
-          </button>
-        </div>
-
-        <div id="passwordFeedback" class="invalid-feedback">
-          비밀번호를 입력하세요
-        </div>
-
-        <div class="small mt-1">
-          <span id="capsIndicator" class="text-danger d-none">Caps Lock 켜짐</span>
-          </div>
-      </div>
-
-      <!-- 보조 링크 -->
-      <div class="d-flex justify-content-between align-items-center mb-3">
-        <div class="small">
-          <a href="javascript:void(0)"
-             class="text-primary text-decoration-underline"
-             onclick="openFindIdPopup()"
-             role="button">아이디 찾기</a>
-
-          <span class="text-secondary mx-1">|</span>
-
-          <a href="javascript:void(0)"
-             class="text-primary text-decoration-underline"
-             onclick="openResetPwPopup()"
-             role="button">비밀번호 재설정</a>
-        </div>
-      </div>
-
-      <!-- 제출 -->
-      <button type="submit" id="login-btn" class="btn btn-primary w-100">
-        로그인
-      </button>
-    </form>
-  </div>
-</div>
+<main class="main-content-with-header">
+	<!-- 로그인 폼 영역 -->
+	<div id="main-container" class="container-fluid">
+	  <div class="auth-wrap d-flex justify-content-center">
+	    <!-- 계약: POST /login, CSRF 필수, 파라미터 acntId·password -->
+	    <form
+	      id="sessionLoginForm"
+	      class="card shadow-sm rounded-4 p-4 auth-card needs-validation"
+	      action="/login"
+	      method="post"
+	      role="form"
+	      aria-label="세션 로그인 폼"
+	      autocomplete="off"
+	      novalidate
+	    >
+	      <!-- CSRF 토큰 -->
+	      <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+	
+	      <h3 class="mb-2 fw-semibold text-center">로그인</h3>
+	      <p class="text-secondary small text-center mb-3">
+	        서비스를 사용하려면 로그인하세요
+	      </p>
+	
+	      <!-- 서버측 인증 실패 경고: SPRING_SECURITY_LAST_EXCEPTION 또는 errorMessage 사용 가능 -->
+	      <%-- JSTL 사용 시:
+	      <c:if test="${not empty SPRING_SECURITY_LAST_EXCEPTION or not empty errorMessage}">
+	        <div id="login-alert" class="alert alert-danger py-2 small" role="alert">
+	          <c:out value="${errorMessage != null ? errorMessage : SPRING_SECURITY_LAST_EXCEPTION.message}" />
+	        </div>
+	      </c:if>
+	      --%>
+	      <div id="login-alert" class="alert alert-danger py-2 small d-none" role="alert"></div>
+	
+	      <!-- 아이디 -->
+	      <div class="mb-3">
+	        <label for="acntId" class="form-label">아이디</label>
+	        <input
+	          id="acntId"
+	          name="acntId"
+	          type="text"
+	          class="form-control"
+	          placeholder="학번 또는 아이디"
+	          required
+	          autofocus
+	          inputmode="text"
+	          autocapitalize="none"
+	          spellcheck="false"
+	          autocomplete="username"
+	          aria-describedby="acntIdFeedback"
+	        />
+	        <div id="acntIdFeedback" class="invalid-feedback">아이디를 입력하세요</div>
+	      </div>
+	
+	      <!-- 비밀번호 (보기/숨기기 + Caps/Num + 규칙 안내) -->
+	      <div class="mb-3">
+	        <label for="password" class="form-label">비밀번호</label>
+	
+	        <div class="input-group">
+	          <input
+	            id="password"
+	            name="password"
+	            type="password"
+	            class="form-control"
+	            placeholder="비밀번호"
+	            required
+	            autocomplete="current-password"
+	            aria-describedby="passwordFeedback passwordRuleText capsIndicator numIndicator"
+	          />
+	          <button type="button"
+	                  class="btn btn-outline-secondary"
+	                  id="toggleLoginPassword"
+	                  tabindex="-1">
+	            보기
+	          </button>
+	        </div>
+	
+	        <div id="passwordFeedback" class="invalid-feedback">
+	          비밀번호를 입력하세요
+	        </div>
+	
+	        <div class="small mt-1">
+	          <span id="capsIndicator" class="text-danger d-none">Caps Lock 켜짐</span>
+	          </div>
+	      </div>
+	
+	      <!-- 보조 링크 -->
+	      <div class="d-flex justify-content-between align-items-center mb-3">
+	        <div class="small">
+	          <a href="javascript:void(0)"
+	             class="text-primary text-decoration-underline"
+	             onclick="openFindIdPopup()"
+	             role="button">아이디 찾기</a>
+	
+	          <span class="text-secondary mx-1">|</span>
+	
+	          <a href="javascript:void(0)"
+	             class="text-primary text-decoration-underline"
+	             onclick="openResetPwPopup()"
+	             role="button">비밀번호 재설정</a>
+	        </div>
+	      </div>
+	
+	      <!-- 제출 -->
+	      <button type="submit" id="login-btn" class="btn btn-primary w-100">
+	        로그인
+	      </button>
+	    </form>
+	  </div>
+	</div>
+	</main>
+	
+	<!-- JWT 오버레이 -->
+	<div id="auth-overlay"
+	     class="position-fixed top-0 start-0 vw-100 vh-100 d-none bg-body bg-opacity-75"
+	     style="z-index: 1050;">
+	  <div
+	    class="h-100 d-flex flex-column justify-content-center align-items-center text-center">
+	    <div class="card shadow-sm rounded-4 p-4" style="min-width: 320px;">
+	      <div class="mb-3">
+	        <div class="spinner-border" role="status" aria-hidden="true"></div>
+	      </div>
+	      <h6 id="overlay-title" class="mb-1">토큰 확인 중</h6>
+	      <p id="overlay-desc" class="small text-secondary mb-0">잠시만 기다려주세요</p>
+	    </div>
+	  </div>
+	</div>
 </main>
 
-<!-- JWT 오버레이 -->
-<div id="auth-overlay"
-     class="position-fixed top-0 start-0 vw-100 vh-100 d-none bg-body bg-opacity-75"
-     style="z-index: 1050;">
-  <div
-    class="h-100 d-flex flex-column justify-content-center align-items-center text-center">
-    <div class="card shadow-sm rounded-4 p-4" style="min-width: 320px;">
-      <div class="mb-3">
-        <div class="spinner-border" role="status" aria-hidden="true"></div>
-      </div>
-      <h6 id="overlay-title" class="mb-1">토큰 확인 중</h6>
-      <p id="overlay-desc" class="small text-secondary mb-0">잠시만 기다려주세요</p>
-    </div>
-  </div>
-</div>
-
-<%@ include file="footer.jsp"%>
 <script>
 /*
   [비밀번호 입력 헬퍼]
@@ -374,4 +410,9 @@ window.openResetPwPopup = function() {
 };
 </script>
 
-::contentReference[oaicite:0]{index=0}
+<%@ include file="index-footer.jsp"%>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>

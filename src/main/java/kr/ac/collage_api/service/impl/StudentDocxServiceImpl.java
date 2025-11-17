@@ -136,8 +136,9 @@ public class StudentDocxServiceImpl implements StudentDocxService {
     }
 
     /**
-     * resolveDegreeNameByCollege
-     *
+     * resolveDegreeNameByCollege 
+     * 목적 
+     *  - 학사 테이블 부재로 데이터 기반 전처리 학사 추론 
      * 입력
      *  - 단과대명 (예: "소프트웨어융합대학", "공과대학")
      * 출력

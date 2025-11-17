@@ -1,6 +1,9 @@
 package kr.ac.collage_api.controller;
 
+import java.io.IOException;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -8,6 +11,17 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.core.io.Resource;
+
+import org.springframework.core.io.support.ResourcePatternResolver;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 
 import jakarta.servlet.http.HttpSession;
 import kr.ac.collage_api.service.DitAccountService;
@@ -65,7 +79,30 @@ public class AuthViewController {
 
     @Autowired
     DitAccountService ditAccountService;
+    @Autowired
+    ResourcePatternResolver resourceResolver;
 
+    // 모든 사용자의 첫 진입점
+    @GetMapping({"/", "/index"})
+    public String indexPage(Model model) throws IOException {
+
+        // classpath:/static/images/background/ 하위 모든 파일 조회
+        Resource[] resources =
+                resourceResolver.getResources("classpath:/static/images/background/*.*");
+
+        // 파일명만 추출 + 이미지 확장자 필터
+        List<String> backgroundImages = Arrays.stream(resources)
+                .map(Resource::getFilename)
+                .filter(Objects::nonNull)
+                .filter(name -> name.matches("(?i).+\\.(png|jpe?g|gif|webp)$"))
+                .toList();
+
+        // JSP에서 EL로 사용: ${background_images}
+        model.addAttribute("background_images", backgroundImages);
+
+        return "index";
+    }
+    
     /**
      * GET /login
      *
