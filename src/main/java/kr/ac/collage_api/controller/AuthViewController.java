@@ -1,10 +1,12 @@
 package kr.ac.collage_api.controller;
 
 import java.io.IOException;
+import java.security.Principal;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -23,6 +25,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+import kr.ac.collage_api.util.BackgroundImageUtils;
+import org.springframework.core.io.support.ResourcePatternResolver;
+
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import kr.ac.collage_api.service.DitAccountService;
 import kr.ac.collage_api.vo.AcntVO;
@@ -79,30 +88,38 @@ public class AuthViewController {
 
     @Autowired
     DitAccountService ditAccountService;
+    
     @Autowired
     ResourcePatternResolver resourceResolver;
+    
 
     // 모든 사용자의 첫 진입점
     @GetMapping({"/", "/index"})
-    public String indexPage(Model model) throws IOException {
+    public String indexPage(Model model,
+    						Principal principal,
+                            HttpServletRequest request) throws IOException {
 
-        // classpath:/static/images/background/ 하위 모든 파일 조회
-        Resource[] resources =
-                resourceResolver.getResources("classpath:/static/images/background/*.*");
-
-        // 파일명만 추출 + 이미지 확장자 필터
-        List<String> backgroundImages = Arrays.stream(resources)
-                .map(Resource::getFilename)
-                .filter(Objects::nonNull)
-                .filter(name -> name.matches("(?i).+\\.(png|jpe?g|gif|webp)$"))
-                .toList();
-
-        // JSP에서 EL로 사용: ${background_images}
+        // 배경 이미지 목록
+        List<String> backgroundImages =
+                BackgroundImageUtils.resolveBackgroundImages(resourceResolver);
         model.addAttribute("background_images", backgroundImages);
+        log.debug("indexPage backgroundImages resolved: count={}", backgroundImages.size());
 
+//        String acntId = principal.getName();
+        if (principal == null) { // 비-로그인 
+        	log.debug("principal : " + principal);
+            return "index";
+        }
+
+        String acntId = principal.getName();
+    	log.debug("acntId : " + acntId);
+
+        // 1) 계정 조회(+권한 목록 매핑 필요)
+        AcntVO acntVO = ditAccountService.findById(acntId);
+        model.addAttribute("acntVO", acntVO);
+        
         return "index";
-    }
-    
+       }
     /**
      * GET /login
      *

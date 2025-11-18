@@ -1,10 +1,27 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+         pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
 
-<%@ include file="../header.jsp" %>
-    <title>학사 일정 캘린더</title>
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>대덕대학교-로그인</title>
+
+    <!-- Pretendard + Bootstrap -->
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/pretendard/dist/web/static/pretendard.css" />
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
     <!-- 전역 스케줄러 css -->
     <link rel="stylesheet"
           href="${pageContext.request.contextPath}/css/schedule.css" />
+
+    <!-- 메인 포털 전용 CSS -->
+    <link rel="stylesheet"
+          href="${pageContext.request.contextPath}/css/main-portal.css" />
 
     <!-- FullCalendar 정적 리소스 (전역 공용) -->
     <link rel="stylesheet"
@@ -13,43 +30,89 @@
 
 </head>
 <body>
-<div class="calendar-container">
-    <!-- [범례] 타입별 필터링 트리거 -->
-    <div class="legend">
-        <div class="legend-item" data-type="TASK">
-            <div class="legend-color type-TASK"></div><span>과제</span>
-        </div>
-        <div class="legend-item" data-type="PROJECT">
-            <div class="legend-color type-PROJECT"></div><span>팀프로젝트</span>
-        </div>
-        <div class="legend-item" data-type="COUNSEL">
-            <div class="legend-color type-COUNSEL"></div><span>상담</span>
-        </div>
-        <div class="legend-item" data-type="COUNSEL_SLOT">
-            <div class="legend-color type-COUNSEL_SLOT"></div><span>상담가능</span>
-        </div>
-        <div class="legend-item" data-type="ENROLL_REQ">
-            <div class="legend-color type-ENROLL_REQ"></div><span>수강신청</span>
-        </div>
-        <div class="legend-item" data-type="ADMIN_REGIST">
-            <div class="legend-color type-ADMIN_REGIST"></div><span>등록/행정</span>
-        </div>
-        <div class="legend-item" data-type="HOLIDAY">
-            <div class="legend-color type-HOLIDAY"></div><span>공휴일</span>
-        </div>
-    </div>
 
-    <!-- FullCalendar 렌더링 영역 -->
-    <div id="calendar"></div>
+<%@ include file="../index-header.jsp"%>
+<style>
+/* 고정 헤더 – 항상 불투명 탑바 */
+header.main-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1050;
 
-    <!-- 비동기 로딩 표시 -->
-    <div id="calendar-loading" class="calendar-loading">
-        일정을 불러오는 중...
-    </div>
-</div>
+    background-color: #0f172a;      /* 완전히 불투명한 네이비 톤 */
+    box-shadow: 0 2px 12px rgba(15, 23, 42, 0.45);
 
-<!-- 공용 툴팁 인스턴스 -->
-<div id="event-tooltip" class="event-tooltip"></div>
+    /* 기존 padding, 기타 스타일 있으면 그대로 유지 */
+}
+
+/* 헤더 아래 메인 콘텐츠 상하 패딩 (스샷 기준 간격) */
+.main-content-with-header-calendar {
+    padding-top: 7rem;   /* 헤더와 콘텐츠 카드 사이 여유 크게 */
+    padding-bottom: 2rem;  /* 하단도 넉넉하게 */
+}
+
+/* 메인 콘텐츠 전체 폰트 한 단계 축소 */
+.main-content-with-header-calendar {
+    font-size: 0.85rem;   /* 기본 1rem 기준 약 10% 감소 */
+}
+
+/* 제목들은 너무 작아지지 않게 약간만 보정 (선택) */
+.main-content-with-header-calendar h1 {
+    font-size: 1.4rem;
+}
+.main-content-with-header-calendar h2 {
+    font-size: 1.2rem;
+}
+.main-content-with-header-calendar h3 {
+    font-size: 1.0rem;
+}
+
+</style>
+<title>대덕대학교-학사 일정</title>
+</head>
+<body>
+
+<main class="main-content-with-header-calendar">
+	<div class="calendar-container">
+	    <!-- [범례] 타입별 필터링 트리거 -->
+	    <div class="legend">
+	        <div class="legend-item" data-type="TASK">
+	            <div class="legend-color type-TASK"></div><span>과제</span>
+	        </div>
+	        <div class="legend-item" data-type="PROJECT">
+	            <div class="legend-color type-PROJECT"></div><span>팀프로젝트</span>
+	        </div>
+	        <div class="legend-item" data-type="COUNSEL">
+	            <div class="legend-color type-COUNSEL"></div><span>상담</span>
+	        </div>
+	        <div class="legend-item" data-type="COUNSEL_SLOT">
+	            <div class="legend-color type-COUNSEL_SLOT"></div><span>상담가능</span>
+	        </div>
+	        <div class="legend-item" data-type="ENROLL_REQ">
+	            <div class="legend-color type-ENROLL_REQ"></div><span>수강신청</span>
+	        </div>
+	        <div class="legend-item" data-type="ADMIN_REGIST">
+	            <div class="legend-color type-ADMIN_REGIST"></div><span>등록/행정</span>
+	        </div>
+	        <div class="legend-item" data-type="HOLIDAY">
+	            <div class="legend-color type-HOLIDAY"></div><span>공휴일</span>
+	        </div>
+	    </div>
+	
+	    <!-- FullCalendar 렌더링 영역 -->
+	    <div id="calendar"></div>
+	
+	    <!-- 비동기 로딩 표시 -->
+	    <div id="calendar-loading" class="calendar-loading">
+	        일정을 불러오는 중...
+	    </div>
+	</div>
+	
+	<!-- 공용 툴팁 인스턴스 -->
+	<div id="event-tooltip" class="event-tooltip"></div>
+</main>
 
 <script>
 document.addEventListener("DOMContentLoaded", function () {
@@ -684,4 +747,9 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 </script>
 
-<%@ include file="../footer.jsp" %>
+<%@ include file="../index-footer.jsp"%>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>

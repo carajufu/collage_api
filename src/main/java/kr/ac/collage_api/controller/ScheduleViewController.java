@@ -15,7 +15,7 @@ public class ScheduleViewController {
      * GET /schedule
      * -> /WEB-INF/views/schedule/calendar.jsp
      */
-    @GetMapping
+	@GetMapping("/calendar")
     public String scheduleCalendarView() {
         log.info("[ScheduleView] /schedule view requested");
         return "schedule/calendar";

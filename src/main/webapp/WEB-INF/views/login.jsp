@@ -279,7 +279,7 @@ function setupPasswordHelpers(pwInputId, toggleBtnId, capsId, numId) {
   - CSRF는 세션 로그인(/login)에만 적용, /api/** 는 JWT 인증 경로로 분리.
 */
 
-const WELCOME_URL = "/debug/debuging";
+const WELCOME_URL = "/";
 const REACT_APP_URL = "/app";
 const REDIRECT_DELAY_MS = 5000;
 

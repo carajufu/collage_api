@@ -4,154 +4,262 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="kr.ac.collage_api.mapper.DitAccountMapper">
-
-  <!--
-      블록: acntMap (계정 + 권한 목록 바인딩)
+  	<!--
+      블록: acntMap (계정 + 권한 + 헤더 표시 정보 바인딩)
 
       1) 코드 의도
          - ACNT(계정 정보) 한 건과 AUTHOR(권한 목록) 다건을
            AcntVO.authorList(List<AuthorVO>) 형태로 한 번에 적재
-         - 로그인 이후 세션/토큰 구성에 필요한 권한까지 로드
+         - 동시에 상단 헤더/메인 포털에서 쓸 표시 정보까지 미리 계산해서 올림
+           · USER_NM          : 사용자 이름(학생/교수/관리자)
+           · USER_STTUS_NM    : 학적/재직 상태 표시 문자열
+           · USER_SUBJCT_NM   : 소속 학과명
+           · USER_NO          : 학생 → 학번, 교수 → 교번
 
       2) 데이터 흐름
-         - 입력 : findById SELECT 결과 (ACNT A LEFT JOIN AUTHOR B)
-         - 가공 : 각 row의 A.* 는 AcntVO 필드에
-                  B.* 는 AuthorVO 로 변환 후 AcntVO.authorList 에 push
+         - 입력 : findById SELECT 결과
+                  (ACNT A
+                   LEFT JOIN AUTHOR B
+                   LEFT JOIN STDNT S
+                   LEFT JOIN SUBJCT SJ_S
+                   LEFT JOIN SKLSTF T
+                   LEFT JOIN PROFSR PR
+                   LEFT JOIN SUBJCT SJ_P)
+         - 가공 :
+           · A.* 컬럼 → AcntVO 기본 필드
+             - ACNT_ID       → acntId
+             - FILE_GROUP_NO → fileGroupNo
+             - PASSWORD      → password
+             - ACNT_TY       → acntTy
+           · 파생 컬럼 → AcntVO 표시용 필드
+             - USER_NM
+               · ROLE_STUDENT → S.STDNT_NM
+               · ROLE_PROF    → T.SKLSTF_NM
+               · ROLE_ADMIN   → '관리자'
+             - USER_STTUS_NM
+               · ROLE_STUDENT → S.SKNRGS_STTUS 가 '재학'이면 '등록생' else 원본 값
+               · ROLE_PROF    → '재직'
+             - USER_SUBJCT_NM
+               · ROLE_STUDENT → SJ_S.SUBJCT_NM (학생 소속 학과)
+               · ROLE_PROF    → SJ_P.SUBJCT_NM (담당 학과)
+             - USER_NO
+               · ROLE_STUDENT → S.STDNT_NO (학번)
+               · ROLE_PROF    → T.SKLSTF_ID (교번)
+           · B.* 컬럼 → AuthorVO 로 변환 후 AcntVO.authorList 에 push
+
          - 출력 : AcntVO 1개
-                  (authorList 내부에 ROLE_* 권한들이 존재)
+                  (authorList + USER_* 파생 필드 포함)
 
       3) 계약
          - AcntVO 필드명
-           acntId, fileGroupNo, password, acntTy, authorList
-           이 정확히 있어야 함
+           acntId, fileGroupNo, password, acntTy,
+           user_nm, userSttusNm, userSubjctNm, userNo,
+           authorList
+           이 정확히 존재해야 함
          - AuthorVO 필드명
            authorId, alwncDe, authorNm, authorDc, acntId
-           이 있어야 함
-         - authorList 는 반드시 List<AuthorVO> 여야 함
+         - authorList 타입은 List<AuthorVO> 여야 함
          - PK 역할 컬럼 ACNT_ID 는 <id> 로 명시되어 있음
-           MyBatis는 이 키를 기준으로 동일 계정 row를 병합하고
-           권한만 리스트로 축적함
+           → MyBatis 는 이 키를 기준으로 동일 계정 row 를 병합하고
+             AUTHOR 들을 리스트로 축적해야 함
 
       4) 보안 · 안전 전제
-         - password 가 같이 로드됨
-           password 필드는 해시 문자열이어야 하며 원문 비번 아님이 전제
-         - password 는 외부 응답(JSON 등)으로 노출 금지
-           즉 Controller에서 그대로 리턴하면 보안 위반
-         - authorList 에 포함된 ROLE_* 정보는 인가 판단에 사용되므로
-           위변조되면 안 됨
-           DB가 단일 소스 오브 트루스
+         - password 는 해시 문자열 전제 (평문이면 보안 파탄)
+         - AcntVO 는 password + 실명(user_nm) + 학번/교번(userNo)을 함께 들고 있음
+           · Controller 에서 그대로 JSON 응답으로 노출 금지
+           · 외부 노출용 DTO 를 별도로 정의해야 안전
+         - ROLE_* 값은 인가(authorization)에 직결되는 핵심 데이터
+           → DB 가 단일 source of truth, 애플리케이션에서 변조 금지
 
       5) 유지보수자 가이드
-         - AUTHOR 쪽에서 B.ACNT_ID 를 AUTHOR_ACNT_ID 로 alias 한 이유:
-           충돌 없이 AuthorVO.acntId 에 주입하기 위함
-           이 alias 삭제하면 매핑 깨짐
-         - fileGroupNo 는 프로필 이미지 등 파일그룹 FK일 가능성
-           NUMBER 계열이면 AcntVO.fileGroupNo 타입도 Long/BigDecimal 등 숫자형이어야 함
-         - ACNT_TY 는 'S'(학생) 'P'(교수) 등 역할 코드일 가능성
-           하드코딩 enum처럼 쓰일 수 있으므로 바꾸기 전에 전체 영향 확인 필요
-  -->
-  <resultMap id="acntMap" type="kr.ac.collage_api.vo.AcntVO">
-    <!-- ACNT 본체 필드 -->
-    <id     property="acntId"      column="ACNT_ID"/>
-    <result property="fileGroupNo" column="FILE_GROUP_NO"/>
-    <result property="password"    column="PASSWORD"/>
-    <result property="acntTy"      column="ACNT_TY"/>
-
-    <!-- AUTHOR 다건 컬렉션 -->
-    <collection property="authorList" resultMap="authorMap"/>
-  </resultMap>
-
-  <!--
+         - B.ACNT_ID AS AUTHOR_ACNT_ID alias 는 AuthorVO.acntId 매핑에 필수
+           → alias 제거/변경 시 authorList 매핑 깨짐
+         - USER_NM / USER_STTUS_NM / USER_SUBJCT_NM / USER_NO alias 는
+           각각 AcntVO.user_nm / userSttusNm / userSubjctNm / userNo 에 매핑됨
+           → SELECT 의 alias 와 resultMap 의 column 이름이 반드시 일치해야 함
+         - STDNT / SKLSTF / PROFSR / SUBJCT 조인 조건, ROLE_* 문자열 변경 시
+           · SELECT, VO, 인가 로직을 동시에 수정해야 정합성 유지
+	  -->
+	  <resultMap id="acntMap" type="kr.ac.collage_api.vo.AcntVO">
+	    <!-- ACNT 본체 필드 -->
+	    <id     property="acntId"        column="ACNT_ID"/>
+	    <result property="fileGroupNo"   column="FILE_GROUP_NO"/>
+	    <result property="password"      column="PASSWORD"/>
+	    <result property="acntTy"        column="ACNT_TY"/>
+	
+	    <!-- 파생 표시용 필드 -->
+	    <result property="user_nm"       column="USER_NM"/>
+	    <result property="userSttusNm"   column="USER_STTUS_NM"/>
+	    <result property="userSubjctNm"  column="USER_SUBJCT_NM"/>
+	    <result property="userNo"        column="USER_NO"/>
+	
+	    <!-- AUTHOR 다건 컬렉션 -->
+	    <collection property="authorList" resultMap="authorMap"/>
+	  </resultMap>
+	
+	  <!--
       블록: authorMap (권한 레코드 매핑)
 
       1) 코드 의도
          - AUTHOR (권한 테이블) 한 줄을 AuthorVO 로 변환
-         - DitAccountMapper.findById 의 JOIN 결과에서 B.* 컬럼 alias를 사용한다
+         - DitAccountMapper.findById 의 JOIN 결과에서 B.* 컬럼 alias를 사용
 
       2) 데이터 흐름
-         - 입력 : AUTHOR B 컬럼들
-         - 출력 : AuthorVO
+         - 입력 : AUTHOR B 관련 컬럼들
+         - 출력 : AuthorVO (authorId, alwncDe, authorNm, authorDc, acntId)
 
       3) 계약
-         - AuthorVO.authorId 는 AUTHOR_ID 와 매핑
-         - AuthorVO.acntId 는 AUTHOR_ACNT_ID 와 매핑
-           (B.ACNT_ID AS AUTHOR_ACNT_ID 로 내려온 alias)
-         - alwncDe 는 권한 부여일자. DATE/TIMESTAMP -> java 필드 타입 호환 필요
+         - AuthorVO.authorId  ← AUTHOR_ID
+         - AuthorVO.acntId    ← AUTHOR_ACNT_ID
+           (B.ACNT_ID AS AUTHOR_ACNT_ID alias 기반)
+         - alwncDe 는 권한 부여일자, DB 타입과 VO 타입 호환 필수
 
       4) 보안 · 안전 전제
-         - ROLE_STUDENT 등 ROLE_* 값은 인가 핵심
-           애플리케이션에서 이 값으로 접근 제어를 걸기 때문에
-           조작되면 권한 우회 가능해짐
-         - 외부에 그대로 노출하더라도 개인정보 직접 식별자는 아님
-           단, "ROLE_ADMIN" 등 시스템 내부 권한명이 외부에 노출되는 게 정책상 허용인지는 별도 검토 필요
+         - ROLE_* 값은 인가 로직에 직접 사용됨
+           → 이 값 기준으로 접근 제어를 걸기 때문에, 조작·오염되면 권한 우회 가능
+         - 문자열 자체는 개인정보 직접 식별자는 아니지만,
+           "ROLE_ADMIN" 등 내부 권한 명칭 외부 노출 가능 여부는 정책으로 판단
 
       5) 유지보수자 가이드
-         - AUTHOR_ACNT_ID alias는 필수
-           그대로 안 두면 AuthorVO.acntId 에 값이 안 박힘
-         - ALWNC_DE(부여일) 타입 DATE/TIMESTAMP 여부에 따라
-           VO에서 java.util.Date / LocalDateTime 등 맞춰야 함
-  -->
-  <resultMap id="authorMap" type="kr.ac.collage_api.vo.AuthorVO">
-    <id     property="authorId" column="AUTHOR_ID"/>
-    <result property="alwncDe"  column="ALWNC_DE"/>
-    <result property="authorNm" column="AUTHOR_NM"/>
-    <result property="authorDc" column="AUTHOR_DC"/>
-    <result property="acntId"   column="AUTHOR_ACNT_ID"/>
-  </resultMap>
-
-  <!--
+         - AUTHOR_ACNT_ID alias 는 필수
+           → 변경 시 AuthorVO.acntId 에 값이 안 들어감
+         - ALWNC_DE 타입(Date/Timestamp 등)에 맞춰
+           VO 필드 타입(java.util.Date, LocalDateTime 등) 을 맞춰야 함
+	  -->
+	  <resultMap id="authorMap" type="kr.ac.collage_api.vo.AuthorVO">
+	    <id     property="authorId" column="AUTHOR_ID"/>
+	    <result property="alwncDe"  column="ALWNC_DE"/>
+	    <result property="authorNm" column="AUTHOR_NM"/>
+	    <result property="authorDc" column="AUTHOR_DC"/>
+	    <result property="acntId"   column="AUTHOR_ACNT_ID"/>
+	  </resultMap>
+	
+	  <!--
       블록: findById
 
       1) 코드 의도
-         - 로그인 시 아이디로 계정 + 권한 목록 한 번에 조회
-         - Spring Security UserDetailsServiceImpl.loadUserByUsername(acntId) 단계에서 호출된다는 전제
+         - 로그인 시 아이디(acntId)로
+           계정 정보 + 권한 목록 + 헤더용 표시 정보(USER_*) 를 한 번에 조회
+         - UserDetailsServiceImpl.loadUserByUsername(acntId) 에서 호출된다는 전제
 
       2) 데이터 흐름
-         - 입력 : #{acntId}
-         - 가공 : ACNT A 기준으로
-                  AUTHOR B 를 LEFT JOIN 해서 권한까지 끌어옴
-                  권한이 없어도 계정은 나와야 하므로 LEFT JOIN
-         - 출력 : resultMap="acntMap"
-                  즉 AcntVO(authorList 포함)
+         - 입력
+           - #{acntId} : ACNT.ACNT_ID (로그인 아이디)
+         - 가공
+           - ACNT A    : 기본 계정 정보
+           - AUTHOR B  : 계정이 가진 권한 목록
+           - STDNT S   : ROLE_STUDENT 일 때 학생 기본 정보/학번/학과
+           - SUBJCT SJ_S: 학생 소속 학과명
+           - SKLSTF T  : ROLE_PROF 일 때 교직원 기본 정보(교번, 이름)
+           - PROFSR PR : 교직원 담당 학과 코드
+           - SUBJCT SJ_P: 교수 소속 학과명
+           - CASE 로 파생 컬럼 생성
+             · USER_NM
+               - STUDENT → S.STDNT_NM
+               - PROF    → T.SKLSTF_NM
+               - ADMIN   → '관리자'
+             · USER_STTUS_NM
+               - STUDENT → S.SKNRGS_STTUS = '재학' 이면 '등록생' else 원본
+               - PROF    → '재직'
+             · USER_SUBJCT_NM
+               - STUDENT → SJ_S.SUBJCT_NM
+               - PROF    → SJ_P.SUBJCT_NM
+             · USER_NO
+               - STUDENT → S.STDNT_NO
+               - PROF    → T.SKLSTF_ID
+         - 출력
+           - resultMap="acntMap"
+           - AcntVO 1개 (authorList + USER_* 파생 필드 포함)
 
       3) 계약
-         - A.PASSWORD 는 이미 해시된 비밀번호여야 함
-           Bcrypt/Argon2 등
-           평문이면 보안 즉시 파탄
-         - 동일 acntId 에 대해 AUTHOR 여러 줄이면
-           MyBatis가 동일 ACNT_ID 를 가진 row들을 병합하고
-           authorList 에 누적해야 함
-           이게 안 되면 resultMap/collection 설정이 어긋난 것
+         - #{acntId} NOT NULL, ACNT.ACNT_ID 와 1:1로 매칭된다는 전제
+         - A.PASSWORD 는 해시 문자열이어야 함
+         - AUTHOR 가 여러 줄이면
+           · 동일 ACNT_ID 기준으로 AcntVO 에 병합되고
+             authorList 에 누적되어야 함 (resultMap/collection 설정 필수)
+         - USER_* 컬럼은 화면 전용 파생값
+           · 원본 테이블 구조 변경 시 함께 검토 필요
 
       4) 보안 · 안전 전제
-         - 반환 객체에는 password 가 포함됨
-           이 VO를 그대로 세션 외부로 노출하거나 JSON 응답으로 내려가면 보안 위반
-         - acntId 는 사용자 계정 ID (로그인 아이디) 이고
-           STDNT_NO 같은 학번 등과는 다름
-           학번 매핑은 별도 쿼리에서만 얻는다
+         - password + USER_* 값(실명, 학번/교번 등)이 함께 반환되므로
+           → 이 VO 를 외부 API 응답으로 직접 반환하는 것은 금지
+         - 실명/학번/교번은 로그에 과도하게 남기지 말 것
 
       5) 유지보수자 가이드
-         - ACNT와 AUTHOR 테이블명 변경 시 여기와 resultMap 둘 다 수정해야 함
-         - AUTHOR 쪽 alias:
-           B.ACNT_ID AS AUTHOR_ACNT_ID
-           이 alias는 authorMap.acntId 매핑에 의존하므로 삭제 금지
-  -->
-  <select id="findById" parameterType="string" resultMap="acntMap">
-    SELECT
-      A.ACNT_ID,
-      A.FILE_GROUP_NO,
-      A.PASSWORD,
-      A.ACNT_TY,
-      B.ALWNC_DE,
-      B.AUTHOR_ID,
-      B.AUTHOR_NM,
-      B.AUTHOR_DC,
-      B.ACNT_ID AS AUTHOR_ACNT_ID
-    FROM ACNT A
-    LEFT JOIN AUTHOR B
-      ON B.ACNT_ID = A.ACNT_ID
-    WHERE A.ACNT_ID = #{acntId}
-  </select>
+         - ROLE_* 문자열이 변경되면
+           CASE, JOIN 조건, 인가 코드 전반을 같이 수정해야 함
+         - STDNT / SKLSTF / PROFSR / SUBJCT 테이블 구조 변경 시
+           JOIN, resultMap, VO 를 동시에 점검할 것
+	  -->
+	  <select id="findById" parameterType="string" resultMap="acntMap">
+	    SELECT
+	        A.ACNT_ID,
+	        A.FILE_GROUP_NO,
+	        A.PASSWORD,
+	        A.ACNT_TY,
+	
+	        B.ALWNC_DE,
+	        B.AUTHOR_ID,
+	        B.AUTHOR_NM,
+	        B.AUTHOR_DC,
+	        B.ACNT_ID AS AUTHOR_ACNT_ID,
+	
+	        /* 상단 인사에 쓸 표시용 이름 */
+	        CASE
+	            WHEN B.AUTHOR_NM = 'ROLE_STUDENT' THEN S.STDNT_NM
+	            WHEN B.AUTHOR_NM = 'ROLE_PROF'    THEN T.SKLSTF_NM
+	            WHEN B.AUTHOR_NM = 'ROLE_ADMIN'   THEN '관리자'
+	            ELSE NULL
+	        END AS USER_NM,
+	
+	        /* 학적/재직 상태 표시용 */
+	        CASE
+	            WHEN B.AUTHOR_NM = 'ROLE_STUDENT' THEN
+	                CASE
+	                    WHEN S.SKNRGS_STTUS = '재학' THEN '등록생'
+	                    ELSE S.SKNRGS_STTUS
+	                END
+	            WHEN B.AUTHOR_NM = 'ROLE_PROF' THEN '재직'
+	            ELSE NULL
+	        END AS USER_STTUS_NM,
+	
+	        /* 소속 학과명 (학생/교수 공통) */
+	        CASE
+	            WHEN B.AUTHOR_NM = 'ROLE_STUDENT' THEN SJ_S.SUBJCT_NM
+	            WHEN B.AUTHOR_NM = 'ROLE_PROF'    THEN SJ_P.SUBJCT_NM
+	            ELSE NULL
+	        END AS USER_SUBJCT_NM,
+	
+	        /* 학번 / 교번 (헤더에서 복사 버튼에 쓸 값) */
+	        CASE
+	            WHEN B.AUTHOR_NM = 'ROLE_STUDENT' THEN S.STDNT_NO
+	            WHEN B.AUTHOR_NM = 'ROLE_PROF'    THEN T.SKLSTF_ID
+	            ELSE NULL
+	        END AS USER_NO
+	
+	    FROM ACNT A
+	    LEFT JOIN AUTHOR B
+	        ON B.ACNT_ID = A.ACNT_ID
+	
+	    /* 학생 계정 전용 조인 */
+	    LEFT JOIN STDNT S
+	        ON S.ACNT_ID = A.ACNT_ID
+	       AND B.AUTHOR_NM = 'ROLE_STUDENT'
+	    LEFT JOIN SUBJCT SJ_S
+	        ON SJ_S.SUBJCT_CODE = S.SUBJCT_CODE
+	
+	    /* 교수(교직원) 계정 전용 조인: ACNT → SKLSTF → PROFSR → SUBJCT */
+	    LEFT JOIN SKLSTF T
+	        ON T.ACNT_ID = A.ACNT_ID
+	       AND B.AUTHOR_NM = 'ROLE_PROF'
+	    LEFT JOIN PROFSR PR
+	        ON PR.SKLSTF_ID = T.SKLSTF_ID
+	    LEFT JOIN SUBJCT SJ_P
+	        ON SJ_P.SUBJCT_CODE = PR.SUBJCT_CODE
+	
+	    WHERE A.ACNT_ID = #{acntId}
+	  </select>
+
 
     <!--
       [1] 계정 ID로 권한 목록 조회
