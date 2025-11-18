@@ -1,14 +1,15 @@
 package kr.ac.collage_api.admin.service.impl;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import kr.ac.collage_api.admin.dto.SubjctUpdateRequestDto;
+import kr.ac.collage_api.admin.dto.UnivUpdateRequestDto;
 import kr.ac.collage_api.admin.mapper.UnivMapper;
 import kr.ac.collage_api.admin.service.UnivService;
 import kr.ac.collage_api.vo.ProfsrVO;
@@ -83,5 +84,33 @@ public class UnivServiceImpl implements  UnivService{
     public List<ProfsrVO> findDeptHeadCandidates(String subjctCode) {
         return univMapper.findProfsrBySubjct(subjctCode, "부교수");
     }
+
+    //단과대 정보 업데이트
+    @Transactional
+	@Override
+	public UnivUpdateRequestDto updateUniv(UnivUpdateRequestDto univDto) {
+    	
+    	int result = univMapper.updateUniv(univDto);
+    	
+    	if(result == 0 ) {
+    		throw new RuntimeException("단과대 정보 업데이트에 실패했습니다.");
+    	}
+    	
+		return univDto;
+	}
+	
+	//학과 정보 업데이트
+	@Override
+	public SubjctUpdateRequestDto updateSubjct(SubjctUpdateRequestDto subjctDto) {
+		
+		int result = univMapper.updateSubjct(subjctDto);
+		
+		if(result == 0 ) {
+			throw new RuntimeException("학과 정보 업데이트에 실패했습니다.");
+		}
+		
+		return subjctDto;
+	}
+
 
 }

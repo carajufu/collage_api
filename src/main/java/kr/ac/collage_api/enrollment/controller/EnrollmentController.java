@@ -13,8 +13,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import kr.ac.collage_api.common.attach.service.UploadController;
 import kr.ac.collage_api.enrollment.service.EnrollmentService;
@@ -164,5 +166,32 @@ public class EnrollmentController {
 			    log.error("학적 변동 신청 처리 중 오류 발생. 학번: {}", stdntNo, e);
 	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("처리 중 오류가 발생했습니다. 관리자에게 문의해주세요.");
 			}
+		}
+			
+		//취소
+			@GetMapping("/cancel")
+		    public String cancelEnrollmentRequest(@RequestParam("reqId") String reqId, 
+		                                          Principal principal, 
+		                                          RedirectAttributes rttr) {
+		                                            
+		        if (principal == null) {
+		            return "redirect:/login"; 
+		        }
+
+		        String studentId = principal.getName(); 
+		        log.info("신청 취소 시도. reqId: {}, studentId: {}", reqId, studentId);
+
+		        try {
+		            enrollmentService.cancelRequest(reqId, studentId);
+		            rttr.addFlashAttribute("message", "신청이 정상적으로 취소되었습니다.");
+		            log.info("신청 취소 성공. reqId: {}", reqId);
+		            
+		        } catch (Exception e) {
+		            log.warn("신청 취소 실패. reqId: {}, error: {}", reqId, e.getMessage());
+		            rttr.addFlashAttribute("error", "취소 처리 중 오류가 발생했습니다: " + e.getMessage());
+		        }
+
+		        return "redirect:/enrollment/status"; 
+		    
 		}
 	}
