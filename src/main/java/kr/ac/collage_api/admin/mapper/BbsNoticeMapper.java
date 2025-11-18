@@ -26,7 +26,7 @@ public interface BbsNoticeMapper {
 	//관리자 - 공지사항게시판 리스트 가져오기
 	public List<BbsVO> adminList();
 
-	
+
 	//관리자 - 공지사항 게시판 1행 삭제
 	public int adminDeleteDetail(int bbscttNo);
 

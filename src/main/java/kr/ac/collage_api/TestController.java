@@ -18,7 +18,4 @@ public class TestController {
 
     @GetMapping("/oho")
     public String testMain3() { return "oho"; }
-
-    @GetMapping("ing")
-    public String testMain4() { return "template"; }
 }

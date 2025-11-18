@@ -20,4 +20,13 @@ public interface AtnlcService {
 	// 장바구니 강의 담기 취소
 	int editMyCart(AtnlcReqstVO atnlcReqstVO);
 
+	// 장바구니 강의 수강신청
+	Map<String, Object> submitMyCart(AtnlcReqstVO atnlcReqstVO);
+
+	// 수강신청
+	Map<String, Object> submitCourse(AtnlcReqstVO atnlcReqstVO);
+
+	// 나의 수강신청 목록 조회
+	List<AtnlcReqstVO> stdntLctreList(String stdntNo);
+
 }

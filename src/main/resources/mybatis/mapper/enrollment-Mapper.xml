@@ -46,6 +46,7 @@
 	<select id="selectHistoryList" parameterType="String" resultType="kr.ac.collage_api.vo.SknrgsChangeReqstVO">
 		SELECT  
 			EFECT_OCCRRNC_SEMSTR
+			, SKNRGS_CHANGE_INNB
 			, REQST_STTUS
 			, CHANGE_REQST_DT
 			, REQST_RESN
@@ -59,6 +60,14 @@
 		ORDER BY EFECT_OCCRRNC_SEMSTR DESC
 	</select>
 	
+	<!-- 중복 내역 -->
+	<select id="activeRequestByStdntNo" parameterType="String" resultType="int">
+		SELECT COUNT(*)
+    	  FROM SKNRGS_CHANGE_REQST
+    	 WHERE STDNT_NO = #{stdntNo}
+      	   AND REQST_STTUS = '신청중'
+	</select>
+
 	<!-- 제출 -->
 	<insert id="submitRequest" parameterType="kr.ac.collage_api.vo.SknrgsChangeReqstVO">
 		INSERT INTO SKNRGS_CHANGE_REQST (
@@ -83,6 +92,18 @@
         	, '신청' 
         	, #{fileGroupNo} )
 	</insert>
+	
+	<!-- 취소 -->
+	<update id="updateRequestStatus" parameterType="map">
+	    UPDATE SKNRGS_CHANGE_REQST
+	    SET
+	        REQST_STTUS = #{newStatus}
+	    WHERE
+	        SKNRGS_CHANGE_INNB = #{reqId}
+        AND STDNT_NO = #{studentId}
+        AND REQST_STTUS = #{currentStatus}
+	</update>
+	
 	
 	<!-- ///////////////////////////관리자//////////////////////////////// -->	
 	

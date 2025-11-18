@@ -37,7 +37,7 @@
 							  	<tr>
 							  		<th>선택</th><th>교과목ID</th><th>이수구분</th><th>강의명</th><th>교수명</th><th>취득학점</th><th>강의실</th><th>강의시간</th><th>신청인원</th><th></th>
 							  	</tr>
-						  		</thead>   
+						  		</thead>
 						  		<tbody id="courseTbody" class="align-middle">
 						  			<tr><td colspan="9">강의 목록을 불러오는 중...</td></tr>
 					  			</tbody>
@@ -74,10 +74,10 @@
 const courseTbody = document.getElementById("courseTbody");
 	
 	function loadCourseList(keyword="", complSe="") {
-		
+
 		const url = `/atnlc/load?keyword=\${keyword}&complSe=\${complSe}`;
 		console.log("url : ", url);
-		
+
 		fetch(url, {
 			method: "get",
 			headers: {"Content-Type":"application/json;charset=UTF-8"}
@@ -96,21 +96,21 @@ const courseTbody = document.getElementById("courseTbody");
 			console.error("강의 목록을 불러오지 못했습니다...", error);
 			courseTbody.innerHTML = "<tr><td colspan='9'>강의 목록을 불러오지 못했습니다...</td></tr>";
 		});
-		
-		
+
+
 		// 강의 목록 로드 함수
-		function loadCourseData(list) { 
+		function loadCourseData(list) {
 			courseTbody.innerHTML = "";
-			
+
 			if(list == null) {
 				courseTbody.innerHTML = "<tr><td colspan='9'>개설된 강의가 없습니다.</td></tr>";
 				return;
 			}
-			
+
 			let html = "";
-			
+
 			list.forEach(l=>{
-				
+
 				const timeInfo = `\${l.timetable.lctreDfk} \${l.timetable.beginTm},\${l.timetable.endTm}`;
 				html += `
 						<tr>
@@ -124,28 +124,28 @@ const courseTbody = document.getElementById("courseTbody");
 				  			<td>\${timeInfo}</td>
 				  			<td>\${l.totalReqst}/\${l.atnlcNmpr}</td>
 				  		</tr>
-				`; 
+				`;
 			});
-			
+
 			courseTbody.innerHTML = html;
 		}
 
 	}
 	
-	
+
 	document.querySelector("nav form").addEventListener("submit", function(event) {
 		event.preventDefault();
-		
+
 		const form = event.target;
 		const keyword = form.querySelector("input[name='keyword']").value;
 		const complSe = form.querySelector("select[name='complSe']").value;
-		
+
 		console.log("keyword : ", keyword);
 		console.log("complSe : ", complSe);
 		loadCourseList(keyword, complSe);
 	});
-	
-	
+
+
 
 	// 장바구니 담기
 	$("#addCartBtn").on("click",(event)=>{
@@ -168,7 +168,7 @@ const courseTbody = document.getElementById("courseTbody");
 		
 		
 		if(confirm("선택한 강의를 장바구니에 담으시겠습니까?")) {
-			
+
 			fetch("/atnlc/mycart/add", {
 				method: "post",
 				headers: {"Content-Type":"application/json;charset-UTF-8"},
@@ -181,21 +181,21 @@ const courseTbody = document.getElementById("courseTbody");
 				return response.json();
 			})
 			.then(data => {
-				
+
 				const result = data.result;
-				
+
 				if(!result.success) {
 					let failMsg = "";
 					let hasConflict = false;
-					
+
 					// 중복 강의
-					const alreadyLecCodes = result.alreadyLecCodes; 
+					const alreadyLecCodes = result.alreadyLecCodes;
 					if(alreadyLecCodes && alreadyLecCodes.length > 0) {
 						failMsg += "이미 장바구니에 담은 강의입니다.\n";
 						failMsg += " - " + alreadyLecCodes.join('\n - ') + "\n\n";
 						hasConflict = true;
 					}
-					
+
 					// 중복 시간표
 					const perLecCodes = result.perLecCodes;
 					if(perLecCodes && perLecCodes.length > 0) {
@@ -203,41 +203,41 @@ const courseTbody = document.getElementById("courseTbody");
 						failMsg += " - " + perLecCodes.join('\n - ') + "\n\n";
 						hasConflict = true;
 					}
-					
+
 					// 실패 메세지 출력
 					if(hasConflict) {
 						alert(failMsg);
 					} else {
 						alert("알 수 없는 오류로 강의 담기에 실패했습니다.");
 					}
-					
+
 				} else {
-					
+
 					// 장바구니 담기 성공
 					alert(`총 \${result.insertCnt}개의 강의가 장바구니에 담겼습니다.`);
-					
+
 				}
-				
+
 				loadMyCart();
 				loadCourseList();
-				
+
 			})
 			.catch(error => {
 				console.error("강의 담기 실패 : ", error);
 				alert("강의 담기에 실패했습니다...");
 			});
 		}
-		
+
 	})
 	
 
 	function getListCourseCodes() {
 		const checkboxs = document.querySelectorAll("input[name='listCheck']:checked");
 		const listCourseCodes = Array.from(checkboxs).map(checkbox => checkbox.value);
-		
+
 		return listCourseCodes;
 	}
-	
+
 	loadCourseList();
 </script>
 

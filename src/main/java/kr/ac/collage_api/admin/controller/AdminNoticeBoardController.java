@@ -31,7 +31,7 @@ public class AdminNoticeBoardController {
 	@Autowired
 	BbsNoticeService bbsNoticeService;
 
-	
+
 	@GetMapping("/getlist")
 	public Map<String,Object> getlist () {
 		
@@ -91,25 +91,25 @@ public class AdminNoticeBoardController {
 	public Map<String,Object> adminDetail(@PathVariable int bbscttNo){
 		log.info("adminDetail() -> bbsVO : {}", bbscttNo);
 		BbsVO bbsVO = this.bbsNoticeService.adminDetail(bbscttNo);
-		
+
 		Map<String,Object> map = new HashMap<String,Object>();
 		map.put("bbsVO",bbsVO);
 
 		if (bbsVO.getFileGroupNo()!=null) {
 			Long fileGroupNo = bbsVO.getFileGroupNo();
-			
+
 			List<FileDetailVO> fileDetailVOList = this.bbsNoticeService.getFileDetailList(fileGroupNo);
 			log.info("adminDetail() -> fileDetailVOList : {}", fileDetailVOList);
 			map.put("fileDetailVOList", fileDetailVOList);
 		}
-		
-		
-		
+
+
+
 		return map;
 	}
-	
 
-	
-	
-	
+
+
+
+
 }

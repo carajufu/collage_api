@@ -21,7 +21,7 @@ public class BbsNoticeServiceImpl implements BbsNoticeService {
 	
 	@Autowired
 	BbsNoticeMapper bbsNoticeMapper;
-	
+
 	@Autowired
 	UploadController uploadController;
 
@@ -68,13 +68,13 @@ public class BbsNoticeServiceImpl implements BbsNoticeService {
 			log.info("adminPostDetail() -> fileGroupNo : {}", fileGroupNo);
 			bbsVO.setFileGroupNo(fileGroupNo);
 		}
-		
+
 		return this.bbsNoticeMapper.adminPostDetail(bbsVO);
 	}
 
 	@Override
 	public BbsVO adminDetail(int bbscttNo) {
-	
+
 		return this.bbsNoticeMapper.adminDetail(bbscttNo);
 	}
 
@@ -88,33 +88,33 @@ public class BbsNoticeServiceImpl implements BbsNoticeService {
 	@Transactional
 	@Override
 	public int adminPutDetail(BbsVO bbsVO, List<MultipartFile> files, List<Integer> deletedFileSns) {
-		
+
 		Long fileGroupNo = bbsVO.getFileGroupNo();
 
 	    if (deletedFileSns != null && !deletedFileSns.isEmpty()) {
 	    	int deleteResult = this.bbsNoticeMapper.deleteFileDetail(deletedFileSns,fileGroupNo);
-	    	log.info("putdetail() -> deleteResult : {}", deleteResult);	
+	    	log.info("putdetail() -> deleteResult : {}", deleteResult);
 	    }
-	    
+
 	    if(files!=null && !files.isEmpty()) {
-	    
+
 		    MultipartFile[] fileArray = files.toArray(new MultipartFile[0]);
-		    
+
 		    if (fileGroupNo !=null) {
 		    	int seq = this.bbsNoticeMapper.selectFileDetailMaxSeq(fileGroupNo);
-		    	
+
 		    	this.uploadController.fileUpload(fileGroupNo, seq, fileArray);
 		    } else {
 		    	fileGroupNo = uploadController.fileUpload(fileArray);
-		        bbsVO.setFileGroupNo(fileGroupNo);	    	
+		        bbsVO.setFileGroupNo(fileGroupNo);
 		    }
 	    }
-	      
-	    
+
+
 		return this.bbsNoticeMapper.adminPutDetail(bbsVO);
 	}
 
 
-	
+
 }
 
