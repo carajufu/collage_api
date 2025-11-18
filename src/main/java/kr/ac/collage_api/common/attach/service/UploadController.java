@@ -31,7 +31,7 @@ public class UploadController {
         long fileGroupNo = 0L;
 
         String fileUrl = "";
-        int seq = 1;
+//        int seq = 1;
         int result = 0;
 
         FileGroupVO fileGroupVO = new FileGroupVO();
