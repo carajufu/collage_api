@@ -34,4 +34,23 @@ public interface UnivMapper {
 	//학과 정보 업데이트
 	public int updateSubjct(SubjctUpdateRequestDto subjctDto);
 
+	//학과 추가
+	public int insertSubjct(SubjctUpdateRequestDto dto);
+
+	//추가된 학과 조회
+	public SubjctVO findSubjectByCode(String subjctCode);
+
+	//단과대에 포함된 학과 수
+	public int countSubjcts(String univCode);
+	
+	//학과에 포함된 교수 수
+	public int countProfsrs(String subjctCode);
+
+	//단과대 삭제
+	public int deleteUniv(String univCode);
+
+	//학과 삭제
+	public int deleteSubjct(String subjctCode);
+
+
 }
