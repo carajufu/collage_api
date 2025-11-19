@@ -12,6 +12,8 @@ public class SubjctUpdateRequestDto {
 	private String subjctTelno;   //학과전화번호	SUBJCT_TELNO
 	private int operSttus;        //운영상태	OPER_STTUS
 	
+	private String univCode;	//대학코드(PK)	UNIV_CODE(PK)
+	
 	//JSON 파싱 오류 방지
 	private String title;
     private String key;
