@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.collage_api.admin.mapper.CompetencyMapper">
+
+	<insert id="insertSelfIntro" parameterType="kr.ac.collage_api.competency.vo.CompetencyVO">
+        <selectKey keyProperty="introNo" resultType="int" order="BEFORE">
+            SELECT TEAM1_202505F.SEQ_SELF_INTRO.NEXTVAL FROM DUAL
+        </selectKey>
+        INSERT INTO TEAM1_202505F.SELF_INTRO (
+            INTRO_NO, STDNT_NO, INTRO_TITLE, TARGET_JOB,
+            MOTIVATION, GROWTH_PROCESS, STRENGTH, 
+            EXPERIENCE, -- VO의 career 필드를 DB의 EXPERIENCE 컬럼에 매핑
+            FINAL_RESULT, REG_DT
+        ) VALUES (
+            #{introNo}, #{stdntNo}, #{introTitle}, #{targetJob},
+            #{motivation}, #{growthProcess}, #{strength},
+            #{career, jdbcType=VARCHAR}, -- 경력/경험
+            #{finalResult}, SYSDATE
+        )
+        -- *참고: 자격증(certificate)은 현재 테이블 컬럼이 없으므로 
+        -- 텍스트(finalResult)에만 녹여내고 별도 컬럼 저장은 생략하거나,
+        -- 필요 시 ALTER TABLE로 컬럼 추가 후 매핑하면 됩니다.
+    </insert>
+
+    <select id="selectSelfIntro" parameterType="int" resultType="kr.ac.collage_api.competency.vo.CompetencyVO">
+        SELECT 
+            INTRO_NO      AS introNo,
+            INTRO_TITLE   AS introTitle,
+            TARGET_JOB    AS targetJob,
+            FINAL_RESULT  AS finalResult,
+            TO_CHAR(REG_DT, 'YYYY-MM-DD') AS regDt,
+            (SELECT STDNT_NM FROM TEAM1_202505F.STDNT WHERE STDNT_NO = S.STDNT_NO) AS name -- 저장은 학번으로 했으니 조회 시 이름 가져옴
+        FROM TEAM1_202505F.SELF_INTRO S
+        WHERE INTRO_NO = #{introNo}
+    </select>
+
+    <select id="selectSelfIntroList" parameterType="String" resultType="kr.ac.collage_api.competency.vo.CompetencyVO">
+        SELECT 
+            INTRO_NO      AS introNo,
+            INTRO_TITLE   AS introTitle,
+            TARGET_JOB    AS targetJob,
+            TO_CHAR(REG_DT, 'YYYY-MM-DD') AS regDt
+        FROM TEAM1_202505F.SELF_INTRO
+        WHERE STDNT_NO = #{stdntNo}
+        ORDER BY INTRO_NO DESC
+    </select>
+</mapper>

@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.ac.collage_api.lecture.mapper.AtnlcMapper">
+
+	<resultMap id="atnlcReqstMap" type="atnlcReqstVO">
+		<result property="registCtNo" column="REGIST_CT_NO"/>
+		<result property="atnlcReqstNo" column="ATNLC_REQST_NO"/>
+		<result property="stdntNo" column="STDNT_NO"/>
+		<result property="estbllctreCode" column="ESTBLLCTRE_CODE"/>
+		<result property="reqstYear" column="REQST_YEAR"/>
+		<result property="reqstSemstr" column="REQST_SEMSTR"/>
+		<result property="reqstSttus" column="REQST_STTUS"/>
+		<result property="reqstDe" column="REQST_DE"/>
+		<result property="recentUpdtDt" column="RECENT_UPDT_DT"/>
+		<association property="estblCourse" javaType="estblCourseVO" resultMap="estblCourseMap"></association>
+		<association property="allCourse" javaType="allCourseVO" resultMap="allCourseMap"></association>
+		<association property="sklstf" javaType="sklstfVO" resultMap="sklstfMap"></association>
+		<association property="profsr" javaType="profsrVO" resultMap="profsrMap"></association>
+<!-- 		<association property="timetable" javaType="lctreTimetableVO" resultMap="lctreTimetableMap"></association> -->
+<!-- 		<association property="file" javaType="fileDetailVO" resultMap="fileMap"></association> -->
+	</resultMap>
+	
+	<resultMap type="estblCourseVO" id="estblCourseMap">
+		<result property="taskScoreReflctRate" column="TASK_SCORE_REFLCT_RATE"/>
+		<result property="middleTestScoreReflctRate" column="MIDDLE_TEST_SCORE_REFLCT_RATE"/>
+		<result property="trmendTestScoreReflctRate" column="TRMEND_TEST_SCORE_REFLCT_RATE"/>
+<!-- 		<result property="estblYear" column="ESTBL_YEAR"/> -->
+<!-- 		<result property="estblSemstr" column="ESTBL_SEMSTR"/> -->
+		<result property="estbllctreCode" column="ESTBLLCTRE_CODE"/>
+		<result property="lctreCode" column="LCTRE_CODE"/>
+		<result property="profsrNo" column="PROFSR_NO"/>
+		<result property="fileGroupNo" column="FILE_GROUP_NO"/>
+		<result property="acqsPnt" column="ACQS_PNT"/>
+		<result property="lctrum" column="LCTRUM"/>
+		<result property="complSe" column="COMPL_SE"/>
+		<result property="atnlcNmpr" column="ATNLC_NMPR"/>
+		<result property="lctreUseLang" column="LCTRE_USE_LANG"/>
+		<result property="evlMthd" column="EVL_MTHD"/>
+		<result property="atendScoreReflctRate" column="ATEND_SCORE_REFLCT_RATE"/>
+		<association property="timetable" javaType="lctreTimetableVO" resultMap="lctreTimetableMap"></association>
+	</resultMap>
+	
+	<resultMap type="lctreTimetableVO" id="lctreTimetableMap">
+		<result property="timetableNo" column="TIMETABLE_TIMETABLE_NO"/>
+		<result property="estbllctreCode" column="TIMETABLE_ESTBLLCTRE_CODE"/>
+		<result property="lctreDfk" column="TIMETABLE_LCTRE_DFK"/>
+		<result property="beginTm" column="TIMETABLE_BEGIN_TM"/>
+		<result property="endTm" column="TIMETABLE_END_TM"/>
+	</resultMap>
+	
+	<resultMap type="allCourseVO" id="allCourseMap">
+		<result property="lctreNm" column="LCTRE_NM"/>
+	</resultMap>
+	
+	<resultMap type="sklstfVO" id="sklstfMap">
+		<result property="sklstfNm" column="SKLSTF_NM"/>
+		<result property="cttpc" column="CTTPC"/>
+	</resultMap>
+		
+	<resultMap type="profsrVO" id="profsrMap">
+		<result property="labrumLc" column="LABRUM_LC"/>
+	</resultMap>
+
+<!-- 	<resultMap type="fileDetailVO" id="fileMap"> -->
+<!-- 		<result property="fileNo" column="FILE_NO"/> -->
+<!-- 		<result property="fileGroupNo" column="FILE_GROUP_NO"/> -->
+<!-- 		<result property="fileNm" column="FILE_NM"/> -->
+<!-- 		<result property="fileStreNm" column="FILE_STRE_NM"/> -->
+<!-- 		<result property="fileStreplace" column="FILE_STREPLACE"/> -->
+<!-- 		<result property="fileStreDe" column="FILE_STRE_DE"/> -->
+<!-- 	</resultMap> -->
+
+	<!-- 로그인한 계정의 학생 번호(stdnt_no) 검증 -->
+	<select id="findStdntNo" parameterType="String" resultType="String">
+		select s.stdnt_no
+		from   stdnt s
+		inner join acnt a on(s.acnt_id = a.acnt_id)
+		where a.acnt_id = #{acntId}
+	</select>
+	
+	<!-- 나의 장바구니 목록 불러오기 -->
+	<select id="myCartList" parameterType="String" resultMap="atnlcReqstMap">
+		select R.ATNLC_REQST_NO, R.STDNT_NO, R.ESTBLLCTRE_CODE, R.REQST_YEAR, R.REQST_SEMSTR, 
+			   R.REQST_STTUS, R.REQST_DE, R.RECENT_UPDT_DT, R.REGIST_CT_NO,
+			   E.ESTBLLCTRE_CODE, E.ACQS_PNT, E.COMPL_SE, A.LCTRE_NM, E.ATNLC_NMPR, E.LCTRE_USE_LANG, 
+		       E.EVL_MTHD, E.ESTBL_SEMSTR, E.LCTRE_CODE, E.PROFSR_NO, E.LCTRUM,
+		       A.LCTRE_CODE, A.OPER_AT,
+		       L.TIMETABLE_NO as TIMETABLE_TIMETABLE_NO, L.LCTRE_DFK as TIMETABLE_LCTRE_DFK, L.BEGIN_TM as TIMETABLE_BEGIN_TM, L.END_TM as TIMETABLE_END_TM,
+		       P.SKLSTF_ID, S.SKLSTF_NM
+		from   ATNLC_REQST R
+		left join ESTBL_COURSE E on (R.ESTBLLCTRE_CODE = E.ESTBLLCTRE_CODE)
+		left join ALL_COURSE A on (E.LCTRE_CODE = A.LCTRE_CODE)
+		left join LCTRE_TIMETABLE L on (E.ESTBLLCTRE_CODE = L.ESTBLLCTRE_CODE)
+		left join PROFSR P on (E.PROFSR_NO = P.PROFSR_NO)
+		left join SKLSTF S on (S.SKLSTF_ID = P.SKLSTF_ID)
+		where  R.STDNT_NO = #{stdntNo}
+		and	   R.REQST_STTUS = '신청중'
+	</select>
+	
+	<!-- 장바구니에 강의 담기 -->
+	<insert id="addMyCart" parameterType="atnlcReqstVO">
+	    INSERT INTO ATNLC_REQST (
+	        ATNLC_REQST_NO, STDNT_NO, ESTBLLCTRE_CODE, REQST_YEAR, REQST_SEMSTR, REQST_STTUS, REQST_DE, RECENT_UPDT_DT
+	    )
+	    SELECT 
+	        'AR'||LPAD((SELECT NVL(MAX(TO_NUMBER(SUBSTR(ATNLC_REQST_NO,3))),0)+1 
+	        			FROM   ATNLC_REQST 
+	        			WHERE  ATNLC_REQST_NO LIKE 'AR%'),7,'0'), 
+	        #{stdntNo}, #{estbllctreCode}, '2025', '2학기', '신청중', TO_CHAR(SYSDATE, 'YYYYMMDD'), SYSDATE
+			FROM    ESTBL_COURSE E
+		    LEFT JOIN ALL_COURSE A ON (E.LCTRE_CODE = A.LCTRE_CODE)
+	    
+	  		WHERE   E.ESTBLLCTRE_CODE = #{estbllctreCode}
+	</insert>
+	
+	<!-- 1. 중복 강의 검사 -->
+	<select id="checkLec" parameterType="atnlcReqstVO" resultType="String">
+		select ESTBLLCTRE_CODE
+		from   atnlc_reqst
+		where  stdnt_no = #{stdntNo}
+		and	   reqst_sttus = '신청중'
+		and	   estbllctre_code in
+			   <foreach collection="estbllctreCodes" item="code" open="(" separator="," close=")">
+			   	 #{code}
+			   </foreach>
+	</select>
+	
+	<!-- 2. 중복 시간표 검사 -->
+	<select id="checkTime" parameterType="atnlcReqstVO" resultType="String">
+		select s.estbllctre_code
+		from   lctre_timetable s
+		inner join lctre_timetable o on ( s.lctre_dfk = o.lctre_dfk 
+									  and  s.begin_tm &lt; o.end_tm 
+									  and  s.end_tm &gt; o.begin_tm )
+		inner join atnlc_reqst a on ( o.estbllctre_code = a.estbllctre_code )
+		where a.stdnt_no = #{stdntNo}
+		and   a.reqst_sttus = '신청중'
+		and   s.estbllctre_code in
+			  <foreach collection="estbllctreCodes" item="code" open="(" separator="," close=")">
+			    #{code}
+			  </foreach>
+	</select>
+	
+	<!-- 장바구니 강의 담기 취소 -->
+	<update id="editMyCart" parameterType="atnlcReqstVO">
+		update ATNLC_REQST
+		set    REQST_STTUS = '취소'
+		where  STDNT_NO = #{stdntNo}
+		and	   ESTBLLCTRE_CODE = #{estbllctreCode}
+	</update>
+	
+</mapper>

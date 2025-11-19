@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.ac.collage_api.admin.mapper.BbsNoticeMapper">
+
+	<!-- 조건식 : keyword가 제목이나 내용에 있으면~ -->
+	<sql id="where">
+		<if test="keyword!=null and keyword!=''">
+			AND (BBSCTT_SJ LIKE '%' || #{keyword} || '%'
+				 OR BBSCTT_CN LIKE '%' || #{keyword} || '%')
+		</if>
+		
+	</sql>
+
+	<!-- //list 총 페이지 가져오기
+	public int getTotal(Map<String, Object> map); -->
+	<select id="getTotal" parameterType="HashMap" resultType="int">
+	 	SELECT COUNT(*)
+	 	FROM BBS
+	 	WHERE 1=1
+	 		AND BBSCTT_TY = 1 <!-- 1:공지사항 게시판  -->
+	 		<include refid="where"></include>  	<!-- keyword 있으면 제목, 내용에서 키워드를 품고 있는 글만 셈 -->
+	</select>
+	
+	<!-- //현재 페이지 목록만 가져오기
+	public List<BbsVO> list(Map<String, Object> map); -->
+	<select id="list" parameterType="HashMap" resultType="bbsVO">
+		WITH T AS (
+			SELECT ROWNUM RNUM
+				   , BBSCTT_NO, BBSCTT_SJ, BBSCTT_CN, BBSCTT_WRITNG_DE, BBSCTT_RDCNT
+				   , BBSCTT_TY, PARNTS_BBSCTT_NO, FILE_GROUP_NO, ACNT_ID
+			FROM BBS
+			WHERE 1=1
+			<include refid="where"></include> 
+		)
+		
+		SELECT * FROM T
+		WHERE T.RNUM BETWEEN (#{currentPage}*10) - (10-1) AND (#{currentPage}*10)
+	
+	</select>
+	
+	<!-- 	//글 번호 하나로 게시글 상세페이지 가져오기
+	public BbsVO detail(int bbscttNo); -->
+	
+	<select id="detail" parameterType="int" resultType="bbsVO">
+	SELECT BBSCTT_NO, BBSCTT_SJ, BBSCTT_CN, BBSCTT_WRITNG_DE, BBSCTT_RDCNT
+		   , BBSCTT_TY, PARNTS_BBSCTT_NO, FILE_GROUP_NO, ACNT_ID
+	FROM BBS
+	WHERE BBSCTT_NO = #{bbscttNo}
+	</select>
+	
+	<!-- //게시글 삭제
+	public int delete(int bbscttNo); -->
+	<delete id="delete" parameterType="int">
+	DELETE FROM BBS WHERE BBSCTT_NO = #{bbscttNo}
+	
+	</delete>
+	
+	<!--
+	****************************
+	
+	 여기 이하는 ADMIN 에서 쓸꺼
+	
+	***************************
+	-->
+	
+	<!-- //관리자 - 공지사항게시판 리스트 가져오기
+	public List<BbsVO> adminList(); -->
+	
+	<select id="adminList" resultType="bbsVO">
+	SELECT
+		BBSCTT_NO, ACNT_ID, PARNTS_BBSCTT_NO, FILE_GROUP_NO, BBSCTT_SJ
+	  , BBSCTT_CN, BBSCTT_WRITNG_DE, BBSCTT_RDCNT, BBSCTT_TY
+	FROM BBS
+	ORDER BY BBSCTT_NO DESC
+	</select>
+	
+	
+	
+	<!-- //관리자 - 공지사항게시판 수정
+	public int adminPutDetail(BbsVO bbsVO); -->
+	
+	<update id="adminPutDetail" parameterType="bbsVO">
+	UPDATE BBS
+	SET BBSCTT_SJ = #{bbscttSj}, BBSCTT_CN = #{bbscttCn} 
+	WHERE BBSCTT_NO = #{bbscttNo}
+	</update>
+	
+	<!-- //관리자 - 공지사항 게시판 1행 삭제
+	public int adminDeleteDetail(int bbscttNo); 
+	 -->
+	<delete id="adminDeleteDetail" parameterType="int">
+	DELETE FROM BBS
+	WHERE BBSCTT_NO = #{bbscttNo}
+	
+	</delete>
+	
+	
+	<!-- //관리자 - 공지사항 게시판 1행 등록
+	public int adminPostDetail(BbsVO bbsVO); -->
+	<insert id="adminPostDetail" parameterType="bbsVO">
+		<selectKey resultType="int" order="BEFORE" keyProperty="bbscttNo" >
+			SELECT NVL(MAX(BBSCTT_NO),0) + 1 FROM BBS		
+		</selectKey>
+	INSERT INTO BBS (BBSCTT_NO, ACNT_ID, BBSCTT_SJ, BBSCTT_CN, BBSCTT_WRITNG_DE, BBSCTT_RDCNT, BBSCTT_TY)
+	VALUES(#{bbscttNo},#{acntId},#{bbscttSj},#{bbscttCn},SYSDATE,0,'1')
+	</insert>
+</mapper>

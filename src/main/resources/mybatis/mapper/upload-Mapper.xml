@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.ac.collage_api.common.attach.mapper.UploadMapper">
+    <!--//파일 그룹 생성 public int insertFileGroup(FileGroupVO fileGroupVO); -->
+    <insert id="insertFileGroup" parameterType="fileGroupVO">
+        <selectKey resultType="long" order="BEFORE" keyProperty="fileGroupNo">
+            SELECT                                                                               /* kr.ac.collage_api.common.upload.mapper.UploadMapper.insertFileGroup.selectKey */
+                NVL(MAX(file_group_no), TO_NUMBER(TO_CHAR(SYSDATE, 'YYYYMMDD')) * 1000) + 1      /* 파일 그룹 번호 */
+            FROM file_group
+            WHERE file_group_no >= TO_NUMBER(TO_CHAR(SYSDATE, 'YYYYMMDD')) * 1000
+        </selectKey>
+        INSERT INTO FILE_GROUP (                    /* kr.ac.collage_api.common.attach.mapper.UploadMapper.insertFileGroup */
+                                file_group_no       /* 파일 그룹 번호 */
+                                , file_regist_de    /* 파일 등록 날짜 */
+                            )
+        VALUES(
+               #{fileGroupNo}
+               ,SYSDATE
+            )
+    </insert>
+
+    <!-- //파일 디테일 생성
+    public int insertFileDetail(FileDetailVO fileDetailVO); -->
+    <insert id="insertFileDetail" parameterType="fileDetailVO">
+        <selectKey resultType="int" order="BEFORE" keyProperty="fileNo">
+            SELECT                                      /* kr.ac.collage_api.common.upload.mapper.UploadMapper.insertFileDetail.selectKey */
+                NVL(MAX(file_no), 0) + 1
+            FROM
+                file_detail
+            WHERE file_group_no = #{fileGroupNo}
+        </selectKey>
+        INSERT INTO file_detail (                       /* kr.ac.collage_api.common.attach.mapper.UploadMapper.insertFileDetail */
+                                 file_no                /* 파일 번호 */
+                                , file_group_no         /* 파일 그룹 번호 */
+                                , file_nm               /* 파일 이름 */
+                                , file_stre_nm          /* 파일 저장 이름 */
+                                , file_streplace        /* 파일 저장 장소 */
+                                , file_mg               /* 파일 크기 */
+                                , file_extsn            /* 파일 확장자 */
+                                , file_ty               /* 파일 타입 */
+                                , file_stre_de          /* 파일 저장 일자 */
+                                , file_dwld_co          /* 파일 다운로드 수 */
+                                )
+        VALUES(
+               #{fileNo}
+                , #{fileGroupNo}
+                , #{fileNm}
+                , #{fileStreNm}
+                , #{fileStreplace}
+                , #{fileMg}
+                , #{fileExtsn}
+                , #{fileTy}
+                , SYSDATE
+                , #{fileDwldCo}
+                )
+    </insert>
+</mapper>
