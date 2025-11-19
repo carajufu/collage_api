@@ -4,26 +4,15 @@ import lombok.Data;
 
 @Data
 public class CompetencyVO {
-    // 시스템 관리용
-    private int introNo;            // PK
-    private String stdntNo;         // FK (로그인한 사용자 식별용)
-    
-    // 1. 사용자 직접 입력 정보 (DB 조회 X)
-    private String name;            // 이름 (직접 입력)
-    private int age;                // 나이 (직접 입력)
-    private String targetJob;       // 희망 직무
-    private String introTitle;      // 제목
+	private Integer formId;       // FORM_ID
+    private String stdntNo;       // STDNT_NO
 
-    // 2. 자기소개서 구성 키워드
-    private String motivation;      // 지원동기 키워드
-    private String growthProcess;   // 성장과정 키워드
-    private String strength;        // 장점 키워드
-    
-    // 3. 경력 및 자격증 (NULL 허용)
-    private String career;          // 경력 사항 (예: 인턴 6개월, 카페 알바 등)
-    private String certificate;     // 자격증 (예: 정보처리기사, 토익 850)
+    private String lastAcdmcr;    // LAST_ACDMCR (최종 학력)
+    private String miltrAt;       // MILTR_AT (군필 여부)
+    private String desireJob;     // DESIRE_JOB (희망 직무)
 
-    // 4. 결과물
-    private String finalResult;     // 자동 생성된 텍스트
-    private String regDt;           // 작성일
+    private String crqfc;         // CRQFC (자격증)
+    private String edcHistory;    // EDC_HISTORY (교육 이력)
+    private String mainProject;   // MAIN_PROJECT (주요 프로젝트)
+    private String character;     // CHARACTER (성격)
 }
