@@ -14,10 +14,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import kr.ac.collage_api.account.dto.ProfSelectEditDetailDTO;
 import kr.ac.collage_api.account.mapper.AccountMapper;
 import kr.ac.collage_api.account.service.AccountService;
 import kr.ac.collage_api.vo.AcntVO;
 import kr.ac.collage_api.vo.AuthorVO;
+import kr.ac.collage_api.vo.ProfsrDgriVO;
+import kr.ac.collage_api.vo.ProfsrVO;
+import kr.ac.collage_api.vo.SklstfVO;
 import kr.ac.collage_api.vo.StdntVO;
 import kr.ac.collage_api.vo.SubjctVO;
 import kr.ac.collage_api.vo.UnivVO;
@@ -237,4 +241,453 @@ public class AccountServiceImpl implements AccountService{
 
 		return this.accountMapper.updateStdAccount(stdntVO);
 	}
+
+
+
+	@Transactional
+	@Override
+	public int insertProfAccount(Map<String, String> map) {
+
+		int result = 0;
+
+		AcntVO acntVO = new AcntVO();
+		SklstfVO sklstfVO = new SklstfVO();
+		ProfsrVO profsrVO = new ProfsrVO();
+		ProfsrDgriVO profsrDgriVO = new ProfsrDgriVO();
+		AuthorVO authorVO = new AuthorVO();
+
+		String sklstfNm = map.get("sklstfNm");
+
+		String brthdy = map.get("brthdy").replaceAll("-", "");
+        String nlty = map.get("nlty");
+		String cttpc = map.get("cttpc");
+		String emgncCttpc = map.get("emgncCttpc");
+		String emailAdres = map.get("emailAdres");
+		String ecnyDe = map.get("ecnyDe").replaceAll("-", "");
+		String hffcSttus = map.get("hffcSttus");
+
+		String retireDe = map.get("retireDe");
+		if (retireDe !=null && !retireDe.equals("null") && retireDe.length() !=0 ) {
+			retireDe = map.get("retireDe").replaceAll("-", "");
+		} else {
+			retireDe = null;
+		}
+
+		String zip = map.get("zip");
+		String bassAdres = map.get("bassAdres");
+		String detailAdres = map.get("detailAdres");
+		String major = map.get("major");
+		String dgri = map.get("dgri");
+		String acqsEngn = map.get("acqsEngn");
+		String acqsDe = map.get("acqsDe").replaceAll("-", "");
+		String univCode = map.get("univCode");
+		String subjctCode = map.get("subjctCode");
+		String clsf = map.get("clsf");
+		String labrumLc = map.get("labrumLc");
+		String bankNm = map.get("bankNm");
+		String acnutno = map.get("acnutno");
+
+		//1.계정 테이블 입력
+		String partOfId = "P"+ecnyDe.substring(2,4);
+		String maxAcntId = this.accountMapper.findIdSeq(partOfId);
+
+		String acntId = "P"+(Integer.parseInt(maxAcntId.substring(1,5))+1);
+		String password = this.bCryptPasswordEncoder.encode(brthdy);
+		String acntTy = ("2");
+
+		acntVO.setAcntId(acntId);
+		acntVO.setPassword(password);
+		acntVO.setAcntTy(acntTy);
+
+		result = this.accountMapper.insertAcnt(acntVO); //있는거 재활용
+
+		//2.교직원 테이블 입력
+		sklstfVO.setAcntId(acntId);
+		sklstfVO.setSklstfId(acntId);
+		sklstfVO.setSklstfNm(sklstfNm);
+		sklstfVO.setEcnyDe(ecnyDe);
+		sklstfVO.setRetireDe(retireDe);
+		sklstfVO.setBrthdy(brthdy);
+		sklstfVO.setCttpc(cttpc);
+		sklstfVO.setEmgncCttpc(emgncCttpc);
+		//sklstfVO.setPsitnDept(null);	// 교직원 소속 나중에 쓰려면 오픈! sql문도 작성해야 함
+		//sklstfVO.setRspofc(null);		// 교직원 직책 나중에 쓰려면 오픈! sql문도 작성해야 함
+		sklstfVO.setHffcSttus(hffcSttus);
+		sklstfVO.setBankNm(bankNm);
+		sklstfVO.setAcnutno(acnutno);
+		sklstfVO.setBassAdres(bassAdres);
+		sklstfVO.setDetailAdres(detailAdres);
+		sklstfVO.setZip(zip);
+
+		result += this.accountMapper.insertSklstf(sklstfVO);
+
+		//3.교수 테이블 입력
+		profsrVO.setProfsrNo(acntId);
+		profsrVO.setSklstfId(acntId);
+		profsrVO.setSubjctCode(subjctCode);
+		profsrVO.setClsf(clsf);
+		profsrVO.setLabrumLc(labrumLc);
+		profsrVO.setNlty(nlty);
+		profsrVO.setEmailAdres(emailAdres);
+
+		result += this.accountMapper.insertProfsr(profsrVO);
+
+		//4.교수 학위 입력
+		profsrDgriVO.setProfsrNo(acntId);
+		profsrDgriVO.setMajor(major);
+		profsrDgriVO.setDgri(dgri);
+		profsrDgriVO.setAcqsEngn(acqsEngn);
+		profsrDgriVO.setAcqsDe(acqsDe);
+
+		result += this.accountMapper.insertProfsrDgri(profsrDgriVO);
+
+		//5.계정 권한 입력
+
+		authorVO.setAcntId(acntId);
+		authorVO.setAuthorNm("ROLE_PROF");
+		authorVO.setAuthorDc("교수");
+
+		result += this.accountMapper.insertAuthor(authorVO);
+
+		return result;
+	}
+
+	@Transactional
+	@Override
+	public int insertProfAccountBulk(MultipartFile uploadFile) {
+
+	int result = 0;
+
+
+     try (BufferedReader reader = new BufferedReader( new
+     InputStreamReader(uploadFile.getInputStream(),StandardCharsets.UTF_8)))
+
+     { String headerLine = reader.readLine(); if(headerLine==null) { throw new
+     IllegalArgumentException("csv 파일이 비어 있습니다."); }
+
+     String[] headers = headerLine.split(",");
+     Map<String,Integer> headerMap = new HashMap<>();
+     for(int i = 0; i<headers.length; i++) { headerMap.put(headers[i].trim(),i);}
+
+     String line;
+     int lineNumber = 1;
+     while ((line = reader.readLine())!=null) {
+     lineNumber++;
+
+     try { String[] data = line.split(",", -1);
+
+     Map<String,String> map = new HashMap<>();
+
+    map.put("sklstfNm",String.valueOf(getValueByHeader(data, headerMap, "sklstfNm")));
+
+	map.put("brthdy",String.valueOf(getValueByHeader(data, headerMap, "brthdy")));
+    map.put("nlty",String.valueOf(getValueByHeader(data, headerMap, "nlty")));
+	map.put("cttpc",String.valueOf(getValueByHeader(data, headerMap, "cttpc")));
+	map.put("emgncCttpc",String.valueOf(getValueByHeader(data, headerMap, "emgncCttpc")));
+	map.put("emailAdres",String.valueOf(getValueByHeader(data, headerMap, "emailAdres")));
+	map.put("ecnyDe",String.valueOf(getValueByHeader(data, headerMap, "ecnyDe")));
+	map.put("hffcSttus",String.valueOf(getValueByHeader(data, headerMap, "hffcSttus")));
+	map.put("retireDe",String.valueOf(getValueByHeader(data, headerMap, "retireDe")));
+	map.put("zip",String.valueOf(getValueByHeader(data, headerMap, "zip")));
+	map.put("bassAdres",String.valueOf(getValueByHeader(data, headerMap, "bassAdres")));
+	map.put("detailAdres",String.valueOf(getValueByHeader(data, headerMap, "detailAdres")));
+	map.put("major",String.valueOf(getValueByHeader(data, headerMap, "major")));
+	map.put("dgri",String.valueOf(getValueByHeader(data, headerMap, "dgri")));
+	map.put("acqsEngn",String.valueOf(getValueByHeader(data, headerMap, "acqsEngn")));
+	map.put("acqsDe",String.valueOf(getValueByHeader(data, headerMap, "acqsDe")));
+	map.put("univCode",String.valueOf(getValueByHeader(data, headerMap, "univCode")));
+	map.put("subjctCode",String.valueOf(getValueByHeader(data, headerMap, "subjctCode")));
+	map.put("clsf",String.valueOf(getValueByHeader(data, headerMap, "clsf")));
+	map.put("labrumLc",String.valueOf(getValueByHeader(data, headerMap, "labrumLc")));
+	map.put("bankNm",String.valueOf(getValueByHeader(data, headerMap, "bankNm")));
+	map.put("acnutno",String.valueOf(getValueByHeader(data, headerMap, "acnutno")));
+
+     result += insertProfAccount(map);
+
+
+     } catch (Exception e) { throw new IllegalArgumentException( lineNumber+
+     "번째 줄 파싱 오류 : "+e.getMessage()); } }
+
+     } catch (IOException e1) {
+    	 e1.printStackTrace();
+     }
+		return result;
+
+	}
+
+	@Override
+	public List<SklstfVO> selectProfInfo(String keyword) {
+		return this.accountMapper.selectProfInfo(keyword);
+	}
+
+	//관리자, 교수 수정페이지 진입시 기존 값 불러오기
+	@Override
+	public ProfSelectEditDetailDTO selecteditdetail(String profsrNo) {
+		return this.accountMapper.selecteditdetail(profsrNo);
+
+
+
+	}
+
+	//교수 계정 리스트 불러오기
+	@Override
+	public List<SklstfVO> selectProfsrList() {
+		return this.accountMapper.selectProfsrList();
+	}
+
+	//교수 게정 수정
+
+	@Transactional
+	@Override
+	public int updateProfAccount(Map<String, String> map) {
+		int result = 0;
+/*
+		updateProfAccount() -> map :
+		{profsrNo=P2401, subjctCode=11, clsf=정교수, labrumLc=A-201, nlty=KOR
+		, emailAdres=P2401@gmail.com, sklstfNm=김철수, ecnyDe=2010-03-01, retireDe=null, brthdy=1975-05-10
+		, cttpc=010-1111-2222, emgncCttpc=010-9999-2401, psitnDept=null, rspofc=null, hffcSttus=1
+		, bankNm=국민은행, acnutno=110-234-567890, bassAdres=대전광역시 유성구 대학로 123
+		, detailAdres=대우아파트 101동 202호, zip=34134, univCode=10}
+	*/
+
+
+
+		SklstfVO sklstfVO = new SklstfVO();
+		ProfsrVO profsrVO = new ProfsrVO();
+
+		String profsrNo = map.get("profsrNo");
+		String sklstfNm = map.get("sklstfNm");
+
+		String brthdy = map.get("brthdy").replaceAll("-", "");
+        String nlty = map.get("nlty");
+		String cttpc = map.get("cttpc");
+		String emgncCttpc = map.get("emgncCttpc");
+		String emailAdres = map.get("emailAdres");
+		String ecnyDe = map.get("ecnyDe").replaceAll("-", "");
+		String hffcSttus = map.get("hffcSttus");
+
+		String retireDe = map.get("retireDe");
+		if (retireDe !=null && !retireDe.equals("null") && retireDe.length() !=0 ) {
+			retireDe = map.get("retireDe").replaceAll("-", "");
+		} else {
+			retireDe = null;
+		}
+
+
+		String zip = map.get("zip");
+		String bassAdres = map.get("bassAdres");
+		String detailAdres = map.get("detailAdres");
+
+
+		String subjctCode = map.get("subjctCode");
+		String clsf = map.get("clsf");
+		String labrumLc = map.get("labrumLc");
+		String bankNm = map.get("bankNm");
+		String acnutno = map.get("acnutno");
+
+
+		//2.교직원 테이블 입력
+		sklstfVO.setSklstfId(profsrNo);
+		sklstfVO.setSklstfNm(sklstfNm);
+		sklstfVO.setEcnyDe(ecnyDe);
+		sklstfVO.setRetireDe(retireDe);
+		sklstfVO.setBrthdy(brthdy);
+		sklstfVO.setCttpc(cttpc);
+		sklstfVO.setEmgncCttpc(emgncCttpc);
+		//sklstfVO.setPsitnDept(null);	// 교직원 소속 나중에 쓰려면 오픈! sql문도 작성해야 함
+		//sklstfVO.setRspofc(null);		// 교직원 직책 나중에 쓰려면 오픈! sql문도 작성해야 함
+		sklstfVO.setHffcSttus(hffcSttus);
+		sklstfVO.setBankNm(bankNm);
+		sklstfVO.setAcnutno(acnutno);
+		sklstfVO.setBassAdres(bassAdres);
+		sklstfVO.setDetailAdres(detailAdres);
+		sklstfVO.setZip(zip);
+
+		result += this.accountMapper.updateSklstf(sklstfVO);
+
+		//3.교수 테이블 입력
+		profsrVO.setProfsrNo(profsrNo);
+		profsrVO.setSubjctCode(subjctCode);
+		profsrVO.setClsf(clsf);
+		profsrVO.setLabrumLc(labrumLc);
+		profsrVO.setNlty(nlty);
+		profsrVO.setEmailAdres(emailAdres);
+
+		result += this.accountMapper.updateProfsr(profsrVO);
+
+
+		return result;
+
+	}
+
+	@Transactional
+	@Override
+	public int deleteProfAccount(String profsrNo) {
+
+		int result = 0;
+		// 권한, 학위, 교수, 교직원 계정
+		// ACNT_ID, PROFSR_NO , profsr_no, sklstf_id, acnt_id
+		String acntId = profsrNo;
+
+		//권한 author 삭제
+		result += this.accountMapper.deleteAuthor(acntId);
+
+		//학위 삭제
+		result += this.accountMapper.deleteProfsrDgri(profsrNo);
+
+		//교수 삭제
+		result += this.accountMapper.deleteProfsr(profsrNo);
+
+		//교직원 삭제
+		result += this.accountMapper.deleteSklstf(acntId);
+
+		//계정 삭제
+		result += this.accountMapper.deleteAcntId(acntId);
+
+
+		return result;
+	}
+
+	@Transactional
+	@Override
+	public int deleteProfAccountList(List<String> idList) {
+
+		int result = 0;
+		for (int i = 0;i<idList.size();i++) {
+			result += deleteProfAccount(idList.get(i));
+		}
+
+		return result;
+	}
+
+
+	/***
+	 * 교수 학위
+	 */
+
+	@Override
+	public List<ProfsrDgriVO> selectProfsrDgriList() {
+		return this.accountMapper.selectProfsrDgriList();
+	}
+
+	@Override
+	public SklstfVO selectProfDgriInfo(String sklstfId) {
+		return this.accountMapper.selectProfDgriInfo(sklstfId);
+	}
+
+	@Override
+	public int insertProfsrDgri(ProfsrDgriVO profsrDgriVO) {
+		log.info("insertProfsrDgri() -> profsrDgriVO : {}", profsrDgriVO);
+		String acqsDe = profsrDgriVO.getAcqsDe().replaceAll("-", "");
+		profsrDgriVO.setAcqsDe(acqsDe);
+
+		return this.accountMapper.insertProfsrDgri(profsrDgriVO);
+
+
+	}
+
+	@Transactional
+	@Override
+	public ProfsrDgriVO selectProfDgriInfoForUpdate(ProfsrDgriVO profsrDgriVO) {
+
+		profsrDgriVO = this.accountMapper.selectProfDgriInfoForUpdate(profsrDgriVO);
+
+		String acqsDe = profsrDgriVO.getAcqsDe();
+
+		StringBuilder sb = new StringBuilder(acqsDe);
+
+		sb.insert(4, "-"); //1999-0909
+		sb.insert(7, "-");
+
+		profsrDgriVO.setAcqsDe(sb.toString());
+		return profsrDgriVO;
+	}
+
+	@Override
+	public int updateProfDgri(ProfsrDgriVO profsrDgriVO) {
+		String acqsDe = profsrDgriVO.getAcqsDe().replaceAll("-", "");
+		profsrDgriVO.setAcqsDe(acqsDe);
+
+		return this.accountMapper.updateProfDgri(profsrDgriVO);
+	}
+
+	@Override
+	public int deleteProfDgri(String dgriNo) {
+		return this.accountMapper.deleteProfDgri(dgriNo);
+	}
+
+	@Override
+	public int deleteProfsrDgriList(List<String> digriVOList) {
+
+		int result = 0;
+		for (String dgriNo : digriVOList) {
+
+			result += this.accountMapper.deleteProfDgri(dgriNo);
+		}
+
+		return result;
+	}
+
+	@Transactional
+	@Override
+	public int insertProfDgriBulk(MultipartFile uploadFile) {
+
+		int result = 0;
+
+		try (BufferedReader reader = new BufferedReader( new
+		     InputStreamReader(uploadFile.getInputStream(),StandardCharsets.UTF_8)))
+
+		     { String headerLine = reader.readLine(); if(headerLine==null) { throw new
+		     IllegalArgumentException("csv 파일이 비어 있습니다."); }
+
+		     String[] headers = headerLine.split(",");
+		     Map<String,Integer> headerMap = new HashMap<>();
+		     for(int i = 0; i<headers.length; i++) { headerMap.put(headers[i].trim(),i);}
+
+		     String line;
+		     int lineNumber = 1;
+		     while ((line = reader.readLine())!=null) {
+		     lineNumber++;
+
+		     try { String[] data = line.split(",", -1);
+
+		     Map<String,String> map = new HashMap<>();
+
+		     ProfsrDgriVO profsrDgriVO = new ProfsrDgriVO();
+
+		     profsrDgriVO.setSklstfNm(String.valueOf(getValueByHeader(data, headerMap, "sklstfNm")));
+		     profsrDgriVO.setProfsrNo(String.valueOf(getValueByHeader(data, headerMap, "profsrNo")));
+		     profsrDgriVO.setMajor(String.valueOf(getValueByHeader(data, headerMap, "major")));
+		     profsrDgriVO.setDgri(String.valueOf(getValueByHeader(data, headerMap, "dgri")));
+		     profsrDgriVO.setAcqsEngn(String.valueOf(getValueByHeader(data, headerMap, "acqsEngn")));
+		     profsrDgriVO.setAcqsDe(String.valueOf(getValueByHeader(data, headerMap, "acqsDe")));
+
+
+
+	      result += insertProfsrDgri(profsrDgriVO);
+
+
+	      } catch (Exception e) { throw new IllegalArgumentException( lineNumber+
+	      "번째 줄 파싱 오류 : "+e.getMessage()); } }
+
+	      } catch (IOException e1) {
+	     	 e1.printStackTrace();
+	      }
+	 	return result;
+
+
+
+	}
+
+
+
+
+
+
+
+
+
+
+
+
 }
