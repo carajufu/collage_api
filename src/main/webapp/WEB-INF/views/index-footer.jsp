@@ -1,31 +1,31 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
          pageEncoding="UTF-8"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="c"  uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
 
-<footer class="custom-footer bg-dark py-5 position-relative" id="footer">
+<footer class="custom-footer bg-dark text-white-50 py-5 mt-5 position-relative" id="footer">
     <div class="container">
         <div class="row">
             <!-- 좌측: 로고 + 학교 소개 + 주소/연락처 -->
             <div class="col-lg-4 col-md-6">
                 <div class="mb-4">
-                    <a href="${pageContext.request.contextPath}/" class="d-flex align-items-center mb-3">
-                        <!-- 다크 모드 로고 -->
+                    <a href="${pageContext.request.contextPath}/"
+                       class="d-flex align-items-center mb-3">
                         <img src="${pageContext.request.contextPath}/images/logo/univ-logo-kor-vite-dark.svg"
                              alt="대덕대학교 로고"
                              height="40"
-                             class="me-2">
+                             class="me-2" />
                     </a>
-                    <p class="mb-2 text-white-50">
+                    <p class="mb-2">
                         미래를 여는 스마트 캠퍼스, 대덕대학교 메인 포털입니다.
                     </p>
-                    <p class="mb-1 text-white-50">
+                    <p class="mb-1">
                         (00000) 대전광역시 ○○구 ○○로 123, 대덕대학교
                     </p>
-                    <p class="mb-1 text-white-50">
+                    <p class="mb-1">
                         TEL : 042-000-0000&nbsp;&nbsp;&nbsp;FAX : 042-000-0001
                     </p>
-                    <p class="mb-0 text-white-50">
+                    <p class="mb-0">
                         E-mail : info@ddc.ac.kr
                     </p>
                 </div>
@@ -35,7 +35,7 @@
             <div class="col-lg-2 col-md-6">
                 <div class="mb-4">
                     <h6 class="text-white text-uppercase mb-3">대학소개</h6>
-                    <ul class="list-unstyled text-white-50 mb-0">
+                    <ul class="list-unstyled mb-0">
                         <li class="mb-2">
                             <a href="${pageContext.request.contextPath}/about"
                                class="text-white-50 text-decoration-none">대학개요</a>
@@ -54,15 +54,16 @@
                         </li>
                     </ul>
                 </div>
+
                 <div class="mb-4">
                     <h6 class="text-white text-uppercase mb-3">학사안내</h6>
-                    <ul class="list-unstyled text-white-50 mb-0">
+                    <ul class="list-unstyled mb-0">
                         <li class="mb-2">
-                            <a href="${pageContext.request.contextPath}/academics/calendar"
+                            <a href="${pageContext.request.contextPath}/schedule/calendar"
                                class="text-white-50 text-decoration-none">학사일정</a>
                         </li>
                         <li class="mb-2">
-                            <a href="${pageContext.request.contextPath}/academics/major"
+                            <a href="${pageContext.request.contextPath}/schedule/major"
                                class="text-white-50 text-decoration-none">전공·학과</a>
                         </li>
                         <li class="mb-2">
@@ -81,7 +82,7 @@
             <div class="col-lg-2 col-md-6">
                 <div class="mb-4">
                     <h6 class="text-white text-uppercase mb-3">입학안내</h6>
-                    <ul class="list-unstyled text-white-50 mb-0">
+                    <ul class="list-unstyled mb-0">
                         <li class="mb-2">
                             <a href="${pageContext.request.contextPath}/admission/undergraduate"
                                class="text-white-50 text-decoration-none">학부 입학</a>
@@ -100,9 +101,10 @@
                         </li>
                     </ul>
                 </div>
+
                 <div class="mb-4">
                     <h6 class="text-white text-uppercase mb-3">대학생활</h6>
-                    <ul class="list-unstyled text-white-50 mb-0">
+                    <ul class="list-unstyled mb-0">
                         <li class="mb-2">
                             <a href="${pageContext.request.contextPath}/campus-life/scholarship"
                                class="text-white-50 text-decoration-none">장학·등록</a>
@@ -127,7 +129,7 @@
             <div class="col-lg-4 col-md-6">
                 <div class="mb-4">
                     <h6 class="text-white text-uppercase mb-3">뉴스·공지</h6>
-                    <ul class="list-unstyled text-white-50 mb-0">
+                    <ul class="list-unstyled mb-0">
                         <li class="mb-2">
                             <a href="${pageContext.request.contextPath}/news/notice"
                                class="text-white-50 text-decoration-none">학사공지</a>
@@ -146,15 +148,16 @@
                         </li>
                     </ul>
                 </div>
+
                 <div class="mb-0">
                     <h6 class="text-white text-uppercase mb-3">문의</h6>
-                    <p class="mb-1 text-white-50">
+                    <p class="mb-1">
                         입학 상담 : 042-000-1000
                     </p>
-                    <p class="mb-1 text-white-50">
+                    <p class="mb-1">
                         행정 문의 : 042-000-2000
                     </p>
-                    <p class="mb-0 text-white-50">
+                    <p class="mb-0">
                         온라인 문의 :
                         <a href="${pageContext.request.contextPath}/contact"
                            class="text-white-50 text-decoration-underline">
@@ -168,7 +171,7 @@
         <!-- 하단 바: 저작권 + 소셜 링크 -->
         <div class="row mt-4 pt-4 border-top border-top-dashed border-secondary">
             <div class="col-md-6">
-                <p class="mb-0 text-white-50">
+                <p class="mb-0">
                     Copyright ©
                     <script>document.write(new Date().getFullYear())</script>
                     대덕대학교. All rights reserved.

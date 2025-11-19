@@ -32,21 +32,9 @@
 <body>
 
 <%@ include file="../index-header.jsp"%>
-<style>
-/* 고정 헤더 – 항상 불투명 탑바 */
-header.main-header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 1050;
-
-    background-color: #0f172a;      /* 완전히 불투명한 네이비 톤 */
-    box-shadow: 0 2px 12px rgba(15, 23, 42, 0.45);
-
-    /* 기존 padding, 기타 스타일 있으면 그대로 유지 */
+<style>.navbar-landing.main-header {
+  background-color: #050b18 !important;
 }
-
 /* 헤더 아래 메인 콘텐츠 상하 패딩 (스샷 기준 간격) */
 .main-content-with-header-calendar {
     padding-top: 7rem;   /* 헤더와 콘텐츠 카드 사이 여유 크게 */

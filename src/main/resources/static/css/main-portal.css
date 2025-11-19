@@ -400,7 +400,7 @@ header.main-header {
     color: var(--dd-text-sub);
     text-align: center;
     max-width: 640px;
-    margin: 0 auto 2.8rem;
+    margin: 0 auto 2.5rem;
 }
 
 /* 4단 그리드 단계 안내 */
@@ -555,11 +555,11 @@ header.main-header {
     border-radius: 999px;
     padding: 0.45rem 1.35rem;
     font-size: 0.88rem;
-    font-weight: 500;
+    font-weight: 600;
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
-    line-height: 1.2;
+    line-height: 1.4;
     transition:
         background-color 0.15s ease,
         border-color 0.15s ease,
@@ -688,6 +688,14 @@ header.main-header.is-scrolled {
 
 /* 고정 헤더 높이만큼 상단 여백 주는 공통 클래스 */
 .main-content-with-header {
-    padding-top: 220px;   /* 헤더 높이(대략 80~100) + 여유 간격 */
-    padding-bottom: 120px; /* 푸터랑도 약간 띄우기 */
+    padding-top: 250px;   /* 헤더 높이(대략 80~100) + 여유 간격 */
+    padding-bottom: 180px; /* 푸터랑도 약간 띄우기 */
+}
+
+.news-section.py-5,
+.section-main-bbs,
+.section-main-events,
+#research-section.section.py-5 {
+    padding-top: 2.6rem !important;   /* 기존 3rem → 2.5rem 같은 느낌으로 조절 */
+    padding-bottom: 2.5rem !important;
 }
