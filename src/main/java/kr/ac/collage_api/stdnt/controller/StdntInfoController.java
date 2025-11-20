@@ -42,6 +42,9 @@ public class StdntInfoController {
         return "stdnt/stdntInfo";
     }
 
+    /* --------------------------
+       프로필 이미지 업로드
+    --------------------------- */
     @PostMapping("info/uploadFile")
     @ResponseBody
     public String uploadFile(@RequestParam("stdntNo") String acntId,
@@ -55,6 +58,9 @@ public class StdntInfoController {
         return "success";
     }
 
+    /* --------------------------
+       기본 정보 수정
+    --------------------------- */
     @PostMapping("info/update")
     @ResponseBody
     public String updateInfo(@RequestBody StdntVO vo) {
@@ -62,6 +68,9 @@ public class StdntInfoController {
         return result > 0 ? "success" : "fail";
     }
 
+    /* --------------------------
+       비밀번호 확인 (모달)
+    --------------------------- */
     @PostMapping("info/pwCheck")
     @ResponseBody
     public String pwCheck(@RequestParam("stdntNo") String stdntNo,
@@ -71,6 +80,9 @@ public class StdntInfoController {
         return match ? "success" : "fail";
     }
 
+    /* --------------------------
+       비밀번호 변경
+    --------------------------- */
     @PostMapping("info/updatePw")
     @ResponseBody
     public String updatePwInfo(@RequestParam("stdntNo") String stdntNo,

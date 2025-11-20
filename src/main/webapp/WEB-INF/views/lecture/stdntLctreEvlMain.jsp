@@ -1,24 +1,21 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" isELIgnored="false" %>
-<%@ taglib prefix="c" uri="jakarta.tags.core" %>
-<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
-<%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
-
-<%@ include file="/WEB-INF/views/header.jsp" %> 
+<%@ include file="../header.jsp" %> 
 
 <div class="page-content">
   <div class="container-fluid">
 
     <h4 class="fw-bold mb-4">강의평가</h4>
 
+    <!-- 요약 박스 -->
     <div class="border rounded p-3 mb-4 bg-light">
       <div class="d-flex justify-content-between align-items-center">
         <div>
           <span class="fw-semibold">미평가 강의 수:</span>
-          <span class="text-primary fw-bold">
-            <c:out value="${fn:length(atnlcList)}"/>
-          </span> 개
+          <span class="text-primary fw-bold">${fn:length(atnlcList)}</span> 개
         </div>
-        <div class="text-muted small">평가 완료 후 수정은 불가하니 신중히 제출해주세요.</div>
+        <div class="text-muted small">
+          평가 완료 후 수정은 불가하니 신중히 제출해주세요.
+        </div>
       </div>
     </div>
 
@@ -46,7 +43,7 @@
               <th>학점</th>
               <th>정원</th>
               <th>수업언어</th>
-              <th style="width: 12%;">평가상태</th>
+              <th style="width: 12%;">평가하기</th>
             </tr>
           </thead>
 
@@ -62,22 +59,12 @@
                 <td>${lecture.acqsPnt}</td>
                 <td>${lecture.atnlcNmpr}</td>
                 <td>${lecture.lctreUseLang}</td>
-
                 <td class="text-center">
-                  <c:choose>
-                    <c:when test="${lecture.evalCompleted eq 'N'}">
-                      <a href="/stdnt/lecture/main/${lecture.estbllctreCode}" 
-                         class="btn btn-primary btn-sm px-3">
-                        평가하기
-                      </a>
-                    </c:when>
-
-                    <c:otherwise>
-                      <span class="badge bg-success px-3 py-2">평가완료</span>
-                    </c:otherwise>
-                  </c:choose>
+                  <a href="/stdnt/lecture/main/${lecture.estbllctreCode}" 
+                     class="btn btn-primary btn-sm px-3">
+                    평가하기
+                  </a>
                 </td>
-
               </tr>
             </c:forEach>
           </tbody>
@@ -88,5 +75,4 @@
 
   </div>
 </div>
-
-<%@ include file="/WEB-INF/views/footer.jsp" %>
+<%@ include file="../footer.jsp" %> 

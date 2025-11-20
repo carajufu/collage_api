@@ -15,4 +15,7 @@ public class CompetencyVO {
     private String edcHistory;    // EDC_HISTORY (교육 이력)
     private String mainProject;   // MAIN_PROJECT (주요 프로젝트)
     private String character;     // CHARACTER (성격)
+    
+    private String stdntNm;
+    private String brthDy;
 }

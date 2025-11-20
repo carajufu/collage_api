@@ -8,6 +8,8 @@ import kr.ac.collage_api.competency.vo.CompetencyVO;
 @Mapper
 public interface CompetencyMapper {
 
+	int getNextFormNo();
+	
 	CompetencyVO getFormData(String stdntNo);
 
 	int insertFormData(CompetencyVO vo);

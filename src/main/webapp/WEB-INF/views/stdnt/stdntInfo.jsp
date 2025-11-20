@@ -1,8 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib prefix="c" uri="jakarta.tags.core" %>
-<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 
-<%@ include file="/WEB-INF/views/header.jsp" %>
+<%@ include file="../header.jsp" %>
 
 <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 
@@ -170,14 +168,6 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 </script>
 
-
-<!-- ===========================
-       화면 본문
-=========================== -->
-
-<div id="main-container" class="container-fluid">
-  <div class="flex-grow-1 p-3 overflow-auto">
-
     <h2 class="border-bottom pb-3 mb-4">학생 정보 수정</h2>
 
     <form>
@@ -257,7 +247,7 @@ document.addEventListener("DOMContentLoaded", function () {
             <div class="card-body text-center">
 
               <img id="previewImg"
-                   src="<c:out value='${empty profileImagePath ? "/assets/images/users/user-dummy-img.jpg" : ("/'/>"
+                   src="<c:out value='${empty profileImagePath ? "/img/default-profile.png" : ("/upload" += profileImagePath)}'/>"
                    style="width:150px;height:150px;object-fit:cover;border-radius:50%;border:1px solid #ddd;" />
 
               <input type="file" id="uploadFile" name="uploadFile" class="form-control mt-3">
@@ -274,9 +264,6 @@ document.addEventListener("DOMContentLoaded", function () {
       </div>
 
     </form>
-  </div>
-</div>
-
 
 <!-- 비밀번호 확인 모달 -->
 <div class="modal fade" id="pwCheckModal" tabindex="-1">
@@ -300,4 +287,4 @@ document.addEventListener("DOMContentLoaded", function () {
   </div>
 </div>
 
-<%@ include file="/WEB-INF/views/footer.jsp" %>
+<%@ include file="../footer.jsp" %>

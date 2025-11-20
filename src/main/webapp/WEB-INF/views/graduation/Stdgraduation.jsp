@@ -1,12 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib prefix="c" uri="jakarta.tags.core"%>
-<%@ taglib prefix="fmt" uri="jakarta.tags.fmt"%>
-<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
 
-<%@ include file="/WEB-INF/views/header.jsp" %>
-
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<%@ include file="../header.jsp" %>
 
 <script>
 document.addEventListener("DOMContentLoaded", function() {
@@ -94,9 +88,6 @@ document.addEventListener("DOMContentLoaded", function() {
   }
 });
 </script>
-
-<div class="page-content">
-  <div class="container-fluid">
 
     <h4 class="fw-bold mb-4">졸업 신청 현황</h4>
 
@@ -238,8 +229,6 @@ document.addEventListener("DOMContentLoaded", function() {
       <button class="btn btn-secondary" onclick="history.back()">뒤로가기</button>
     </div>
 
-  </div>
-</div>
 
 <div class="modal fade" id="selectStudentModal" tabindex="-1">
   <div class="modal-dialog modal-lg">
@@ -311,4 +300,4 @@ document.addEventListener("DOMContentLoaded", function() {
     </div>
   </div>
 </div>
-<%@ include file="/WEB-INF/views/footer.jsp" %>
+<%@ include file="../footer.jsp" %>

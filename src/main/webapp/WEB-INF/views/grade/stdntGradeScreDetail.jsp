@@ -1,9 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 
-<%@ include file="/WEB-INF/views/header.jsp" %> 
-
-<div class="flex-grow-1 p-3 overflow-auto">
+<%@ include file="../header.jsp" %> 
 
   <h2 class="border-bottom pb-3 mb-4">과목별 성적 상세</h2>
 
@@ -59,7 +56,6 @@
   <div class="mt-3">
     <a href="/stdnt/grade/main/All" class="btn btn-secondary btn-sm">뒤로가기</a>
   </div>
-</div>
 
 <!-- 평균 그래프 모달 -->
 <div class="modal fade" id="chartModal" tabindex="-1">
@@ -112,4 +108,4 @@ document.querySelectorAll(".btn-chart").forEach(btn => {
 });
 </script>
 
-<%@ include file="/WEB-INF/views/footer.jsp" %>
+<%@ include file="../footer.jsp" %>

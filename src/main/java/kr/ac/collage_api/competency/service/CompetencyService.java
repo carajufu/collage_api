@@ -10,8 +10,8 @@ public interface CompetencyService {
 
     String generateIntro(CompetencyVO form);
 
-    // 옵션: 사용자가 폼을 저장하고 싶으면 아래 사용
     int insertFormData(CompetencyVO vo);
+    
     int updateFormData(CompetencyVO vo);
 
 	void saveForm(CompetencyVO form);

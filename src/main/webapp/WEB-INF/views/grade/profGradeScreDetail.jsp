@@ -1,8 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib prefix="c" uri="jakarta.tags.core"%>
-<%@ taglib prefix="fmt" uri="jakarta.tags.fmt"%>
 
-<%@ include file="/WEB-INF/views/header.jsp" %> 
+<%@ include file="../header.jsp" %> 
 
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
@@ -19,7 +17,6 @@ document.addEventListener("DOMContentLoaded", function () {
     return document.querySelectorAll(".score-input");
   }
 
-  //총점 재계산
   function recalcRowTotal(row) {
     const chul = parseFloat(row.querySelector("input[name*='.atendScore']").value) || 0;
     const guwa = parseFloat(row.querySelector("input[name*='.taskScore']").value) || 0;
@@ -32,7 +29,6 @@ document.addEventListener("DOMContentLoaded", function () {
     applyGrade(row, total);
   }
 
-  //등급 계산
   function applyGrade(row, total) {
     let grade = "";
     let score = 0;
@@ -50,12 +46,10 @@ document.addEventListener("DOMContentLoaded", function () {
     row.querySelector("input[name*='.pntAvrg']").value = score.toFixed(1);
   }
 
-  // 전체 재계산
   function recalcAllTotals() {
     document.querySelectorAll("table tbody tr").forEach(recalcRowTotal);
   }
 
-  // 차트 업데이트
   function updateAverageChart() {
     const rows = document.querySelectorAll("table tbody tr");
     const count = rows.length;
@@ -77,7 +71,7 @@ document.addEventListener("DOMContentLoaded", function () {
       (sumTrmend / count).toFixed(1)
     ];
 
-    const ctx = document.getElementById('barChart').getContext('2d');
+    const ctx = document.getElementById('barChartModalCanvas').getContext('2d');
 
     if (!myBarChart) {
       myBarChart = new Chart(ctx, {
@@ -107,7 +101,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  // 입력 이벤트
   function bindScoreInputEvents(scope = document) {
     scope.querySelectorAll(".score-input").forEach(input => {
       const cloned = input.cloneNode(true);
@@ -124,7 +117,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // 편집모드
   function setEditMode(enable) {
     isEditMode = !!enable;
     getAllScoreInputs().forEach(input => input.readOnly = !isEditMode);
@@ -134,7 +126,6 @@ document.addEventListener("DOMContentLoaded", function () {
     cancelBtn.style.display = enable ? "inline-block" : "none";
   }
 
-  // 값 저장/복구
   function snapshotOriginalValues() {
     originalValues = [];
     getAllScoreInputs().forEach(input => originalValues.push(input.value));
@@ -146,7 +137,6 @@ document.addEventListener("DOMContentLoaded", function () {
     updateAverageChart();
   }
 
-  // AJAX 저장
   function wireAjaxSave() {
     $("#saveBtn").on("click", function (e) {
       e.preventDefault();
@@ -171,19 +161,15 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // ⭐ DOM 요소 선언 (중요)
   const editBtn   = document.getElementById("editBtn");
   const saveBtn   = document.getElementById("saveBtn");
   const cancelBtn = document.getElementById("cancelBtn");
 
-  // ⭐ 초기화 (이제 정상 작동)
   recalcAllTotals();
   bindScoreInputEvents();
-  updateAverageChart();
   setEditMode(false);
   snapshotOriginalValues();
 
-  // ⭐ 버튼 이벤트 바인딩
   if (editBtn) {
     editBtn.addEventListener("click", () => {
       setEditMode(true);
@@ -199,13 +185,16 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   wireAjaxSave();
+
+  const chartModal = document.getElementById('averageChartModal');
+  chartModal.addEventListener('shown.bs.modal', function () {
+    updateAverageChart();
+  });
+
 });
 </script>
 
-<div class="page-content">
-  <div class="container-fluid">
-
-    <h4 class="fw-bold mb-4">과목별 성적 관리</h4>
+    <h2 class="fw-bold mb-4">과목별 성적 관리</h2>
 
     <div class="alert alert-info mb-4">
       <div class="row g-2">
@@ -216,11 +205,10 @@ document.addEventListener("DOMContentLoaded", function () {
       </div>
     </div>
 
-    <div class="border rounded p-3 mb-4">
-      <h6 class="fw-semibold mb-3">전체 학생 평균 점수 (100점 기준)</h6>
-      <div style="height:200px;">
-        <canvas id="barChart"></canvas>
-      </div>
+    <div class="d-flex justify-content-end mb-3">
+      <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#averageChartModal">
+        전체 평균 그래프 보기
+      </button>
     </div>
 
     <form id="gradeForm" method="post">
@@ -284,7 +272,23 @@ document.addEventListener("DOMContentLoaded", function () {
       </div>
     </form>
 
+<div class="modal fade" id="averageChartModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title">전체 학생 평균 점수 그래프</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+        <div style="height:350px;">
+          <canvas id="barChartModalCanvas"></canvas>
+        </div>
+      </div>
+
+    </div>
   </div>
 </div>
 
-<%@ include file="/WEB-INF/views/footer.jsp" %>
+<%@ include file="../footer.jsp" %>

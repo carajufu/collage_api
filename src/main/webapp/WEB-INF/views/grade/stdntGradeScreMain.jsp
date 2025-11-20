@@ -1,9 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib prefix="c" uri="jakarta.tags.core" %>
-
-<%@ include file="/WEB-INF/views/header.jsp" %> 
-
-<div class="flex-grow-1 p-3 overflow-auto">
+<%@ include file="../header.jsp" %> 
 
   <h2 class="border-bottom pb-3 mb-2 fw-semibold">학기별 성적 조회</h2>
   <p class="text-muted mb-4">이수한 학기별 종합 성적 정보를 확인할 수 있습니다.</p>
@@ -96,5 +92,4 @@
     </table>
   </c:if>
 
-</div>
-<%@ include file="/WEB-INF/views/footer.jsp" %>
+<%@ include file="../footer.jsp" %>

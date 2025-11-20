@@ -1,43 +1,16 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 
-<%@ include file="/WEB-INF/views/header.jsp" %>
+<%@ include file="../header.jsp" %>
 
-<div class="page-content">
-  <div class="container-fluid">
+    <h2 class="border-bottom pb-2 mb-2">개설 강의 목록</h2>
 
-    <h4 class="fw-bold mb-4">개설 강의 목록</h4>
-
-    <!-- 검색 폼 추가 -->
-    <form method="get" action="/prof/course/list" class="row g-3 mb-4">
-      <div class="col-md-3">
-        <label class="form-label fw-semibold">개설년도</label>
-        <select name="year" class="form-select">
-          <option value="">전체</option>
-          <option value="2025">2025</option>
-          <option value="2024">2024</option>
-          <option value="2023">2023</option>
-        </select>
-      </div>
-
-      <div class="col-md-3">
-        <label class="form-label fw-semibold">학기</label>
-        <select name="semstr" class="form-select">
-          <option value="">전체</option>
-          <option value="1">1학기</option>
-          <option value="2">2학기</option>
-        </select>
-      </div>
-
-      <div class="col-md-3 align-self-end">
-        <button type="submit" class="btn btn-primary">검색</button>
-      </div>
-    </form>
-
+    <div class="d-flex justify-content-end mb-3 mt-0">
+      <input type="text" id="lectureSearch" class="form-control w-25" placeholder="강의명 / 코드 / 연도 / 학기 검색">
+      <button type="submit" class="btn btn-primary ms-2">검색</button>
+    </div>
+	
     <c:if test="${empty allCourseList}">
-      <div class="alert alert-warning text-center" role="alert">
-        등록된 강의가 없습니다.
-      </div>
+      <div class="alert alert-warning text-center">등록된 강의가 없습니다.</div>
     </c:if>
 
     <c:if test="${not empty allCourseList}">
@@ -53,7 +26,6 @@
               <th>개설년도</th>
               <th>개설학기</th>
               <th>성적입력</th>
-              <th>평균그래프</th>
             </tr>
           </thead>
 
@@ -70,15 +42,6 @@
                 <td>
                   <a href="/prof/grade/main/detail/${course.estbllctreCode}" class="btn btn-sm btn-primary">보기</a>
                 </td>
-                <td>
-                  <button type="button"
-                          class="btn btn-sm btn-outline-secondary btn-chart"
-                          data-bs-toggle="modal"
-                          data-bs-target="#chartModal"
-                          data-code="${course.estbllctreCode}">
-                    보기
-                  </button>
-                </td>
               </tr>
             </c:forEach>
           </tbody>
@@ -87,64 +50,36 @@
       </div>
     </c:if>
 
-  </div>
-</div>
-
-<!-- 성적 평균 그래프 모달 -->
-<div class="modal fade" id="chartModal" tabindex="-1">
-  <div class="modal-dialog modal-dialog-centered modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">성적 평균 그래프</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body">
-        <canvas id="avgChart" height="120"></canvas>
-      </div>
-    </div>
-  </div>
-</div>
-
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
-let chartInstance;
-
 document.addEventListener("DOMContentLoaded", function () {
-  document.querySelectorAll(".btn-chart").forEach(btn => {
-    btn.addEventListener("click", function () {
 
-      const code = this.dataset.code;
+  const searchInput = document.getElementById("lectureSearch");
+  const table = document.querySelector("table");
+  const rows = table.getElementsByTagName("tr");
 
-      // AJAX 요청하여 평균 데이터 가져오는 형식
-      fetch("/prof/grade/chart/" + code)
-        .then(res => res.json())
-        .then(data => {
-
-          const ctx = document.getElementById("avgChart").getContext("2d");
-
-          if (chartInstance) {
-            chartInstance.destroy();
-          }
-
-          chartInstance = new Chart(ctx, {
-            type: 'bar',
-            data: {
-              labels: ['출석', '과제', '중간', '기말'],
-              datasets: [{
-                label: '평균점수',
-                data: [data.atendAvg, data.taskAvg, data.middleAvg, data.trmendAvg]
-              }]
-            },
-            options: {
-              responsive: true,
-              scales: { y: { beginAtZero: true } }
-            }
-          });
-        });
-    });
+  const searchBtn = document.querySelector(".btn.btn-primary");
+  searchBtn.addEventListener("click", function(e) {
+    e.preventDefault();
+    searchInput.dispatchEvent(new Event("keyup"));
   });
+
+  searchInput.addEventListener("keyup", () => {
+    const keyword = searchInput.value.toLowerCase();
+
+    for (let i = 1; i < rows.length; i++) {
+      const rowText = rows[i].innerText.toLowerCase();
+
+      if (rowText.includes(keyword)) {
+        rows[i].style.display = "";
+      } else {
+        rows[i].style.display = "none";
+      }
+    }
+  });
+
 });
 </script>
 
-<%@ include file="/WEB-INF/views/footer.jsp" %>
+<%@ include file="../footer.jsp" %>
