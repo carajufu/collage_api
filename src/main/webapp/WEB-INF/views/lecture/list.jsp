@@ -9,20 +9,18 @@
 	       		<div class="container-fluid"> 
 	       			<nav class="navbar navbar-expand-lg bg-body-tertiary">
 					  <div class="container-fluid">
-					    <a class="navbar-brand">구분</a>
-	<!-- 				    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"> -->
-	<!-- 				      <span class="navbar-toggler-icon"></span> -->
-	<!-- 				    </button> -->
+					    <a class="navbar-brand">이수구분</a>
 					    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+					      <form class="d-flex" role="search">
 					        <select class="form-select" aria-label="Default select example" name="complSe" value="${param.complSe}">
-							  <option selected>이수구분</option>
+							  <option value="" selected>---</option>
 							  <option value="전필">전필</option>
 							  <option value="전선">전선</option>
 							  <option value="교필">교필</option>
 							  <option value="교선">교선</option>
 							  <option value="일선">일선</option>
 							</select>
-					      <form class="d-flex" role="search">
+							<a class="navbar-brand" style="margin-left:50px">강의명</a>
 					        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="keyword" value="${param.keyword}"/>
 					        <button class="btn btn-outline-primary" type="submit">search</button>
 					      </form>
@@ -38,23 +36,30 @@
 					  	<tr>
 					  		<th>교과목ID</th><th>이수구분</th><th>강의명</th><th>교수명</th><th>취득학점</th><th>강의실</th><th>강의시간</th><th>수강인원</th><th></th>
 					  	</tr>
-					  </thead>    
-					  <tbody>
-					  	<c:forEach var="l" items="${estblCourseVOList}" varStatus="stat">
-					  		<tr>
-					  			<td>${l.estbllctreCode}</td><td>${l.complSe}</td>
-					  			<td>${l.allCourse.lctreNm}</td>
-					  			<td>${l.sklstf.sklstfNm}</td><td>${l.acqsPnt}</td>
-					  			<td>${l.lctrum}</td><td>${l.timetable.lctreDfk} ${l.timetable.beginTm},${l.timetable.endTm}</td><td>${l.atnlcNmpr}</td>
-					  			<td>
-						  			<button class="btn btn-outline-secondary d-inline-flex align-items-center" type="button"
-						  					data-bs-toggle="modal" data-bs-target="#modalDetail" data-item-id="${l.estbllctreCode}">
-									강의 정보</button>
-<!-- 									<svg class="bi ms-1" width="10" height="5" aria-hidden="true"><use xlink:href="#arrow-right-short"></use></svg>  -->
-								</td>
-					  		</tr>
-					  	</c:forEach>
-					  </tbody>
+					  </thead>   
+					  <c:if test="${empty estblCourseVOList}">
+					  	<tbody>
+					  		<tr><td colspan="9">개설된 강의가 없습니다.</td></tr>
+					  	</tbody>
+					  </c:if>
+					  <c:if test="${!empty estblCourseVOList}">
+						  <tbody>
+						  	<c:forEach var="l" items="${estblCourseVOList}" varStatus="stat">
+						  		<tr>
+						  			<td>${l.estbllctreCode}</td><td>${l.complSe}</td>
+						  			<td>${l.allCourse.lctreNm}</td>
+						  			<td>${l.sklstf.sklstfNm}</td><td>${l.acqsPnt}</td>
+						  			<td>${l.lctrum}</td><td>${l.timetable.lctreDfk} ${l.timetable.beginTm},${l.timetable.endTm}</td><td>${l.atnlcNmpr}</td>
+						  			<td>
+							  			<button class="btn btn-outline-secondary d-inline-flex align-items-center" type="button"
+							  					data-bs-toggle="modal" data-bs-target="#modalDetail" data-item-id="${l.estbllctreCode}">
+										강의 정보</button>
+	<!-- 									<svg class="bi ms-1" width="10" height="5" aria-hidden="true"><use xlink:href="#arrow-right-short"></use></svg>  -->
+									</td>
+						  		</tr>
+						  	</c:forEach>
+						  </tbody>
+						</c:if>
 					</table>
 				</div>
 	        </div>
@@ -81,56 +86,25 @@
 
 <script type="text/javascript">
 const modalDetail = document.getElementById("modalDetail");
-// let editBtn = document.getElementById("editBtn");
 
-
-$("#editBtn").on("click",(event)=>{
-	const formElements = document.querySelector("form.needs-validation");
-	const readonlyElements = formElements.querySelectorAll('[readonly], [disabled]');
-	readonlyElements.forEach(element=>{
-		if(element.hasAttribute("readonly")) {
-			element.removeAttribute("readonly");
-		}
-		if(element.hasAttribute("disabled")) {
-			element.removeAttribute("disabled");
-		}
-	});
+document.addEventListener("click", (e)=>{
 	
-	$("#editBtn").hide();
-	$("#editConfirmBtn").show();
-	$("#lctreDfk").hide();
-	$("#timeEditDiv").show();
+	const downloadBtn = e.target.closest("#fileDownload");
 	
-	$("#editConfirmBtn").on("click",(event)=>{
+	
+	if(downloadBtn) {
+		const fileGroupNo = downloadBtn.dataset.filegroupno;
 		
-		const inputValues = formElements.querySelectorAll("input");
-		const data = [...inputValues].filter(input=>input.name).map(input=>{
-																			if (input.name != 'lctreDfk') { return {
-																				name: input.name,
-																				value: input.value
-																			};
-																			}
-																			return null;
-		}).filter(item=>item!=null);
-		const lctreDfkData = $("input[name='lctreDfk']:checked").map(function() {
-		    // 체크박스 <label>의 텍스트("월", "화" 등)를 가져옵니다.
-		    return $(this).parent().text().trim(); 
-		}).get();
-		
-		if(lctreDfkData.length > 0) {
-			data.push({
-				name: 'lctreDfk',
-				value: lctreDfkData.join(',')
-			});
+		if(fileGroupNo && fileGroupNo!=0) {
+			e.preventDefault();
+			console.log("fileGroupNo 체크 : ", fileGroupNo);
+			
+			window.location.href = "/lecture/downloadFile?fileGroupNo=" + fileGroupNo;
+		} else {
+			e.preventDefault();
 		}
-		
-		console.log("data : ", data);
-		if(confirm("수정 내용을 저장하시겠습니까?")) {
-			fetch("")
-		}
-	});
-})
-
+	}
+});
 
 $("#modalDetail").on("show.bs.modal",(event)=>{
 	let modalDetailBtn = $(event.relatedTarget);
@@ -141,7 +115,7 @@ $("#modalDetail").on("show.bs.modal",(event)=>{
 	
 	console.log("체크 : ", estbllctreCode);
 	
-	fetch("/lecture/detailAjax/"+estbllctreCode)
+	fetch("/lecture/detail/"+estbllctreCode)
 		.then(response => {
 			if(!response.ok) {
 				throw new Error("오류 발생...");
@@ -150,7 +124,31 @@ $("#modalDetail").on("show.bs.modal",(event)=>{
 		})
 		.then(data => {
 			const vo = data.estblCourseVO;
-			modalBody.innerHTML = `
+			
+			let modalHTML = "";
+			let planHTML = "";
+			
+			if(vo.file) {
+				const fileName = vo.file.fileNm;
+				const fileGroupNo = vo.file.fileGroupNo;
+				
+// 				const downloadUrl = "/lecture/downloadFile?fileGroupNo=" + fileGroupNo;
+				planHTML += `
+								<div class="col-sm-4"> 
+									<label for="planFile" class="form-label"> 강의계획서 </label> 
+									<button class="btn btn-outline-primary" id="fileDownload" data-filegroupno="\${fileGroupNo}">\${fileName}</button>
+								</div>
+							`;
+			} else {
+				planHTML += `
+								<div class="col-sm-4"> 
+									<label for="planFile" class="form-label"> 강의계획서 </label> 
+									<a class="btn btn-outline-secondary"  id="fileDownload" data-filegroupno="0" readonly>파일 없음</a>
+								</div>
+							`;
+			}
+			
+			modalHTML = `
 					 <form class="needs-validation" novalidate="">
 						<div class="row g-3"> 
 							<div class="col-md-5"> 
@@ -226,12 +224,10 @@ $("#modalDetail").on("show.bs.modal",(event)=>{
 										Valid first name is required.
 									</div> 
 							</div> 
-							<div class="col-sm-4"> 
-								<label for="address2" class="form-label">강의계획서 </label> 
-								<input type="file" class="form-control" id="address2" placeholder="Apartment or suite" disabled> 
-							</div> 
 							
-<hr class="my-4">
+							\${planHTML}
+							
+							<hr class="my-4">
 							
 							<div class="col-4"> 
 								<label for="sklstfNm" class="form-label">교수</label> 
@@ -268,6 +264,7 @@ $("#modalDetail").on("show.bs.modal",(event)=>{
 						</div>
 					</form> 
 			`
+			modalBody.innerHTML = modalHTML;
 		})
 		.catch(error => {
 			console.error('fetch 에러 : ', error);
@@ -275,5 +272,11 @@ $("#modalDetail").on("show.bs.modal",(event)=>{
 		});
 });
 </script>
+<style>
+#form {
+	max-height: 270px;
+	overflow-y: auto;
+}
+</style>
 
 <%@ include file="../footer.jsp" %>

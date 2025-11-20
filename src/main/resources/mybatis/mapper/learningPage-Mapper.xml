@@ -10,9 +10,32 @@
             , task_at               /* 과제 여부 */
             , lrn_thema             /* 학습 주제 */
             , lrn_cn                /* 학습 내용 */
+            , quiz_at               /* 퀴즈 여부 */
         FROM week_accto_lrn         /* 주 별 학습 */
         WHERE estbllctre_code = #{lecNo}
         ORDER BY week
+    </select>
+
+    <select id="getLectureInfo" parameterType="String" resultType="HashMap">
+        SELECT                          /* kr.ac.collage_api.learning.mapper.LearningPageMapper.getLectureInfo */
+            ec.profsr_no                /* 교수 번호 */
+            , ec.acqs_pnt               /* 취득 학점 */
+            , ec.lctrum                 /* 강의실 */
+            , ec.compl_se               /* 이수 구분 */
+            , ec.atnlc_nmpr             /* 수강 인원 */
+            , ec.evl_mthd               /* 평가 방식 */
+            , ec.estbl_year             /* 개설 년도 */
+            , ec.estbl_semstr           /* 개설 학기 */
+            , ac.lctre_nm               /* 강의 명 */
+            , skl.sklstf_nm             /* 교직원 이름 */
+        FROM estbl_course ec
+            INNER JOIN all_course ac
+                ON ec.lctre_code = ac.lctre_code
+            INNER JOIN profsr prof
+                ON ec.profsr_no = prof.profsr_no
+            INNER JOIN sklstf skl
+                ON prof.sklstf_id = skl.sklstf_id
+        WHERE estbllctre_code = #{lecNo}
     </select>
 
     <select id="taskList" resultType="taskVO">
@@ -31,5 +54,152 @@
             WHERE estbllctre_code = #{lecNo}
                 AND week = #{weekNo}
             )
+    </select>
+
+    <resultMap id="taskPresentnMap" type="taskPresentnVO">
+        <result property="taskPresentnNo" column="TASK_PRESENTN_NO"/>
+        <result property="stdntNo" column="STDNT_NO"/>
+        <result property="taskNo" column="TASK_NO"/>
+        <result property="fileGroupNo" column="FILE_GROUP_NO"/>
+        <result property="taskPresentnDe" column="TASK_PRESENTN_DE"/>
+        <result property="presentnAt" column="PRESENTN_AT"/>
+        <collection property="fileDetailVOList" resultMap="taskDetailMap"></collection>
+    </resultMap>
+
+    <resultMap id="taskDetailMap" type="fileDetailVO">
+        <result property="fileNo" column="FILE_NO"/>
+        <result property="fileGroupNo" column="FILE_GROUP_NO"/>
+        <result property="fileNm" column="FILE_NM"/>
+        <result property="fileStreNm" column="FILE_STRE_NM"/>
+        <result property="fileStreplace" column="FILE_STREPLACE"/>
+        <result property="fileMg" column="FILE_MG"/>
+        <result property="fileExtsn" column="FILE_EXTSN"/>
+        <result property="fileTy" column="FILE_TY"/>
+        <result property="fileStreDe" column="FILE_STRE_DE"/>
+        <result property="fileDwldCo" column="FILE_DWLD_CO"/>
+    </resultMap>
+
+    <select id="getSubmitTask" resultType="taskPresentnVO" resultMap="taskPresentnMap">
+        SELECT                      /* kr.ac.collage_api.learning.mapper.LearningPageMapper.getSubmitTask */
+            tp.task_presentn_no        /* 과제 제출 번호 */
+             , tp.stdnt_no              /* 학생 번호 */
+             , tp.task_no               /* 과제 번호 */
+             , tp.file_group_no         /* 파일 그룹 번호 */
+             , tp.task_presentn_de      /* 과제 제출 일자 */
+             , tp.presentn_at           /* 제출 여부 */
+             , fd.file_no
+             , fd.file_nm
+             , fd.file_streplace
+             , fd.file_mg
+             , fd.file_extsn
+             , fd.file_ty
+             , fd.file_stre_de
+             , fd.file_dwld_co
+        FROM task_presentn tp
+                 INNER JOIN file_detail fd
+                            ON tp.file_group_no = fd.file_group_no
+        WHERE tp.task_no = #{taskNo}
+          AND tp.stdnt_no = #{studentNo}
+    </select>
+
+    <select id="getSubmitQuiz" resultType="quizPresentnVO">
+        SELECT
+            quiz_presentn_no
+            , stdnt_no
+            , quiz_code
+            , quiz_ex_code
+            , quiz_presentn_de
+            , presentn_at
+        FROM quiz_presentn
+        WHERE quiz_code = #{quizCode}
+            AND stdnt_no = #{name}
+    </select>
+
+    <update id="taskFileUpload">
+        UPDATE task_presentn                                        /* kr.ac.collage_api.learning.mapper.LearningPageMapper.taskFileUpload */
+        SET file_group_no = #{fileGroupNo}                          /* 파일 그룹 번호 */
+            , task_presentn_de = TO_CHAR(SYSDATE, 'YYYYMMDD')     /* 과제 제출 일자 */
+            , presentn_at = 1                                       /* 제철 여부 */
+        WHERE task_presentn_no = #{taskpresentnNo}                  /* 과제 제출 번호 */
+    </update>
+
+    <select id="quizList" parameterType="quizVO">
+        SELECT                      /* kr.ac.collage_api.learning.mapper.LearningPageMapper.quizList */
+            quiz_code               /* 퀴즈 코드 */
+            , week_accto_lrn_no     /* 주 별 학습 번호 */
+            , ques_cn               /* 문제 내용 */
+            , quiz_begin_de         /* 퀴즈 시작 일자 */
+            , quiz_clos_de          /* 퀴즈 마감 일자 */
+        FROM quiz
+        WHERE week_accto_lrn_no = (
+            SELECT week_accto_lrn_no
+            FROM week_accto_lrn
+            WHERE estbllctre_code = #{lecNo}
+              AND week = #{weekNo}
+        )
+    </select>
+
+    <select id="quizExList" parameterType="String">
+        SELECT                  /* kr.ac.collage_api.learning.mapper.LearningPageMapper.quizExList */
+            quiz_ex_code        /* 퀴즈 보기 코드 */
+            , quiz_code         /* 퀴즈 코드 */
+            , ex_no             /* 보기 번호 */
+            , ex_cn             /* 보기 내용 */
+            , cnsl_at           /* 정답 여부 */
+        FROM quiz_ex
+        WHERE quiz_code = #{quizCode}
+    </select>
+
+    <update id="quizSubmit" parameterType="String">
+        UPDATE quiz_presentn                /* kr.ac.collage_api.learning.mapper.LearningPageMapper.quizSubmit */
+        SET
+            quiz_ex_code = #{quizExCode}
+            , quiz_presentn_de = SYSDATE
+            , presentn_at = '1'
+        WHERE stdnt_no = #{stdntNo}
+            AND quiz_code = #{quizCode}
+    </update>
+
+    <select id="isCorrect" resultType="String">
+        SELECT                                  /* kr.ac.collage_api.learning.mapper.LearningPageMapper.isCorrect */
+            cnsl_at
+        FROM quiz_ex
+        WHERE quiz_ex_code = #{quizExCode}
+            AND quiz_code = #{quizCode}
+    </select>
+
+    <resultMap id="lectureBbsMap" type="LectureBbsVO">
+        <result property="estbllctreCode" column="ESTBLLCTRE_CODE"/>
+        <result property="bbsNm" column="BBS_NM"/>
+        <result property="bbsDc" column="BBS_DC"/>
+        <result property="bbsCode" column="BBS_CODE"/>
+        <collection property="lectureBbsCttVOList" javaType="ArrayList" ofType="lectureBbsCttVO" select="getLectureBbsCtt" column="BBS_CODE"/>
+    </resultMap>
+
+    <select id="getLectureBbs" parameterType="String" resultMap="lectureBbsMap">
+        SELECT                          /* kr.ac.collage_api.learning.mapper.LearningPageMapper.getLectureBbs */
+            bbs_code
+            , estbllctre_code
+            , bbs_nm
+            , bbs_dc
+        FROM bbs
+        WHERE estbllctre_code = #{lecNo}
+            AND bbs_nm = #{type}
+    </select>
+
+    <select id="getLectureBbsCtt" resultType="lectureBbsCttVO">
+        SELECT                          /* kr.ac.collage_api.learning.mapper.LearningPageMapper.getLectureBbsCtt */
+            ROWNUM
+            , bbsctt_no
+            , acnt_id
+            , bbs_code
+            , parnts_bbsctt_no
+            , file_group_no
+            , bbsctt_sj
+            , bbsctt_cn
+            , bbsctt_writng_de
+            , bbsctt_rdcnt
+        FROM bbs_ctt
+        WHERE bbs_code = #{value}
     </select>
 </mapper>

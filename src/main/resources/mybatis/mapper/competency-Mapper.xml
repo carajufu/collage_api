@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.ac.collage_api.competency.mapper.CompetencyMapper">
+
+    <select id="getFormData" resultType="kr.ac.collage_api.competency.vo.CompetencyVO">
+        SELECT
+             A.FORM_ID
+            ,A.STDNT_NO
+            ,A.LAST_ACDMCR
+            ,A.MILTR_AT
+            ,A.DESIRE_JOB
+            ,A.CRQFC
+            ,A.EDC_HISTORY
+            ,A.MAIN_PROJECT
+            ,A.CHARACTER
+        FROM COMPETENCY A
+        WHERE A.STDNT_NO = #{stdntNo}
+    </select>
+
+
+    <insert id="insertFormData">
+        INSERT INTO COMPETENCY (
+             FORM_ID
+            ,STDNT_NO
+            ,LAST_ACDMCR
+            ,MILTR_AT
+            ,DESIRE_JOB
+            ,CRQFC
+            ,EDC_HISTORY
+            ,MAIN_PROJECT
+            ,CHARACTER
+        ) VALUES (
+             COMPETENCY_SEQ.NEXTVAL
+            ,#{stdntNo}
+            ,#{lastAcdmcr}
+            ,#{miltrAt}
+            ,#{desireJob}
+            ,#{crqfc}
+            ,#{edcHistory}
+            ,#{mainProject}
+            ,#{character}
+        )
+    </insert>
+
+    <update id="updateFormData">
+        UPDATE COMPETENCY
+        SET
+             LAST_ACDMCR = #{lastAcdmcr}
+            ,MILTR_AT = #{miltrAt}
+            ,DESIRE_JOB = #{desireJob}
+            ,CRQFC = #{crqfc}
+            ,EDC_HISTORY = #{edcHistory}
+            ,MAIN_PROJECT = #{mainProject}
+            ,CHARACTER = #{character}
+        WHERE STDNT_NO = #{stdntNo}
+    </update>
+
+</mapper>

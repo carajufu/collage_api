@@ -1,0 +1,54 @@
+/*
+Template Name: Velzon - Admin & Dashboard Template
+Author: Themesbrand
+Website: https://themesbrand.com/
+Contact: support@themesbrand.com
+File: Custom Css File
+*/
+
+:root,
+[data-bs-theme=light] {
+    /* 헤더 */
+    --vz-header-item-sub-color: var(--vz-primary);
+
+    .topbar-user {
+        background-color: white;
+    }
+
+    /* 사이드바 */
+    --vz-vertical-menu-bg: #222E83;
+    --vz-vertical-menu-item-color: #ffffff;
+    --vz-vertical-menu-title-color: #ffffff;
+    --vz-vertical-menu-sub-item-color: #ffffff;
+
+    .menu-title {
+        font-size: .9375rem;
+    }
+
+    /* body */
+    --vz-body-bg: var(--vz-gray-200);
+    #main-container {
+        min-height: 89vh;
+        background-color: white;
+    }
+    .page-content {
+        padding: calc(60px + 1.5rem) calc(1.5rem * .5) 20px calc(1.5rem * .5);
+    }
+
+    /* 주색 */
+    --vz-primary: #222E83;
+    --vz-primary-rgb: 34, 46, 131;
+
+    /* 보조색 */
+    --vz-secondary: #3CCE88;
+    --vz-secondary-rgb: 60, 206, 136;
+
+    --vz-success : #3CCE88;
+    --vz-success-rgb: 60, 206, 136;
+
+    /* list.group */
+    .list-group {
+        --vz-list-group-active-bg: var(--vz-primary);
+        --vz-list-group-active-border-color: var(--vz-primary);
+    }
+}

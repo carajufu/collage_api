@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.ac.collage_api.graduation.mapper.GraduationMapper">
+
+    <select id="getStdntRegist" resultType="kr.ac.collage_api.graduation.vo.GraduationVO">
+        SELECT *
+        FROM (
+            SELECT
+                SKNRGS_CHANGE_INNB, STDNT_NO, CHANGE_TY, EFECT_OCCRRNC_SEMSTR,
+                REQST_RESN, CHANGE_REQST_DT, REQST_STTUS, CONFM_COMPT_DT,
+                RETURN_RESN, LAST_UPDT_TM, TMPABSSKL_TY
+            FROM SKNRGS_CHANGE_REQST
+            WHERE STDNT_NO = #{stdntNo}
+              AND CHANGE_TY = '졸업'
+            ORDER BY CHANGE_REQST_DT DESC
+        )
+        WHERE ROWNUM = 1
+    </select>
+
+    <insert id="applyForGraduation" parameterType="kr.ac.collage_api.graduation.vo.GraduationVO">
+        INSERT INTO SKNRGS_CHANGE_REQST (
+            SKNRGS_CHANGE_INNB
+            ,STDNT_NO
+            ,CHANGE_TY
+            ,REQST_RESN
+            ,CHANGE_REQST_DT
+            ,REQST_STTUS
+        ) VALUES (
+            (SELECT NVL(MAX(SKNRGS_CHANGE_INNB), 0) + 1 FROM SKNRGS_CHANGE_REQST)
+            ,#{stdntNo}
+            ,#{changeTy}
+            ,#{reqstResn}
+            ,SYSDATE
+            ,#{reqstSttus}
+        )
+    </insert>
+
+    <select id="getAllPnt" resultType="int">
+        SELECT NVL(SUM(TOT_ACQS_PNT), 0)
+        FROM SEMSTR_SCRE
+        WHERE STDNT_NO = #{stdntNo}
+    </select>
+
+    <select id="getStudentInfo" resultType="kr.ac.collage_api.vo.StdntVO">
+        SELECT
+            A.STDNT_NO, A.ACNT_ID, A.SUBJCT_CODE, A.STDNT_NM, A.BRTHDY,
+            A.BASS_ADRES, A.DETAIL_ADRES, A.ZIP, A.CTTPC, A.EMGNC_CTTPC,
+            A.GRADE, A.SKNRGS_STTUS, A.ENTSCH_DE, A.GRDTN_DE,
+            A.BANK_NM, A.ACNUTNO, A.LAST_UPDATED_TIME,
+            B.SUBJCT_NM
+        FROM STDNT A
+        LEFT JOIN SUBJCT B ON A.SUBJCT_CODE = B.SUBJCT_CODE
+        WHERE A.STDNT_NO = #{stdntNo}
+    </select>
+
+    <select id="getConsult" resultType="map">
+        SELECT
+           A.CNSLT_REQST_INNB, A.CNSLT_INNB, A.STDNT_NO, A.REQST_DE,
+           A.CNSLT_STTUS, A.CNSLT_REQUST_CN, A.CANCL_REASON,
+           D.SKLSTF_NM AS profsrNm
+        FROM CNSLT_REQST A
+        LEFT JOIN CNSLT_AT B ON A.CNSLT_INNB = B.CNSLT_INNB
+        LEFT JOIN PROFSR C ON B.PROFSR_NO = C.PROFSR_NO
+        LEFT JOIN SKLSTF D ON C.SKLSTF_ID = D.SKLSTF_ID
+        WHERE A.STDNT_NO = #{stdntNo}
+        ORDER BY A.REQST_DE DESC
+    </select>
+
+	<select id="getSubjectCompletions" resultType="map">
+	    SELECT
+	         C.COMPL_SE,
+	         D.LCTRE_NM,
+	         D.SUBJCT_CODE
+	    FROM SBJECT_SCRE A
+	    JOIN ATNLC_REQST B ON A.ATNLC_REQST_NO = B.ATNLC_REQST_NO
+	    JOIN ESTBL_COURSE C ON B.ESTBLLCTRE_CODE = C.ESTBLLCTRE_CODE
+	    JOIN ALL_COURSE D ON C.LCTRE_CODE = D.LCTRE_CODE
+	    WHERE B.STDNT_NO = #{stdntNo}
+	      AND A.PNT_GRAD != 'F'
+	</select>
+
+    <select id="getCumulativeGpa" resultType="double">
+        SELECT
+            NVL(
+                CASE
+                    WHEN SUM(TOT_ACQS_PNT) = 0 THEN 0
+                    ELSE SUM(PNT_AVRG * TOT_ACQS_PNT) / SUM(TOT_ACQS_PNT)
+                END
+            , 0) AS totalGpa
+        FROM SEMSTR_SCRE
+        WHERE STDNT_NO = #{stdntNo}
+    </select>
+
+</mapper>

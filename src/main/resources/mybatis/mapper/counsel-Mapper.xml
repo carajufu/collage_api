@@ -134,8 +134,4 @@
 		WHERE STDNT_NO = #{stdntNo}
 		GROUP BY STTUS
 	</select>
-	
-
-	
-
 </mapper>
