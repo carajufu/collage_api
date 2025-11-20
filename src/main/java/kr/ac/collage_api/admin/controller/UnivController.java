@@ -63,20 +63,20 @@ public class UnivController {
         List<ProfsrVO> candidates = univService.findDeptHeadCandidates(subjctCode);
         return ResponseEntity.ok(candidates);
     }
-    
+
     //단과대 정보 업데이트
-    @PutMapping("/update/{univCode}") 
+    @PutMapping("/update/{univCode}")
     public ResponseEntity<UnivUpdateRequestDto> updateUniversity(
             @PathVariable String univCode,
             @RequestBody UnivUpdateRequestDto univDto) {
-        
-        univDto.setUnivCode(univCode); 
-        
+
+        univDto.setUnivCode(univCode);
+
         UnivUpdateRequestDto updatedUniv = univService.updateUniv(univDto);
-        
+
         return ResponseEntity.ok(updatedUniv);
     }
-    
+
     // 학과 정보 업데이트
     @PutMapping("/update/subjcts/{subjctCode}")
     public ResponseEntity<SubjctUpdateRequestDto> updateSubjct(
@@ -89,11 +89,11 @@ public class UnivController {
 
         return ResponseEntity.ok(updatedSubjct);
     }
-    
+
     //학과 추가
     @PostMapping("/create/subjcts")
     public ResponseEntity<?> createSubject(@RequestBody SubjctUpdateRequestDto dto) {
-        
+
 
         if (dto.getUnivCode() == null || dto.getUnivCode().isEmpty()) {
              return ResponseEntity
@@ -117,42 +117,42 @@ public class UnivController {
             return ResponseEntity
                 .status(HttpStatus.CONFLICT)
                 .body(Map.of("message", "이미 존재하는 학과 코드입니다."));
-                
-        } catch (IllegalArgumentException e) { 
+
+        } catch (IllegalArgumentException e) {
             return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(Map.of("message", e.getMessage()));
-                
+
         } catch (Exception e) {
             return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(Map.of("message", "학과 추가 중 서버 오류가 발생했습니다."));
         }
-        
+
     }
-        
+
     //단과대 삭제
     @DeleteMapping("/delete/{univCode}")
     public ResponseEntity<?> deleteUniversity(@PathVariable String univCode) {
         try {
             univService.deleteUniv(univCode);
             //성공
-            return ResponseEntity.noContent().build(); 
-            
+            return ResponseEntity.noContent().build();
+
         } catch (Exception e) {
             return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(Map.of("message", e.getMessage()));
         }
     }
-    
+
     //학과 삭제
     @DeleteMapping("/delete/subjcts/{subjctCode}")
     public ResponseEntity<?> deleteSubject(@PathVariable String subjctCode) {
         try {
             univService.deleteSubjct(subjctCode);
             return ResponseEntity.noContent().build();
-            
+
         } catch (Exception e) {
             return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)

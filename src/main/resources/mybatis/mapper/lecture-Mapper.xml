@@ -54,7 +54,7 @@
 
 	<!-- 개설 강의 조회 -->
 	<select id="list" parameterType="estblCourseVO" resultMap="lectureMap">
-		select E.ESTBLLCTRE_CODE, E.ACQS_PNT, E.COMPL_SE, A.LCTRE_NM, E.ATNLC_NMPR, E.LCTRE_USE_LANG, 
+		select E.ESTBLLCTRE_CODE, E.ACQS_PNT, E.COMPL_SE, A.LCTRE_NM, E.ATNLC_NMPR, E.LCTRE_USE_LANG,
 		       E.EVL_MTHD, E.ESTBL_SEMSTR, E.LCTRE_CODE, E.PROFSR_NO, E.LCTRUM,
 		       A.LCTRE_CODE, A.OPER_AT,
 		       L.TIMETABLE_NO, L.ESTBLLCTRE_CODE, L.LCTRE_DFK, L.BEGIN_TM, L.END_TM

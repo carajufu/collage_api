@@ -79,4 +79,5 @@ public class GradeScreServiceImpl implements GradeScreService {
 		 return gradeMapper.getStudentSemstrDetail(semstrScreInnb);
 	}
 
+
 }

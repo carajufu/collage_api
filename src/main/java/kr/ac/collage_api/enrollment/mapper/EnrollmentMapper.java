@@ -26,7 +26,7 @@ public interface EnrollmentMapper {
 
 	//제출
 	void submitRequest(SknrgsChangeReqstVO sknrgsChangeReqstVO);
-	
+
 	//취소
 	int updateRequestStatus(Map<String, Object> params);
 
@@ -47,7 +47,7 @@ public interface EnrollmentMapper {
 	//학적 이력 저장
 	void insertHistory(SknrgsChangeHistVO histVO);
 
-	
+
 
 
 

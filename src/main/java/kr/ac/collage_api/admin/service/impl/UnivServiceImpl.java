@@ -89,27 +89,27 @@ public class UnivServiceImpl implements  UnivService{
     @Transactional
 	@Override
 	public UnivUpdateRequestDto updateUniv(UnivUpdateRequestDto univDto) {
-    	
+
     	int result = univMapper.updateUniv(univDto);
-    	
+
     	if(result == 0 ) {
     		throw new RuntimeException("단과대 정보 업데이트에 실패했습니다.");
     	}
-    	
+
 		return univDto;
 	}
-	
+
 	//학과 정보 업데이트
     @Transactional
 	@Override
 	public SubjctUpdateRequestDto updateSubjct(SubjctUpdateRequestDto subjctDto) {
-		
+
 		int result = univMapper.updateSubjct(subjctDto);
-		
+
 		if(result == 0 ) {
 			throw new RuntimeException("학과 정보 업데이트에 실패했습니다.");
 		}
-		
+
 		return subjctDto;
 	}
 
@@ -118,7 +118,7 @@ public class UnivServiceImpl implements  UnivService{
 	@Override
 	public SubjctVO createSubject(SubjctUpdateRequestDto dto) {
     	int result = univMapper.insertSubjct(dto);
-    	
+
     	if(result == 0) {
     		throw new RuntimeException("학과 추가에 실패했습니다.");
     	}
@@ -126,7 +126,7 @@ public class UnivServiceImpl implements  UnivService{
     	if (savedSubject == null) {
             throw new RuntimeException("학과 반환 데이터 조회에 실패했습니다.");
         }
-    	
+
 		return savedSubject;
 	}
 
@@ -153,13 +153,13 @@ public class UnivServiceImpl implements  UnivService{
     @Override
     public void deleteSubjct(String subjctCode) {
     	int profsrCount = univMapper.countProfsrs(subjctCode);
-    	
+
     	if(profsrCount > 0) {
     		throw new RuntimeException("교수가 존재하는 학과는 삭제할 수 없습니다.");
     	}
-    	
+
     	int result = univMapper.deleteSubjct(subjctCode);
-    	
+
     	if (result == 0) {
     		throw new RuntimeException("학과 삭제에 실패했습니다.");
     	}
