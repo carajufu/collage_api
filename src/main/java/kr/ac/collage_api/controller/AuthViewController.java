@@ -2,6 +2,9 @@ package kr.ac.collage_api.controller;
 
 import java.io.IOException;
 import java.security.Principal;
+import java.time.LocalDate;
+import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.support.ResourcePatternResolver;
@@ -13,6 +16,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.core.io.Resource;
 
 import org.springframework.core.io.support.ResourcePatternResolver;
@@ -22,8 +26,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.time.LocalDate;
 
 import kr.ac.collage_api.util.BackgroundImageUtils;
 import org.springframework.core.io.support.ResourcePatternResolver;
@@ -35,8 +42,13 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import kr.ac.collage_api.service.DitAccountService;
 import kr.ac.collage_api.service.IndexBbsService;
+import kr.ac.collage_api.service.IndexScheduleEventService;
+import kr.ac.collage_api.service.ScheduleEventService;
+import kr.ac.collage_api.service.SpcdeHolidayService;
 import kr.ac.collage_api.vo.AcntVO;
+import kr.ac.collage_api.vo.CalendarEventVO;
 import kr.ac.collage_api.vo.IndexBbsVO;
+import kr.ac.collage_api.vo.ScheduleEventVO;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -97,43 +109,13 @@ public class AuthViewController {
     @Autowired
     IndexBbsService indexBbsService;
     
-    // 모든 사용자의 첫 진입점
-    @GetMapping({"/", "/index"})
-    public String indexPage(Model model,
-    						Principal principal,
-                            HttpServletRequest request) throws IOException {
+    @Autowired
+    SpcdeHolidayService spcdeHolidayService;
+    
+    @Autowired
+    IndexScheduleEventService indexScheduleEventService;
+   
 
-        // 배경 이미지 목록
-        List<String> backgroundImages =
-                BackgroundImageUtils.resolveBackgroundImages(resourceResolver);
-        model.addAttribute("background_images", backgroundImages);
-        log.debug("indexPage backgroundImages resolved: count={}", backgroundImages.size());
-
-        // index 페이지 주요 게시판 목록 
-        List<IndexBbsVO> notices_bbs = indexBbsService.selectMainBbsList(1); // 공지사항
-        List<IndexBbsVO> events_bbs  = indexBbsService.selectMainBbsList(2); // 행사
-        List<IndexBbsVO> papers_bbs  = indexBbsService.selectMainBbsList(3); // 학술/논문
-        List<IndexBbsVO> news_bbs  = indexBbsService.selectMainBbsList(7); // 대내외 뉴스
-        model.addAttribute("notices_bbs", notices_bbs);
-        model.addAttribute("events_bbs", events_bbs);
-        model.addAttribute("papers_bbs", papers_bbs);
-        model.addAttribute("news_bbs", news_bbs);
-        
-        if (principal == null) { // 비-로그인 
-        	log.debug("principal : " + principal);
-            return "index";
-        }
-
-        // 로그인
-        String acntId = principal.getName();
-    	log.debug("acntId : " + acntId);
-
-        // 계정 조회, 헤더에 계정 정보 주입
-        AcntVO acntVO = ditAccountService.findById(acntId);
-        model.addAttribute("acntVO", acntVO);
-        
-        return "index";
-       }
     /**
      * GET /login
      *

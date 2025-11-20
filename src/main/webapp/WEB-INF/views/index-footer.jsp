@@ -3,6 +3,22 @@
 <%@ taglib prefix="c"  uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
 
+<style>
+/* 푸터 영역 강제 센터 정렬 */
+footer.custom-footer {
+  display: flex;
+  justify-content: center;   /* 안쪽 컨텐츠 가로 중앙 */
+}
+
+/* 안쪽 폭 제한 + 가운데 배치 */
+footer.custom-footer .container,
+footer.custom-footer .container-fluid {
+  max-width: 1200px;         /* 필요 시 조절 */
+  width: 100%;
+  margin: 0 auto;
+}
+</style>
+
 <footer class="custom-footer bg-dark text-white-50 py-5 mt-5 position-relative" id="footer">
     <div class="container">
         <div class="row">

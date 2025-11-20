@@ -195,6 +195,7 @@ public class SecurityConfig implements WebMvcConfigurer {
                         .requestMatchers(
                                 "/",              // 서버 첫 진입점 공개
                                 "/index",         // 메인 포털 JSP
+                                "/search",        // 검색창 결과
                                 "/login", "/signup" // 로그인, 로그아웃 공개
                         		,"/account/find-id" // 비로그인, 아이디 찾기
                         		,"/account/reset-pw" // 비로그인, 비밀번호 재설정
@@ -240,8 +241,9 @@ public class SecurityConfig implements WebMvcConfigurer {
                 // logout: 세션 무효화 후 /login 으로 이동 (JWT 클라이언트는 자체 토큰 삭제 필요)
                 .logout(lo -> lo
                         .logoutRequestMatcher(new AntPathRequestMatcher("/logout", "GET")) // 앵커 클릭 로그아웃 허용 테스트 시 편의
-                        .logoutSuccessUrl("/login") // 로그아웃 후 로그인 페이지 복귀
+                        .logoutSuccessUrl("/login?logout=1")  // 로그아웃 알림 메세지 출력, 로그인 페이지 복귀
                         .invalidateHttpSession(true) // 세션 무효화
+                        .deleteCookies("JSESSIONID") // 세션 쿠키 제거
                         .permitAll())
 
                 .build();

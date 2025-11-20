@@ -264,7 +264,7 @@
                            role="button"
                            data-bs-toggle="dropdown"
                            aria-expanded="false">
-                            뉴스·공지
+                            뉴스 · 공지
                             <i class="ri-arrow-down-s-line align-middle ms-1 fs-13"></i>
                         </a>
                         <ul class="dropdown-menu">
@@ -381,8 +381,8 @@
                         </div>
 
                         <!-- 로그아웃 / 학사포털 버튼 -->
-                        <form action="${cPath}/logout"
-                              method="post"
+                        <form action="/logout"
+                              method="get"
                               class="m-0 ms-2">
                             <input type="hidden"
                                    name="${_csrf.parameterName}"
@@ -393,7 +393,7 @@
                             </button>
                         </form>
 
-                        <a href="${cPath}/portal"
+                        <a href="/portal"
                            class="btn btn-sm navbar-util-btn btn-warning ms-1">
                             학사포털
                         </a>
@@ -401,15 +401,15 @@
 
                     <!-- 비로그인 상태 -->
                     <sec:authorize access="isAnonymous()">
-                        <a href="${cPath}/login"
+                        <a href="/login"
                            class="btn btn-sm navbar-util-btn btn-outline-light">
                             로그인
                         </a>
-                        <a href="${cPath}/signup"
+                        <a href="$/signup"
                            class="btn btn-sm navbar-util-btn btn-soft-light d-none d-lg-inline-flex">
                             회원가입
                         </a>
-                        <a href="${cPath}/portal"
+                        <a href="/portal"
                            class="btn btn-sm navbar-util-btn btn-warning ms-lg-1">
                             학사포털
                         </a>
@@ -448,3 +448,10 @@ document.addEventListener("scroll", function () {
 
 </script>
     
+    
+<c:if test="${param.logout eq '1'}">
+	<script>
+	    // 실제 로그아웃 성공 후 페이지가 로드됐을 때만 실행
+	    alert('로그아웃 되었습니다.');
+	</script>
+</c:if>

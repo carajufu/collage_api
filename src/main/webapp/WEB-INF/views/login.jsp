@@ -24,19 +24,16 @@
 <body>
 
 <style>
-/* 고정 헤더 – 항상 불투명 탑바 */
-header.main-header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 1050;
-
-    background-color: #0f172a;      /* 완전히 불투명한 네이비 톤 */
-    box-shadow: 0 2px 12px rgba(15, 23, 42, 0.45);
-
-    /* 기존 padding, 기타 스타일 있으면 그대로 유지 */
+.navbar-landing.main-header {
+  background-color: #272A3A !important;
 }
+/* 헤더 회원가입 버튼 – 살짝 밝은 톤 */
+.navbar-util .btn-outline-signup {
+    background-color: rgba(15, 23, 42, 0.25);
+    border: 1px solid rgba(148, 163, 184, 0.7);
+    color: #e5e7eb;
+}
+
 </style>
 <%--
   [뷰 목적]

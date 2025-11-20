@@ -32,8 +32,9 @@
 <body>
 
 <%@ include file="../index-header.jsp"%>
-<style>.navbar-landing.main-header {
-  background-color: #050b18 !important;
+<style>
+.navbar-landing.main-header {
+  background-color: #272A3A !important;
 }
 /* 헤더 아래 메인 콘텐츠 상하 패딩 (스샷 기준 간격) */
 .main-content-with-header-calendar {

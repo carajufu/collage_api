@@ -153,7 +153,7 @@
                 sk.SKLSTF_NM             AS profName,
                 sj.SUBJCT_NM             AS profDeptName,
 
-                -- 요일 코드(한글/영문) → 해당 주의 실제 날짜
+                -- 요일 코드(한글/영문) -> 해당 주의 실제 날짜
                 CASE lt.LCTRE_DFK
                     WHEN '월'  THEN TO_DATE(#{startDate}, 'YYYY-MM-DD') + 0
                     WHEN '화'  THEN TO_DATE(#{startDate}, 'YYYY-MM-DD') + 1

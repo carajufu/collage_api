@@ -1,0 +1,555 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+[Index 전용 학사 일정 매퍼]
+
+[파일 의도]
+- index.jsp 메인 학사일정 카드/요약 전용.
+- 비회원/학생/교수/관리자 공용 엔드포인트에서 role 기반으로 노출 범위 분기.
+
+[공통 스키마 → ScheduleEventVO]
+- EVENT_ID : 문자열 식별자
+- TITLE    : 노출 제목
+- TYPE     : LECTURE / TASK / PROJECT / COUNSEL_SLOT / COUNSEL /
+             ENROLL_REQ / ADMIN_CERT / ADMIN_STATUS / ADMIN_GRAD / ADMIN_REGIST
+- PLACE    : 장소(있을 때만)
+- TARGET   : ADMIN 요약용 대상 정보
+- CONTENT  : "라벨 : 값 | 라벨 : 값" 형식 메모
+- START_DT : VARCHAR(ISO 형태 문자열)
+- END_DT   : VARCHAR(ISO 형태 문자열)
+- ALL_DAY_YN : 1 or 0
+
+[입력 파라미터(map)]
+- role      : ROLE_STUDENT / ROLE_PROF / ROLE_ADMIN / 기타(null 포함 → guest)
+- stdntNo   : 학생 번호
+- profsrNo  : 교수 번호
+- startDate : 조회 시작일 (YYYYMMDD)
+- endDate   : 조회 종료일 (YYYYMMDD)
+
+[권한/무결 규칙]
+- guest( role null/기타 ) :
+    - LECTURE, ADMIN_REGIST (등록기간) 같이 전역 일정만.
+- ROLE_STUDENT :
+    - 본인 관련 과제/팀프로젝트/상담/수강신청/증명서/학적변동/졸업요건 + 전역 강의/등록.
+- ROLE_PROF :
+    - 본인 담당 강의/과제/팀프로젝트/상담(슬롯+상담) + 본인 담당 수강신청 + 전역 등록.
+- ROLE_ADMIN :
+    - 행정 이벤트 전체 + 강의/등록금 납부 기간 전체.
+-->
+
+<mapper namespace="kr.ac.collage_api.mapper.IndexScheduleEventMapper">
+
+    <resultMap id="IndexScheduleEventMap" type="kr.ac.collage_api.vo.ScheduleEventVO">
+        <id     property="id"        column="EVENT_ID"/>
+        <result property="title"     column="TITLE"/>
+        <result property="type"      column="TYPE"/>
+        <result property="place"     column="PLACE"/>
+        <result property="target"    column="TARGET"/>
+        <result property="memo"      column="CONTENT"/>
+        <result property="startDate" column="START_DT"/>
+        <result property="endDate"   column="END_DT"/>
+        <result property="allDay"    column="ALL_DAY_YN"/>
+    </resultMap>
+
+    <!--
+    index.jsp 전용 통합 일정 조회
+    - SELECT * FROM ( ... UNION ALL ... ) ORDER BY 로 정렬
+    - START_DT/END_DT 전부 VARCHAR로 통일
+    -->
+      <!--
+      [1] 강의 일정: LECTURE (index.jsp 메인에서는 강의 시간표 비노출)
+
+      - 주의사항 : LCTRE_TIMETABLE.BEGIN_TM / END_TM 은 NUMBER(4,0) "교시" 컬럼임.
+        · 예: 1,2,3 교시 / 0900, 1030 같은 형태의 정수 (시간 슬롯)일 뿐,
+          DATE 타입이 아니고, 'YYYYMMDD' 와 직접 비교 불가. -->
+      <!-- [2] 과제 일정: TASK (TASK_BEGIN_DE / TASK_CLOS_DE = VARCHAR2(8, YYYYMMDD)) -->
+      <!-- [3] 팀 프로젝트 일정: TEAM_PRJCT (BEGIN_DE / CLOS_DE = VARCHAR2(8, YYYYMMDD)) -->
+         
+      <!-- [4-1] 상담 가능 슬롯: CNSLT_AT (DATE + VARCHAR2(2) 시간) -->
+
+      <!-- [4-2] 실제 상담: CNSLT (DATE + VARCHAR2(2) 시간) -->
+
+      <!-- [5] 수강신청: ATNLC_REQST.REQST_DE = VARCHAR2(8, YYYYMMDD) -->
+ 
+      <!-- [6-1] 증명서 발급: CRTF_ISSU_REQUST (REQST_DT / ISSU_DT = DATE) -->
+ 
+      <!-- [6-2] 학적변동: SKNRGS_CHANGE_HIST.CHANGE_DE = VARCHAR2(8, YYYYMMDD) -->
+ 
+      <!-- [6-3] 졸업요건 등록: GRDTN_RQISIT.REGIST_DE = VARCHAR2(8, YYYYMMDD) -->
+    
+      <!-- [6-4] 등록금 납부 기간: REGIST_CT.RQEST_DE / PAY_ENDDE = VARCHAR2(8, YYYYMMDD) -->
+      
+	<select id="selectIndexScheduleEvents"
+	        parameterType="map"
+	        resultMap="IndexScheduleEventMap">
+	    SELECT *
+	    FROM (
+	
+	
+	        SELECT
+	            ''  AS EVENT_ID,
+	            ''  AS TITLE,
+	            ''  AS TYPE,
+	            ''  AS PLACE,
+	            ''  AS TARGET,
+	            ''  AS CONTENT,
+	            ''  AS START_DT,
+	            ''  AS END_DT,
+	            0   AS ALL_DAY_YN
+	        FROM DUAL
+	        WHERE 1 = 0
+	
+	        UNION ALL
+	
+            SELECT
+                'TASK_' || t.TASK_NO AS EVENT_ID,
+                '[과제] ' || sj.SUBJCT_NM || ' - ' || t.TASK_SJ AS TITLE,
+                'TASK' AS TYPE,
+                NULL  AS PLACE,
+                NULL  AS TARGET,
+                (
+                    '구분 : 과제'
+                    || ' | 과목 : ' || sj.SUBJCT_NM
+                    || ' | 제목 : ' || t.TASK_SJ
+                    || ' | 마감일 : '
+                    || CASE
+                           WHEN REGEXP_LIKE(t.TASK_CLOS_DE, '^[0-9]{8}$') THEN
+                               SUBSTR(t.TASK_CLOS_DE,1,4) || '-' ||
+                               SUBSTR(t.TASK_CLOS_DE,5,2) || '-' ||
+                               SUBSTR(t.TASK_CLOS_DE,7,2)
+                           ELSE t.TASK_CLOS_DE
+                       END
+                ) AS CONTENT,
+                CASE
+                    WHEN REGEXP_LIKE(t.TASK_BEGIN_DE, '^[0-9]{8}$') THEN
+                        SUBSTR(t.TASK_BEGIN_DE,1,4) || '-' ||
+                        SUBSTR(t.TASK_BEGIN_DE,5,2) || '-' ||
+                        SUBSTR(t.TASK_BEGIN_DE,7,2)
+                    ELSE NULL
+                END AS START_DT,
+                CASE
+                    WHEN REGEXP_LIKE(t.TASK_CLOS_DE, '^[0-9]{8}$') THEN
+                        SUBSTR(t.TASK_CLOS_DE,1,4) || '-' ||
+                        SUBSTR(t.TASK_CLOS_DE,5,2) || '-' ||
+                        SUBSTR(t.TASK_CLOS_DE,7,2)
+                    ELSE NULL
+                END AS END_DT,
+                1 AS ALL_DAY_YN
+            FROM TASK t
+                JOIN WEEK_ACCTO_LRN w ON w.WEEK_ACCTO_LRN_NO = t.WEEK_ACCTO_LRN_NO
+                JOIN ESTBL_COURSE ec ON ec.ESTBLLCTRE_CODE   = w.ESTBLLCTRE_CODE
+                JOIN ALL_COURSE ac   ON ac.LCTRE_CODE        = ec.LCTRE_CODE
+                JOIN SUBJCT sj       ON sj.SUBJCT_CODE       = ac.SUBJCT_CODE
+            WHERE REGEXP_LIKE(t.TASK_BEGIN_DE, '^[0-9]{8}$')
+              AND REGEXP_LIKE(t.TASK_CLOS_DE,  '^[0-9]{8}$')
+              AND t.TASK_CLOS_DE  >= #{startDate}
+              AND t.TASK_BEGIN_DE &lt;= #{endDate}
+              AND (
+                    CASE
+                        WHEN #{role} = 'ROLE_STUDENT' THEN
+                            CASE
+                                WHEN EXISTS (
+                                    SELECT 1
+                                    FROM ATNLC_REQST ar
+                                    WHERE ar.ESTBLLCTRE_CODE = ec.ESTBLLCTRE_CODE
+                                      AND ar.STDNT_NO        = #{stdntNo}
+                                      AND ar.REQST_STTUS     = 'APPROVED'
+                                ) THEN 1 ELSE 0 END
+                        WHEN #{role} = 'ROLE_PROF' THEN
+                            CASE WHEN ec.PROFSR_NO = #{profsrNo} THEN 1 ELSE 0 END
+                        ELSE 0
+                    END
+                  ) = 1
+
+            UNION ALL
+
+            SELECT
+                'TP_' || tp.TEAM_PRJCT_ID AS EVENT_ID,
+                '[프로젝트] ' || sj.SUBJCT_NM || ' - ' || tp.PRJCT_SJ AS TITLE,
+                'PROJECT' AS TYPE,
+                NULL AS PLACE,
+                NULL AS TARGET,
+                (
+                    '구분 : 팀프로젝트'
+                    || ' | 과목 : ' || sj.SUBJCT_NM
+                    || ' | 프로젝트 : ' || tp.PRJCT_SJ
+                    || ' | 팀 아이디 : ' || tp.TEAM_PRJCT_ID
+                    || ' | 기간 : '
+                    || CASE
+                           WHEN REGEXP_LIKE(tp.BEGIN_DE, '^[0-9]{8}$') THEN
+                               SUBSTR(tp.BEGIN_DE,1,4) || '-' ||
+                               SUBSTR(tp.BEGIN_DE,5,2) || '-' ||
+                               SUBSTR(tp.BEGIN_DE,7,2)
+                           ELSE tp.BEGIN_DE
+                       END
+                    || '~'
+                    || CASE
+                           WHEN REGEXP_LIKE(tp.CLOS_DE, '^[0-9]{8}$') THEN
+                               SUBSTR(tp.CLOS_DE,1,4) || '-' ||
+                               SUBSTR(tp.CLOS_DE,5,2) || '-' ||
+                               SUBSTR(tp.CLOS_DE,7,2)
+                           ELSE tp.CLOS_DE
+                       END
+                ) AS CONTENT,
+                CASE
+                    WHEN REGEXP_LIKE(tp.BEGIN_DE, '^[0-9]{8}$') THEN
+                        SUBSTR(tp.BEGIN_DE,1,4) || '-' ||
+                        SUBSTR(tp.BEGIN_DE,5,2) || '-' ||
+                        SUBSTR(tp.BEGIN_DE,7,2)
+                    ELSE NULL
+                END AS START_DT,
+                CASE
+                    WHEN REGEXP_LIKE(tp.CLOS_DE, '^[0-9]{8}$') THEN
+                        SUBSTR(tp.CLOS_DE,1,4) || '-' ||
+                        SUBSTR(tp.CLOS_DE,5,2) || '-' ||
+                        SUBSTR(tp.CLOS_DE,7,2)
+                    ELSE NULL
+                END AS END_DT,
+                1 AS ALL_DAY_YN
+            FROM TEAM_PRJCT tp
+                JOIN ESTBL_COURSE ec ON ec.ESTBLLCTRE_CODE = tp.ESTBLLCTRE_CODE
+                JOIN ALL_COURSE ac   ON ac.LCTRE_CODE      = ec.LCTRE_CODE
+                JOIN SUBJCT sj       ON sj.SUBJCT_CODE     = ac.SUBJCT_CODE
+            WHERE REGEXP_LIKE(tp.BEGIN_DE, '^[0-9]{8}$')
+              AND REGEXP_LIKE(tp.CLOS_DE,  '^[0-9]{8}$')
+              AND tp.CLOS_DE  >= #{startDate}
+              AND tp.BEGIN_DE &lt;= #{endDate}
+              AND (
+                    CASE
+                        WHEN #{role} = 'ROLE_STUDENT' THEN
+                            CASE
+                                WHEN EXISTS (
+                                    SELECT 1
+                                    FROM TEAM_INFO ti
+                                        JOIN TEAM_CONSTNT tc ON tc.TEAM_ID = ti.TEAM_ID
+                                    WHERE ti.TEAM_PRJCT_ID = tp.TEAM_PRJCT_ID
+                                      AND tc.STDNT_NO      = #{stdntNo}
+                                ) THEN 1 ELSE 0 END
+                        WHEN #{role} = 'ROLE_PROF' THEN
+                            CASE WHEN ec.PROFSR_NO = #{profsrNo} THEN 1 ELSE 0 END
+                        ELSE 0
+                    END
+                  ) = 1
+
+            UNION ALL
+	       SELECT
+                'CNSLT_SLOT_' || ca.CNSLT_INNB AS EVENT_ID,
+                '상담 가능' AS TITLE,
+                'COUNSEL_SLOT' AS TYPE,
+                NULL AS PLACE,
+                NULL AS TARGET,
+                (
+                    '구분 : 상담가능'
+                    || ' | 교수번호 : ' || ca.PROFSR_NO
+                    || ' | 교수명 : '   || NVL(ps.SKLSTF_NM, '')
+                    || ' | 교수 사무실 : ' || NVL(ps.DETAIL_ADRES, '')
+                    || ' | 전화번호 : ' || NVL(ps.CTTPC, '')
+                ) AS CONTENT,
+                TO_CHAR(
+                    ca.CNSLT_BEGIN_DE + (TO_NUMBER(ca.CNSLT_BEGIN_TIME) / 24),
+                    'YYYY-MM-DD"T"HH24:MI'
+                ) AS START_DT,
+                TO_CHAR(
+                    ca.CNSLT_BEGIN_DE + (TO_NUMBER(ca.CNSLT_END_TIME) / 24),
+                    'YYYY-MM-DD"T"HH24:MI'
+                ) AS END_DT,
+                0 AS ALL_DAY_YN
+            FROM CNSLT_AT ca
+                LEFT JOIN PROFSR pr ON pr.PROFSR_NO = ca.PROFSR_NO
+                LEFT JOIN SKLSTF ps ON ps.SKLSTF_ID = pr.SKLSTF_ID
+            WHERE ca.CNSLT_BEGIN_DE BETWEEN TO_DATE(#{startDate}, 'YYYYMMDD')
+                                        AND TO_DATE(#{endDate},   'YYYYMMDD')
+              AND (
+                    CASE
+                        WHEN #{role} = 'ROLE_PROF' THEN
+                            CASE WHEN ca.PROFSR_NO = #{profsrNo} THEN 1 ELSE 0 END
+                        ELSE 0
+                    END
+                  ) = 1
+
+            UNION ALL
+	      SELECT
+                'CNSLT_' || c.CNSLT_INNB AS EVENT_ID,
+                CASE
+                    WHEN #{role} = 'ROLE_PROF' THEN '상담 - ' || s.STDNT_NM
+                    ELSE '상담(' || c.STTUS || ')'
+                END AS TITLE,
+                'COUNSEL' AS TYPE,
+                NULL AS PLACE,
+                NULL AS TARGET,
+                CASE
+                    WHEN #{role} = 'ROLE_PROF' THEN
+                        '구분 : 상담'
+                        || ' | 상태 : ' || c.STTUS
+                        || ' | 학번 : ' || s.STDNT_NO
+                        || ' | 성명 : ' || s.STDNT_NM
+                        || ' | 전화번호 : ' || NVL(s.CTTPC, '')
+                    WHEN #{role} = 'ROLE_STUDENT' THEN
+                        '구분 : 상담'
+                        || ' | 상태 : ' || c.STTUS
+                        || ' | 교수번호 : ' || c.PROFSR_NO
+                        || ' | 교수명 : '   || NVL(ps.SKLSTF_NM, '')
+                        || ' | 전화번호 : ' || NVL(ps.CTTPC, '')
+                    ELSE NULL
+                END AS CONTENT,
+                TO_CHAR(
+                    c.CNSLT_REQUST_DE + (TO_NUMBER(c.CNSLT_REQUST_HOUR) / 24),
+                    'YYYY-MM-DD"T"HH24:MI'
+                ) AS START_DT,
+                TO_CHAR(
+                    c.CNSLT_REQUST_DE + (TO_NUMBER(c.CNSLT_REQUST_HOUR) / 24) + (1/24),
+                    'YYYY-MM-DD"T"HH24:MI'
+                ) AS END_DT,
+                0 AS ALL_DAY_YN
+            FROM CNSLT c
+                JOIN STDNT s ON s.STDNT_NO = c.STDNT_NO
+                LEFT JOIN PROFSR pr ON pr.PROFSR_NO = c.PROFSR_NO
+                LEFT JOIN SKLSTF ps ON ps.SKLSTF_ID = pr.SKLSTF_ID
+            WHERE c.CNSLT_REQUST_DE BETWEEN TO_DATE(#{startDate}, 'YYYYMMDD')
+                                        AND TO_DATE(#{endDate},   'YYYYMMDD')
+              AND (
+                    CASE
+                        WHEN #{role} = 'ROLE_STUDENT' THEN
+                            CASE WHEN c.STDNT_NO = #{stdntNo} THEN 1 ELSE 0 END
+                        WHEN #{role} = 'ROLE_PROF' THEN
+                            CASE WHEN c.PROFSR_NO = #{profsrNo} THEN 1 ELSE 0 END
+                        ELSE 0
+                    END
+                  ) = 1
+
+            UNION ALL
+	     SELECT
+                'ENROLL_' || ar.ATNLC_REQST_NO AS EVENT_ID,
+                '[수강신청] ' || sj.SUBJCT_NM || ' 신청(' || ar.REQST_STTUS || ')' AS TITLE,
+                'ENROLL_REQ' AS TYPE,
+                NULL AS PLACE,
+                NULL AS TARGET,
+                (
+                    '구분 : 수강신청'
+                    || ' | 과목 : ' || sj.SUBJCT_NM
+                    || ' | 상태 : ' || ar.REQST_STTUS
+                    || ' | 요청일 : '
+                    || CASE
+                           WHEN REGEXP_LIKE(ar.REQST_DE, '^[0-9]{8}$') THEN
+                               SUBSTR(ar.REQST_DE,1,4) || '-' ||
+                               SUBSTR(ar.REQST_DE,5,2) || '-' ||
+                               SUBSTR(ar.REQST_DE,7,2)
+                           ELSE ar.REQST_DE
+                       END
+                ) AS CONTENT,
+                CASE
+                    WHEN REGEXP_LIKE(ar.REQST_DE, '^[0-9]{8}$') THEN
+                        SUBSTR(ar.REQST_DE,1,4) || '-' ||
+                        SUBSTR(ar.REQST_DE,5,2) || '-' ||
+                        SUBSTR(ar.REQST_DE,7,2)
+                    ELSE NULL
+                END AS START_DT,
+                CASE
+                    WHEN REGEXP_LIKE(ar.REQST_DE, '^[0-9]{8}$') THEN
+                        SUBSTR(ar.REQST_DE,1,4) || '-' ||
+                        SUBSTR(ar.REQST_DE,5,2) || '-' ||
+                        SUBSTR(ar.REQST_DE,7,2)
+                    ELSE NULL
+                END AS END_DT,
+                1 AS ALL_DAY_YN
+            FROM ATNLC_REQST ar
+                JOIN ESTBL_COURSE ec ON ec.ESTBLLCTRE_CODE = ar.ESTBLLCTRE_CODE
+                JOIN ALL_COURSE ac   ON ac.LCTRE_CODE      = ec.LCTRE_CODE
+                JOIN SUBJCT sj       ON sj.SUBJCT_CODE     = ac.SUBJCT_CODE
+            WHERE REGEXP_LIKE(ar.REQST_DE, '^[0-9]{8}$')
+              AND ar.REQST_DE BETWEEN #{startDate} AND #{endDate}
+              AND (
+                    CASE
+                        WHEN #{role} = 'ROLE_STUDENT' THEN
+                            CASE WHEN ar.STDNT_NO = #{stdntNo} THEN 1 ELSE 0 END
+                        WHEN #{role} = 'ROLE_PROF' THEN
+                            CASE WHEN ec.PROFSR_NO = #{profsrNo} THEN 1 ELSE 0 END
+                        ELSE 0
+                    END
+                  ) = 1
+
+            UNION ALL
+	     SELECT
+                'CERT_' || ci.CRTF_ISSU_INNB AS EVENT_ID,
+                '증명서발급(' || ci.ISSU_STTUS || ')' AS TITLE,
+                'ADMIN_CERT' AS TYPE,
+                NULL AS PLACE,
+                CASE
+                    WHEN #{role} = 'ROLE_ADMIN' THEN '학번 : ' || ci.STDNT_NO
+                    ELSE NULL
+                END AS TARGET,
+                CASE
+                    WHEN #{role} = 'ROLE_ADMIN' THEN
+                        '구분 : 증명서발급'
+                        || ' | 증명서종류 : ' || ci.CRTF_KND_NO
+                        || ' | 요청일 : ' || TO_CHAR(ci.REQST_DT,'YYYY-MM-DD')
+                        || ' | 발급일 : ' || TO_CHAR(NVL(ci.ISSU_DT,ci.REQST_DT),'YYYY-MM-DD')
+                    WHEN #{role} = 'ROLE_STUDENT' THEN
+                        '구분 : 증명서발급'
+                        || ' | 증명서종류 : ' || ci.CRTF_KND_NO
+                        || ' | 요청일 : ' || TO_CHAR(ci.REQST_DT,'YYYY-MM-DD')
+                        || ' | 발급상태 : ' || ci.ISSU_STTUS
+                    ELSE NULL
+                END AS CONTENT,
+                TO_CHAR(ci.REQST_DT,'YYYY-MM-DD') AS START_DT,
+                TO_CHAR(NVL(ci.ISSU_DT,ci.REQST_DT),'YYYY-MM-DD') AS END_DT,
+                1 AS ALL_DAY_YN
+            FROM CRTF_ISSU_REQUST ci
+            WHERE ci.REQST_DT BETWEEN TO_DATE(#{startDate}, 'YYYYMMDD')
+                                  AND TO_DATE(#{endDate},   'YYYYMMDD')
+              AND (
+                    CASE
+                        WHEN #{role} = 'ROLE_ADMIN' THEN 1
+                        WHEN #{role} = 'ROLE_STUDENT' THEN
+                            CASE WHEN ci.STDNT_NO = #{stdntNo} THEN 1 ELSE 0 END
+                        ELSE 0
+                    END
+                  ) = 1
+
+            UNION ALL
+	     SELECT
+                'SKNRG_' || ch.SKNRGS_HIST_INNB AS EVENT_ID,
+                '학적변동(' || ch.SKNRGS || ')' AS TITLE,
+                'ADMIN_STATUS' AS TYPE,
+                NULL AS PLACE,
+                CASE
+                    WHEN #{role} = 'ROLE_ADMIN' THEN '학번 : ' || s.STDNT_NO
+                    ELSE NULL
+                END AS TARGET,
+                CASE
+                    WHEN #{role} = 'ROLE_ADMIN' THEN
+                        '구분 : 학적변동' || ' | 사유 : ' || ch.CHANGE_RESN
+                    WHEN #{role} = 'ROLE_STUDENT' THEN
+                        '구분 : 학적변동' || ' | 상태 : ' || ch.SKNRGS
+                    ELSE NULL
+                END AS CONTENT,
+                CASE
+                    WHEN REGEXP_LIKE(ch.CHANGE_DE, '^[0-9]{8}$') THEN
+                        SUBSTR(ch.CHANGE_DE,1,4) || '-' ||
+                        SUBSTR(ch.CHANGE_DE,5,2) || '-' ||
+                        SUBSTR(ch.CHANGE_DE,7,2)
+                    ELSE NULL
+                END AS START_DT,
+                CASE
+                    WHEN REGEXP_LIKE(ch.CHANGE_DE, '^[0-9]{8}$') THEN
+                        SUBSTR(ch.CHANGE_DE,1,4) || '-' ||
+                        SUBSTR(ch.CHANGE_DE,5,2) || '-' ||
+                        SUBSTR(ch.CHANGE_DE,7,2)
+                    ELSE NULL
+                END AS END_DT,
+                1 AS ALL_DAY_YN
+            FROM SKNRGS_CHANGE_HIST ch
+                JOIN SKNRGS_CHANGE_REQST cr
+                     ON cr.SKNRGS_CHANGE_INNB = ch.SKNRGS_CHANGE_INNB
+                JOIN STDNT s ON s.STDNT_NO = cr.STDNT_NO
+            WHERE REGEXP_LIKE(ch.CHANGE_DE, '^[0-9]{8}$')
+              AND ch.CHANGE_DE BETWEEN #{startDate} AND #{endDate}
+              AND (
+                    CASE
+                        WHEN #{role} = 'ROLE_ADMIN' THEN 1
+                        WHEN #{role} = 'ROLE_STUDENT' THEN
+                            CASE WHEN s.STDNT_NO = #{stdntNo} THEN 1 ELSE 0 END
+                        ELSE 0
+                    END
+                  ) = 1
+
+            UNION ALL
+		  SELECT
+                'GRAD_' || gr.GRDTN_RQISIT_ID AS EVENT_ID,
+                '졸업요건등록(' || gr.GRDTN_RQISIT_TY || ')' AS TITLE,
+                'ADMIN_GRAD' AS TYPE,
+                NULL AS PLACE,
+                CASE
+                    WHEN #{role} = 'ROLE_ADMIN' THEN '학번 : ' || gr.STDNT_NO
+                    ELSE NULL
+                END AS TARGET,
+                CASE
+                    WHEN #{role} = 'ROLE_ADMIN' THEN
+                        '구분 : 졸업요건등록'
+                    WHEN #{role} = 'ROLE_STUDENT' THEN
+                        '구분 : 졸업요건등록'
+                        || ' | 유형 : ' || gr.GRDTN_RQISIT_TY
+                    ELSE NULL
+                END AS CONTENT,
+                CASE
+                    WHEN REGEXP_LIKE(gr.REGIST_DE, '^[0-9]{8}$') THEN
+                        SUBSTR(gr.REGIST_DE,1,4) || '-' ||
+                        SUBSTR(gr.REGIST_DE,5,2) || '-' ||
+                        SUBSTR(gr.REGIST_DE,7,2)
+                    ELSE NULL
+                END AS START_DT,
+                CASE
+                    WHEN REGEXP_LIKE(gr.REGIST_DE, '^[0-9]{8}$') THEN
+                        SUBSTR(gr.REGIST_DE,1,4) || '-' ||
+                        SUBSTR(gr.REGIST_DE,5,2) || '-' ||
+                        SUBSTR(gr.REGIST_DE,7,2)
+                    ELSE NULL
+                END AS END_DT,
+                1 AS ALL_DAY_YN
+            FROM GRDTN_RQISIT gr
+            WHERE REGEXP_LIKE(gr.REGIST_DE, '^[0-9]{8}$')
+              AND gr.REGIST_DE BETWEEN #{startDate} AND #{endDate}
+              AND (
+                    CASE
+                        WHEN #{role} = 'ROLE_ADMIN' THEN 1
+                        WHEN #{role} = 'ROLE_STUDENT' THEN
+                            CASE WHEN gr.STDNT_NO = #{stdntNo} THEN 1 ELSE 0 END
+                        ELSE 0
+                    END
+                  ) = 1
+
+            UNION ALL
+			SELECT
+                'REGIST_' || rc.REGIST_CT_NO AS EVENT_ID,
+                '등록(' || rc.RQEST_YEAR || ' ' || rc.RQEST_SEMSTR || ')' AS TITLE,
+                'ADMIN_REGIST' AS TYPE,
+                NULL AS PLACE,
+                NULL AS TARGET,
+                (
+                    '구분 : 등록'
+                    || ' | 연도 : ' || rc.RQEST_YEAR
+                    || ' | 학기 : ' || rc.RQEST_SEMSTR
+                ) AS CONTENT,
+                CASE
+                    WHEN REGEXP_LIKE(rc.RQEST_DE, '^[0-9]{8}$') THEN
+                        SUBSTR(rc.RQEST_DE,1,4) || '-' ||
+                        SUBSTR(rc.RQEST_DE,5,2) || '-' ||
+                        SUBSTR(rc.RQEST_DE,7,2)
+                    ELSE NULL
+                END AS START_DT,
+                CASE
+                    WHEN REGEXP_LIKE(rc.PAY_ENDDE, '^[0-9]{8}$') THEN
+                        SUBSTR(rc.PAY_ENDDE,1,4) || '-' ||
+                        SUBSTR(rc.PAY_ENDDE,5,2) || '-' ||
+                        SUBSTR(rc.PAY_ENDDE,7,2)
+                    ELSE NULL
+                END AS END_DT,
+                1 AS ALL_DAY_YN
+            FROM REGIST_CT rc
+            WHERE REGEXP_LIKE(rc.RQEST_DE,  '^[0-9]{8}$')
+              AND REGEXP_LIKE(rc.PAY_ENDDE, '^[0-9]{8}$')
+              AND rc.RQEST_DE BETWEEN #{startDate} AND #{endDate}
+              AND (
+                    CASE
+                        WHEN #{role} = 'ROLE_ADMIN' THEN 1
+                        WHEN #{role} = 'ROLE_STUDENT' THEN
+                            CASE
+                                WHEN EXISTS (
+                                    SELECT 1
+                                    FROM ATNLC_REQST ar
+                                    WHERE ar.REGIST_CT_NO = rc.REGIST_CT_NO
+                                      AND ar.STDNT_NO     = #{stdntNo}
+                                ) THEN 1 ELSE 0 END
+                        ELSE 1  -- 교수/guest: 전역 등록기간 전체 노출
+                    END
+                  ) = 1
+
+        ) EV
+        ORDER BY EV.START_DT, EV.TYPE, EV.TITLE
+
+    </select>
+
+</mapper>
