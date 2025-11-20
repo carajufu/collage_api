@@ -182,7 +182,7 @@ public class ChatBotServiceImpl implements ChatBotService {
             JSONObject i = new JSONObject();
             i.put("name", info.getStdntNm());
             i.put("grade", info.getGrade());
-//            i.put("major", info.getSubjctNm());
+            i.put("major", info.getSubjctNm());
             root.put("info", i);
         }
 
@@ -230,7 +230,7 @@ public class ChatBotServiceImpl implements ChatBotService {
         if (lectureList != null) {
             for (EstblCourseVO l : lectureList) {
                 JSONObject o = new JSONObject();
-//                o.put("name", l.getLctreNm());
+                o.put("name", l.getLctreNm());
                 o.put("year", l.getEstblYear());
                 o.put("semester", l.getEstblSemstr());
                 o.put("type", l.getComplSe());
@@ -247,7 +247,7 @@ public class ChatBotServiceImpl implements ChatBotService {
         if (cList != null) {
             for (CnsltVO c : cList) {
                 JSONObject o = new JSONObject();
-//                o.put("studentName", c.getStdntNm());
+                o.put("studentName", c.getStdntNm());
                 o.put("applyDate", c.getReqstDe());
                 o.put("date", c.getCnsltRequstDe());
                 o.put("time", c.getCnsltRequstHour());
