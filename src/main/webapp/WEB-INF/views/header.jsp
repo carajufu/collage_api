@@ -19,8 +19,6 @@
     <!-- plugin css -->
     <link href="/assets/libs/jsvectormap/jsvectormap.min.css" rel="stylesheet" type="text/css" />
 
-    <!-- Layout config Js -->
-    <script src="/assets/js/layout.js"></script>
     <!-- Bootstrap Css -->
     <link href="/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
     <!-- Icons Css -->
@@ -30,10 +28,19 @@
     <!-- custom Css-->
     <link href="/assets/css/custom.css" rel="stylesheet" type="text/css" />
 
+    <!-- JAVASCRIPT -->
+    <script src="/assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="/assets/js/pages/plugins/lord-icon-2.1.0.js"></script>
+    <script src="/assets/js/plugins.js"></script>
+    <script src="/assets/js/app.js"></script>
+    <script src="/assets/js/layout.js"></script>
 
+    <script src="/assets/libs/simplebar/simplebar.min.js"></script>
+    <script src="/assets/libs/node-waves/waves.min.js"></script>
 
-    <!-- jQuery-3.7.1.min -->
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <!-- jQuery-3.6.0.min -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
 </head>
 <body>
 <!-- Begin page -->
@@ -422,8 +429,8 @@
                         </div>
                     </div>
 
-                    <div class="dropdown ms-sm-3 header-item topbar-user">
-                        <button type="button" class="btn" id="page-header-user-dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width: 300px">
+                    <div class="dropdown ms-sm-3 header-item topbar-user ">
+                        <button type="button" class="btn btn-ghost-primary" id="page-header-user-dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width: 300px">
                         <span class="d-flex align-items-center">
                             <img class="rounded-circle header-profile-user" src="/assets/images/users/user-dummy-img.jpg" alt="Header Avatar">
                             <span class="text-start ms-xl-2">
@@ -436,7 +443,7 @@
                             <h6 class="dropdown-header">${user.affiliation}</h6>
                             <h6 class="dropdown-header">${user.username}</h6>
                             <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="/stdnt/main/info"><i class="mdi mdi-account-circle text-muted fs-16 align-middle me-1"></i> <span class="align-middle">개인 정보 수정</span></a>
+                            <a class="dropdown-item" href="pages-profile.html"><i class="mdi mdi-account-circle text-muted fs-16 align-middle me-1"></i> <span class="align-middle">개인 정보 수정</span></a>
                             <a class="dropdown-item" href="apps-chat.html"><i class="mdi mdi-message-text-outline text-muted fs-16 align-middle me-1"></i> <span class="align-middle">메세지</span></a>
                             <a class="dropdown-item" href="apps-tasks-kanban.html"><i class="mdi mdi-calendar-check-outline text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Taskboard</span></a>
                             <a class="dropdown-item" href="pages-faqs.html"><i class="mdi mdi-lifebuoy text-muted fs-16 align-middle me-1"></i> <span class="align-middle">도움말</span></a>
@@ -451,7 +458,7 @@
             </div>
         </div>
     </header>
-</div>
+
     <!-- removeNotificationModal -->
     <div id="removeNotificationModal" class="modal fade zoomIn" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
@@ -533,17 +540,19 @@
                         <div class="collapse menu-dropdown" id="sidebarLecture">
                             <ul class="nav nav-sm flex-column">
                                 <li class="nav-item">
-                                    <a href="/atnlc" class="nav-link" data-key="">
+                                    <a href="/atnlc/submit" class="nav-link" data-key="">
                                         수강 신청
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="/atnlc" class="nav-link" data-key="">
+                                    <a href="/atnlc/cart" class="nav-link" data-key="">
                                         장바구니
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="apps-chat.html" class="nav-link" data-key=""> 신청 내역 조회 </a>
+                                    <a href="/atnlc/stdntLctreList" class="nav-link" data-key="">
+                                        신청 내역 조회
+                                    </a>
                                 </li>
                             </ul>
                         </div>

@@ -35,11 +35,12 @@ public class SecurityConfig {
     public WebSecurityCustomizer configure() {
         return web -> web.debug(false)
                 .ignoring()
-                .requestMatchers("/img/**", "/css/**",
+                .requestMatchers("/css/**",
                         "/js/**",
                         "favicon.ico",
-                        "/app/**",
-                        "/assets/**");
+                        "/.well-known/**",
+                        "/assets/**",
+                        "/img/**");
     }
 
     @Bean
@@ -67,9 +68,8 @@ public class SecurityConfig {
                         .dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.ASYNC).permitAll()
                         .requestMatchers("/",
                                 "/login",
-                                "/accessError",
-                                "/.well-known/**",
-                                "/admin/**").permitAll()
+                                "/admin/**",
+                                "/20*/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .requestCache(cache -> cache.requestCache(requestCache))

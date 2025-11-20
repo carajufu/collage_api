@@ -1,5 +1,10 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
+</div>
+<!-- container-fluid -->
+</div>
+<!-- End Page-content -->
+
 <%--<footer class="footer">--%>
 <%--    <div class="container-fluid">--%>
 <%--        <div class="row">--%>
@@ -14,24 +19,42 @@
 <%--        </div>--%>
 <%--    </div>--%>
 <%--</footer>--%>
-
-<!-- <footer class="footer"> -->
-<!--     <div class="container-fluid"> -->
-<!--         <div class="row"> -->
-<!--             <div class="col-sm-6"> -->
-<!--                 <script>document.write(new Date().getFullYear())</script> © Collage. -->
-<!--             </div> -->
-<!--             <div class="col-sm-6"> -->
-<!--                 <div class="text-sm-end d-none d-sm-block"> -->
-<!--                     Design & Develop by Collage Team -->
-<!--                 </div> -->
-<!--             </div> -->
-<!--         </div> -->
-<!--     </div> -->
-<!-- </footer> -->
+</div>
+<!-- end main content-->
 
 </div>
-</div>
+<!-- END layout-wrapper -->
+
+
+
+<%--</div>--%>
+<%--</main>--%>
+<%--    <footer>--%>
+<%--        <div class="py-3 my-4">--%>
+<%--            <ul class="nav justify-content-center border-bottom pb-3 mb-3">--%>
+<%--                <li class="nav-item">--%>
+<%--                    <a href="#" class="nav-link px-2 text-body-secondary">Home</a>--%>
+<%--                </li>--%>
+<%--                <li class="nav-item">--%>
+<%--                    <a href="#" class="nav-link px-2 text-body-secondary">Features</a>--%>
+<%--                </li>--%>
+<%--                <li class="nav-item">--%>
+<%--                    <a href="#" class="nav-link px-2 text-body-secondary">Pricing</a>--%>
+<%--                </li>--%>
+<%--                <li class="nav-item">--%>
+<%--                    <a href="#" class="nav-link px-2 text-body-secondary">FAQs</a>--%>
+<%--                </li>--%>
+<%--                <li class="nav-item">--%>
+<%--                    <a href="#" class="nav-link px-2 text-body-secondary">About</a>--%>
+<%--                </li>--%>
+<%--            </ul>--%>
+<%--            <p class="text-center text-body-secondary">© 2025 Company, Inc</p>--%>
+<%--        </div>--%>
+<%--    </footer>--%>
+<%--</div>--%>
+
+
+<!--preloader-->
 <div id="preloader">
     <div id="status">
         <div class="spinner-border text-primary avatar-sm" role="status">
@@ -159,15 +182,21 @@
   </div>
 </div>
 </div>
-<script src="/assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
-<script src="/assets/libs/simplebar/simplebar.min.js"></script>
-<script src="/assets/libs/node-waves/waves.min.js"></script>
+
+
+
+
+<!-- 아마 필요 없을 거 같은디 -->
 <script src="/assets/libs/feather-icons/feather.min.js"></script>
-<script src="/assets/js/pages/plugins/lord-icon-2.1.0.js"></script>
-<script src="/assets/js/plugins.js"></script>
+
+<!-- apexcharts -->
 <script src="/assets/libs/apexcharts/apexcharts.min.js"></script>
+
+<!-- Vector map-->
 <script src="/assets/libs/jsvectormap/jsvectormap.min.js"></script>
 <script src="/assets/libs/jsvectormap/maps/world-merc.js"></script>
+
+<!-- Dashboard init -->
 <script src="/assets/js/pages/dashboard-analytics.init.js"></script>
 <script src="/assets/js/app.js"></script>
 

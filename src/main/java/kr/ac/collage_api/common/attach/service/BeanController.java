@@ -7,7 +7,7 @@ import java.util.Date;
 import org.springframework.stereotype.Component;
 
 //파일업로드를 위한 파일 -저장경로 설정
-//@Component
+@Component
 public class BeanController {
 	
 	private String uploadFolder = "D:\\upload";

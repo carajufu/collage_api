@@ -21,8 +21,14 @@ public interface EnrollmentMapper {
 	//신청내역
 	List<SknrgsChangeReqstVO> selectHistoryList(String stdntNo);
 
+	//중복내역
+	int activeRequestByStdntNo(String stdntNo);
+
 	//제출
 	void submitRequest(SknrgsChangeReqstVO sknrgsChangeReqstVO);
+
+	//취소
+	int updateRequestStatus(Map<String, Object> params);
 
 	//관리자------------------------------------------------------------
 	
@@ -40,5 +46,9 @@ public interface EnrollmentMapper {
 
 	//학적 이력 저장
 	void insertHistory(SknrgsChangeHistVO histVO);
+
+
+
+
 
 }

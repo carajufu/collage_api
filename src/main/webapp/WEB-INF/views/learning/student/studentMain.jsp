@@ -4,10 +4,20 @@
     <style>
         .blog-post-meta { font-size: 85%; margin-top: 0.5rem; font-style: italic; }
     </style>
+
+    <!-- dropzone -->
+    <link type="text/css" href="/assets/libs/dropzone/basic.css" />
+    <link type="text/css" href="/assets/libs/dropzone/dropzone.css" />
+    <script type="text/javascript" src="/assets/libs/dropzone/dropzone-min.js"></script>
+
+    <!-- sweetalert2 -->
+    <link href="/assets/libs/sweetalert2/sweetalert2.min.css" rel="stylesheet" type="text/css" />
+    <script type="text/javascript" src="/assets/libs/sweetalert2/sweetalert2.min.js"></script>
+
     <script type="text/javascript" src="/js/wtModal.js"></script>
     <script type="text/javascript">
         document.addEventListener("DOMContentLoaded", () => {
-            document.querySelector("body").innerHTML += modal;
+            document.querySelector("body").appendChild(frag);
 
             // 선택한 주차의 과제 리스트를 보여주는 모달
             const tModal = document.querySelector("#modal");
@@ -43,13 +53,13 @@
                       })
                       .catch(err => console.error(err));
 
-                popModal(modalId);
+                // popModal(modalId);
               });
            });
 
            // 모달 외부 영역에만 한정해 closeModal 호출
-            tModal.addEventListener("click", () => closeModal(tModal.id));
-            tModal.querySelector("#cont").addEventListener("click", e => e.stopPropagation());
+           //  tModal.addEventListener("click", () => closeModal(tModal.id));
+           //  tModal.querySelector("#cont").addEventListener("click", e => e.stopPropagation());
         });
 
         /**
@@ -60,19 +70,19 @@
          */
         function renderList(modalId, tasks) {
             const container = document.createElement("div");
-            container.className = "container mt-4";
+            container.className = "container";
 
             const group = document.createElement("div");
             group.className = "list-group shadow-sm rounded-3";
             group.id = "listGroup";
 
             // group list의 header
-            const groupHeader = document.createElement("div");
-            groupHeader.className = "list-group-item d-flex active";
-            groupHeader.style = "-bs-list-group-active-bg: var(--bs-primary); --bs-list-group-active-border-color: var(--bs-primary);"
-            groupHeader.textContent = "과제";
+            // const groupHeader = document.createElement("div");
+            // groupHeader.className = "list-group-item d-flex active";
+            // groupHeader.style = "-bs-list-group-active-bg: var(--bs-primary); --bs-list-group-active-border-color: var(--bs-primary);"
+            // groupHeader.textContent = "과제";
 
-            group.appendChild(groupHeader);
+            // group.appendChild(groupHeader);
 
             // 과제 배열의 각 요소 마다 a 태그 생성해 group list의 요소로 등록
             tasks.forEach((task, idx) => {
@@ -92,7 +102,7 @@
 
             container.appendChild(group);
 
-            changeModalBody(modalId, container);
+            changeModalBody(modalId, "과제 목록", container);
         }
 
         /**
@@ -120,7 +130,7 @@
             grid.appendChild(side);
 
             let group = document.createElement("div");
-            group.className = "list-group";
+            group.className = "list-group shadow-sm rounded-3";
             side.appendChild(group);
 
 
@@ -129,7 +139,7 @@
             titles = listGroup.querySelectorAll(".list-group-item-action");
 
             let body = document.createElement("div");
-            body.className = "col d-flex flex-column border shadow-sm rounded-3";
+            body.className = "col d-flex flex-column border shadow-sm rounded-3 me-2";
             body.id = "body";
             grid.appendChild(body);
 
@@ -152,7 +162,7 @@
             }
 
             console.log("chkng before change body >  ", root);
-            changeModalBody(modalId, root);
+            changeModalBody(modalId, "과제 상세", root);
 
             if (Array.isArray(tasks) && tasks.length && idx >= 0 && idx < tasks.length) {
                 taskDetail(body, tasks[idx]);
@@ -182,9 +192,18 @@
             article.className = "blog-post p-3";
             article.id = "article";
 
+            const taskRow = document.createElement("div");
+            taskRow.className = "row";
+            taskRow.id = "taskRow";
+            article.appendChild(taskRow);
+
+            const tCol = document.createElement("div");
+            tCol.className = "col";
+            taskRow.appendChild(tCol);
+
             const title = document.createElement("h3");
             title.textContent = detail.taskSj;
-            article.appendChild(title);
+            tCol.appendChild(title);
 
             const meta = document.createElement("p");
 
@@ -199,18 +218,18 @@
 
             meta.className = "blog-post-meta";
             meta.textContent = registMsg + updateMsg;
-            article.appendChild(meta);
+            tCol.appendChild(meta);
 
             const deadLine = document.createElement("p");
             deadLine.className = "blog-post-meta";
             deadLine.textContent = detail.taskBeginDe + " ~ " + detail.taskClosDe;
-            article.appendChild(deadLine);
+            tCol.appendChild(deadLine);
 
             article.appendChild(document.createElement("hr"));
 
             const content = detail.taskCn;
             const pContent = document.createElement("p");
-            pContent.style.whiteSpace = "break-spaces";
+            pContent.className = "my-4";
             pContent.textContent = content;
             article.appendChild(pContent);
 
@@ -249,73 +268,174 @@
 
          async function renderSubmitBtn(taskNo) {
             const container = document.createElement("div");
-            container.className = "container d-flex justify-content-center gap-3";
+            container.className = "container d-flex justify-content-center gap-3 my-3";
+            container.id = "btnContainer";
 
             const submit = await isSubmit(taskNo);
 
             const state = { mode: "form" };
             if(!submit) {
-                // form의 부모 div
-                const frmContainer = document.createElement("div");
-                frmContainer.className = "container m-3 border rounded-2"
-                frmContainer.id = "frmContainer";
+                const dz = document.createElement("div");
+                dz.className = "dropzone dz-clickable d-flex align-items-center justify-content-center mb-3";
+                dz.setAttribute("style", "min-height: 240px");
+                dz.id = "taskDz";
 
-                //form
-                const frm = document.createElement("form");
+                const dzMsg = document.createElement("div");
+                dzMsg.className = "dz-message needsclick d-flex flex-column align-items-center text-center";
+                dz.appendChild(dzMsg);
 
-                // 버튼 부모 div
+                const dzWrapper = document.createElement("div");
+                dzMsg.appendChild(dzWrapper);
+
+                const dzIcon = document.createElement("i");
+                dzIcon.className = "display-4 text-muted ri-upload-cloud-2-fill";
+                dzWrapper.appendChild(dzIcon);
+
+                const dzMent = document.createElement("h4");
+                dzMent.textContent = "파일을 이곳에 끌어놓아 업로드 하세요";
+                dzMsg.appendChild(dzMent);
+
+                const dzPreview = document.createElement("ul");
+                dzPreview.id = "dropzone-preview";
+                dzPreview.className = "list-unstyled mb-0";
+
                 const btnContainer = document.createElement("div");
                 btnContainer.className = "m-3 fs-6";
 
-                const label = document.createElement("label")
-                label.className = "form-label";
-                label.setAttribute("for", "formFile");
-                label.textContent = "파일을 업로드 하세요.";
-
-                const fileInput = document.createElement("input");
-                fileInput.className = "form-control";
-                fileInput.id = "formFile";
-                fileInput.setAttribute("type", "file");
-                fileInput.setAttribute("multiple", "");
-                fileInput.addEventListener("change", () => state.mode = "upload");
-
                 const submitBtn = document.createElement("button");
-                submitBtn.className = "btn btn-primary btn-lg";
+                submitBtn.className = "btn btn-primary w-xs";
                 submitBtn.textContent = "제출";
                 submitBtn.id = "submitBtn";
 
                 const cancleBtn = document.createElement("button");
-                cancleBtn.className = "btn btn-danger btn-lg";
+                cancleBtn.className = "btn btn-danger w-xs";
+                cancleBtn.id = "submitCanBtn";
                 cancleBtn.textContent = "취소";
+
+                let taskDz;
                 // todo: (Level 5) 제출한 파일 목록 보기 및 수정
                 submitBtn.addEventListener("click", () => {
                     if(state.mode === "form") {
-                        const exist = document.querySelector("#frmContainer");
+                        const exist = document.querySelector("#taskDz");
                         if(exist) { exist.remove(); }
 
-                        console.log("submit btn clicked")
+                        if(taskDz) {
+                            taskDz.destroy();
+                            taskDz = null;
+                        }
 
-                        container.before(frmContainer);
+                        const oldTitle = document.querySelector("#submitTitle");
+                        if(oldTitle) { oldTitle.remove(); }
 
-                        frmContainer.appendChild(frm);
+                        console.log("submit btn clicked");
 
-                        frm.appendChild(btnContainer);
+                        const submitTitle = document.createElement("h4");
+                        submitTitle.className = "m-3"
+                        submitTitle.id = "submitTitle";
+                        submitTitle.textContent = "제출하기";
+                        container.before(submitTitle);
 
-                        btnContainer.appendChild(label);
-                        btnContainer.appendChild(fileInput);
-                    }
+                        container.before(dz);
+                        container.before(dzPreview);
 
-                    if(state.mode === "upload") {
-                        console.log("upload btn clicked")
-                        fileSubmit(fileInput, taskNo);
-                        state.mode = "form";
+                        const template = document.querySelector("#preview-template");
+                        Dropzone.autoDiscover = false;
+                        taskDz = new Dropzone("#taskDz", {
+                            url: "/learning/student/fileUpload",
+                            paramName: "uploadFiles",
+                            previewsContainer: "#dropzone-preview",
+                            previewTemplate: template.innerHTML,
+                            autoProcessQueue: false,
+                            uploadMultiple: true,
+                            parallelUploads: 100,
+                            maxFilesize: 10,
+                            timeout: 0
+                        });
+
+                        taskDz.on("addedfile", () => state.mode = "upload");
+                        taskDz.on("sendingmultiple", (file, xhr, formData) => {
+                            formData.append("taskPresentnNo", taskNo);
+                        });
+                        taskDz.on("successmultiple", (file, resp) => {
+                            Swal.fire({
+                                icon: "success",
+                                title: "제출이 완료 되었어요",
+                                showConfirmButton: 0,
+                                timer: 1000,
+                                timerProgressBar: !0
+                            });
+                        });
+                        taskDz.on("errormultiple", (files, resp) => {
+                           Swal.fire({
+                               icon: "error",
+                               title: "제출이 실패 되었어요",
+                               timer: 1000,
+                               timerProgressBar: !0,
+                               showConfirmButton: 0,
+                               text: String(msg),
+                           });
+                        });
+                        taskDz.on("queuecomplete", () => {
+                            const dzEl = document.querySelector("#taskDz");
+                            if(dzEl) { dzEl.remove(); }
+
+                            const title = document.querySelector("#submitTitle");
+                            if(title) { title.remove(); }
+
+                            let upFrag = {
+                                title: submitTitle,
+                                body: dz,
+                                dzObj: taskDz,
+                                btnContainer: container
+                            }
+
+                            if(taskDz) {
+                                taskDz.removeAllFiles(true);
+                                taskDz.destroy();
+                                taskDz = null;
+                            }
+
+                            document.querySelector("#submitBtn").remove();
+                            document.querySelector("#submitCanBtn").remove();
+
+                            const updateBtn = document.createElement("button");
+                            updateBtn.className = "btn btn-outline-primary w-xs";
+                            updateBtn.textContent = "수정";
+
+                            updateBtn.addEventListener("click", e => upHandler({ e, taskNo, container, updateBtn: e.currentTarget }));
+
+                            container.appendChild(updateBtn);
+                        });
                     }
 
                     container.appendChild(cancleBtn);
+
+                    if(state.mode === "upload") {
+                        console.log("upload btn clicked")
+                        fileSubmit(taskDz);
+
+                        state.mode = "form";
+                    }
                 });
 
                 cancleBtn.addEventListener("click", e => {
-                   frmContainer.remove();
+                    const dzEl = document.querySelector("#taskDz");
+                    if(dzEl) { dzEl.remove(); }
+
+                    const title = document.querySelector("#submitTitle");
+                    if(title) { title.remove(); }
+
+                    const prev = document.querySelector("#dropzone-preview");
+                    if (prev) prev.remove();
+
+                    if(taskDz) {
+                        taskDz.removeAllFiles(true);
+                        taskDz.destroy();
+                        taskDz = null;
+                    }
+
+                    state.mode = "form";
+
                    e.target.remove();
                 });
 
@@ -324,57 +444,315 @@
 
             if(submit) {
                 const updateBtn = document.createElement("button");
-                updateBtn.className = "btn btn-secondary btn-lg";
+                updateBtn.className = "btn btn-outline-primary w-xs";
                 updateBtn.textContent = "수정";
-
                 //todo : 수정 이벤트 핸들러 작성
-
+                updateBtn.addEventListener("click", e => upHandler({ e, taskNo, container, updateBtn: e.currentTarget }));
                 container.appendChild(updateBtn);
             }
 
             return container;
         }
 
-        function fileSubmit(input, taskPresentnNo) {
-            const formData = new FormData();
+        // todo: 수정 버튼 클릭 시 dropzone 레이아웃 화면에 출력 및 Dropzone.displayExistingFile() 이용해 업로드 되었떤 파일 목록 출력
+        function upHandler(ctx) {
+            const { e, taskNo, container, updateBtn } = ctx || {};
+            if (e) { e.preventDefault(); e.stopPropagation(); }
+            if (!taskNo || !container || !updateBtn) return;
 
-            const files = input.files;
-            Array.prototype.forEach.call(files, file => formData.append("uploadFiles", file));
-            formData.append("taskPresentnNo", taskPresentnNo);
+            ["#taskDz", "#dropzone-preview", "#submitTitle"].forEach(sel => {
+                const el = document.querySelector(sel);
+                if (el) el.remove();
+            });
 
-            fetch("/learning/student/fileUpload", {
-                method: "POST",
-                body: formData
+            const submitTitle = document.createElement("h4");
+            submitTitle.className = "m-3";
+            submitTitle.id = "submitTitle";
+            submitTitle.textContent = "수정하기";
+            container.before(submitTitle);
+
+            const dz = document.createElement("div");
+            dz.className = "dropzone dz-clickable d-flex align-items-center justify-content-center mb-3";
+            dz.style.minHeight = "240px";
+            dz.id = "taskDz";
+
+            const dzMsg = document.createElement("div");
+            dzMsg.className = "dz-message needsclick d-flex flex-column align-items-center text-center";
+            const dzWrapper = document.createElement("div");
+            const dzIcon = document.createElement("i");
+            dzIcon.className = "display-4 text-muted ri-upload-cloud-2-fill";
+            dzWrapper.appendChild(dzIcon);
+            const dzMent = document.createElement("h4");
+            dzMent.textContent = "파일을 이곳에 끌어놓아 업로드 하세요";
+            dzMsg.appendChild(dzWrapper);
+            dzMsg.appendChild(dzMent);
+            dz.appendChild(dzMsg);
+            container.before(dz);
+
+            const dzPreview = document.createElement("ul");
+            dzPreview.id = "dropzone-preview";
+            dzPreview.className = "list-unstyled mb-0";
+            container.before(dzPreview);
+
+            const template = document.querySelector("#preview-template");
+            Dropzone.autoDiscover = false;
+            const dzInst = new Dropzone("#taskDz", {
+                url: "/learning/student/fileUpload",
+                paramName: "uploadFiles",
+                previewsContainer: "#dropzone-preview",
+                previewTemplate: template.innerHTML,
+                autoProcessQueue: false,
+                uploadMultiple: true,
+                parallelUploads: 100,
+                maxFilesize: 10,
+                timeout: 0,
+                addRemoveLinks: false
+            });
+
+            const FALLBACK_THUMB = "<c:url value='/assets/images/placeholder.png'/>";
+            dzInst.on("thumbnail", (file, dataUrl) => {
+                const img = file.previewElement?.querySelector("[data-dz-thumbnail]");
+                if(!img) return;
+
+                const isImage = !!dataUrl || (file.type && file.type.indexOf("image/") === 0);
+
+                if (!isImage) {
+                    // 이미지가 아닌 경우 (PDF, ZIP 등)
+                    img.onerror = null;
+                    img.src = FALLBACK_THUMB;
+                } else {
+                    // 이미지 파일인 경우: 썸네일 로드 실패 시(404 등) 대비하여 onerror를 설정
+                    img.onerror = () => {
+                        img.onerror = null;
+                        img.src = FALLBACK_THUMB;
+                    };
+                }
             })
-                .then(resp => resp.json())
-                .then(rslt => console.log(rslt))
-                .catch(err => console.error(err));
+
+            // Track existing files and deletions so they’re “included” unless removed
+            const existingMetas = [];               // { fileNo, fileGroupNo, fileNm, fileStreplace, fileMg, fileExtsn }
+            const deletedExistingNos = new Set();   // fileNo strings
+            let startedUpload = false;
+
+            dzInst.on("removedfile", file => {
+                if (file.isExisting && file.meta && file.meta.fileNo != null) {
+                    deletedExistingNos.add(String(file.meta.fileNo));
+                }
+            });
+
+            // Load existing uploaded files and show them
+            isSubmit(taskNo)
+                .then(data => {
+                    const list = (data && data.fileDetailVOList) || [];
+                    list.forEach(f => {
+                        const mock = { name: f.fileNm, size: Number(f.fileMg) || 0, accepted: true };
+                        mock.isExisting = true;
+                        mock.meta = {
+                            fileNo: f.fileNo,
+                            fileGroupNo: f.fileGroupNo,
+                            fileNm: f.fileNm,
+                            fileStreplace: f.fileStreplace,
+                            fileMg: f.fileMg,
+                            fileExtsn: f.fileExtsn
+                        };
+                        existingMetas.push(mock.meta);
+                        dzInst.displayExistingFile(mock, f.fileStreplace);
+                    });
+                })
+                .catch(err => console.error("failed to load existing files", err));
+
+            dzInst.on("sendingmultiple", (files, xhr, formData) => {
+                startedUpload = true;
+                formData.append("taskPresentnNo", taskNo);
+
+                // Include existing files (that the user did not remove) as metadata
+                const retained = existingMetas.filter(m => !deletedExistingNos.has(String(m.fileNo)));
+                formData.append("retainedExisting", JSON.stringify(retained));
+                // Optionally include explicit deletions if you want to handle removes server-side
+                formData.append("deletedExisting", JSON.stringify([...deletedExistingNos]));
+            });
+
+            // Turn modify button into upload
+            const cloned = updateBtn.cloneNode(true);
+            updateBtn.replaceWith(cloned);
+            cloned.textContent = "수정";
+            cloned.addEventListener("click", async () => {
+                const hasNew = dzInst.getQueuedFiles().length > 0;
+                if (hasNew) { dzInst.processQueue(); return; }
+
+                // 새 파일이 없는 경우, 삭제 여부 확인
+                const retained = existingMetas.filter(m => !deletedExistingNos.has(String(m.fileNo)));
+                const hasDeletes = deletedExistingNos.size > 0;
+
+                // 변경 사항이 전혀 없는 경우
+                if (!hasDeletes) {
+                    Swal.fire({
+                        icon:"info",
+                        title:"변경된 내용이 없습니다.",
+                        timer:1000,
+                        timerProgressBar: !0,
+                        showConfirmButton: 0
+                    });
+                    return;
+                }
+
+                // 삭제만 있는 경우: 메타데이터만 포함하여 수동 전송
+                const formData = new FormData();
+                formData.append("taskPresentnNo", taskNo);
+                formData.append("retainedExisting", JSON.stringify(retained));
+                formData.append("deletedExisting", JSON.stringify([...deletedExistingNos]));
+
+                try {
+                    const resp = await fetch("/learning/student/fileUpdate", { method: "POST", body: formData });
+                    if (!resp.ok) throw new Error("request failed");
+                    Swal.fire({
+                        icon:"success",
+                        title:"수정 완료",
+                        timer:1000,
+                        timerProgressBar: !0,
+                        showConfirmButton: 0
+                    });
+                    resetUI();
+                } catch(e) {
+                    Swal.fire({
+                        icon:"error",
+                        title:"수정 실패",
+                        timer:1000,
+                        timerProgressBar: !0,
+                        showConfirmButton: 0
+                    });
+                }
+            });
+
+            // Add a cancel button
+            let cancelBtn = container.querySelector("#updateCancelBtn");
+            if (!cancelBtn) {
+                cancelBtn = document.createElement("button");
+                cancelBtn.id = "updateCancelBtn";
+                cancelBtn.className = "btn btn-danger w-xs";
+                cancelBtn.textContent = "취소";
+                container.appendChild(cancelBtn);
+            }
+
+            const resetUI = () => {
+                ["#taskDz", "#dropzone-preview", "#submitTitle"].forEach(sel => {
+                    const el = document.querySelector(sel);
+                    if (el) el.remove();
+                });
+                if (cancelBtn && cancelBtn.parentNode) cancelBtn.remove();
+
+                const resetClone = cloned.cloneNode(true);
+                cloned.replaceWith(resetClone);
+                resetClone.textContent = "수정";
+                resetClone.addEventListener("click", ev =>
+                    upHandler({ e: ev, taskNo, container, updateBtn: ev.currentTarget })
+                );
+            };
+
+            cancelBtn.addEventListener("click", () => {
+                if (dzInst) { dzInst.removeAllFiles(true); dzInst.destroy(); }
+                resetUI();
+            });
+
+            dzInst.on("queuecomplete", () => {
+                if (!startedUpload) return; // don’t reset if we only showed existing files
+                if (dzInst) { dzInst.removeAllFiles(true); dzInst.destroy(); }
+                resetUI();
+            });
+        }
+
+        function fileSubmit(dz) {
+            dz.processQueue();
         }
     </script>
 
-        <div class="flex-grow-1 mx-5">
+        <div class="row py-3 px-5">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item active"><a href="/dashboard/student"><i class="las la-home"></i></a></li>
+                    <li class="breadcrumb-item active" aria-current="page">${learnInfo.lecInfo.LCTRE_NM}</li>
+                </ol>
+            </nav>
+            <div class="col-12 page-title mt-2">
+                <h2 class="fw-semibold">${learnInfo.lecInfo.LCTRE_NM}</h2>
+                <div class="my-4 p-0 bg-primary" style="width: 100px; height:5px;"></div>
+<%--                <hr class="mb-5"/>--%>
+            </div>
+            <div class="col-xxl-9">
             <!-- 반복문을 통해 아코디언 리스트 생성 -->
-            <div class="accordion accordion-flush" id="accordionFlush">
-                <c:forEach var="week" items="${weekList}">
-                        <div class="accordion-item shadow rounded-3">
-                            <h2 class="accordion-header" id="flush-heading${week.WEEK}">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse${week.WEEK}" aria-expanded="false" aria-controls="flush-collapse${week.WEEK}">
-                                    <strong>#${week.WEEK}</strong>${week.LRN_THEMA}
-                                </button>
-                            </h2>
-                            <div id="flush-collapse${week.WEEK}" class="accordion-collapse collapse p-4" aria-labelledby="flush-heading${week.WEEK}" data-bs-parent="#accordionFlush">
-                                <p>${week.LRN_CN}</p>
-                                <!-- 부여 여부에 따른 요소 출력 -->
-                                <c:if test="${week.TASK_AT eq '0'}">
-                                    <span class="badge rounded-pill bg-primary task" style="cursor: pointer;" data-week-no="${week.WEEK}">과제</span>
-                                </c:if>
-                                <c:if test="${week.TASK_AT eq '1'}">
-                                    <span class="badge rounded-pill bg-secondary">과제</span>
-                                </c:if>
+                <div class="card card-height-100 shadow rounded-3">
+                    <div class="card-header">
+                        <h5 class="fs-3 fw-bold">강의 목록</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div data-simplebar="init" style="max-height: 330px;" class="px-3 simplebar-scrollable-y">
+                            <div class="simplebar-wrapper" style="margin: 0px -16px;">
+                                <div class="simplebar-height-auto-observer-wrapper">
+                                    <div class="simplebar-height-auto-observer"></div>
+                                </div>
+                                <div class="simplebar-mask">
+                                    <div class="simplebar-offset" style="right: 0px; bottom: 0px;">
+                                        <div class="simplebar-content-wrapper" tabindex="0" role="region" aria-label="scrollable content" style="height: auto; overflow: hidden scroll;">
+                                            <div class="simplebar-content" style="padding: 0px 16px;">
+                                                <div class="accordion accordion-flush" id="accordionFlush">
+                                                    <c:forEach var="week" items="${learnInfo.weekList}">
+                                                        <div class="accordion-item ">
+                                                            <h2 class="accordion-header" id="flush-heading${week.WEEK}">
+                                                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse${week.WEEK}" aria-expanded="false" aria-controls="flush-collapse${week.WEEK}">
+                                                                    <span class="fw-bold fs-5 mx-1">#${week.WEEK}</span><span class="fs-5">${week.LRN_THEMA}</span>
+                                                                </button>
+                                                            </h2>
+                                                            <div id="flush-collapse${week.WEEK}" class="accordion-collapse collapse p-4" aria-labelledby="flush-heading${week.WEEK}" data-bs-parent="#accordionFlush">
+                                                                <p>${week.LRN_CN}</p>
+                                                                <!-- 부여 여부에 따른 요소 출력 -->
+                                                                <c:if test="${week.TASK_AT eq '0'}">
+                                                                    <span class="badge rounded-pill border boder-light text-body">과제</span>
+                                                                </c:if>
+                                                                <c:if test="${week.TASK_AT eq '1'}">
+                                                                    <span class="badge rounded-pill bg-primary task" style="cursor: pointer;" data-week-no="${week.WEEK}" data-bs-toggle="modal" data-bs-target="#modal">과제</span>
+                                                                </c:if>
+                                                            </div>
+                                                        </div>
+                                                    </c:forEach>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="simplebar-placeholder" style="width: 792px; height: 274px;"></div>
+                            </div>
+                            <div class="simplebar-track simplebar-horizontal" style="visibility: hidden;">
+                                <div class="simplebar-scrollbar" style="width: 0px; display: none;"></div>
+                            </div>
+                            <div class="simplebar-track simplebar-vertical" style="visibility: visible;">
+                                <div class="simplebar-scrollbar" style="height: 176px; transform: translate3d(0px, 0px, 0px); display: block;"></div>
                             </div>
                         </div>
-                </c:forEach>
+
+                    </div>
+                </div>
             </div>
         </div>
+
+    <div id="preview-template" style="display:none;">
+        <div class="dz-preview dz-file-preview border rounded p-2">
+            <div class="d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center">
+                    <div class="flex-shrink-0 me-3">
+                        <div class="avatar-sm bg-light rounded">
+                            <img data-dz-thumbnail class="img-fluid rounded d-block" alt="">
+                        </div>
+                    </div>
+                    <div class="flex-grow-1">
+                        <h5 class="fs-14 mb-1" data-dz-name>File Name</h5>
+                        <p class="fs-13 text-muted mb-1" data-dz-size></p>
+                    </div>
+                </div>
+                <div class="flex-shrink-0 ms-3 d-flex align-items-center">
+                    <button data-dz-remove class="btn btn-sm btn-danger">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
 <%@ include file="../../footer.jsp" %>

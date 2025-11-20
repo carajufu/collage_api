@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 
+import kr.ac.collage_api.vo.AllCourseVO;
 import kr.ac.collage_api.vo.EstblCourseVO;
 import kr.ac.collage_api.vo.FileDetailVO;
 import kr.ac.collage_api.vo.FileGroupVO;
@@ -40,6 +41,16 @@ public interface LectureMapper {
 
 	// 강의 계획서 다운로드
 	public FileDetailVO getFileDetail(long fileGroupNo);
+
+
+	// -------- <관리자> --------
+
+
+	// 강의 생성
+	public int createCourse(AllCourseVO allCourseVO);
+
+	// 전체 강의 목록 조회
+	public List<EstblCourseVO> allList(EstblCourseVO estblCourseVO);
 
 
 

@@ -11,12 +11,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import kr.ac.collage_api.admin.service.BbsNoticeService;
 import kr.ac.collage_api.vo.BbsVO;
+import kr.ac.collage_api.vo.FileDetailVO;
 import lombok.extern.slf4j.Slf4j;
 
 @CrossOrigin(origins = "*" )
@@ -25,9 +27,11 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 public class AdminNoticeBoardController {
 
+
 	@Autowired
 	BbsNoticeService bbsNoticeService;
-	
+
+
 	@GetMapping("/getlist")
 	public Map<String,Object> getlist () {
 		
@@ -41,19 +45,19 @@ public class AdminNoticeBoardController {
 
 	
 	@PutMapping("/putdetail")
-	public int putdetail(@RequestBody BbsVO bbsVO) {
+	public int putdetail(@RequestPart BbsVO bbsVO
+						, @RequestPart(value="files", required = false) List<MultipartFile> files
+						, @RequestPart(value="deletedFileSns", required=false) List<Integer> deletedFileSns) {
 		log.info("putdetail() -> bbsVO : {}", bbsVO);
-		int result = this.bbsNoticeService.adminPutDetail(bbsVO);
+		log.info("putdetail() -> deletedFileSns : {}", deletedFileSns);
+		log.info("putdetail() -> files : {}", files);
 		
+		int result = this.bbsNoticeService.adminPutDetail(bbsVO, files, deletedFileSns);
+
 		return result;
 	}
 	
-	/*
-	 export const deleteNoticeBoard = (id) => {
-     return API.delete(`/admin/bbs/deletedetail/${id}`)
-}
-	 
-	*/
+
 	
 	@DeleteMapping("/deletedetail/{bbscttNo}")
 	public int deletedetail(@PathVariable int bbscttNo) {
@@ -63,13 +67,10 @@ public class AdminNoticeBoardController {
 		return result;
 	}
 	
-	/*export const postNoticeBoard = () => {
-    return API.post("/admin/bbs/postdetail")
-	}
-	 */
+
 	
 	@PostMapping("/postdetail")
-	public int postdetail(@RequestBody BbsVO bbsVO) {
+	public int postdetail(BbsVO bbsVO) {
 		String acntId = "a001";
 		
 		//만약 jwt 토큰을 저장해서 보내왓고, 그걸 pincipal로 Userdetais 객체를 저장했다면
@@ -84,6 +85,31 @@ public class AdminNoticeBoardController {
 		
 	}
 	
+
 	
-	
+	@GetMapping("/detail/{bbscttNo}")
+	public Map<String,Object> adminDetail(@PathVariable int bbscttNo){
+		log.info("adminDetail() -> bbsVO : {}", bbscttNo);
+		BbsVO bbsVO = this.bbsNoticeService.adminDetail(bbscttNo);
+
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("bbsVO",bbsVO);
+
+		if (bbsVO.getFileGroupNo()!=null) {
+			Long fileGroupNo = bbsVO.getFileGroupNo();
+
+			List<FileDetailVO> fileDetailVOList = this.bbsNoticeService.getFileDetailList(fileGroupNo);
+			log.info("adminDetail() -> fileDetailVOList : {}", fileDetailVOList);
+			map.put("fileDetailVOList", fileDetailVOList);
+		}
+
+
+
+		return map;
+	}
+
+
+
+
+
 }

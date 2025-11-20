@@ -54,4 +54,19 @@
                 , #{fileDwldCo}
                 )
     </insert>
+
+
+    <!-- //그룹넘버로 파일 리스트를 셀렉하는 매퍼얌
+	public List<FileDetailVO> getFileDetailList(Long fileGroupNo); -->
+	<select id="getFileDetailList" parameterType="long" resultType="fileDetailVO">
+
+		SELECT
+			FILE_NO, FILE_GROUP_NO, FILE_NM, FILE_STRE_NM, FILE_STREPLACE
+			, FILE_MG, FILE_EXTSN, FILE_TY, FILE_STRE_DE, FILE_DWLD_CO
+		FROM FILE_DETAIL
+		WHERE FILE_GROUP_NO = #{fileGroupNo}
+	</select>
+
+
+
 </mapper>

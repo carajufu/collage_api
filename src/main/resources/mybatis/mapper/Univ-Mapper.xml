@@ -20,9 +20,7 @@
 	        LEFT JOIN PROFSR P ON U.PROFSR_NO = P.PROFSR_NO
 	        LEFT JOIN SKLSTF S ON P.SKLSTF_ID = S.SKLSTF_ID
 	        LEFT JOIN CMMN_CODE C ON U.BULD_LC = C.CODE_NO
-        WHERE
-            OPER_STTUS = '1'
-        	ORDER BY U.BULD_LC DESC
+        ORDER BY U.BULD_LC DESC
 	</select>
 	
 	<!-- 학과 -->
@@ -44,8 +42,6 @@
 			LEFT JOIN PROFSR P ON SB.SUBJCT_CHPT = P.PROFSR_NO
 			LEFT JOIN SKLSTF S ON P.SKLSTF_ID = S.SKLSTF_ID
 			LEFT JOIN CMMN_CODE C ON SB.SUBJCT_LC = C.CODE_NO
-		WHERE 
-			OPER_STTUS = '1'
 	</select>
 	
 	<!-- 학장후보 -->
@@ -85,4 +81,102 @@
 	  	P.SUBJCT_CODE = #{subjctCode}
 	  AND P.CLSF = '부교수'
 	</select>
+
+	<!-- 단과대 정보 업데이트 -->
+	<update id="updateUniv" parameterType="kr.ac.collage_api.admin.dto.UnivUpdateRequestDto">
+        UPDATE UNIV SET
+            UNIV_NM         = #{univNm}
+            ,BULD_LC         = #{buldLc}
+            ,PROFSR_NO       = #{profsrNo}
+            ,UNIV_TELNO      = #{univTelno}
+            ,OPER_STTUS      = #{operSttus}
+            ,RECENT_UPDT_DT  = SYSDATE
+        WHERE
+            UNIV_CODE = #{univCode}
+    </update>
+
+	<!-- 학과 정보 업데이트 -->
+	<update id="updateSubjct" parameterType="kr.ac.collage_api.admin.dto.SubjctUpdateRequestDto">
+        UPDATE SUBJCT SET
+            SUBJCT_NM       = #{subjctNm}
+            ,SUBJCT_LC       = #{subjctLc}
+            ,SUBJCT_CHPT     = #{subjctChpt}
+            ,SUBJCT_TELNO    = #{subjctTelno}
+            ,OPER_STTUS      = #{operSttus}
+            ,RECENT_UPDT_DT  = SYSDATE
+        WHERE
+            SUBJCT_CODE = #{subjctCode}
+    </update>
+
+    <!-- 학과 추가 -->
+	<insert id="insertSubjct" parameterType="kr.ac.collage_api.admin.dto.SubjctUpdateRequestDto">
+	     INSERT INTO SUBJCT(
+	         SUBJCT_CODE
+	         ,SUBJCT_NM
+	         ,SUBJCT_LC
+	         ,SUBJCT_TELNO
+	         ,UNIV_CODE
+	         ,OPER_STTUS
+	         ,RECENT_UPDT_DT
+	         ,FONDYEAR)
+	     VALUES (
+	         #{subjctCode}
+	         ,#{subjctNm}
+	         ,#{subjctLc}
+	         ,#{subjctTelno}
+	         ,#{univCode}
+	         ,'1'
+			 ,SYSDATE
+	         ,TO_CHAR(SYSDATE, 'YYYY') )
+	 </insert>
+
+    <!-- 추가된 학과 조회 -->
+    <select id="findSubjectByCode" resultType="kr.ac.collage_api.vo.SubjctVO" parameterType="string">
+        SELECT
+			SB.SUBJCT_CODE
+			,SB.UNIV_CODE
+			,SB.SUBJCT_NM
+			,SB.SUBJCT_TELNO
+			,SB.SUBJCT_LC
+			,SB.FONDYEAR
+			,SB.OPER_STTUS
+			,SB.RECENT_UPDT_DT
+			,SB.SUBJCT_CHPT
+			,S.SKLSTF_NM AS deanNm
+			,C.CODE_NM AS buldNm
+		FROM
+			SUBJCT SB
+			LEFT JOIN PROFSR P ON SB.SUBJCT_CHPT = P.PROFSR_NO
+			LEFT JOIN SKLSTF S ON P.SKLSTF_ID = S.SKLSTF_ID
+			LEFT JOIN CMMN_CODE C ON SB.SUBJCT_LC = C.CODE_NO
+		WHERE
+			SB.SUBJCT_CODE = #{subjctCode}
+    </select>
+
+    <!-- 단과대에 포함된 학과 수 -->
+    <select id="countSubjcts" parameterType="string" resultType="int">
+    	SELECT COUNT(*)
+    	FROM SUBJCT
+    	WHERE UNIV_CODE = #{univCode}
+    </select>
+
+    <!-- 학과에 포함된 교수 수 -->
+    <select id="countProfsrs" parameterType="String" resultType="int">
+    	SELECT COUNT(*)
+    	FROM PROFSR
+    	WHERE SUBJCT_CODE =#{subjctCode}
+    </select>
+
+    <!-- 단과대 삭제 -->
+    <delete id="deleteUniv" parameterType="string">
+        DELETE FROM UNIV
+        WHERE UNIV_CODE = #{univCode}
+    </delete>
+
+    <!-- 학과 삭제 -->
+    <delete id="deleteSubjct" parameterType="string">
+        DELETE FROM SUBJCT
+        WHERE SUBJCT_CODE = #{subjctCode}
+    </delete>
+
 </mapper>
