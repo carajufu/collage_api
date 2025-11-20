@@ -67,7 +67,7 @@
                 <div class="d-flex align-items-center">
 
                     <div class="dropdown ms-1 topbar-head-dropdown header-item">
-                        <button type="button" class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <button type="button" class="btn btn-icon btn-topbar btn-ghost-primary rounded-circle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <img id="header-lang-img" src="/assets/images/flags/kr.svg" alt="Header Language" height="20" class="rounded">
                         </button>
                         <div class="dropdown-menu dropdown-menu-end">
@@ -163,13 +163,13 @@
                     </div>
 
                     <div class="ms-1 header-item d-none d-sm-flex">
-                        <button type="button" class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle light-dark-mode">
+                        <button type="button" class="btn btn-icon btn-topbar btn-ghost-primary rounded-circle light-dark-mode">
                             <i class='bx bx-moon fs-22'></i>
                         </button>
                     </div>
 
                     <div class="dropdown topbar-head-dropdown ms-1 header-item" id="notificationDropdown">
-                        <button type="button" class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle" id="page-header-notifications-dropdown" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-haspopup="true" aria-expanded="false">
+                        <button type="button" class="btn btn-icon btn-topbar btn-ghost-primary rounded-circle" id="page-header-notifications-dropdown" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-haspopup="true" aria-expanded="false">
                             <i class='bx bx-bell fs-22'></i>
                             <span class="position-absolute topbar-badge fs-10 translate-middle badge rounded-pill bg-danger">3<span class="visually-hidden">unread messages</span></span>
                         </button>
@@ -700,92 +700,6 @@
 
         <div class="page-content">
             <div id="main-container" class="container-fluid">
-
-                <%--<div id="wrapper">--%>
-                <%--    <header class="header">--%>
-                <%--        <div class="container-fluid d-flex justify-content-between align-items-center gap-3">--%>
-                <%--            <div class="brand"><i class="bi bi-mortarboard-fill"></i> 스마트 LMS</div>--%>
-                <%--            <div class="user-actions">--%>
-                <%--                <i class="bi bi-bell p-2"></i>--%>
-                <%--                <i class="bi bi-gear p-2"></i>--%>
-                <%--                <i class="bi bi-person-circle p-2"></i>--%>
-                <%--            </div>--%>
-                <%--            <sec:authorize access="isAuthenticated()">--%>
-                <%--                <a href="/logout"><button class="btn btn-outline-danger">로그아웃</button></a>--%>
-                <%--            </sec:authorize>--%>
-                <%--        </div>--%>
-
-                <%--        <!-- ✅ CHANGED: 토스트 -->--%>
-                <%--        <div id="toastContainer"></div>--%>
-                <%--    </header>--%>
-
-                <%--    <main class="d-flex">--%>
-                <%--        <div id="sidebar" class="d-flex flex-column flex-shrink-0 p-3 bg-primary bg-gradient">--%>
-                <%--            <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">--%>
-                <%--                <svg class="bi pe-none me-2" width="40" height="32" aria-hidden="true"><use xlink:href="#bootstrap"></use></svg>--%>
-                <%--                <span class="fs-4">Sidebar</span>--%>
-                <%--            </a>--%>
-                <%--            <hr>--%>
-                <%--            <ul class="nav nav-pills flex-column mb-auto">--%>
-                <%--                <li class="nav-item">--%>
-                <%--                    <a href="#" class="nav-link active" aria-current="page">--%>
-                <%--                        <svg class="bi pe-none me-2" width="16" height="16" aria-hidden="true"><use xlink:href="#home"></use></svg>--%>
-                <%--                        Home--%>
-                <%--                    </a>--%>
-                <%--                </li>--%>
-                <%--                <li>--%>
-                <%--                    <a href="#" class="nav-link link-body-emphasis">--%>
-                <%--                        <svg class="bi pe-none me-2" width="16" height="16" aria-hidden="true"><use xlink:href="#speedometer2"></use></svg>--%>
-                <%--                        Dashboard--%>
-                <%--                    </a>--%>
-                <%--                </li>--%>
-                <%--                <li>--%>
-                <%--                    <a href="#" class="nav-link link-body-emphasis">--%>
-                <%--                        <svg class="bi pe-none me-2" width="16" height="16" aria-hidden="true"><use xlink:href="#table"></use></svg>--%>
-                <%--                        Orders--%>
-                <%--                    </a>--%>
-                <%--                </li>--%>
-                <%--                <li>--%>
-                <%--                    <a href="#" class="nav-link link-body-emphasis">--%>
-                <%--                        <svg class="bi pe-none me-2" width="16" height="16" aria-hidden="true"><use xlink:href="#grid"></use></svg>--%>
-                <%--                        Products--%>
-                <%--                    </a>--%>
-                <%--                </li>--%>
-                <%--                <li>--%>
-                <%--                    <a href="#" class="nav-link link-body-emphasis">--%>
-                <%--                        <svg class="bi pe-none me-2" width="16" height="16" aria-hidden="true"><use xlink:href="#people-circle"></use></svg>--%>
-                <%--                        Customers--%>
-                <%--                    </a>--%>
-                <%--                </li>--%>
-                <%--            </ul>--%>
-                <%--            <sec:authorize access="isAuthenticated()">--%>
-                <%--                <hr>--%>
-                <%--                <div class="dropdown">--%>
-                <%--                    <a href="#" class="d-flex align-items-center link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">--%>
-                <%--                        <img src="https://github.com/mdo.png" alt="" width="32" height="32" class="rounded-circle me-2">--%>
-                <%--                        <strong><sec:authentication property="principal.username"/></strong>--%>
-                <%--                    </a>--%>
-                <%--                    <ul class="dropdown-menu text-small shadow">--%>
-                <%--                        <li>--%>
-                <%--                            <a class="dropdown-item" href="#">New project...</a>--%>
-                <%--                        </li>--%>
-                <%--                        <li>--%>
-                <%--                            <a class="dropdown-item" href="#">Settings</a>--%>
-                <%--                        </li>--%>
-                <%--                        <li>--%>
-                <%--                            <a class="dropdown-item" href="#">Profile</a>--%>
-                <%--                        </li>--%>
-                <%--                        <li>--%>
-                <%--                            <hr class="dropdown-divider">--%>
-                <%--                        </li>--%>
-                <%--                        <li>--%>
-                <%--                            <a class="dropdown-item" href="#">Sign out</a>--%>
-                <%--                        </li>--%>
-                <%--                    </ul>--%>
-                <%--                </div>--%>
-                <%--            </sec:authorize>--%>
-                <%--        </div>--%>
-                <%--        <div id="main-container" class="container-fluid">--%>
 
 
 
