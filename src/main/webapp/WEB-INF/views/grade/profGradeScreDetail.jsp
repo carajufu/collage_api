@@ -10,12 +10,6 @@
 document.addEventListener("DOMContentLoaded", function () {
 
   let myBarChart = null;
-  let originalValues = [];
-  let isEditMode = false;
-
-  function getAllScoreInputs() {
-    return document.querySelectorAll(".score-input");
-  }
 
   function recalcRowTotal(row) {
     const chul = parseFloat(row.querySelector("input[name*='.atendScore']").value) || 0;
@@ -101,12 +95,14 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  function bindScoreInputEvents(scope = document) {
-    scope.querySelectorAll(".score-input").forEach(input => {
+  function bindScoreInputEvents() {
+    document.querySelectorAll(".score-input").forEach(input => {
+
       const cloned = input.cloneNode(true);
       input.parentNode.replaceChild(cloned, input);
 
       cloned.addEventListener("input", function () {
+
         if (this.value > 100) this.value = 100;
         if (this.value < 0) this.value = 0;
 
@@ -117,74 +113,8 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  function setEditMode(enable) {
-    isEditMode = !!enable;
-    getAllScoreInputs().forEach(input => input.readOnly = !isEditMode);
-
-    editBtn.style.display = enable ? "none" : "inline-block";
-    saveBtn.style.display = enable ? "inline-block" : "none";
-    cancelBtn.style.display = enable ? "inline-block" : "none";
-  }
-
-  function snapshotOriginalValues() {
-    originalValues = [];
-    getAllScoreInputs().forEach(input => originalValues.push(input.value));
-  }
-
-  function restoreOriginalValues() {
-    getAllScoreInputs().forEach((input, i) => input.value = originalValues[i]);
-    recalcAllTotals();
-    updateAverageChart();
-  }
-
-  function wireAjaxSave() {
-    $("#saveBtn").on("click", function (e) {
-      e.preventDefault();
-
-      $.ajax({
-        url: "/prof/grade/main/save",
-        type: "POST",
-        data: $("#gradeForm").serialize(),
-        success: function (response) {
-          if (response === "success") {
-            alert("저장되었습니다.");
-            setEditMode(false);
-            snapshotOriginalValues();
-          } else {
-            alert("저장에 실패했습니다.(서버 응답 오류)");
-          }
-        },
-        error: function () {
-          alert("저장 중 오류가 발생했습니다.");
-        }
-      });
-    });
-  }
-
-  const editBtn   = document.getElementById("editBtn");
-  const saveBtn   = document.getElementById("saveBtn");
-  const cancelBtn = document.getElementById("cancelBtn");
-
   recalcAllTotals();
   bindScoreInputEvents();
-  setEditMode(false);
-  snapshotOriginalValues();
-
-  if (editBtn) {
-    editBtn.addEventListener("click", () => {
-      setEditMode(true);
-      snapshotOriginalValues();
-    });
-  }
-
-  if (cancelBtn) {
-    cancelBtn.addEventListener("click", () => {
-      restoreOriginalValues();
-      setEditMode(false);
-    });
-  }
-
-  wireAjaxSave();
 
   const chartModal = document.getElementById('averageChartModal');
   chartModal.addEventListener('shown.bs.modal', function () {
@@ -194,12 +124,15 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 </script>
 
+<div class="page-content py-2">
+  <div class="container-fluid pt-1">
+
     <h2 class="fw-bold mb-4">과목별 성적 관리</h2>
 
     <div class="alert alert-info mb-4">
       <div class="row g-2">
         <div class="col-sm-6"><strong>강의명:</strong> ${selSbject.lctreNm}</div>
-        <div class="col-sm-6"><strong>강의코드:</strong> ${selSbject.lctreCode}</div>
+        <div class="col-sm-6"><strong>강의코드:</strong> ${selSbject.lctreCode}</strong></div>
         <div class="col-sm-6"><strong>이수구분:</strong> ${selSbject.complSe}</div>
         <div class="col-sm-6"><strong>년도/학기:</strong> ${selSbject.estblYear}년 / ${selSbject.estblSemstr}</div>
       </div>
@@ -239,23 +172,39 @@ document.addEventListener("DOMContentLoaded", function () {
           <tbody>
             <c:forEach var="stdnt" items="${sbjectScr}" varStatus="status">
               <tr>
+
                 <td>${stdnt.stdntNo}</td>
                 <td>${stdnt.stdntNm}</td>
 
-                <input type="hidden" name="grades[${status.index}].atnlcReqstNo" value="${stdnt.atnlcReqstNo}" />
+                <input type="hidden"
+                  name="grades[${status.index}].atnlcReqstNo"
+                  value="${stdnt.atnlcReqstNo}" />
 
-                <td><input type="number" min="0" max="100" name="grades[${status.index}].atendScore"  value="${stdnt.atendScore}"  class="form-control form-control-sm score-input" readonly></td>
-                <td><input type="number" min="0" max="100" name="grades[${status.index}].taskScore"   value="${stdnt.taskScore}"   class="form-control form-control-sm score-input" readonly></td>
-                <td><input type="number" min="0" max="100" name="grades[${status.index}].middleScore" class="form-control form-control-sm score-input" value="${stdnt.middleScore}" readonly></td>
-                <td><input type="number" min="0" max="100" name="grades[${status.index}].trmendScore" class="form-control form-control-sm score-input" value="${stdnt.trmendScore}" readonly></td>
+                <!-- 입력 가능 (readonly 제거됨) -->
+                <td><input type="number" min="0" max="100" name="grades[${status.index}].atendScore"  
+                  value="${stdnt.atendScore}"  class="form-control form-control-sm score-input"></td>
 
-                <td><input type="number" name="grades[${status.index}].sbjectTotpoint" value="${stdnt.sbjectTotpoint}" class="form-control form-control-sm bg-light text-center fw-semibold" readonly></td>
-                <td><input type="number" name="grades[${status.index}].pntAvrg" value="${stdnt.pntAvrg}" class="form-control form-control-sm bg-light text-center" readonly></td>
-                <td><input type="text"   name="grades[${status.index}].pntGrad" value="${stdnt.pntGrad}" class="form-control form-control-sm bg-light text-center" readonly></td>
+                <td><input type="number" min="0" max="100" name="grades[${status.index}].taskScore"   
+                  value="${stdnt.taskScore}"   class="form-control form-control-sm score-input"></td>
+
+                <td><input type="number" min="0" max="100" name="grades[${status.index}].middleScore"
+                  value="${stdnt.middleScore}" class="form-control form-control-sm score-input"></td>
+
+                <td><input type="number" min="0" max="100" name="grades[${status.index}].trmendScore"
+                  value="${stdnt.trmendScore}" class="form-control form-control-sm score-input"></td>
+
+                <!-- 자동 계산 필드 유지 -->
+                <td><input type="number" name="grades[${status.index}].sbjectTotpoint"
+                  value="${stdnt.sbjectTotpoint}" class="form-control form-control-sm bg-light text-center fw-semibold" readonly></td>
+
+                <td><input type="number" name="grades[${status.index}].pntAvrg"
+                  value="${stdnt.pntAvrg}" class="form-control form-control-sm bg-light text-center" readonly></td>
+
+                <td><input type="text" name="grades[${status.index}].pntGrad"
+                  value="${stdnt.pntGrad}" class="form-control form-control-sm bg-light text-center" readonly></td>
               </tr>
             </c:forEach>
           </tbody>
-
         </table>
       </c:if>
 
@@ -263,14 +212,13 @@ document.addEventListener("DOMContentLoaded", function () {
         <a href="/prof/grade/main/All" class="btn btn-secondary">목록으로</a>
 
         <c:if test="${not empty sbjectScr}">
-          <div>
-            <button type="button" id="editBtn" class="btn btn-warning">수정하기</button>
-            <button type="submit" id="saveBtn" class="btn btn-primary me-2" style="display:none;">저장</button>
-            <button type="button" id="cancelBtn" class="btn btn-secondary" style="display:none;">취소</button>
-          </div>
+          <button type="submit" id="saveBtn" class="btn btn-primary">저장</button>
         </c:if>
       </div>
     </form>
+
+  </div>
+</div>
 
 <div class="modal fade" id="averageChartModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered modal-lg">
