@@ -19,8 +19,6 @@
     <!-- plugin css -->
     <link href="/assets/libs/jsvectormap/jsvectormap.min.css" rel="stylesheet" type="text/css" />
 
-    <!-- Layout config Js -->
-    <script src="/assets/js/layout.js"></script>
     <!-- Bootstrap Css -->
     <link href="/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
     <!-- Icons Css -->
@@ -30,10 +28,22 @@
     <!-- custom Css-->
     <link href="/assets/css/custom.css" rel="stylesheet" type="text/css" />
 
+    <!-- JAVASCRIPT -->
+    <script src="/assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="/assets/js/pages/plugins/lord-icon-2.1.0.js"></script>
+    <script src="/assets/js/plugins.js"></script>
+    <script src="/assets/js/app.js" defer></script>
+    <script src="/assets/js/layout.js"></script>
 
+    <script src="/assets/libs/simplebar/simplebar.min.js"></script>
+    <script src="/assets/libs/node-waves/waves.min.js"></script>
 
-    <!-- jQuery-3.7.1.min -->
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <!-- jQuery-3.6.0.min -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
+    <!-- axios -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
 </head>
 <body>
 <!-- Begin page -->
@@ -89,22 +99,22 @@
                             <a href="javascript:void(0);" class="dropdown-item notify-item language" data-lang="jp" title="Japen">
                                 <img src="/assets/images/flags/jp.svg" alt="user-image" class="me-2 rounded" height="18"> <span class="align-middle">日本語</span>
                             </a>
-							
+
 							<!-- item-->
                             <a href="javascript:void(0);" class="dropdown-item notify-item language" data-lang="vi" title="Vitenam">
                                 <img src="/assets/images/flags/vi.svg" alt="user-image" class="me-2 rounded" height="18"> <span class="align-middle">Tiếng Việt</span>
                             </a>
-							
+
 							<!-- item-->
                             <a href="javascript:void(0);" class="dropdown-item notify-item language" data-lang="mn" title="Mongol">
                                 <img src="/assets/images/flags/mn.svg" alt="user-image" class="me-2 rounded" height="18"> <span class="align-middle">Монгол хэл</span>
                             </a>
-							
+
 							<!-- item-->
                             <a href="javascript:void(0);" class="dropdown-item notify-item language" data-lang="ne" title="Nepal">
                                 <img src="/assets/images/flags/ne.svg" alt="user-image" class="me-2 rounded" height="18"> <span class="align-middle">नेपाली</span>
                             </a>
-							
+
                             <!-- item-->
                             <a href="javascript:void(0);" class="dropdown-item notify-item language" data-lang="it" title="Italian">
                                 <img src="/assets/images/flags/italy.svg" alt="user-image" class="me-2 rounded" height="18">
@@ -134,17 +144,17 @@
                                 <img src="/assets/images/flags/ae.svg" alt="user-image" class="me-2 rounded" height="18">
                                 <span class="align-middle">Arabic</span>
                             </a>
-                            
+
                            <a href="javascript:void(0);" class="dropdown-item notify-item language" data-lang="km" title="Khmer">
 							    <img src="/assets/images/flags/km.svg" alt="Cambodia flag" class="me-2 rounded" height="18">
 							    <span class="align-middle">ភាសាខ្មែរ</span>
 							</a>
-							
+
 							<a href="javascript:void(0);" class="dropdown-item notify-item language" data-lang="la" title="Lao">
 							    <img src="/assets/images/flags/la.svg" alt="Laos flag" class="me-2 rounded" height="18">
 							    <span class="align-middle">ລາວ</span>
 							</a>
-							
+
 							<a href="javascript:void(0);" class="dropdown-item notify-item language" data-lang="th" title="Thai">
 							    <img src="/assets/images/flags/th.svg" alt="Thailand flag" class="me-2 rounded" height="18">
 							    <span class="align-middle">ไทย</span>
@@ -422,8 +432,8 @@
                         </div>
                     </div>
 
-                    <div class="dropdown ms-sm-3 header-item topbar-user">
-                        <button type="button" class="btn" id="page-header-user-dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width: 300px">
+                    <div class="dropdown ms-sm-3 header-item topbar-user ">
+                        <button type="button" class="btn btn-ghost-primary" id="page-header-user-dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width: 300px">
                         <span class="d-flex align-items-center">
                             <img class="rounded-circle header-profile-user" src="/assets/images/users/user-dummy-img.jpg" alt="Header Avatar">
                             <span class="text-start ms-xl-2">
@@ -451,7 +461,7 @@
             </div>
         </div>
     </header>
-</div>
+
     <!-- removeNotificationModal -->
     <div id="removeNotificationModal" class="modal fade zoomIn" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
@@ -533,17 +543,19 @@
                         <div class="collapse menu-dropdown" id="sidebarLecture">
                             <ul class="nav nav-sm flex-column">
                                 <li class="nav-item">
-                                    <a href="/atnlc" class="nav-link" data-key="">
+                                    <a href="/atnlc/submit" class="nav-link" data-key="">
                                         수강 신청
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="/atnlc" class="nav-link" data-key="">
+                                    <a href="/atnlc/cart" class="nav-link" data-key="">
                                         장바구니
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="apps-chat.html" class="nav-link" data-key=""> 신청 내역 조회 </a>
+                                    <a href="/atnlc/stdntLctreList" class="nav-link" data-key="">
+                                        신청 내역 조회
+                                    </a>
                                 </li>
                             </ul>
                         </div>
@@ -592,7 +604,7 @@
                         <div class="collapse menu-dropdown" id="sidebargraduation">
                             <ul class="nav nav-sm flex-column">
                                 <li class="nav-item">
-                                    <a href="pages-starter.html" class="nav-link" data-key=""> 졸업 현황 </a>
+                                    <a href="/stdnt/gradu/main/All" class="nav-link" data-key=""> 졸업 현황 </a>
                                 </li>
                             </ul>
                         </div>
@@ -617,7 +629,7 @@
                     <li class="menu-title"><span data-key="">학습</span></li>
 
                     <li class="nav-item">
-                        <a class="nav-link menu-link" href="ui-alerts.html" data-key="">
+                        <a class="nav-link menu-link" href="/dashboard/student" data-key="">
                             <i class="las la-university"></i> <span data-key="">학습 관리</span>
                         </a>
                     </li>

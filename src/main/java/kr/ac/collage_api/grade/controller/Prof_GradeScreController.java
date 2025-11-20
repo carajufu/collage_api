@@ -15,7 +15,7 @@ import kr.ac.collage_api.grade.vo.GradeScreVO;
 @Controller
 @RequestMapping("/prof/grade")
 public class Prof_GradeScreController {
-	
+
     @Autowired
     GradeScreService gradeService;
 

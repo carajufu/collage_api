@@ -33,7 +33,7 @@ public class Stdnt_GradeScreController {
         log.info("getStudentSemstrList : {}", semstrList);
 
         model.addAttribute("getAllSemstr", semstrList);
-        return "grade/stdntGradeScreMain"; 
+        return "grade/stdntGradeScreMain";
     }
 
     @GetMapping("/main/detail/{semstrScreInnb}")

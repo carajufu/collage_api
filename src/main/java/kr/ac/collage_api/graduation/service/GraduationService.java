@@ -7,7 +7,7 @@ import kr.ac.collage_api.graduation.vo.GraduationVO; // VO 경로는 실제 프�
 public interface GraduationService {
 
 	public Map<String, Object> getGraduMainData(String stdntNo);
-	
+
 	public int applyForGraduation(GraduationVO graduVO);
-	
+
 }

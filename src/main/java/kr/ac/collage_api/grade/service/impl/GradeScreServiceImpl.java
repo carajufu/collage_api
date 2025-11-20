@@ -78,6 +78,6 @@ public class GradeScreServiceImpl implements GradeScreService {
 	public List<GradeScreVO> getStudentSemstrDetail(String semstrScreInnb) {
 		 return gradeMapper.getStudentSemstrDetail(semstrScreInnb);
 	}
-    
-     
+
+
 }

@@ -1,92 +1,118 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-    
+
 <%@ include file="../header.jsp" %>
 
-<div class="content-area" id="main-content">
-<h2 class="section-title">휴학/복학 신청</h2>
+<!-- 상단 레이아웃 영역 -->
+<div class="row p-5">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="#"><i class="las la-home"></i></a></li>
+            <li class="breadcrumb-item"><a href="#">학적관리</a></li>
+            <li class="breadcrumb-item active" aria-current="page">휴학/복학 신청</li>
+        </ol>
+    </nav>
+
+    <div class="col-12 page-title mt-2">
+        <div class="display-6 fw-semibold">휴학/복학 신청</div>
+        <div class="my-4 p-0 bg-primary" style="width: 100px; height:5px;"></div>
+    </div>
+</div>
+
+<!-- 본문 content-area -->
+<div class="content-area px-5 mb-5" id="main-content">
+
     <div class="card card-custom p-4">
-        
+
+        <h2 class="section-title mb-4">신청 정보 입력</h2>
+
         <c:if test="${stdntStatus == '재학' || stdntStatus == '휴학'}">
             <form action="/enrollment/change" id="change-form" method="post" enctype="multipart/form-data">
             
-             <div class="mb-3">
-                <label class="form-label">신청 종류</label>
-                <div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="changeTy" id="leave-radio" value="휴학"
-                            <c:if test="${stdntStatus == '재학'}">checked</c:if>
-                            <c:if test="${stdntStatus != '재학'}">disabled</c:if>>
-                        <label class="form-check-label" for="leave-radio">휴학</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="changeTy" id="return-radio" value="복학"
-                            <c:if test="${stdntStatus == '휴학'}">checked</c:if>
-                            <c:if test="${stdntStatus != '휴학'}">disabled</c:if>>
-                        <label class="form-check-label" for="return-radio">복학</label>
+                <!-- 신청 종류 -->
+                <div class="mb-3">
+                    <label class="form-label">신청 종류</label>
+                    <div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="changeTy" id="leave-radio" value="휴학"
+                                <c:if test="${stdntStatus == '재학'}">checked</c:if>
+                                <c:if test="${stdntStatus != '재학'}">disabled</c:if>>
+                            <label class="form-check-label" for="leave-radio">휴학</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="changeTy" id="return-radio" value="복학"
+                                <c:if test="${stdntStatus == '휴학'}">checked</c:if>
+                                <c:if test="${stdntStatus != '휴학'}">disabled</c:if>>
+                            <label class="form-check-label" for="return-radio">복학</label>
+                        </div>
                     </div>
                 </div>
-            </div>
-            
-			<div class="mb-3" id="leave-semester-group" <c:if test="${stdntStatus != '재학'}">style="display: none;"</c:if>>
-			    <label for="leave-semester-select" class="form-label">신청 학기</label>
-			    <select class="form-select" name="efectOccrrncSemstr" id="leave-semester-select"> 
-			        <option value="" selected>신청할 학기를 선택하세요...</option>
-			        <c:forEach items="${leaveSemesters}" var="semester">
-			            <option value="${semester}">
-			                ${semester.split('-')[0]}년 ${semester.split('-')[1]}학기
-			            </option>
-			        </c:forEach>
-			    </select>
-			</div>
-			
-			<div class="mb-3" id="return-semester-group" <c:if test="${stdntStatus != '휴학'}">style="display: none;"</c:if>>
-			    <label for="return-semester-select" class="form-label">신청 학기</label>
-			    <select class="form-select" name="efectOccrrncSemstr" id="return-semester-select"> 
-			        <option value="" selected>신청할 학기를 선택하세요...</option>
-			        <c:forEach items="${returnSemesters}" var="semester">
-			            <option value="${semester}">
-			                ${semester.split('-')[0]}년 ${semester.split('-')[1]}학기
-			            </option>
-			        </c:forEach>
-			    </select>
-			</div>
-            
-            <div id="leaveFields" <c:if test="${stdntStatus != '재학'}">style="display: none;"</c:if>>
-	            <div class="mb-3">
-	                <label for="leave-reason" class="form-label">휴학 유형</label>
-	                <select class="form-select" id="leave-reason" name="tmpabssklTy">
-	                    <option value="" selected>유형을 선택하세요...</option>
-	                    <option value="일N반">개인 사유</option>
-	                    <option value="질병">질병</option>
-	                    <option value="군입대">군입대</option>
-	                    <option value="기타">기타</option>
-	                </select>
-	            </div>
-	            
-	            <div class="mb-3">
-	                <label for="leave-details" class="form-label">상세 사유</label>
-	                <textarea class="form-control" id="leave-details" name="reqstResn" rows="3" placeholder="상세 사유를 입력하세요."></textarea>
-	            </div>
-	            
-	            <div class="mb-3">
-	                <label for="attachment-file" class="form-label">첨부 서류</label>
-	                <input type="file" id="attachment-file" name="uploadFile" class="form-control">
-	            </div>
-            </div>
-               
-            <button type="submit" id="submit-btn" class="btn btn-primary">신청하기</button>
-        </form>
+
+                <!-- 휴학 학기 -->
+                <div class="mb-3" id="leave-semester-group" <c:if test="${stdntStatus != '재학'}">style="display: none;"</c:if>>
+                    <label for="leave-semester-select" class="form-label">신청 학기</label>
+                    <select class="form-select" name="efectOccrrncSemstr" id="leave-semester-select">
+                        <option value="" selected>신청할 학기를 선택하세요...</option>
+                        <c:forEach items="${leaveSemesters}" var="semester">
+                            <option value="${semester}">
+                                ${semester.split('-')[0]}년 ${semester.split('-')[1]}학기
+                            </option>
+                        </c:forEach>
+                    </select>
+                </div>
+
+                <!-- 복학 학기 -->
+                <div class="mb-3" id="return-semester-group" <c:if test="${stdntStatus != '휴학'}">style="display: none;"</c:if>>
+                    <label for="return-semester-select" class="form-label">신청 학기</label>
+                    <select class="form-select" name="efectOccrrncSemstr" id="return-semester-select">
+                        <option value="" selected>신청할 학기를 선택하세요...</option>
+                        <c:forEach items="${returnSemesters}" var="semester">
+                            <option value="${semester}">
+                                ${semester.split('-')[0]}년 ${semester.split('-')[1]}학기
+                            </option>
+                        </c:forEach>
+                    </select>
+                </div>
+
+                <!-- 휴학 필드 -->
+                <div id="leaveFields" <c:if test="${stdntStatus != '재학'}">style="display: none;"</c:if>>
+                    <div class="mb-3">
+                        <label for="leave-reason" class="form-label">휴학 유형</label>
+                        <select class="form-select" id="leave-reason" name="tmpabssklTy">
+                            <option value="" selected>유형을 선택하세요...</option>
+                            <option value="일반">개인 사유</option>
+                            <option value="질병">질병</option>
+                            <option value="군입대">군입대</option>
+                            <option value="기타">기타</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="leave-details" class="form-label">상세 사유</label>
+                        <textarea class="form-control" id="leave-details" name="reqstResn" rows="3" placeholder="상세 사유를 입력하세요."></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="attachment-file" class="form-label">첨부 서류</label>
+                        <input type="file" id="attachment-file" name="uploadFile" class="form-control">
+                    </div>
+                </div>
+
+                <button type="submit" id="submit-btn" class="btn btn-primary mt-4">신청하기</button>
+            </form>
         </c:if>
-        
+
         <c:if test="${stdntStatus != '재학' && stdntStatus != '휴학'}">
             <div class="alert alert-warning" role="alert">
                 현재 학적 상태(${stdntStatus})에서는 휴학 또는 복학 신청이 불가능합니다.
             </div>
         </c:if>
-        
+
     </div>
 </div>
+
+<%@ include file="../footer.jsp" %>
+
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
@@ -148,21 +174,33 @@ document.addEventListener('DOMContentLoaded', function() {
     	
         const reasonSelect = document.getElementById('leave-reason');
     	
-        //유효성 검사
+      //유효성 검사
         if (leaveRadio.checked) {
             //휴학
             if (leaveSelect.value === "") {
-                Swal.fire('신청 학기를 선택해주세요.');
+                Swal.fire({
+                    icon: 'warning',
+                    title: '입력 오류',
+                    text: '신청 학기를 선택해주세요.'
+                });
                 return;
             }
             if (reasonSelect.value === "") { 
-                Swal.fire('휴학 유형을 선택해주세요.');
+                Swal.fire({
+                    icon: 'warning',
+                    title: '입력 오류',
+                    text: '휴학 유형을 선택해주세요.'
+                });
                 return;
             }
         } else if (returnRadio.checked) {
             //복학
             if (returnSelect.value === "") {
-                Swal.fire('신청 학기를 선택해주세요.');
+                Swal.fire({
+                    icon: 'warning',
+                    title: '입력 오류',
+                    text: '신청 학기를 선택해주세요.'
+                });
                 return;
             }
         }

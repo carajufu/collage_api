@@ -1,26 +1,37 @@
 const modal = `
-    <style>
-        #modal {
-            position: fixed;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0; 
-            background-color: rgba(176, 196, 222, 0.4); 
-            display: none;
-        }
-        #modal #cont {
-            width: 80%; height:85%;
-            margin: 10px auto;
-            position: fixed;
-            top: 5%; left: 10%;
-            background-color: white;
-        }
-    </style>
-     <div class="modal"id="modal">
-        <div id="cont" class="shadow rounded-3"></div> 
+     <div class="modal fade" data-bs-backdrop="static" id="modal">
+        <div class="modal-dialog modal-dialog-scrollable modal-xl">
+            <div class="modal-content pb-5">
+                <div class="modal-header">
+                    <h4 class="modal-title"></h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <hr/>
+                <div class="modal-body"></div>
+            </div>
+        </div>
     </div>
 `;
+
+const frag = document.createRange().createContextualFragment(modal);
+
+const quizModal = `
+     <div class="modal fade" data-bs-backdrop="static" id="quizModal">
+        <div class="modal-dialog modal-dialog-scrollable modal-xl">
+            <div class="modal-content pb-5">
+                <div class="modal-header">
+                    <h4 class="modal-title"></h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <hr/>
+                <div class="modal-body"></div>
+            </div>
+        </div>
+    </div>
+`;
+
+const quizFrag = document.createRange().createContextualFragment(quizModal);
+
 
 /**
  * 모달의 display css 속성의 값을 block으로 변경해 모달을 화면에 표시하는 함수
@@ -39,10 +50,10 @@ function popModal(modalId) {
  * @param {string} modalId - 닫을 modal 요소의 id
  * @return {void} Does not return a value.
  */
-function closeModal(modalId) {
-    const modal = document.querySelector("#" + modalId);
-    modal.style.display = "none";
-}
+// function closeModal(modalId) {
+//     const modal = document.querySelector("#" + modalId);
+//     modal.style.display = "none";
+// }
 
 /**
  * modal의 body에 표시할 내용을 인자로 받아 modal body 내용을 교체하는 함수
@@ -51,13 +62,16 @@ function closeModal(modalId) {
  * @param {HTMLElement|string} cont - modal body에 표시할 html element
  * @return {void} Does not return anything.
  */
-function changeModalBody(modalId, cont) {
+function changeModalBody(modalId, headCont, cont) {
     const modal = document.querySelector("#" + modalId);
-    const modalBody = modal.querySelector("#cont");
+
+    const modalHead = modal.querySelector(".modal-header h4");
+    modalHead.textContent = headCont;
+
+    const modalBody = modal.querySelector(".modal-body");
 
     modalBody.innerHTML = "";
     modalBody.append(cont);
-<<<<<<< HEAD
 }
 
 // todo: 뒤로가기 방지 기능 고치기
@@ -71,6 +85,4 @@ function changeModalBody(modalId, cont) {
 // history.pushState({ isModalOpen: true}, '');
 // isModalOpen = false;
 // history.pushState({ isModalOpen: false }, '');
-=======
-}
->>>>>>> 26a4290 (please)
+

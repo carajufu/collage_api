@@ -14,6 +14,9 @@ public class ProfsrVO {
 	private String nlty;        //국적
 	//교직원VO에 있는거 가져옴 교수명임
 	private String sklstfNm;     //교직원명	SKLSTF_NM
+	private String subjctNm;      //학과명		SUBJCT_NM
+	private String emailAdres;
+
 }
 
 

@@ -1,5 +1,10 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
+</div>
+<!-- container-fluid -->
+</div>
+<!-- End Page-content -->
+
 <%--<footer class="footer">--%>
 <%--    <div class="container-fluid">--%>
 <%--        <div class="row">--%>
@@ -14,24 +19,42 @@
 <%--        </div>--%>
 <%--    </div>--%>
 <%--</footer>--%>
-
-<!-- <footer class="footer"> -->
-<!--     <div class="container-fluid"> -->
-<!--         <div class="row"> -->
-<!--             <div class="col-sm-6"> -->
-<!--                 <script>document.write(new Date().getFullYear())</script> © Collage. -->
-<!--             </div> -->
-<!--             <div class="col-sm-6"> -->
-<!--                 <div class="text-sm-end d-none d-sm-block"> -->
-<!--                     Design & Develop by Collage Team -->
-<!--                 </div> -->
-<!--             </div> -->
-<!--         </div> -->
-<!--     </div> -->
-<!-- </footer> -->
+</div>
+<!-- end main content-->
 
 </div>
-</div>
+<!-- END layout-wrapper -->
+
+
+
+<%--</div>--%>
+<%--</main>--%>
+<%--    <footer>--%>
+<%--        <div class="py-3 my-4">--%>
+<%--            <ul class="nav justify-content-center border-bottom pb-3 mb-3">--%>
+<%--                <li class="nav-item">--%>
+<%--                    <a href="#" class="nav-link px-2 text-body-secondary">Home</a>--%>
+<%--                </li>--%>
+<%--                <li class="nav-item">--%>
+<%--                    <a href="#" class="nav-link px-2 text-body-secondary">Features</a>--%>
+<%--                </li>--%>
+<%--                <li class="nav-item">--%>
+<%--                    <a href="#" class="nav-link px-2 text-body-secondary">Pricing</a>--%>
+<%--                </li>--%>
+<%--                <li class="nav-item">--%>
+<%--                    <a href="#" class="nav-link px-2 text-body-secondary">FAQs</a>--%>
+<%--                </li>--%>
+<%--                <li class="nav-item">--%>
+<%--                    <a href="#" class="nav-link px-2 text-body-secondary">About</a>--%>
+<%--                </li>--%>
+<%--            </ul>--%>
+<%--            <p class="text-center text-body-secondary">© 2025 Company, Inc</p>--%>
+<%--        </div>--%>
+<%--    </footer>--%>
+<%--</div>--%>
+
+
+<!--preloader-->
 <div id="preloader">
     <div id="status">
         <div class="spinner-border text-primary avatar-sm" role="status">
@@ -66,7 +89,7 @@
   </div>
 </div>
 
-<div class="offcanvas offcanvas-end border-primary" tabindex="-1" id="chatbot-offcanvas" 
+<div class="offcanvas offcanvas-end border-primary" tabindex="-1" id="chatbot-offcanvas"
 		data-bs-backdrop="false" style="width: 600px;">
   <div class="d-flex align-items-center bg-primary bg-gradient p-3 offcanvas-header">
     <div style="font-size: 18px; font-weight: 600; color: #fff; text-shadow: 0 0 1px rgba(0,0,0,0.3);">
@@ -82,7 +105,7 @@
 	         class="rounded-circle me-2"
 	         draggable="false"
 	         style="pointer-events:none; width:50px; height:50px;">
-	
+
 	    <div>
 	      <div style="font-weight: 600; font-size: 16px;">안녕하세요. SMART_LMS 도우미 챗봇입니다</div>
 	      <div class="text-muted" style="font-size: 14px;">
@@ -91,14 +114,14 @@
 	    </div>
 	  </div>
     </div>
-	
-	<div id="chatbot-tags" 
+
+	<div id="chatbot-tags"
 	     class="card shadow-sm border-primary mt-0"
 	     style="position:sticky; top:0; z-index:10; background:white; flex: 0 0 auto; border-radius: 0; border-top: 0; border-bottom: 1px solid #ddd;">
 
 	    <div class="card-header bg-primary bg-gradient text-white fw-bold py-2 d-flex justify-content-between align-items-center" style="border-radius: 0;">
 	      <span>챗봇 빠른 메뉴</span>
-	      <button id="toggle-menu-btn" 
+	      <button id="toggle-menu-btn"
 	              class="btn btn-sm btn-light fw-semibold no-send"
 	              style="padding:2px 10px; font-size:12px;">
 	        접기
@@ -143,14 +166,14 @@
 	      </div>
 	    </div>
 	</div>
-	
+
     <div id="chatbot-messages" style="flex: 1 1 auto; overflow-y: auto; padding: 15px;
          background-color: #ffffff; min-height: 300px; display: flex; flex-direction: column; justify-content: flex-start;">
       <div style="text-align:center; color:#888; margin-top:50px;">
         <small>대화를 시작하려면 메시지를 입력하세요.</small>
       </div>
     </div>
-      
+
     <div class="input-group" style="flex: 0 0 auto; border-top: 1px solid #ccc;">
       <input type="text" id="chatbot-input" class="form-control rounded-start" placeholder="메시지를 입력하세요...">
       <button class="btn btn-primary rounded-end" id="chatbot-send">전송</button>
@@ -158,16 +181,21 @@
 
   </div>
 </div>
-</div>
-<script src="/assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
-<script src="/assets/libs/simplebar/simplebar.min.js"></script>
-<script src="/assets/libs/node-waves/waves.min.js"></script>
+
+
+
+
+<!-- 아마 필요 없을 거 같은디 -->
 <script src="/assets/libs/feather-icons/feather.min.js"></script>
-<script src="/assets/js/pages/plugins/lord-icon-2.1.0.js"></script>
-<script src="/assets/js/plugins.js"></script>
+
+<!-- apexcharts -->
 <script src="/assets/libs/apexcharts/apexcharts.min.js"></script>
+
+<!-- Vector map-->
 <script src="/assets/libs/jsvectormap/jsvectormap.min.js"></script>
 <script src="/assets/libs/jsvectormap/maps/world-merc.js"></script>
+
+<!-- Dashboard init -->
 <script src="/assets/js/pages/dashboard-analytics.init.js"></script>
 <script src="/assets/js/app.js"></script>
 
@@ -182,10 +210,10 @@ if (!window.chatbotInitialized) {
 
         function scrollToBottom() {
             setTimeout(() => {
-                if(messages) { 
+                if(messages) {
                     messages.scrollTop = messages.scrollHeight;
                 }
-            }, 0); 
+            }, 0);
         }
 
 
@@ -233,7 +261,7 @@ if (!window.chatbotInitialized) {
                      style="width:40px; height:40px;">
                 <div class="p-2 rounded-3 bg-light text-muted shadow-sm" style="max-width:75%;">...</div>`;
             messages.appendChild(loader);
-            scrollToBottom(); 
+            scrollToBottom();
             return loader;
         }
 
@@ -241,9 +269,9 @@ if (!window.chatbotInitialized) {
         function sendMessage(text) {
             const placeholder = messages.querySelector("div[style*='text-align:center']");
             if (placeholder) {
-                messages.innerHTML = ""; 
+                messages.innerHTML = "";
             }
-            
+
             appendMessage(text, "me");
             input.value = "";
 
@@ -256,7 +284,7 @@ if (!window.chatbotInitialized) {
             })
             .then(res => res.json())
             .then(data => {
-                setTimeout(() => {   
+                setTimeout(() => {
                     loader.remove();
                     if (data.answer) {
                         appendMessage(data.answer, "bot");

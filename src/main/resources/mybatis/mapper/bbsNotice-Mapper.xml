@@ -54,7 +54,7 @@
 	DELETE FROM BBS WHERE BBSCTT_NO = #{bbscttNo}
 	
 	</delete>
-	
+
 	<!--
 	****************************
 	
@@ -75,16 +75,8 @@
 	</select>
 	
 	
-	
-	<!-- //관리자 - 공지사항게시판 수정
-	public int adminPutDetail(BbsVO bbsVO); -->
-	
-	<update id="adminPutDetail" parameterType="bbsVO">
-	UPDATE BBS
-	SET BBSCTT_SJ = #{bbscttSj}, BBSCTT_CN = #{bbscttCn} 
-	WHERE BBSCTT_NO = #{bbscttNo}
-	</update>
-	
+
+
 	<!-- //관리자 - 공지사항 게시판 1행 삭제
 	public int adminDeleteDetail(int bbscttNo); 
 	 -->
@@ -101,7 +93,72 @@
 		<selectKey resultType="int" order="BEFORE" keyProperty="bbscttNo" >
 			SELECT NVL(MAX(BBSCTT_NO),0) + 1 FROM BBS		
 		</selectKey>
-	INSERT INTO BBS (BBSCTT_NO, ACNT_ID, BBSCTT_SJ, BBSCTT_CN, BBSCTT_WRITNG_DE, BBSCTT_RDCNT, BBSCTT_TY)
-	VALUES(#{bbscttNo},#{acntId},#{bbscttSj},#{bbscttCn},SYSDATE,0,'1')
+	INSERT INTO BBS (BBSCTT_NO, ACNT_ID, BBSCTT_SJ, BBSCTT_CN, BBSCTT_WRITNG_DE, BBSCTT_RDCNT, BBSCTT_TY
+	,FILE_GROUP_NO
+	)
+	VALUES(#{bbscttNo},#{acntId},#{bbscttSj},#{bbscttCn},SYSDATE,0,'1'
+	,#{fileGroupNo}
+	)
 	</insert>
+
+
+
+	<!-- 	//관리자 - 공지사항 상세화면 bbs1행 가져오기
+	public BbsVO adminDetail(BbsVO bbsVO); -->
+
+	<select id="adminDetail" parameterType="int" resultType="bbsVO">
+
+	SELECT BBSCTT_NO, ACNT_ID, PARNTS_BBSCTT_NO, FILE_GROUP_NO, BBSCTT_SJ
+		, BBSCTT_CN, BBSCTT_WRITNG_DE, BBSCTT_RDCNT, BBSCTT_TY
+		FROM BBS
+		WHERE BBSCTT_NO = #{bbscttNo}
+	</select>
+
+	<!--
+	** 여기서부터는 어드민 수정부분!!
+
+	 -->
+
+
+	<!-- 	//파일 디테일에서 deletedFileSns 삭제하기
+	public int deleteFileDetail(
+				@Param("fileNo")List<Integer> deletedFileSns,
+				@Param("fileGroupNo") Long fileGroupNo);
+	 -->
+
+	<delete id="deleteFileDetail" >
+		DELETE FROM FILE_DETAIL
+		WHERE 1=1
+		AND FILE_GROUP_NO = #{fileGroupNo}
+		AND FILE_NO IN
+		<foreach collection="fileNo" item="fileNo" open="(" separator="," close=")">
+			#{fileNo}
+		</foreach>
+
+	</delete>
+
+	<!-- 	//파일 디테일 테이블에서 파일 그룹에 맞는 seq 최대값 찾기
+	public int selectFileDetailMaxSeq(Long fileGroupNo); -->
+
+	<select id="selectFileDetailMaxSeq" parameterType="Long">
+		SELECT NVL(MAX(FILE_NO),0)
+		FROM FILE_DETAIL
+		WHERE FILE_GROUP_NO = #{fileGroupNo}
+	</select>
+
+
+	<!-- //관리자 - 공지사항게시판 수정
+	public int adminPutDetail(BbsVO bbsVO); -->
+
+	<update id="adminPutDetail" parameterType="bbsVO">
+	UPDATE BBS
+	SET BBSCTT_SJ = #{bbscttSj}, BBSCTT_CN = #{bbscttCn},FILE_GROUP_NO=#{fileGroupNo}
+	WHERE BBSCTT_NO = #{bbscttNo}
+	</update>
+
+
+
+
+
+
 </mapper>

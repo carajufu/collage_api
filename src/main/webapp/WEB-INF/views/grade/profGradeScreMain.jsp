@@ -2,7 +2,33 @@
 
 <%@ include file="../header.jsp" %>
 
-    <h2 class="border-bottom pb-2 mb-2">개설 강의 목록</h2>
+    <h4 class="fw-bold mb-4">개설 강의 목록</h4>
+
+    <!-- 검색 폼 추가 -->
+    <form method="get" action="/prof/course/list" class="row g-3 mb-4">
+      <div class="col-md-3">
+        <label class="form-label fw-semibold">개설년도</label>
+        <select name="year" class="form-select">
+          <option value="">전체</option>
+          <option value="2025">2025</option>
+          <option value="2024">2024</option>
+          <option value="2023">2023</option>
+        </select>
+      </div>
+
+      <div class="col-md-3">
+        <label class="form-label fw-semibold">학기</label>
+        <select name="semstr" class="form-select">
+          <option value="">전체</option>
+          <option value="1">1학기</option>
+          <option value="2">2학기</option>
+        </select>
+      </div>
+
+      <div class="col-md-3 align-self-end">
+        <button type="submit" class="btn btn-primary">검색</button>
+      </div>
+    </form>
 
     <div class="d-flex justify-content-end mb-3 mt-0">
       <input type="text" id="lectureSearch" class="form-control w-25" placeholder="강의명 / 코드 / 연도 / 학기 검색">

@@ -1,8 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" isELIgnored="false" %>
-<%@ include file="../header.jsp" %> 
+<%@ include file="../header.jsp" %>
 
-<div class="page-content">
-  <div class="container-fluid">
 
     <h4 class="fw-bold mb-4">강의평가</h4>
 
@@ -33,6 +31,8 @@
       <div class="table-responsive">
         <table class="table table-bordered align-middle">
           <thead class="table-light text-center">
+        <table class="table table-hover align-middle text-center">
+          <thead class="table-light">
             <tr>
               <th style="width: 6%;">No.</th>
               <th style="width: 25%;">개설 강의명</th>
@@ -73,6 +73,4 @@
       </div>
     </c:if>
 
-  </div>
-</div>
-<%@ include file="../footer.jsp" %> 
+<%@ include file="../footer.jsp" %>
