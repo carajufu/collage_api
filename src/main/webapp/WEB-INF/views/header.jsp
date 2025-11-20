@@ -32,7 +32,7 @@
     <script src="/assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="/assets/js/pages/plugins/lord-icon-2.1.0.js"></script>
     <script src="/assets/js/plugins.js"></script>
-    <script src="/assets/js/app.js"></script>
+    <script src="/assets/js/app.js" defer></script>
     <script src="/assets/js/layout.js"></script>
 
     <script src="/assets/libs/simplebar/simplebar.min.js"></script>
@@ -40,6 +40,9 @@
 
     <!-- jQuery-3.6.0.min -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
+    <!-- axios -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
 </head>
 <body>
@@ -626,7 +629,7 @@
                     <li class="menu-title"><span data-key="">학습</span></li>
 
                     <li class="nav-item">
-                        <a class="nav-link menu-link" href="ui-alerts.html" data-key="">
+                        <a class="nav-link menu-link" href="/dashboard/student" data-key="">
                             <i class="las la-university"></i> <span data-key="">학습 관리</span>
                         </a>
                     </li>

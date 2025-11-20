@@ -15,6 +15,24 @@ const modal = `
 
 const frag = document.createRange().createContextualFragment(modal);
 
+const quizModal = `
+     <div class="modal fade" data-bs-backdrop="static" id="quizModal">
+        <div class="modal-dialog modal-dialog-scrollable modal-xl">
+            <div class="modal-content pb-5">
+                <div class="modal-header">
+                    <h4 class="modal-title"></h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <hr/>
+                <div class="modal-body"></div>
+            </div>
+        </div>
+    </div>
+`;
+
+const quizFrag = document.createRange().createContextualFragment(quizModal);
+
+
 /**
  * 모달의 display css 속성의 값을 block으로 변경해 모달을 화면에 표시하는 함수
  *
