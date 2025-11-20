@@ -39,7 +39,8 @@ public class SecurityConfig {
                         "/js/**",
                         "favicon.ico",
                         "/.well-known/**",
-                        "/assets/**");
+                        "/assets/**",
+                        "/img/**");
     }
 
     @Bean

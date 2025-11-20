@@ -42,7 +42,7 @@ public interface UnivMapper {
 
 	//단과대에 포함된 학과 수
 	public int countSubjcts(String univCode);
-	
+
 	//학과에 포함된 교수 수
 	public int countProfsrs(String subjctCode);
 

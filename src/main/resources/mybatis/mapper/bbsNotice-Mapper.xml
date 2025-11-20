@@ -100,9 +100,9 @@
 	,#{fileGroupNo}
 	)
 	</insert>
-	
-	
-	
+
+
+
 	<!-- 	//관리자 - 공지사항 상세화면 bbs1행 가져오기
 	public BbsVO adminDetail(BbsVO bbsVO); -->
 
@@ -158,7 +158,7 @@
 
 
 
-	
 
-	
+
+
 </mapper>

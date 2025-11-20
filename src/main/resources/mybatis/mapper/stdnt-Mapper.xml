@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.ac.collage_api.stdnt.mapper.StdntMapper">
+
+  <!-- ==== 기본 ResultMap ==== -->
+  <resultMap type="kr.ac.collage_api.vo.StdntVO" id="stdntResultMap">
+    <id property="stdntNo" column="STDNT_NO"/>
+    <result property="stdntNm" column="STDNT_NM"/>
+    <!-- 필요시 추가 -->
+  </resultMap>
+
+  <!-- ==== 학생/계정/학기 ==== -->
+  <select id="selectStdntInfo" parameterType="string" resultMap="stdntResultMap">
+    SELECT
+        STDNT_NO , ACNT_ID , SUBJCT_CODE , STDNT_NM , BRTHDY ,
+        BASS_ADRES , DETAIL_ADRES , ZIP , CTTPC , EMGNC_CTTPC ,
+        GRADE , SKNRGS_STTUS , ENTSCH_DE , GRDTN_DE ,
+        BANK_NM , ACNUTNO , LAST_UPDATED_TIME
+    FROM STDNT
+    WHERE STDNT_NO = #{stdntNo}
+  </select>
+
+  <select id="getAcntInfo" parameterType="string" resultType="kr.ac.collage_api.vo.AcntVO">
+    SELECT ACNT_ID , FILE_GROUP_NO , PASSWORD , ACNT_TY
+    FROM ACNT
+    WHERE ACNT_ID = #{acntId}
+  </select>
+
+  <select id="getSemstrList" parameterType="string" resultType="kr.ac.collage_api.vo.SemstrScreVO">
+    SELECT
+        SEMSTR_SCRE_INNB, STDNT_NO, TOT_REQST_PNT, TOT_ACQS_PNT,
+        PNT_AVRG, SEMSTR, YEAR, SEMSTR_TOTPOINT, PNT_GRAD
+    FROM SEMSTR_SCRE
+    WHERE STDNT_NO = #{stdntNo}
+    ORDER BY YEAR DESC, SEMSTR DESC, SEMSTR_SCRE_INNB DESC
+  </select>
+
+  <!-- 선택학기 PK로 YEAR/SEMSTR 조회 -->
+  <select id="getYearSemBySemstrInnb" parameterType="int" resultType="map">
+    SELECT YEAR, SEMSTR
+    FROM SEMSTR_SCRE
+    WHERE SEMSTR_SCRE_INNB = #{semstrScreInnb}
+  </select>
+
+  <!-- ==== 수강 목록 (선택 학기 필터 가능) ==== -->
+	<select id="getCourseList" resultType="kr.ac.collage_api.vo.EstblCourseVO">
+	    SELECT
+	        A.ESTBLLCTRE_CODE,
+	        A.LCTRE_CODE,
+	        B.LCTRE_NM,
+	        A.ACQS_PNT,
+	        A.ESTBL_YEAR,
+	        A.ESTBL_SEMSTR
+	    FROM ESTBL_COURSE A
+	    JOIN ALL_COURSE B
+	        ON A.LCTRE_CODE = B.LCTRE_CODE
+	    JOIN ATNLC_REQST C
+	        ON A.ESTBLLCTRE_CODE = C.ESTBLLCTRE_CODE   <!-- 이것만이 정답 -->
+	    WHERE C.STDNT_NO = #{stdntNo}
+	    <if test="year != null and year != ''">
+	      AND A.ESTBL_YEAR = #{year}
+	    </if>
+	    <if test="semstr != null and semstr != ''">
+	      AND A.ESTBL_SEMSTR = #{semstr}
+	    </if>
+	    ORDER BY A.ESTBLLCTRE_CODE DESC
+	</select>
+
+  <!-- ==== 총 이수 학점 ==== -->
+  <select id="getTotalAcqsPnt" parameterType="string" resultType="int">
+    SELECT NVL(SUM(TOT_ACQS_PNT), 0)
+    FROM SEMSTR_SCRE
+    WHERE STDNT_NO = #{stdntNo}
+  </select>
+
+  <!-- ==== 이수구분별(전필/전선/교필/교선) 합계 ==== -->
+  <select id="getPntByComplSe" resultType="map">
+    SELECT
+      A.COMPL_SE,
+      NVL(SUM(A.ACQS_PNT), 0) AS SUM_PNT
+    FROM ESTBL_COURSE A
+    JOIN ATNLC_REQST C
+      ON A.ESTBLLCTRE_CODE = C.ESTBLLCTRE_CODE
+    WHERE C.STDNT_NO = #{stdntNo}
+    <if test="year != null and year != ''">
+      AND C.REQST_YEAR = #{year}
+    </if>
+    <if test="semstr != null and semstr != ''">
+      AND C.REQST_SEMSTR = #{semstr}
+    </if>
+    GROUP BY A.COMPL_SE
+  </select>
+
+  <!-- ==== 출결 요약 (코드별 개수) ==== -->
+  <select id="getAttendanceSummary" parameterType="string" resultType="map">
+    SELECT ATEND_STTUS_CODE, COUNT(*) AS CNT
+    FROM ATEND_ABSNC
+    WHERE STDNT_NO = #{stdntNo}
+    GROUP BY ATEND_STTUS_CODE
+  </select>
+
+  <!-- ==== 기타 조회 ==== -->
+  <select id="selectStdntInfoByName" parameterType="string" resultMap="stdntResultMap">
+    SELECT
+        STDNT_NO , ACNT_ID , SUBJCT_CODE , STDNT_NM , BRTHDY ,
+        BASS_ADRES , DETAIL_ADRES , ZIP , CTTPC , EMGNC_CTTPC ,
+        GRADE , SKNRGS_STTUS , ENTSCH_DE , GRDTN_DE ,
+        BANK_NM , ACNUTNO , LAST_UPDATED_TIME
+    FROM STDNT
+    WHERE STDNT_NM = #{stdntNm}
+  </select>
+
+  <!-- ==== 프로필 이미지 FileGroupNo 업데이트 ==== -->
+  <update id="updateProfileImage">
+    UPDATE ACNT
+       SET FILE_GROUP_NO = #{fileGroupNo}
+     WHERE ACNT_ID = #{acntId}
+  </update>
+  
+</mapper>
