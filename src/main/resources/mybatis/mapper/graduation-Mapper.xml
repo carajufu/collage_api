@@ -5,44 +5,44 @@
     <select id="getStdntRegist" resultType="kr.ac.collage_api.graduation.vo.GraduationVO">
         SELECT *
         FROM (
-            SELECT 	
-                SKNRGS_CHANGE_INNB, STDNT_NO, CHANGE_TY, EFECT_OCCRRNC_SEMSTR,	
-                REQST_RESN, CHANGE_REQST_DT, REQST_STTUS, CONFM_COMPT_DT,			
-                RETURN_RESN, LAST_UPDT_TM, TMPABSSKL_TY			
+            SELECT
+                SKNRGS_CHANGE_INNB, STDNT_NO, CHANGE_TY, EFECT_OCCRRNC_SEMSTR,
+                REQST_RESN, CHANGE_REQST_DT, REQST_STTUS, CONFM_COMPT_DT,
+                RETURN_RESN, LAST_UPDT_TM, TMPABSSKL_TY
             FROM SKNRGS_CHANGE_REQST
             WHERE STDNT_NO = #{stdntNo}
-              AND CHANGE_TY = '졸업' 
+              AND CHANGE_TY = '졸업'
             ORDER BY CHANGE_REQST_DT DESC
         )
         WHERE ROWNUM = 1
     </select>
-    
+
     <insert id="applyForGraduation" parameterType="kr.ac.collage_api.graduation.vo.GraduationVO">
         INSERT INTO SKNRGS_CHANGE_REQST (
-            SKNRGS_CHANGE_INNB		
-            ,STDNT_NO				
-            ,CHANGE_TY				
-            ,REQST_RESN				
-            ,CHANGE_REQST_DT		
-            ,REQST_STTUS			
+            SKNRGS_CHANGE_INNB
+            ,STDNT_NO
+            ,CHANGE_TY
+            ,REQST_RESN
+            ,CHANGE_REQST_DT
+            ,REQST_STTUS
         ) VALUES (
             (SELECT NVL(MAX(SKNRGS_CHANGE_INNB), 0) + 1 FROM SKNRGS_CHANGE_REQST)
-            ,#{stdntNo}						
-            ,#{changeTy}					
-            ,#{reqstResn}					
-            ,SYSDATE						
-            ,#{reqstSttus}		
+            ,#{stdntNo}
+            ,#{changeTy}
+            ,#{reqstResn}
+            ,SYSDATE
+            ,#{reqstSttus}
         )
     </insert>
-    
+
     <select id="getAllPnt" resultType="int">
         SELECT NVL(SUM(TOT_ACQS_PNT), 0)
         FROM SEMSTR_SCRE
-        WHERE STDNT_NO = #{stdntNo}				
+        WHERE STDNT_NO = #{stdntNo}
     </select>
-    
+
     <select id="getStudentInfo" resultType="kr.ac.collage_api.vo.StdntVO">
-        SELECT 
+        SELECT
             A.STDNT_NO, A.ACNT_ID, A.SUBJCT_CODE, A.STDNT_NM, A.BRTHDY,
             A.BASS_ADRES, A.DETAIL_ADRES, A.ZIP, A.CTTPC, A.EMGNC_CTTPC,
             A.GRADE, A.SKNRGS_STTUS, A.ENTSCH_DE, A.GRDTN_DE,
@@ -52,9 +52,9 @@
         LEFT JOIN SUBJCT B ON A.SUBJCT_CODE = B.SUBJCT_CODE
         WHERE A.STDNT_NO = #{stdntNo}
     </select>
-    
+
     <select id="getConsult" resultType="map">
-        SELECT 
+        SELECT
            A.CNSLT_REQST_INNB, A.CNSLT_INNB, A.STDNT_NO, A.REQST_DE,
            A.CNSLT_STTUS, A.CNSLT_REQUST_CN, A.CANCL_REASON,
            D.SKLSTF_NM AS profsrNm
@@ -65,26 +65,26 @@
         WHERE A.STDNT_NO = #{stdntNo}
         ORDER BY A.REQST_DE DESC
     </select>
-	    
+
 	<select id="getSubjectCompletions" resultType="map">
 	    SELECT
 	         C.COMPL_SE,
 	         D.LCTRE_NM,
-	         D.SUBJCT_CODE 
-	    FROM SBJECT_SCRE A 
-	    JOIN ATNLC_REQST B ON A.ATNLC_REQST_NO = B.ATNLC_REQST_NO 
-	    JOIN ESTBL_COURSE C ON B.ESTBLLCTRE_CODE = C.ESTBLLCTRE_CODE 
-	    JOIN ALL_COURSE D ON C.LCTRE_CODE = D.LCTRE_CODE 
+	         D.SUBJCT_CODE
+	    FROM SBJECT_SCRE A
+	    JOIN ATNLC_REQST B ON A.ATNLC_REQST_NO = B.ATNLC_REQST_NO
+	    JOIN ESTBL_COURSE C ON B.ESTBLLCTRE_CODE = C.ESTBLLCTRE_CODE
+	    JOIN ALL_COURSE D ON C.LCTRE_CODE = D.LCTRE_CODE
 	    WHERE B.STDNT_NO = #{stdntNo}
 	      AND A.PNT_GRAD != 'F'
 	</select>
-    
+
     <select id="getCumulativeGpa" resultType="double">
-        SELECT 
+        SELECT
             NVL(
-                CASE 
-                    WHEN SUM(TOT_ACQS_PNT) = 0 THEN 0 
-                    ELSE SUM(PNT_AVRG * TOT_ACQS_PNT) / SUM(TOT_ACQS_PNT) 
+                CASE
+                    WHEN SUM(TOT_ACQS_PNT) = 0 THEN 0
+                    ELSE SUM(PNT_AVRG * TOT_ACQS_PNT) / SUM(TOT_ACQS_PNT)
                 END
             , 0) AS totalGpa
         FROM SEMSTR_SCRE

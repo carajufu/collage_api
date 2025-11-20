@@ -2,7 +2,8 @@
 <%@ taglib prefix="c" uri="jakarta.tags.core"%>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt"%>
 
-<%@ include file="/WEB-INF/views/header.jsp" %> 
+
+<%@ include file="../header.jsp"%>
 
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
@@ -202,8 +203,6 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 </script>
 
-<div class="page-content">
-  <div class="container-fluid">
 
     <h4 class="fw-bold mb-4">과목별 성적 관리</h4>
 
@@ -284,7 +283,4 @@ document.addEventListener("DOMContentLoaded", function () {
       </div>
     </form>
 
-  </div>
-</div>
-
-<%@ include file="/WEB-INF/views/footer.jsp" %>
+<%@ include file="../footer.jsp" %>

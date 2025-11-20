@@ -44,10 +44,10 @@
             NVL(G.AVRG_SCORE, 0)        AS pntAvrg
 
         FROM ATNLC_REQST AR
-        JOIN STDNT ST 
+        JOIN STDNT ST
             ON AR.STDNT_NO = ST.STDNT_NO
 
-        LEFT JOIN SBJECT_SCRE G 
+        LEFT JOIN SBJECT_SCRE G
             ON AR.ATNLC_REQST_NO = G.ATNLC_REQST_NO
 
         WHERE AR.ESTBLLCTRE_CODE = #{estbllctreCode}
@@ -61,14 +61,14 @@
 		  v_year      VARCHAR2(4);
 		  v_semstr    VARCHAR2(20);
 		BEGIN
-		
+
 		  <foreach collection="list" item="g">
-		
+
 		    SELECT STDNT_NO, REQST_YEAR, REQST_SEMSTR
 		    INTO v_stdnt_no, v_year, v_semstr
 		    FROM ATNLC_REQST
 		    WHERE ATNLC_REQST_NO = #{g.atnlcReqstNo};
-		
+
 		    BEGIN
 		      SELECT SEMSTR_SCRE_INNB
 		      INTO v_semstr_scre_innb
@@ -81,7 +81,7 @@
 		        SELECT NVL(MAX(SEMSTR_SCRE_INNB), 0) + 1
 		        INTO v_semstr_scre_innb
 		        FROM SEMSTR_SCRE;
-		
+
 		        INSERT INTO SEMSTR_SCRE (
 		          SEMSTR_SCRE_INNB, STDNT_NO, TOT_REQST_PNT,
 		          TOT_ACQS_PNT, PNT_AVRG, SEMSTR, YEAR,
@@ -91,7 +91,7 @@
 		          0, 0, v_semstr, v_year, 0, NULL
 		        );
 		    END;
-		
+
 		    MERGE INTO SBJECT_SCRE G
 		    USING (
 		      SELECT
@@ -106,7 +106,7 @@
 		      FROM DUAL
 		    ) S
 		    ON (G.ATNLC_REQST_NO = S.ATNLC_REQST_NO)
-		
+
 		    WHEN MATCHED THEN
 		      UPDATE SET
 		        G.ATEND_SCORE     = S.ATEND_SCORE,
@@ -116,7 +116,7 @@
 		        G.SBJECT_TOTPOINT = S.SBJECT_TOTPOINT,
 		        G.PNT_GRAD        = S.PNT_GRAD,
 		        G.AVRG_SCORE      = S.AVRG_SCORE
-		
+
 		    WHEN NOT MATCHED THEN
 		      INSERT (
 		        G.SBJECT_SCRE_INNB, G.SEMSTR_SCRE_INNB, G.ATNLC_REQST_NO,
@@ -136,9 +136,9 @@
 		        S.SBJECT_TOTPOINT,
 		        S.AVRG_SCORE
 		      );
-		
+
 		  </foreach>
-		
+
 		END;
 		</update>
 

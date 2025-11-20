@@ -2,7 +2,7 @@
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 
-<%@ include file="/WEB-INF/views/header.jsp" %> 
+<%@ include file="../header.jsp" %>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -122,4 +122,4 @@ window.onload = function() {
     </div>
 
   </div>
-<%@ include file="/WEB-INF/views/footer.jsp" %>
+<%@ include file="../footer.jsp" %>

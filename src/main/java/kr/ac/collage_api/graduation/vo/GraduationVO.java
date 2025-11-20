@@ -16,7 +16,7 @@ public class GraduationVO {
 	private String semstr;        //학기	SEMSTR
 	private String year;          //년도	YEAR
     private int acqsPnt;            // 이수학점 (ACQS_PNT)
-    
+
     //학적변동 신청
 	private int sknrgsChangeInnb;          //학적변동고유번호(PK)	SKNRGS_CHANGE_INNB(PK)
 	private String stdntNo;                //학생번호(FK)	STDNT_NO(FK)
@@ -29,14 +29,14 @@ public class GraduationVO {
 	private Date confmComptDt;             //승인완료일시	CONFM_COMPT_DT
 	private String returnResn;             //반려사유	RETURN_RESN
 	private Date lastUpdtTm;               //최종수정일시	LAST_UPDT_TM
-	
+
 	//전체교과목
 	private String lctreCode;   //강의코드(PK)	LCTRE_CODE(PK)
 	private String subjctCode;  //학과코드(FK)	SUBJCT_CODE(FK)
 	private String preLecture;  //선수_강의(FK)	PRE_LECTURE(FK)
 	private String lctreNm;     //강의명	LCTRE_NM
-	private String operAt;      //운영여부	OPER_AT	
-	private Date recentUpdtDt;  //최근수정일시	RECENT_UPDT_DT	
+	private String operAt;      //운영여부	OPER_AT
+	private Date recentUpdtDt;  //최근수정일시	RECENT_UPDT_DT
 
 	//개설교과목
 	private String estbllctreCode;           //개설강의코드(PK)	ESTBLLCTRE_CODE(PK)
@@ -53,8 +53,8 @@ public class GraduationVO {
 	private int trmendTestScoreReflctRate;   //기말시험점수반영비율	TRMEND_TEST_SCORE_REFLCT_RATE
 	private String estblYear;                //개설년도	ESTBL_YEAR
 	private String estblSemstr;              //개설학기	ESTBL_SEMSTR
-	
 
-	
-	
+
+
+
 }

@@ -1,7 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 
-<%@ include file="/WEB-INF/views/header.jsp" %> 
+<%@ include file="../header.jsp" %>
 
 <div class="flex-grow-1 p-3 overflow-auto">
 
@@ -97,4 +96,4 @@
   </c:if>
 
 </div>
-<%@ include file="/WEB-INF/views/footer.jsp" %>
+<%@ include file="../footer.jsp" %>

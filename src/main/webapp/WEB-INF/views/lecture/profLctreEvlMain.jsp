@@ -2,7 +2,7 @@
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 
-<%@ include file="/WEB-INF/views/header.jsp" %> 
+<%@ include file="../header.jsp" %>
 
   <div class="flex-grow-1 p-1 overflow-auto">
 
@@ -76,4 +76,4 @@
 
   </div>
 
-<%@ include file="/WEB-INF/views/footer.jsp" %>
+<%@ include file="../footer.jsp" %>

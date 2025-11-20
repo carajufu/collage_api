@@ -1,12 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" isELIgnored="false" %>
-<%@ taglib prefix="c" uri="jakarta.tags.core" %>
-<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
-<%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
+<%@ include file="../header.jsp" %>
 
-<%@ include file="/WEB-INF/views/header.jsp" %> 
-
-<div class="page-content">
-  <div class="container-fluid">
 
     <h4 class="fw-bold mb-4">강의평가</h4>
 
@@ -36,6 +30,8 @@
       <div class="table-responsive">
         <table class="table table-bordered align-middle">
           <thead class="table-light text-center">
+        <table class="table table-hover align-middle text-center">
+          <thead class="table-light">
             <tr>
               <th style="width: 6%;">No.</th>
               <th style="width: 25%;">개설 강의명</th>
@@ -66,7 +62,7 @@
                 <td class="text-center">
                   <c:choose>
                     <c:when test="${lecture.evalCompleted eq 'N'}">
-                      <a href="/stdnt/lecture/main/${lecture.estbllctreCode}" 
+                      <a href="/stdnt/lecture/main/${lecture.estbllctreCode}"
                          class="btn btn-primary btn-sm px-3">
                         평가하기
                       </a>
@@ -86,7 +82,4 @@
       </div>
     </c:if>
 
-  </div>
-</div>
-
-<%@ include file="/WEB-INF/views/footer.jsp" %>
+<%@ include file="../footer.jsp" %>

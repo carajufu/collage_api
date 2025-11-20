@@ -8,5 +8,5 @@ import lombok.Data;
 public class GradeForm {
 	
 	private List<GradeScreVO> grades;
-	
+
 }

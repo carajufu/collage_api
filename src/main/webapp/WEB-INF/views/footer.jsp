@@ -89,7 +89,7 @@
   </div>
 </div>
 
-<div class="offcanvas offcanvas-end border-primary" tabindex="-1" id="chatbot-offcanvas" 
+<div class="offcanvas offcanvas-end border-primary" tabindex="-1" id="chatbot-offcanvas"
 		data-bs-backdrop="false" style="width: 600px;">
   <div class="d-flex align-items-center bg-primary bg-gradient p-3 offcanvas-header">
     <div style="font-size: 18px; font-weight: 600; color: #fff; text-shadow: 0 0 1px rgba(0,0,0,0.3);">
@@ -105,7 +105,7 @@
 	         class="rounded-circle me-2"
 	         draggable="false"
 	         style="pointer-events:none; width:50px; height:50px;">
-	
+
 	    <div>
 	      <div style="font-weight: 600; font-size: 16px;">안녕하세요. SMART_LMS 도우미 챗봇입니다</div>
 	      <div class="text-muted" style="font-size: 14px;">
@@ -114,14 +114,14 @@
 	    </div>
 	  </div>
     </div>
-	
-	<div id="chatbot-tags" 
+
+	<div id="chatbot-tags"
 	     class="card shadow-sm border-primary mt-0"
 	     style="position:sticky; top:0; z-index:10; background:white; flex: 0 0 auto; border-radius: 0; border-top: 0; border-bottom: 1px solid #ddd;">
 
 	    <div class="card-header bg-primary bg-gradient text-white fw-bold py-2 d-flex justify-content-between align-items-center" style="border-radius: 0;">
 	      <span>챗봇 빠른 메뉴</span>
-	      <button id="toggle-menu-btn" 
+	      <button id="toggle-menu-btn"
 	              class="btn btn-sm btn-light fw-semibold no-send"
 	              style="padding:2px 10px; font-size:12px;">
 	        접기
@@ -166,21 +166,20 @@
 	      </div>
 	    </div>
 	</div>
-	
+
     <div id="chatbot-messages" style="flex: 1 1 auto; overflow-y: auto; padding: 15px;
          background-color: #ffffff; min-height: 300px; display: flex; flex-direction: column; justify-content: flex-start;">
       <div style="text-align:center; color:#888; margin-top:50px;">
         <small>대화를 시작하려면 메시지를 입력하세요.</small>
       </div>
     </div>
-      
+
     <div class="input-group" style="flex: 0 0 auto; border-top: 1px solid #ccc;">
       <input type="text" id="chatbot-input" class="form-control rounded-start" placeholder="메시지를 입력하세요...">
       <button class="btn btn-primary rounded-end" id="chatbot-send">전송</button>
     </div>
 
   </div>
-</div>
 </div>
 
 
@@ -211,10 +210,10 @@ if (!window.chatbotInitialized) {
 
         function scrollToBottom() {
             setTimeout(() => {
-                if(messages) { 
+                if(messages) {
                     messages.scrollTop = messages.scrollHeight;
                 }
-            }, 0); 
+            }, 0);
         }
 
 
@@ -262,7 +261,7 @@ if (!window.chatbotInitialized) {
                      style="width:40px; height:40px;">
                 <div class="p-2 rounded-3 bg-light text-muted shadow-sm" style="max-width:75%;">...</div>`;
             messages.appendChild(loader);
-            scrollToBottom(); 
+            scrollToBottom();
             return loader;
         }
 
@@ -270,9 +269,9 @@ if (!window.chatbotInitialized) {
         function sendMessage(text) {
             const placeholder = messages.querySelector("div[style*='text-align:center']");
             if (placeholder) {
-                messages.innerHTML = ""; 
+                messages.innerHTML = "";
             }
-            
+
             appendMessage(text, "me");
             input.value = "";
 
@@ -285,7 +284,7 @@ if (!window.chatbotInitialized) {
             })
             .then(res => res.json())
             .then(data => {
-                setTimeout(() => {   
+                setTimeout(() => {
                     loader.remove();
                     if (data.answer) {
                         appendMessage(data.answer, "bot");

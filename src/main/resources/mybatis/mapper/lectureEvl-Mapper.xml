@@ -6,7 +6,7 @@
     <!--  공통: ACNT_ID → 교수번호 / 학생번호 -->
     <!-- ========================================================= -->
     <select id="getProfsrNoByAcntId" resultType="string">
-        SELECT 
+        SELECT
              P.PROFSR_NO
         FROM ACNT A
         JOIN SKLSTF S ON A.ACNT_ID = S.ACNT_ID
@@ -15,7 +15,7 @@
     </select>
 
     <select id="getStdntNoByAcntId" resultType="string">
-        SELECT 
+        SELECT
              S.STDNT_NO
         FROM ACNT A
         JOIN STDNT S ON A.ACNT_ID = S.ACNT_ID
@@ -26,7 +26,7 @@
     <!--  교수: 개설강의 개수 -->
     <!-- ========================================================= -->
     <select id="getTotalCourseCount" parameterType="string" resultType="int">
-        SELECT 
+        SELECT
              COUNT(*)
         FROM ESTBL_COURSE
         WHERE PROFSR_NO = #{profsrNo}
@@ -38,7 +38,7 @@
     <select id="getPagedCourses" parameterType="map" resultType="kr.ac.collage_api.lecture.vo.LectureEvlVO">
         SELECT *
         FROM (
-            SELECT 
+            SELECT
                  ROWNUM AS RNUM
                 ,C.*
             FROM (
@@ -60,7 +60,7 @@
                     ,A.ESTBL_SEMSTR
                     ,B.LCTRE_NM
                 FROM ESTBL_COURSE A
-                LEFT JOIN ALL_COURSE B 
+                LEFT JOIN ALL_COURSE B
                        ON A.LCTRE_CODE = B.LCTRE_CODE
                 WHERE A.PROFSR_NO = #{profsrNo}
                 ORDER BY A.ESTBL_YEAR DESC
@@ -88,11 +88,11 @@
             ,C.LCTRE_NM
             ,S.SKLSTF_NM AS PROFSR_NM
         FROM ESTBL_COURSE E
-        LEFT JOIN ALL_COURSE C 
+        LEFT JOIN ALL_COURSE C
                ON E.LCTRE_CODE = C.LCTRE_CODE
-        LEFT JOIN PROFSR P 
+        LEFT JOIN PROFSR P
                ON E.PROFSR_NO = P.PROFSR_NO
-        LEFT JOIN SKLSTF S 
+        LEFT JOIN SKLSTF S
                ON P.SKLSTF_ID = S.SKLSTF_ID
         WHERE E.ESTBLLCTRE_CODE = #{estbllctreCode}
     </select>
@@ -129,7 +129,7 @@
     <!--  공통: 해당 강의의 EVL_NO (중복 없음 전제) -->
     <!-- ========================================================= -->
     <select id="getEvlNoByEstbllctreCode" resultType="java.lang.Integer">
-        SELECT 
+        SELECT
              EVL_NO
         FROM LCTRE_EVL
         WHERE ESTBLLCTRE_CODE = #{estbllctreCode}
@@ -144,12 +144,12 @@
             ,ROUND(AVG(S.EVL_SCORE), 2) AS AVG_SCORE
             ,COUNT(*) AS EVL_CNT
         FROM LCTRE_EVL_SCORE S
-        JOIN LCTRE_EVL_IEM I 
+        JOIN LCTRE_EVL_IEM I
              ON S.LCTRE_EVL_INNB = I.LCTRE_EVL_INNB
-        JOIN LCTRE_EVL E 
+        JOIN LCTRE_EVL E
              ON I.EVL_NO = E.EVL_NO
         WHERE E.ESTBLLCTRE_CODE = #{estbllctreCode}
-        GROUP BY 
+        GROUP BY
              I.LCTRE_EVL_INNB
             ,I.EVL_CN
         ORDER BY I.LCTRE_EVL_INNB
@@ -159,12 +159,12 @@
     <!--  교수: 점수별 분포 -->
     <!-- ========================================================= -->
     <select id="getLectureEvalScoreCounts" resultType="int">
-        SELECT 
+        SELECT
              COUNT(*)
         FROM LCTRE_EVL_SCORE S
-        JOIN LCTRE_EVL_IEM I 
+        JOIN LCTRE_EVL_IEM I
              ON S.LCTRE_EVL_INNB = I.LCTRE_EVL_INNB
-        JOIN LCTRE_EVL E 
+        JOIN LCTRE_EVL E
              ON I.EVL_NO = E.EVL_NO
         WHERE E.ESTBLLCTRE_CODE = #{estbllctreCode}
         GROUP BY S.EVL_SCORE
@@ -187,12 +187,12 @@
             ,AC.LCTRE_NM
             ,CASE 
                 WHEN EXISTS (
-                    SELECT 
+                    SELECT
                         1
                     FROM LCTRE_EVL_SCORE S
-                    JOIN LCTRE_EVL_IEM IEM 
+                    JOIN LCTRE_EVL_IEM IEM
                          ON S.LCTRE_EVL_INNB = IEM.LCTRE_EVL_INNB
-                    JOIN LCTRE_EVL EVL 
+                    JOIN LCTRE_EVL EVL
                          ON IEM.EVL_NO = EVL.EVL_NO
                     WHERE S.STDNT_NO = AR.STDNT_NO
                       AND EVL.ESTBLLCTRE_CODE = AR.ESTBLLCTRE_CODE
@@ -200,13 +200,13 @@
                 ELSE 'N'
             END AS evalCompleted
         FROM ATNLC_REQST AR
-        JOIN ESTBL_COURSE EC 
+        JOIN ESTBL_COURSE EC
              ON AR.ESTBLLCTRE_CODE = EC.ESTBLLCTRE_CODE
-        JOIN ALL_COURSE AC 
+        JOIN ALL_COURSE AC
              ON EC.LCTRE_CODE = AC.LCTRE_CODE
         WHERE AR.STDNT_NO = #{stdntNo}
           AND AR.REQST_STTUS = '신청완료'
-        ORDER BY 
+        ORDER BY
              EC.ESTBL_YEAR DESC
             ,EC.ESTBL_SEMSTR DESC
     </select>
@@ -223,7 +223,7 @@
             ,EVL_SCORE
             ,EVL_CN
         )
-        VALUES 
+        VALUES
         (
             (SELECT NVL(MAX(TO_NUMBER(LCTRE_EVL_SN)), 0) + 1 FROM LCTRE_EVL_SCORE)
             ,#{stdntId}
@@ -243,7 +243,7 @@
             ,ESTBLLCTRE_CODE
             ,ALL_EVL_AVRG
         )
-        VALUES 
+        VALUES
         (
              #{evlNo}
             ,#{estbllctreCode}
@@ -261,7 +261,7 @@
             ,EVL_NO
             ,EVL_CN
         )
-        VALUES 
+        VALUES
         (
             (SELECT NVL(MAX(LCTRE_EVL_INNB), 0) + 1 FROM LCTRE_EVL_IEM)
             ,#{evlNo}
@@ -273,8 +273,8 @@
     <!--  시스템: 다음 EVL_NO 생성 -->
     <!-- ========================================================= -->
     <select id="getNextEvlNo" resultType="int">
-        SELECT 
-             NVL(MAX(EVL_NO), 0) + 1 
+        SELECT
+             NVL(MAX(EVL_NO), 0) + 1
         FROM LCTRE_EVL
     </select>
 

@@ -1,10 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 
-<%@ include file="/WEB-INF/views/header.jsp" %>
-
-<div class="page-content">
-  <div class="container-fluid">
+<%@ include file="../header.jsp" %>
 
     <h4 class="fw-bold mb-4">개설 강의 목록</h4>
 
@@ -147,4 +144,4 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 </script>
 
-<%@ include file="/WEB-INF/views/footer.jsp" %>
+<%@ include file="../footer.jsp" %>
