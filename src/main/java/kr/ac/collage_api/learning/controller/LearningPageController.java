@@ -4,6 +4,7 @@ import kr.ac.collage_api.learning.vo.*;
 import kr.ac.collage_api.learning.service.impl.LearningPageServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,6 +22,13 @@ import java.util.Map;
 @RequestMapping("/learning/student")
 @Slf4j
 public class LearningPageController {
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public class QuizBadRequestException extends RuntimeException {
+        public QuizBadRequestException(String message) {
+            super(message);
+        }
+    }
+
     @Autowired
     LearningPageServiceImpl learningPageService;
 
@@ -167,20 +175,17 @@ public class LearningPageController {
     @ResponseBody
     @GetMapping("/quizSubmit")
     public Map<String, Object> quizSubmit(@RequestParam String quizExCode,
-                                          @RequestParam String quizCode) {
-        int rslt = 0;
+                                          @RequestParam String quizCode,
+                                          Principal principal) {
+        Map<String, Object> respMap = new HashMap<>();
+
         // todo: 제출 데이터 db insert 후 정답인지 아닌지 알려주는 응답 바디 작성하기
-        if(quizCode != null && quizExCode != null) {
-            rslt = learningPageService.quizSubmit(quizCode, quizExCode);
+        if(quizCode == null || quizExCode == null) {
+            throw new QuizBadRequestException("Required field is missing");
         }
 
-        Map<String, Object> respMap = new HashMap<>();
-        if(rslt <= 0) {
-            respMap.put("status", "error");
-            return respMap;
-        }
-        else {
-            respMap.put("status", "success");
-        }
+        respMap = learningPageService.quizSubmit(quizCode, quizExCode, principal.getName());
+
+        return respMap;
     }
 }

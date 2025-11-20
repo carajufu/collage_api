@@ -10,7 +10,13 @@
     <link href="/assets/libs/sweetalert2/sweetalert2.min.css" rel="stylesheet" type="text/css" />
     <script type="text/javascript" src="/assets/libs/sweetalert2/sweetalert2.min.js"></script>
 
+    <!-- girdJs -->
+    <link href="/assets/libs/gridjs/theme/mermaid.min.css" rel="stylesheet" type="text/css" />
+    <script type="text/javascript" src="/assets/libs/gridjs/gridjs.umd.js"></script>
+
+    <!-- custom -->
     <script type="text/javascript" src="/js/wtModal.js"></script>
+
     <script type="text/javascript">
         document.addEventListener("DOMContentLoaded", () => {
             if(window.Waves) {
@@ -282,12 +288,12 @@
             }
             let updateMsg = updateTime ? "수정 일시 : " + updateTime : "";
 
-            meta.className = "text-muted fw-lighter";
+            meta.className = "text-muted fw-lighter small";
             meta.textContent = registMsg + updateMsg;
             tCol.appendChild(meta);
 
             const deadLine = document.createElement("div");
-            deadLine.className = "text-muted fw-lighter mb-3";
+            deadLine.className = "text-muted fw-lighter mb-3 small";
             deadLine.textContent = "제출기간 : " + detail.taskBeginDe + " ~ " + detail.taskClosDe;
             tCol.appendChild(deadLine);
 
@@ -402,6 +408,8 @@
                 });
 
                 article.appendChild(list);
+
+                article.querySelectorAll("input.form-check-input[type='radio']").forEach(r => r.checked = false);
             }
 
             const btnWrapper = document.createElement("div");
@@ -439,15 +447,18 @@
                    params: payload
                })
                    .then(resp => {
+                       const isCorrect = resp.data.isCorrect;
+
                        Swal.fire({
-                           icon:"success",
-                           title:"제출이 성공 했어요.",
+                           icon: isCorrect === "Correct" ? "success" : "error",
+                           title: isCorrect === "Correct" ? "정답을 제출 했어요." : "오답을 제출 했어요.",
                            timer:1000,
                            timerProgressBar: !0,
                            showConfirmButton: 0
                        });
                    })
-                   .catch(() => {
+                   .catch(err => {
+                       console.log(err.toJSON());
                        Swal.fire({
                            icon:"error",
                            title:"제출이 실패 했어요.",
@@ -904,6 +915,15 @@
             </div>
             <div class="col-12 page-title mt-2">
                 <h2 class="fw-semibold">${learnInfo.lecInfo.LCTRE_NM}</h2>
+                <div class="mt-2 d-flex flex-wrap align-items-center text-muted small">
+                    <i class="las la-info-circle me-2"></i>
+                    <span class="me-3">${learnInfo.lecInfo.SKLSTF_NM}</span>
+                    <span class="me-3">${learnInfo.lecInfo.LCTRUM}</span>
+                    <span class="me-3">${learnInfo.lecInfo.ESTBL_YEAR}년</span>
+                    <span class="me-3">${learnInfo.lecInfo.ESTBL_SEMSTR}</span>
+                    <span class="me-3">${learnInfo.lecInfo.COMPL_SE}</span>
+                    <span class="me-3">${learnInfo.lecInfo.ACQS_PNT}학점</span>
+                </div>
                 <div class="my-4 p-0 bg-primary" style="width: 100px; height:5px;"></div>
             </div>
             <div class="col-xxl-6 col-6">
@@ -1084,7 +1104,7 @@
                                 <a href="#notice" class="nav-link active" role="tab" data-bs-toggle="tab" aria-selected="true"><h6>공지사항</h6></a>
                             </li>
                             <li class="nav-item waves-effect waves-light" role="presentation">
-                                <a href="#resouce" class="nav-link" role="tab" data-bs-toggle="tab" aria-selected="false"><h6>자료실</h6></a>
+                                <a href="#resource" class="nav-link" role="tab" data-bs-toggle="tab" aria-selected="false"><h6>자료실</h6></a>
                             </li>
                             <li class="nav-item waves-effect waves-light" role="presentation">
                                 <a href="#question" class="nav-link" role="tab" data-bs-toggle="tab" aria-selected="false"><h6>질문</h6></a>
@@ -1094,9 +1114,16 @@
                     <div class="card-body p-0" style="min-height: 330px;">
                         <div class="tab-content">
                             <div class="tab-pane active show" id="notice" role="tabpanel">
-
+                                <div class="card h-100">
+                                    <div class="card-header">공지사항</div>
+                                    <div data-simplebar style="max-height: 330px;" class="px-3">
+                                        <div class="card-body">여기에 공지 내용/리스트</div>
+                                        <p>${learnInfo.notice}</p>
+                                    </div>
+<%--                                    <div class="card-footer text-end">더보기 버튼 등</div>--%>
+                                </div>
                             </div>
-                            <div class="tab-pane" id="resouce" role="tabpanel">
+                            <div class="tab-pane" id="resource" role="tabpanel">
 
                             </div>
                             <div class="tab-pane" id="question" role="tabpanel">
@@ -1126,6 +1153,17 @@
             </div>
         </div>
 
+    <script type="text/javascript">
+        const bbsHeader = [""]
+        const noticeRows = [
+            <c:forEach var="row" items="${learnInfo.notice.lectureBbsCttVOList}" varStatus="st">
+            [
+
+            ]
+            </c:forEach>
+        ]
+    </script>
+
     <div id="preview-template" style="display:none;">
         <div class="dz-preview dz-file-preview border rounded p-2">
             <div class="d-flex align-items-center justify-content-between">
@@ -1137,7 +1175,6 @@
                     </div>
                     <div class="flex-grow-1">
                         <h5 class="fs-14 mb-1" data-dz-name>File Name</h5>
-                        <p class="fs-13 text-muted mb-1" data-dz-size></p>
                     </div>
                 </div>
                 <div class="flex-shrink-0 ms-3 d-flex align-items-center">

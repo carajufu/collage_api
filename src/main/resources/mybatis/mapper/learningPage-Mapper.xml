@@ -17,20 +17,24 @@
     </select>
 
     <select id="getLectureInfo" parameterType="String" resultType="HashMap">
-        SELECT
-            ec.profsr_no
-            , ec.acqs_pnt
-            , ec.lctrum
-            , ec.compl_se
-            , ec.atnlc_nmpr
-            , ec.lctre_use_lang
-            , ec.evl_mthd
-            , ec.estbl_year
-            , ec.estbl_semstr
-            , ac.lctre_nm
+        SELECT                          /* kr.ac.collage_api.learning.mapper.LearningPageMapper.getLectureInfo */
+            ec.profsr_no                /* 교수 번호 */
+            , ec.acqs_pnt               /* 취득 학점 */
+            , ec.lctrum                 /* 강의실 */
+            , ec.compl_se               /* 이수 구분 */
+            , ec.atnlc_nmpr             /* 수강 인원 */
+            , ec.evl_mthd               /* 평가 방식 */
+            , ec.estbl_year             /* 개설 년도 */
+            , ec.estbl_semstr           /* 개설 학기 */
+            , ac.lctre_nm               /* 강의 명 */
+            , skl.sklstf_nm             /* 교직원 이름 */
         FROM estbl_course ec
             INNER JOIN all_course ac
                 ON ec.lctre_code = ac.lctre_code
+            INNER JOIN profsr prof
+                ON ec.profsr_no = prof.profsr_no
+            INNER JOIN sklstf skl
+                ON prof.sklstf_id = skl.sklstf_id
         WHERE estbllctre_code = #{lecNo}
     </select>
 
@@ -144,5 +148,58 @@
             , cnsl_at           /* 정답 여부 */
         FROM quiz_ex
         WHERE quiz_code = #{quizCode}
+    </select>
+
+    <update id="quizSubmit" parameterType="String">
+        UPDATE quiz_presentn                /* kr.ac.collage_api.learning.mapper.LearningPageMapper.quizSubmit */
+        SET
+            quiz_ex_code = #{quizExCode}
+            , quiz_presentn_de = SYSDATE
+            , presentn_at = '1'
+        WHERE stdnt_no = #{stdntNo}
+            AND quiz_code = #{quizCode}
+    </update>
+
+    <select id="isCorrect" resultType="String">
+        SELECT                                  /* kr.ac.collage_api.learning.mapper.LearningPageMapper.isCorrect */
+            cnsl_at
+        FROM quiz_ex
+        WHERE quiz_ex_code = #{quizExCode}
+            AND quiz_code = #{quizCode}
+    </select>
+
+    <resultMap id="lectureBbsMap" type="LectureBbsVO">
+        <result property="estbllctreCode" column="ESTBLLCTRE_CODE"/>
+        <result property="bbsNm" column="BBS_NM"/>
+        <result property="bbsDc" column="BBS_DC"/>
+        <result property="bbsCode" column="BBS_CODE"/>
+        <collection property="lectureBbsCttVOList" javaType="ArrayList" ofType="lectureBbsCttVO" select="getLectureBbsCtt" column="BBS_CODE"/>
+    </resultMap>
+
+    <select id="getLectureBbs" parameterType="String" resultMap="lectureBbsMap">
+        SELECT                          /* kr.ac.collage_api.learning.mapper.LearningPageMapper.getLectureBbs */
+            bbs_code
+            , estbllctre_code
+            , bbs_nm
+            , bbs_dc
+        FROM bbs
+        WHERE estbllctre_code = #{lecNo}
+            AND bbs_nm = #{type}
+    </select>
+
+    <select id="getLectureBbsCtt" resultType="lectureBbsCttVO">
+        SELECT                          /* kr.ac.collage_api.learning.mapper.LearningPageMapper.getLectureBbsCtt */
+            ROWNUM
+            , bbsctt_no
+            , acnt_id
+            , bbs_code
+            , parnts_bbsctt_no
+            , file_group_no
+            , bbsctt_sj
+            , bbsctt_cn
+            , bbsctt_writng_de
+            , bbsctt_rdcnt
+        FROM bbs_ctt
+        WHERE bbs_code = #{value}
     </select>
 </mapper>

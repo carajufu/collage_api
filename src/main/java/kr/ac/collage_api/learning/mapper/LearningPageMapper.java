@@ -25,4 +25,10 @@ public interface LearningPageMapper {
     List<QuizExVO> quizExList(String quizCode);
 
     QuizPresentnVO getSubmitQuiz(String quizCode, String name);
+
+    void quizSubmit(String quizCode, String quizExCode, String stdntNo);
+
+    String isCorrect(String quizCode, String quizExCode);
+
+    LectureBbsVO getLectureBbs(String lecNo, String type);
 }
