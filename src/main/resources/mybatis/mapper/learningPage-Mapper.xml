@@ -165,7 +165,7 @@
             cnsl_at
         FROM quiz_ex
         WHERE quiz_ex_code = #{quizExCode}
-            AND quiz_code = #{quizCode}
+            AND quiz_code = #{quizCode}------------
     </select>
 
     <resultMap id="lectureBbsMap" type="LectureBbsVO">
@@ -190,16 +190,27 @@
     <select id="getLectureBbsCtt" resultType="lectureBbsCttVO">
         SELECT                          /* kr.ac.collage_api.learning.mapper.LearningPageMapper.getLectureBbsCtt */
             ROWNUM
-            , bbsctt_no
-            , acnt_id
-            , bbs_code
-            , parnts_bbsctt_no
-            , file_group_no
-            , bbsctt_sj
-            , bbsctt_cn
-            , bbsctt_writng_de
-            , bbsctt_rdcnt
-        FROM bbs_ctt
-        WHERE bbs_code = #{value}
+            , ctt.*
+        FROM (
+            SELECT
+                bbsctt_no
+                 , ctt.acnt_id
+                 , ctt.bbs_code
+                 , ctt.parnts_bbsctt_no
+                 , ctt.file_group_no
+                 , ctt.bbsctt_sj
+                 , ctt.bbsctt_cn
+                 , ctt.bbsctt_writng_de
+                 , ctt.bbsctt_rdcnt
+                 , skl.sklstf_nm
+                 , std.stdnt_nm
+            FROM bbs_ctt ctt
+            LEFT OUTER JOIN sklstf skl
+                ON ctt.acnt_id = skl.acnt_id
+            LEFT OUTER JOIN stdnt std
+                ON ctt.acnt_id = std.acnt_id
+            WHERE bbs_code = #{value}
+            ORDER BY bbsctt_no DESC
+             ) ctt
     </select>
 </mapper>
