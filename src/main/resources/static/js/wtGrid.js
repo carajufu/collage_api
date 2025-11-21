@@ -10,7 +10,6 @@ function gridInit({ columns, data }) {
                 nextButton: true,
                 prevButton: true
             },
-            search: true,
             style: {
                 tr: {
                     borderBottom: "1px solid #e9ebec"
