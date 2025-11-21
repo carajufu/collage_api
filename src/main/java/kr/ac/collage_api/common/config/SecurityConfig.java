@@ -68,7 +68,8 @@ public class SecurityConfig {
                         .requestMatchers("/",
                                 "/login",
                                 "/admin/**",
-                                "/20*/**").permitAll()
+                                "/20*/**",
+                                "/ws/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .requestCache(cache -> cache.requestCache(requestCache))

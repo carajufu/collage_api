@@ -52,3 +52,26 @@ File: Custom Css File
         --vz-list-group-active-border-color: var(--vz-primary);
     }
 }
+
+/****************************/
+/* 알림이 왔을 때 종이 움직이는 css */
+/****************************/
+/* 종 흔들림 */
+@keyframes bell-shake {
+    0% { transform: rotate(0); }
+    15% { transform: rotate(5deg); }
+    30% { transform: rotate(-5deg); }
+    45% { transform: rotate(4deg); }
+    60% { transform: rotate(-4deg); }
+    75% { transform: rotate(2deg); }
+    85% { transform: rotate(-2deg); }
+    100% { transform: rotate(0); }
+}
+
+/*이 클래스 붙이면 흔들림*/
+.bell-ringing {
+	animation: bell-shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+	color : #f06548 !important;
+	transform-origin: top center;
+}
+
