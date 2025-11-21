@@ -2,6 +2,12 @@
 
 <%@ include file="../header.jsp" %> 
 
+<c:if test="${not empty msg}">
+    <script>
+        alert("${msg}");
+    </script>
+</c:if>
+
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -144,7 +150,7 @@ document.addEventListener("DOMContentLoaded", function () {
       </button>
     </div>
 
-    <form id="gradeForm" method="post">
+    <form id="gradeForm" method="post" action="/prof/grade/main/save">
       <input type="hidden" name="estbllctreCode" value="${selSbject.estbllctreCode}">
 
       <c:if test="${empty sbjectScr}">
