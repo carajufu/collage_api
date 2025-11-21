@@ -9,6 +9,7 @@ File: Custom Css File
 :root,
 [data-bs-theme=light] {
     /* 헤더 */
+    --vz-header-item-bg: var(--vz-primary-bg-subtle);
     --vz-header-item-sub-color: var(--vz-primary);
 
     .topbar-user {
@@ -38,6 +39,7 @@ File: Custom Css File
     /* 주색 */
     --vz-primary: #222E83;
     --vz-primary-rgb: 34, 46, 131;
+    --vz-primary-rgba: 34, 46, 131,0.12;
 
     /* 보조색 */
     --vz-secondary: #3CCE88;
@@ -50,6 +52,12 @@ File: Custom Css File
     .list-group {
         --vz-list-group-active-bg: var(--vz-primary);
         --vz-list-group-active-border-color: var(--vz-primary);
+    }
+
+    /* gridjs (테이블) */
+    .gridjs-pagination .gridjs-pages button {
+        border: none;
+
     }
 }
 

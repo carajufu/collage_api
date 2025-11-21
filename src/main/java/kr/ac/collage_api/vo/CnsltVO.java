@@ -26,7 +26,6 @@ public class CnsltVO {
 	//카운트
 	private int cnt;		// 통계를 위한
 
-
 	//페이징을 위한 rnum 가져옴
 	private int rnum;
 

@@ -4,7 +4,6 @@
 
 <%@ include file="../header.jsp" %>
 
-<div id="main-container" class="container-fluid">
   <div class="flex-grow-1 p-1 overflow-auto">
 
     <h2 class="border-bottom pb-3 mb-4">강의 목록</h2>
@@ -76,6 +75,5 @@
     </c:if>
 
   </div>
-</div>
 
-<%-- <%@ include file="../footer.jsp" %> --%>
+<%@ include file="../footer.jsp" %>

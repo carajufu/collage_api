@@ -19,7 +19,7 @@ public interface EnrollmentService {
 
 	//제출
 	void submitRequest(SknrgsChangeReqstVO sknrgsChangeReqstVO);
-	
+
 	//취소
 	void cancelRequest(String reqId, String studentId);
 
@@ -35,7 +35,7 @@ public interface EnrollmentService {
 	//학적상태 변경
 	void updateRequestStatus(int reqId, SknrgsChangeReqstVO requestVO);
 
-	
+
 
 
 

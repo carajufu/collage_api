@@ -2,7 +2,6 @@
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 
-<%-- header.jsp가 필요합니다 --%>
 <%@ include file="../header.jsp" %>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -48,7 +47,6 @@ window.onload = function() {
 };
 </script>
 
-<div id="main-container" class="container-fluid">
   <div class="flex-grow-1 p-3 overflow-auto">
 
     <section class="card shadow-sm mb-4">
@@ -124,4 +122,4 @@ window.onload = function() {
     </div>
 
   </div>
-</div>
+<%@ include file="../footer.jsp" %>

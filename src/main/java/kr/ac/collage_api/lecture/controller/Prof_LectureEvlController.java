@@ -17,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 @Controller
 @RequestMapping("/prof/lecture")
 public class Prof_LectureEvlController {
-
+	
     @Autowired
     private LectureEvlService lectureService;
 

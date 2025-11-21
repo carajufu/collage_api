@@ -32,7 +32,7 @@
     <script src="/assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="/assets/js/pages/plugins/lord-icon-2.1.0.js"></script>
     <script src="/assets/js/plugins.js"></script>
-    <script src="/assets/js/app.js"></script>
+    <script src="/assets/js/app.js" defer></script>
     <script src="/assets/js/layout.js"></script>
 
     <script src="/assets/libs/simplebar/simplebar.min.js"></script>
@@ -40,6 +40,9 @@
 
     <!-- jQuery-3.6.0.min -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
+    <!-- axios -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
 </head>
 <body>
@@ -64,7 +67,7 @@
                 <div class="d-flex align-items-center">
 
                     <div class="dropdown ms-1 topbar-head-dropdown header-item">
-                        <button type="button" class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <button type="button" class="btn btn-icon btn-topbar btn-ghost-primary rounded-circle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <img id="header-lang-img" src="/assets/images/flags/kr.svg" alt="Header Language" height="20" class="rounded">
                         </button>
                         <div class="dropdown-menu dropdown-menu-end">
@@ -90,6 +93,26 @@
                             <!-- item-->
                             <a href="javascript:void(0);" class="dropdown-item notify-item language" data-lang="gr" title="German">
                                 <img src="/assets/images/flags/germany.svg" alt="user-image" class="me-2 rounded" height="18"> <span class="align-middle">Deutsche</span>
+                            </a>
+
+							<!-- item-->
+                            <a href="javascript:void(0);" class="dropdown-item notify-item language" data-lang="jp" title="Japen">
+                                <img src="/assets/images/flags/jp.svg" alt="user-image" class="me-2 rounded" height="18"> <span class="align-middle">日本語</span>
+                            </a>
+
+							<!-- item-->
+                            <a href="javascript:void(0);" class="dropdown-item notify-item language" data-lang="vi" title="Vitenam">
+                                <img src="/assets/images/flags/vi.svg" alt="user-image" class="me-2 rounded" height="18"> <span class="align-middle">Tiếng Việt</span>
+                            </a>
+
+							<!-- item-->
+                            <a href="javascript:void(0);" class="dropdown-item notify-item language" data-lang="mn" title="Mongol">
+                                <img src="/assets/images/flags/mn.svg" alt="user-image" class="me-2 rounded" height="18"> <span class="align-middle">Монгол хэл</span>
+                            </a>
+
+							<!-- item-->
+                            <a href="javascript:void(0);" class="dropdown-item notify-item language" data-lang="ne" title="Nepal">
+                                <img src="/assets/images/flags/ne.svg" alt="user-image" class="me-2 rounded" height="18"> <span class="align-middle">नेपाली</span>
                             </a>
 
                             <!-- item-->
@@ -121,11 +144,26 @@
                                 <img src="/assets/images/flags/ae.svg" alt="user-image" class="me-2 rounded" height="18">
                                 <span class="align-middle">Arabic</span>
                             </a>
+
+                           <a href="javascript:void(0);" class="dropdown-item notify-item language" data-lang="km" title="Khmer">
+							    <img src="/assets/images/flags/km.svg" alt="Cambodia flag" class="me-2 rounded" height="18">
+							    <span class="align-middle">ភាសាខ្មែរ</span>
+							</a>
+
+							<a href="javascript:void(0);" class="dropdown-item notify-item language" data-lang="la" title="Lao">
+							    <img src="/assets/images/flags/la.svg" alt="Laos flag" class="me-2 rounded" height="18">
+							    <span class="align-middle">ລາວ</span>
+							</a>
+
+							<a href="javascript:void(0);" class="dropdown-item notify-item language" data-lang="th" title="Thai">
+							    <img src="/assets/images/flags/th.svg" alt="Thailand flag" class="me-2 rounded" height="18">
+							    <span class="align-middle">ไทย</span>
+							</a>
                         </div>
                     </div>
 
                     <div class="ms-1 header-item d-none d-sm-flex">
-                        <button type="button" class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle light-dark-mode">
+                        <button type="button" class="btn btn-icon btn-topbar btn-ghost-primary rounded-circle light-dark-mode">
                             <i class='bx bx-moon fs-22'></i>
                         </button>
                     </div>
@@ -186,7 +224,7 @@
                         <div class="dropdown-menu dropdown-menu-end" style="width: 300px">
                             <!-- item-->
                             <h6 class="dropdown-header">${user.affiliation}</h6>
-                            <h6 class="dropdown-header">${userc.username}</h6>
+                            <h6 class="dropdown-header">${user.username}</h6>
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item" href="pages-profile.html"><i class="mdi mdi-account-circle text-muted fs-16 align-middle me-1"></i> <span class="align-middle">개인 정보 수정</span></a>
                             <a class="dropdown-item" href="apps-chat.html"><i class="mdi mdi-message-text-outline text-muted fs-16 align-middle me-1"></i> <span class="align-middle">메세지</span></a>
@@ -346,7 +384,7 @@
                         <div class="collapse menu-dropdown" id="sidebargraduation">
                             <ul class="nav nav-sm flex-column">
                                 <li class="nav-item">
-                                    <a href="pages-starter.html" class="nav-link" data-key=""> 졸업 현황 </a>
+                                    <a href="/stdnt/gradu/main/All" class="nav-link" data-key=""> 졸업 현황 </a>
                                 </li>
                             </ul>
                         </div>
@@ -371,7 +409,7 @@
                     <li class="menu-title"><span data-key="">학습</span></li>
 
                     <li class="nav-item">
-                        <a class="nav-link menu-link" href="ui-alerts.html" data-key="">
+                        <a class="nav-link menu-link" href="/dashboard/student" data-key="">
                             <i class="las la-university"></i> <span data-key="">학습 관리</span>
                         </a>
                     </li>
@@ -442,92 +480,6 @@
 
         <div class="page-content">
             <div id="main-container" class="container-fluid">
-
-                <%--<div id="wrapper">--%>
-                <%--    <header class="header">--%>
-                <%--        <div class="container-fluid d-flex justify-content-between align-items-center gap-3">--%>
-                <%--            <div class="brand"><i class="bi bi-mortarboard-fill"></i> 스마트 LMS</div>--%>
-                <%--            <div class="user-actions">--%>
-                <%--                <i class="bi bi-bell p-2"></i>--%>
-                <%--                <i class="bi bi-gear p-2"></i>--%>
-                <%--                <i class="bi bi-person-circle p-2"></i>--%>
-                <%--            </div>--%>
-                <%--            <sec:authorize access="isAuthenticated()">--%>
-                <%--                <a href="/logout"><button class="btn btn-outline-danger">로그아웃</button></a>--%>
-                <%--            </sec:authorize>--%>
-                <%--        </div>--%>
-
-                <%--        <!-- ✅ CHANGED: 토스트 -->--%>
-                <%--        <div id="toastContainer"></div>--%>
-                <%--    </header>--%>
-
-                <%--    <main class="d-flex">--%>
-                <%--        <div id="sidebar" class="d-flex flex-column flex-shrink-0 p-3 bg-primary bg-gradient">--%>
-                <%--            <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">--%>
-                <%--                <svg class="bi pe-none me-2" width="40" height="32" aria-hidden="true"><use xlink:href="#bootstrap"></use></svg>--%>
-                <%--                <span class="fs-4">Sidebar</span>--%>
-                <%--            </a>--%>
-                <%--            <hr>--%>
-                <%--            <ul class="nav nav-pills flex-column mb-auto">--%>
-                <%--                <li class="nav-item">--%>
-                <%--                    <a href="#" class="nav-link active" aria-current="page">--%>
-                <%--                        <svg class="bi pe-none me-2" width="16" height="16" aria-hidden="true"><use xlink:href="#home"></use></svg>--%>
-                <%--                        Home--%>
-                <%--                    </a>--%>
-                <%--                </li>--%>
-                <%--                <li>--%>
-                <%--                    <a href="#" class="nav-link link-body-emphasis">--%>
-                <%--                        <svg class="bi pe-none me-2" width="16" height="16" aria-hidden="true"><use xlink:href="#speedometer2"></use></svg>--%>
-                <%--                        Dashboard--%>
-                <%--                    </a>--%>
-                <%--                </li>--%>
-                <%--                <li>--%>
-                <%--                    <a href="#" class="nav-link link-body-emphasis">--%>
-                <%--                        <svg class="bi pe-none me-2" width="16" height="16" aria-hidden="true"><use xlink:href="#table"></use></svg>--%>
-                <%--                        Orders--%>
-                <%--                    </a>--%>
-                <%--                </li>--%>
-                <%--                <li>--%>
-                <%--                    <a href="#" class="nav-link link-body-emphasis">--%>
-                <%--                        <svg class="bi pe-none me-2" width="16" height="16" aria-hidden="true"><use xlink:href="#grid"></use></svg>--%>
-                <%--                        Products--%>
-                <%--                    </a>--%>
-                <%--                </li>--%>
-                <%--                <li>--%>
-                <%--                    <a href="#" class="nav-link link-body-emphasis">--%>
-                <%--                        <svg class="bi pe-none me-2" width="16" height="16" aria-hidden="true"><use xlink:href="#people-circle"></use></svg>--%>
-                <%--                        Customers--%>
-                <%--                    </a>--%>
-                <%--                </li>--%>
-                <%--            </ul>--%>
-                <%--            <sec:authorize access="isAuthenticated()">--%>
-                <%--                <hr>--%>
-                <%--                <div class="dropdown">--%>
-                <%--                    <a href="#" class="d-flex align-items-center link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">--%>
-                <%--                        <img src="https://github.com/mdo.png" alt="" width="32" height="32" class="rounded-circle me-2">--%>
-                <%--                        <strong><sec:authentication property="principal.username"/></strong>--%>
-                <%--                    </a>--%>
-                <%--                    <ul class="dropdown-menu text-small shadow">--%>
-                <%--                        <li>--%>
-                <%--                            <a class="dropdown-item" href="#">New project...</a>--%>
-                <%--                        </li>--%>
-                <%--                        <li>--%>
-                <%--                            <a class="dropdown-item" href="#">Settings</a>--%>
-                <%--                        </li>--%>
-                <%--                        <li>--%>
-                <%--                            <a class="dropdown-item" href="#">Profile</a>--%>
-                <%--                        </li>--%>
-                <%--                        <li>--%>
-                <%--                            <hr class="dropdown-divider">--%>
-                <%--                        </li>--%>
-                <%--                        <li>--%>
-                <%--                            <a class="dropdown-item" href="#">Sign out</a>--%>
-                <%--                        </li>--%>
-                <%--                    </ul>--%>
-                <%--                </div>--%>
-                <%--            </sec:authorize>--%>
-                <%--        </div>--%>
-                <%--        <div id="main-container" class="container-fluid">--%>
 
 
 

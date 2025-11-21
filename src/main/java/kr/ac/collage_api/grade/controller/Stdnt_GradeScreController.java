@@ -21,20 +21,19 @@ import lombok.extern.slf4j.Slf4j;
 public class Stdnt_GradeScreController {
 
     @Autowired
-    private GradeScreService gradeService;
+    GradeScreService gradeService;
 
     @GetMapping("/main/All")
     public String stdntGradeMain(Model model) {
 
-        // Spring Security에서 로그인한 사용자 정보(학번) 가져오기
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String stdntNo = auth.getName();
-        
+        String stdntNo = auth.getName(); 
+
         List<GradeScreVO> semstrList = gradeService.getStudentSemstrList(stdntNo);
         log.info("getStudentSemstrList : {}", semstrList);
 
         model.addAttribute("getAllSemstr", semstrList);
-        return "grade/stdntGradeScreMain"; // stdntGradeScreMain.jsp
+        return "grade/stdntGradeScreMain";
     }
 
     @GetMapping("/main/detail/{semstrScreInnb}")
@@ -44,7 +43,8 @@ public class Stdnt_GradeScreController {
         log.info("getStudentSemstrDetail : {}", subjectList);
 
         model.addAttribute("subjectList", subjectList);
+        // model.addAttribute("semesterInfo", ...);
 
-        return "grade/stdntGradeScreDetail"; // stdntGradeScreDetail.jsp
+        return "grade/stdntGradeScreDetail";
     }
 }

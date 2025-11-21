@@ -84,7 +84,7 @@
                 <tr>
                     <td>입학</td>
                     <td>
-                        <fmt:formatDate value="${admissionDate}" pattern="yyyy" />년 
+                        <fmt:formatDate value="${admissionDate}" pattern="yyyy" />년
                         <c:choose>
                             <c:when test="${admissionMonth >= 3 && admissionMonth <= 8}">
                                 1학기
@@ -100,7 +100,7 @@
         </table>
     </div>
 
-</div> 
+</div>
 
 
 <%-- 신청 내역 조회--%>
@@ -127,7 +127,7 @@
                 <c:forEach items="${historyList}" var="history">
 
     <c:if test="${history.reqstSttus != '신청취소'}">
-    
+
         <tr>
             <td>${history.changeTy} (${history.tmpabssklTy})</td>
             <td>${history.efectOccrrncSemstr.split('-')[0]}년 ${history.efectOccrrncSemstr.split('-')[1]}학기</td>
@@ -140,17 +140,17 @@
                     <c:when test="${history.reqstSttus == '반려'}">
                         <span class="badge bg-danger">반려</span>
                     </c:when>
-                    <c:when test="${history.reqstSttus == '처리중'}"> 
+                    <c:when test="${history.reqstSttus == '처리중'}">
                         <span class="badge bg-warning text-dark">처리중</span>
                     </c:when>
                     <c:otherwise>
                         <%-- '신청' 상태일 때 --%>
                         <span class="badge bg-secondary">신청</span>
                     </c:otherwise>
-                </c:choose>	
+                </c:choose>
             </td>
             <td>
-                <button type="button" class="btn btn-sm btn-outline-secondary" 
+                <button type="button" class="btn btn-sm btn-outline-secondary"
                         data-bs-toggle="modal" data-bs-target="#detailsModal"
                         data-reqst-resn="${history.reqstResn}"
                         data-return-resn="${history.returnResn}"
@@ -159,14 +159,14 @@
                         data-semester="${history.efectOccrrncSemstr.split('-')[0]}년 ${history.efectOccrrncSemstr.split('-')[1]}학기">
                     자세히 보기
                 </button>
-                
+
                 <%-- '신청' 상태일 때만 취소 버튼 보임 --%>
                 <c:if test="${history.reqstSttus == '신청'}">
                     <a href="/enrollment/cancel?reqId=${history.sknrgsChangeInnb}" class="btn btn-sm btn-outline-danger cancel-btn">신청 취소</a>
                 </c:if>
             </td>
         </tr>
-        
+
     </c:if>
 </c:forEach>
                 
@@ -250,7 +250,7 @@ document.addEventListener('DOMContentLoaded', function () {
             modalReturnSection.style.display = 'none';
         }
     });
-    
+
     document.querySelectorAll('.cancel-btn').forEach(function(btn){
         btn.addEventListener('click', function(e){
             e.preventDefault();
@@ -278,7 +278,7 @@ document.addEventListener('DOMContentLoaded', function () {
 	        icon: 'success'
 	    });
 	</c:if>
-	
+
 	//실패
 	<c:if test="${not empty error}">
 	    Swal.fire({
@@ -287,6 +287,6 @@ document.addEventListener('DOMContentLoaded', function () {
 	        icon: 'error'
 	    });
 	</c:if>
-    
+
 });
 </script>

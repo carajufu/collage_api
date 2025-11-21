@@ -58,7 +58,6 @@ public class Prof_GradeScreController {
     public String saveGrade(@ModelAttribute GradeScreForm gradeForm,
                             @RequestParam("estbllctreCode") String estbllctreCode) {
         try {
-            // Service 호출: 폼에서 바인딩된 grades 리스트와 estbllctreCode를 전달
             gradeService.saveGrades(gradeForm.getGrades(), estbllctreCode);
             
             // JSP의 success: function()으로 "success" 문자열 반환

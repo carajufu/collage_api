@@ -1,7 +1,6 @@
 package kr.ac.collage_api.learning.mapper;
 
-import kr.ac.collage_api.learning.vo.TaskPresentnVO;
-import kr.ac.collage_api.learning.vo.TaskVO;
+import kr.ac.collage_api.learning.vo.*;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -20,4 +19,16 @@ public interface LearningPageMapper {
 
     int taskFileUpload(@Param("taskpresentnNo") String taskpresentnNo,
                           @Param("fileGroupNo") Long fileGroupNo);
+
+    List<QuizVO> quizList(String lecNo, String weekNo);
+
+    List<QuizExVO> quizExList(String quizCode);
+
+    QuizPresentnVO getSubmitQuiz(String quizCode, String name);
+
+    void quizSubmit(String quizCode, String quizExCode, String stdntNo);
+
+    String isCorrect(String quizCode, String quizExCode);
+
+    LectureBbsVO getLectureBbs(String lecNo, String type);
 }

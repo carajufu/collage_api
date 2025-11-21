@@ -58,11 +58,11 @@ public class EnrollmentServiceImpl implements EnrollmentService {
 
 		enrollmentMapper.submitRequest(sknrgsChangeReqstVO);
 	}
-	
+
 	//취소
 	@Override
 	public void cancelRequest(String reqId, String studentId) {
-		
+
         Map<String, Object> params = new HashMap<>();
         params.put("reqId", reqId);
         params.put("studentId", studentId);
@@ -74,7 +74,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         if (updatedRows == 0) {
             throw new RuntimeException("취소할 수 없는 신청 건이거나 존재하지 않는 신청입니다.");
         }
-        
+
 	}
 
 	//관리자------------------------------------------------------------------
@@ -134,8 +134,8 @@ public class EnrollmentServiceImpl implements EnrollmentService {
 	    }
 	}
 
-	
-	
+
+
 
 
 }
