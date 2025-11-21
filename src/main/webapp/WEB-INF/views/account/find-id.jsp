@@ -1,22 +1,28 @@
-<!-- /WEB-INF/views/account/find-id.jsp -->
-<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+         pageEncoding="UTF-8"%>
+<%@ taglib prefix="c"  uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
+
+<c:set var="cPath" value="${pageContext.request.contextPath}"/>
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <title>아이디 찾기</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8" />
+    <title>아이디 찾기</title>
+  	<meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <!-- 기본 폰트 / Bootstrap / Icons (팝업 전용) -->
-  <link rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/pretendard/dist/web/static/pretendard.css" />
-  <link rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
-  <link rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-          type="text/javascript"></script>
-  <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+    <!-- velzon layout config -->
+    <script src="${cPath}/assets/js/layout.js"></script>
+
+    <!-- velzon CSS stack -->
+    <link href="${cPath}/assets/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="${cPath}/assets/css/icons.min.css" rel="stylesheet" />
+    <link href="${cPath}/assets/css/app.min.css" rel="stylesheet" />
+    <link href="${cPath}/assets/css/custom.min.css" rel="stylesheet" />
+    <link href="${cPath}/assets/css/app.css" rel="stylesheet" />
+    
   <style>
     /* 전체 배경: 연한 회색 톤 */
     body {
@@ -92,7 +98,7 @@
     .invalid-feedback {
       font-size: 12px;
     }
-
+/* 
     .btn-primary {
       margin-top: 8px;
       height: 44px;
@@ -101,12 +107,12 @@
       font-size: 14px;
       background-color: #2563eb;
       border-color: #2563eb;
-    }
-
+    } */
+/* 
     .btn-primary:hover {
       background-color: #1d4ed8;
       border-color: #1d4ed8;
-    }
+    } */
 
     .popup-footer-text {
       margin-top: 12px;
@@ -219,8 +225,8 @@
 
   window.addEventListener("load", function () {
     try {
-      const w = 440;
-      const h = 630;
+      const w = 460;
+      const h = 645;
       window.resizeTo(w, h);
       window.moveTo(
         Math.round((screen.availWidth - w) / 2),

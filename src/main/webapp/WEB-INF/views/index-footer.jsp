@@ -13,7 +13,7 @@ footer.custom-footer {
 /* 안쪽 폭 제한 + 가운데 배치 */
 footer.custom-footer .container,
 footer.custom-footer .container-fluid {
-  max-width: 1200px;         /* 필요 시 조절 */
+  max-width: 1250px;         /* 필요 시 조절 */
   width: 100%;
   margin: 0 auto;
 }
@@ -25,7 +25,7 @@ footer.custom-footer .container-fluid {
             <!-- 좌측: 로고 + 학교 소개 + 주소/연락처 -->
             <div class="col-lg-4 col-md-6">
                 <div class="mb-4">
-                    <a href="${pageContext.request.contextPath}/"
+                    <a href="/"
                        class="d-flex align-items-center mb-3">
                         <img src="${pageContext.request.contextPath}/images/logo/univ-logo-kor-vite-dark.svg"
                              alt="대덕대학교 로고"
@@ -53,19 +53,19 @@ footer.custom-footer .container-fluid {
                     <h6 class="text-white text-uppercase mb-3">대학소개</h6>
                     <ul class="list-unstyled mb-0">
                         <li class="mb-2">
-                            <a href="${pageContext.request.contextPath}/about"
+                            <a href="#"
                                class="text-white-50 text-decoration-none">대학개요</a>
                         </li>
                         <li class="mb-2">
-                            <a href="${pageContext.request.contextPath}/about/history"
+                            <a href="#"
                                class="text-white-50 text-decoration-none">연혁</a>
                         </li>
                         <li class="mb-2">
-                            <a href="${pageContext.request.contextPath}/about/message"
+                            <a href="#"
                                class="text-white-50 text-decoration-none">총장 인사말</a>
                         </li>
                         <li class="mb-2">
-                            <a href="${pageContext.request.contextPath}/about/campus-map"
+                            <a href="#"
                                class="text-white-50 text-decoration-none">캠퍼스 안내</a>
                         </li>
                     </ul>
@@ -75,19 +75,19 @@ footer.custom-footer .container-fluid {
                     <h6 class="text-white text-uppercase mb-3">학사안내</h6>
                     <ul class="list-unstyled mb-0">
                         <li class="mb-2">
-                            <a href="${pageContext.request.contextPath}/schedule/calendar"
+                            <a href="#"
                                class="text-white-50 text-decoration-none">학사일정</a>
                         </li>
                         <li class="mb-2">
-                            <a href="${pageContext.request.contextPath}/schedule/major"
+                            <a href="#"
                                class="text-white-50 text-decoration-none">전공·학과</a>
                         </li>
                         <li class="mb-2">
-                            <a href="${pageContext.request.contextPath}/academics/rule"
+                            <a href="#"
                                class="text-white-50 text-decoration-none">학사 규정</a>
                         </li>
                         <li class="mb-2">
-                            <a href="${pageContext.request.contextPath}/portal"
+                            <a href="#"
                                class="text-white-50 text-decoration-none">학사포털</a>
                         </li>
                     </ul>
@@ -100,19 +100,19 @@ footer.custom-footer .container-fluid {
                     <h6 class="text-white text-uppercase mb-3">입학안내</h6>
                     <ul class="list-unstyled mb-0">
                         <li class="mb-2">
-                            <a href="${pageContext.request.contextPath}/admission/undergraduate"
+                            <a href="#"
                                class="text-white-50 text-decoration-none">학부 입학</a>
                         </li>
                         <li class="mb-2">
-                            <a href="${pageContext.request.contextPath}/admission/graduate"
+                            <a href="#"
                                class="text-white-50 text-decoration-none">대학원 입학</a>
                         </li>
                         <li class="mb-2">
-                            <a href="${pageContext.request.contextPath}/admission/transfer"
+                            <a href="#"
                                class="text-white-50 text-decoration-none">편입학</a>
                         </li>
                         <li class="mb-2">
-                            <a href="${pageContext.request.contextPath}/admission/international"
+                            <a href="#"
                                class="text-white-50 text-decoration-none">외국인·교환학생</a>
                         </li>
                     </ul>
@@ -122,19 +122,19 @@ footer.custom-footer .container-fluid {
                     <h6 class="text-white text-uppercase mb-3">대학생활</h6>
                     <ul class="list-unstyled mb-0">
                         <li class="mb-2">
-                            <a href="${pageContext.request.contextPath}/campus-life/scholarship"
+                            <a href="#"
                                class="text-white-50 text-decoration-none">장학·등록</a>
                         </li>
                         <li class="mb-2">
-                            <a href="${pageContext.request.contextPath}/campus-life/dormitory"
+                            <a href="#"
                                class="text-white-50 text-decoration-none">기숙사</a>
                         </li>
                         <li class="mb-2">
-                            <a href="${pageContext.request.contextPath}/campus-life/club"
+                            <a href="#"
                                class="text-white-50 text-decoration-none">동아리</a>
                         </li>
                         <li class="mb-2">
-                            <a href="${pageContext.request.contextPath}/library"
+                            <a href="#"
                                class="text-white-50 text-decoration-none">도서관</a>
                         </li>
                     </ul>
@@ -147,19 +147,19 @@ footer.custom-footer .container-fluid {
                     <h6 class="text-white text-uppercase mb-3">뉴스·공지</h6>
                     <ul class="list-unstyled mb-0">
                         <li class="mb-2">
-                            <a href="${pageContext.request.contextPath}/news/notice"
+                            <a href="#"
                                class="text-white-50 text-decoration-none">학사공지</a>
                         </li>
                         <li class="mb-2">
-                            <a href="${pageContext.request.contextPath}/news/univ"
+                            <a href="#"
                                class="text-white-50 text-decoration-none">대학뉴스</a>
                         </li>
                         <li class="mb-2">
-                            <a href="${pageContext.request.contextPath}/news/press"
+                            <a href="#"
                                class="text-white-50 text-decoration-none">보도자료</a>
                         </li>
                         <li class="mb-2">
-                            <a href="${pageContext.request.contextPath}/news/event"
+                            <a href="#"
                                class="text-white-50 text-decoration-none">행사·이벤트</a>
                         </li>
                     </ul>
@@ -175,7 +175,7 @@ footer.custom-footer .container-fluid {
                     </p>
                     <p class="mb-0">
                         온라인 문의 :
-                        <a href="${pageContext.request.contextPath}/contact"
+                        <a href="#"
                            class="text-white-50 text-decoration-underline">
                             문의하기
                         </a>
@@ -196,11 +196,11 @@ footer.custom-footer .container-fluid {
             <div class="col-md-6">
                 <ul class="list-inline mb-0 text-md-end mt-3 mt-md-0">
                     <li class="list-inline-item">
-                        <a href="${pageContext.request.contextPath}/privacy"
+                        <a href="#"
                            class="text-white-50 text-decoration-none">개인정보처리방침</a>
                     </li>
                     <li class="list-inline-item">
-                        <a href="${pageContext.request.contextPath}/terms"
+                        <a href="#"
                            class="text-white-50 text-decoration-none">이용약관</a>
                     </li>
                     <li class="list-inline-item">

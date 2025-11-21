@@ -1,9 +1,9 @@
 /* ==========================================================================
  * main-portal.css
      <link rel="stylesheet"
-          href="${pageContext.request.contextPath}/css/main-portal.css" />
+          href="${pageContext.request.contextPath}/css/main-pages.css" />
            
- * 대덕대학교 메인 포털(헤더 · 히어로 · 하단 안내) 공통 스타일
+ * 대덕대학교 메인 페이지 공통 스타일
  *
  * [역할]
  *  - 로그인 전 메인 인덱스 페이지의 레이아웃, 타이포그래피, 컬러 시스템을 통합 관리
@@ -97,20 +97,6 @@ body {
 a {
     text-decoration: none;
     color: inherit;
-}
-
-/* 헤더: 배경 이미지 위에 얇게 깔리는 그라디언트 바 */
-header.main-header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 20;
-    background: linear-gradient(
-        to bottom,
-        rgba(15, 23, 42, 0.75),
-        rgba(15, 23, 42, 0)
-    );
 }
 
 /* 헤더 로고 텍스트 스타일 */
@@ -382,12 +368,6 @@ header.main-header {
     background-color: rgba(15, 23, 42, 0.98);
 }
 
-/* 하단 안내 섹션(How It’s Work 영역) */
-.how-section {
-    background-color: #f9fafb;
-    padding: 72px 0 80px;
-}
-
 .how-section h2 {
     font-size: 1.3rem;
     font-weight: 700;
@@ -496,16 +476,6 @@ header.main-header {
     }
 }
 
-/* 헤더 우측 버튼 공통 스타일(크기, 라운드) */
-.navbar-util .navbar-util-btn {
-    border-radius: 999px;
-    font-size: 1rem;
-    padding: 0.6rem 2.1rem;
-    font-weight: 500;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.25rem;
-}
 
 /* 로그인: 라인형 기본 스타일 재정의 */
 .btn-outline-login {
@@ -551,7 +521,7 @@ header.main-header {
     }
 }
 
-/* 헤더 우측 버튼 상세 튜닝 (중복이지만 외형 통일용) */
+/* 헤더 우측 버튼 상세 튜닝 */
 .navbar-util .navbar-util-btn {
     border-radius: 999px;
     padding: 0.45rem 1.35rem;

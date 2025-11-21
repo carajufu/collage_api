@@ -21,7 +21,8 @@
     <link href="${cPath}/assets/css/icons.min.css" rel="stylesheet" />
     <link href="${cPath}/assets/css/app.min.css" rel="stylesheet" />
     <link href="${cPath}/assets/css/custom.min.css" rel="stylesheet" />
-
+    <link href="${cPath}/assets/css/app.css" rel="stylesheet" />
+    
     <style>
         /* ====== HEADER / NAVBAR 튜닝 ====== */
         .navbar-util {
@@ -150,6 +151,12 @@
 		.navbar-util-btn.btn-soft-light:focus {
 		    color: #000 !important;
 		}
+		/* 회원가입: 옅은 배경 버튼 */
+		.btn-outline-signup {
+		    border: 1.1px solid transparent;
+		    background-color: rgba(248, 250, 252, 0.12);
+		    color: #f9fafb;
+		}
     </style>
 </head>
 
@@ -161,7 +168,7 @@
     <nav class="navbar navbar-expand-lg navbar-landing fixed-top main-header" id="navbar">
         <div class="container-fluid custom-container">
             <!-- 로고 -->
-            <a class="navbar-brand me-3" href="${cPath}/">
+            <a class="navbar-brand me-3" href="/">
                 <img src="${cPath}/images/logo/univ-logo-kor-vite-dark.svg"
                      alt="대덕대학교" height="55"
                      class="card-logo card-logo-dark" />
@@ -183,7 +190,7 @@
                 <!-- GNB -->
                 <ul class="navbar-nav mx-auto mt-3 mt-lg-0">
                     <li class="nav-item">
-                        <a href="${cPath}/" class="nav-link active">홈</a>
+                        <a href="/" class="nav-link active">홈</a>
                     </li>
     				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <!-- 간격 조율 -->
                     <!-- 대학소개 -->
@@ -197,10 +204,10 @@
                             <i class="ri-arrow-down-s-line align-middle ms-1 fs-13"></i>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="${cPath}/about">대학개요</a></li>
-                            <li><a class="dropdown-item" href="${cPath}/about/history">연혁</a></li>
-                            <li><a class="dropdown-item" href="${cPath}/about/message">총장 인사말</a></li>
-                            <li><a class="dropdown-item" href="${cPath}/about/campus-map">캠퍼스 안내</a></li>
+                            <li><a class="dropdown-item" href="#">대학개요</a></li>
+                            <li><a class="dropdown-item" href="#">연혁</a></li>
+                            <li><a class="dropdown-item" href="#">총장 인사말</a></li>
+                            <li><a class="dropdown-item" href="#">캠퍼스 안내</a></li>
                         </ul>
                     </li>
 
@@ -215,9 +222,9 @@
                             <i class="ri-arrow-down-s-line align-middle ms-1 fs-13"></i>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="${cPath}/schedule/calendar">학사일정</a></li>
-                            <li><a class="dropdown-item" href="${cPath}/schedule/major">전공·학과</a></li>
-                            <li><a class="dropdown-item" href="${cPath}/academics/rule">학사 규정</a></li>
+                            <li><a class="dropdown-item" href="/schedule/calendar">학사일정</a></li>
+                            <li><a class="dropdown-item" href="#">전공·학과</a></li>
+                            <li><a class="dropdown-item" href="#">학사 규정</a></li>
                         </ul>
                     </li>
 
@@ -232,10 +239,10 @@
                             <i class="ri-arrow-down-s-line align-middle ms-1 fs-13"></i>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="${cPath}/admission/undergraduate">학부 입학</a></li>
-                            <li><a class="dropdown-item" href="${cPath}/admission/graduate">대학원 입학</a></li>
-                            <li><a class="dropdown-item" href="${cPath}/admission/transfer">편입학</a></li>
-                            <li><a class="dropdown-item" href="${cPath}/admission/international">외국인·교환학생</a></li>
+                            <li><a class="dropdown-item" href="#">학부 입학</a></li>
+                            <li><a class="dropdown-item" href="#">대학원 입학</a></li>
+                            <li><a class="dropdown-item" href="#">편입학</a></li>
+                            <li><a class="dropdown-item" href="#">외국인·교환학생</a></li>
                         </ul>
                     </li>
 
@@ -250,10 +257,10 @@
                             <i class="ri-arrow-down-s-line align-middle ms-1 fs-13"></i>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="${cPath}/campus-life/scholarship">장학·등록</a></li>
-                            <li><a class="dropdown-item" href="${cPath}/campus-life/dormitory">기숙사</a></li>
-                            <li><a class="dropdown-item" href="${cPath}/campus-life/club">동아리</a></li>
-                            <li><a class="dropdown-item" href="${cPath}/library">도서관</a></li>
+                            <li><a class="dropdown-item" href="#">장학·등록</a></li>
+                            <li><a class="dropdown-item" href="#">기숙사</a></li>
+                            <li><a class="dropdown-item" href="#">동아리</a></li>
+                            <li><a class="dropdown-item" href="#">도서관</a></li>
                         </ul>
                     </li>
 
@@ -268,10 +275,10 @@
                             <i class="ri-arrow-down-s-line align-middle ms-1 fs-13"></i>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="${cPath}/news/notice">학사공지</a></li>
-                            <li><a class="dropdown-item" href="${cPath}/news/univ">대학뉴스</a></li>
-                            <li><a class="dropdown-item" href="${cPath}/news/press">보도자료</a></li>
-                            <li><a class="dropdown-item" href="${cPath}/news/event">행사·이벤트</a></li>
+                            <li><a class="dropdown-item" href="#">학사공지</a></li>
+                            <li><a class="dropdown-item" href="#">대학뉴스</a></li>
+                            <li><a class="dropdown-item" href="#">보도자료</a></li>
+                            <li><a class="dropdown-item" href="#">행사·이벤트</a></li>
                         </ul>
                     </li>
                 </ul>
@@ -318,65 +325,91 @@
                                     </span>
                                 </button>
 
-                                <!-- 드롭다운 카드 -->
-                                <div class="dropdown-menu dropdown-menu-end nav-user-menu shadow-sm"
-                                     aria-labelledby="navUserDropdown">
-                                    <div class="d-flex justify-content-between align-items-center mb-2">
-                                        <div>
-                                            <div class="fw-semibold">
-                                                <c:out value="${acntVO.user_nm}" /> 님
-                                            </div>
-                                            <div class="small text-white-50">
-                                                <c:out value="${acntVO.userSubjctNm}" />
-                                            </div>
-                                        </div>
-                                    </div>
-
-									<dl class="mb-3 small">
-									    <div class="d-flex">
-									        <dt class="text-white-50">학적 상태</dt>
-									        <dd><c:out value="${acntVO.userSttusNm}" /></dd>
-									    </div>
-									    <div class="d-flex">
-									        <dt class="text-white-50">소속 학과</dt>
-									        <dd><c:out value="${acntVO.userSubjctNm}" /></dd>
-									    </div>
-									    <div class="d-flex">
-									        <dt class="text-white-50">
-									            <c:choose>
-									                <c:when test="${not empty acntVO.authorList}">
-									                    <c:set var="idLabel" value="학번" />
-									                    <c:forEach var="auth" items="${acntVO.authorList}">
-									                        <c:if test="${auth.authorNm == 'ROLE_PROF'}">
-									                            <c:set var="idLabel" value="교번" />
-									                        </c:if>
-									                    </c:forEach>
-									                    ${idLabel}
-									                </c:when>
-									                <c:otherwise>
-									                    학번
-									                </c:otherwise>
-									            </c:choose>
-									        </dt>
-									        <dd>
-									            <span class="nav-user-id-copy"
-									                  data-copy-text="${acntVO.userNo}">
-									                <c:out value="${acntVO.userNo}" /> (복사)
-									            </span>
-									        </dd>
-									    </div>
-									</dl>
-	                                    <div class="border-top pt-3 mt-2 d-flex gap-1">
-	                                        <a href="#"
-	                                           class="btn btn-sm btn-light flex-fill">
-	                                            개인정보관리
-	                                        </a>
-	                                        <a href="#"
-	                                           class="btn btn-sm btn-outline-light flex-fill">
-	                                            비밀번호관리
-	                                        </a>
-	                                    </div>
-                                </div>
+								<!-- 드롭다운 카드 -->
+								<div class="dropdown-menu dropdown-menu-end nav-user-menu shadow-sm"
+								     aria-labelledby="navUserDropdown">
+								
+								    <%
+								        // 상단 이름/소속 영역은 공통
+								    %>
+								    <div class="d-flex justify-content-between align-items-center mb-2">
+								        <div>
+								            <div class="fw-semibold">
+								                <c:out value="${acntVO.user_nm}" /> 님
+								            </div>
+								            <div class="small text-white-50">
+								                <c:out value="${acntVO.userSubjctNm}" />
+								            </div>
+								        </div>
+								    </div>
+								
+								    <%-- 1. ROLE_PROF 여부 플래그 한 번만 계산 --%>
+								    <c:set var="isProf" value="false" />
+								    <c:if test="${not empty acntVO.authorList}">
+								        <c:forEach var="auth" items="${acntVO.authorList}">
+								            <c:if test="${auth.authorNm == 'ROLE_PROF'}">
+								                <c:set var="isProf" value="true" />
+								            </c:if>
+								        </c:forEach>
+								    </c:if>
+								
+								    <dl class="mb-3 small">
+								
+								        <%-- 2. 학적 상태 / 재직 상태 라벨 통일 처리 --%>
+								        <div class="d-flex">
+								            <dt class="text-white-50">
+								                <c:choose>
+								                    <c:when test="${isProf}">
+								                        재직 상태
+								                    </c:when>
+								                    <c:otherwise>
+								                        학적 상태
+								                    </c:otherwise>
+								                </c:choose>
+								            </dt>
+								            <dd>
+								                <c:out value="${acntVO.userSttusNm}" />
+								            </dd>
+								        </div>
+								
+								        <%-- 3. 소속 학과 (학생/교수 공통) --%>
+								        <div class="d-flex">
+								            <dt class="text-white-50">소속 학과</dt>
+								            <dd><c:out value="${acntVO.userSubjctNm}" /></dd>
+								        </div>
+								
+								        <%-- 4. 학번 / 교번 라벨 통일 처리 --%>
+								        <div class="d-flex">
+								            <dt class="text-white-50">
+								                <c:choose>
+								                    <c:when test="${isProf}">
+								                        교번
+								                    </c:when>
+								                    <c:otherwise>
+								                        학번
+								                    </c:otherwise>
+								                </c:choose>
+								            </dt>
+								            <dd>
+								                <span class="nav-user-id-copy"
+								                      data-copy-text="${acntVO.userNo}">
+								                    <c:out value="${acntVO.userNo}" /> (복사)
+								                </span>
+								            </dd>
+								        </div>
+								    </dl>
+								
+								    <div class="border-top pt-3 mt-2 d-flex gap-1">
+								        <a href="#"
+								           class="btn btn-sm btn-light flex-fill">
+								            개인정보관리
+								        </a>
+								        <a href="#"
+								           class="btn btn-sm btn-outline-light flex-fill">
+								            비밀번호관리
+								        </a>
+								    </div>
+								</div>
                             </div>
                         </div>
 
@@ -405,11 +438,12 @@
                            class="btn btn-sm navbar-util-btn btn-outline-light">
                             로그인
                         </a>
-                        <a href="$/signup"
+                        <a href="/signup"
                            class="btn btn-sm navbar-util-btn btn-soft-light d-none d-lg-inline-flex">
                             회원가입
                         </a>
-                        <a href="/portal"
+                        <!-- 학사(관리) 포털 연동시 실 경로 입력 -->
+                        <a href="/portal" 
                            class="btn btn-sm navbar-util-btn btn-warning ms-lg-1">
                             학사포털
                         </a>

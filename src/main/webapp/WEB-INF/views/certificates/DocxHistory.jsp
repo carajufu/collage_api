@@ -1,8 +1,30 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+         pageEncoding="UTF-8"%>
+<%@ taglib prefix="c"  uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
+
+<c:set var="cPath" value="${pageContext.request.contextPath}"/>
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8" />
+    <title>증명서 발급 이력 조회</title>
+  	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- velzon layout config -->
+    <script src="${cPath}/assets/js/layout.js"></script>
+
+    <!-- velzon CSS stack -->
+    <link href="${cPath}/assets/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="${cPath}/assets/css/icons.min.css" rel="stylesheet" />
+    <link href="${cPath}/assets/css/app.min.css" rel="stylesheet" />
+    <link href="${cPath}/assets/css/custom.min.css" rel="stylesheet" />
+    <link href="${cPath}/assets/css/app.css" rel="stylesheet" />
+	<link rel="stylesheet" href="<c:url value='${cPath}/css/docx.css'/>">
+    
 <%@ include file="../header.jsp" %>
-<!-- 전역 docx css -->
-<link rel="stylesheet" href="<c:url value='${pageContext.request.contextPath}/css/docx.css'/>">
 <div class="docx-history-page">
     <h2>증명서 발급 이력 조회</h2>
 

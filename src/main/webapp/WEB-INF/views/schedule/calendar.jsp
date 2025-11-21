@@ -2,26 +2,13 @@
          pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
+<%@ include file="../index-header.jsp"%> <!-- 메인페이지용, 학사 관리로 하려면 학사 관리용 헤더 필요 -->
 
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>대덕대학교-로그인</title>
+    <title>대덕대학교-학사일정(상세)</title>
 
-    <!-- Pretendard + Bootstrap -->
-    <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/pretendard/dist/web/static/pretendard.css" />
-    <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
     <!-- 전역 스케줄러 css -->
     <link rel="stylesheet"
           href="${pageContext.request.contextPath}/css/schedule.css" />
-
-    <!-- 메인 포털 전용 CSS -->
-    <link rel="stylesheet"
-          href="${pageContext.request.contextPath}/css/main-portal.css" />
 
     <!-- FullCalendar 정적 리소스 (전역 공용) -->
     <link rel="stylesheet"
@@ -31,12 +18,11 @@
 </head>
 <body>
 
-<%@ include file="../index-header.jsp"%>
 <style>
 .navbar-landing.main-header {
   background-color: #272A3A !important;
 }
-/* 헤더 아래 메인 콘텐츠 상하 패딩 (스샷 기준 간격) */
+/* 헤더 아래 메인 콘텐츠 상하 패딩 (간격 조율) */
 .main-content-with-header-calendar {
     padding-top: 7rem;   /* 헤더와 콘텐츠 카드 사이 여유 크게 */
     padding-bottom: 2rem;  /* 하단도 넉넉하게 */
@@ -57,7 +43,12 @@
 .main-content-with-header-calendar h3 {
     font-size: 1.0rem;
 }
-
+/* FullCalendar 일자 숫자 줄바꿈 금지 */
+.fc .fc-daygrid-day-number {
+    white-space: nowrap !important;  /* 한 줄 유지 */
+    word-break: keep-all !important; /* 숫자+한글 사이에서 강제 줄바꿈 금지 */
+    display: inline-block;           /* 폭 계산 안정화  */
+}
 </style>
 <title>대덕대학교-학사 일정</title>
 </head>
