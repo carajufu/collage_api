@@ -19,16 +19,20 @@ public class CnsltVO {
 	private String cnsltResult;       //상담결과	CNSLT_RESULT
 	private String profsrNo;          //교수번호(FK)	PROFSR_NO(FK)
 	private String stdntNo;           //학생번호(FK)	STDNT_NO(FK)
-	
+
 	//상담디테일 보려고 가져감
 	private String sklstfNm;     //교직원명	SKLSTF_NM
-	
+	private String stdntNm;		//학생명
 	//카운트
 	private int cnt;		// 통계를 위한
 
-	
 	//페이징을 위한 rnum 가져옴
 	private int rnum;
+
+	//학생 전화번호, 교수 전화번호 가져오기
+	private String sklstfCttpc;
+	private String stdntCttpc;
+
 
 }
 

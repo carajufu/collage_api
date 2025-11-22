@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.ac.collage_api.counsel.mapper.CounselAdminMapper">
+
+	<!-- //관리자 상담 리스트 불러오기
+	public List<CnsltVO> selectCnsltList(); -->
+	<select id="selectCnsltList" resultType="CnsltVO">
+		SELECT
+			C.CNSLT_INNB,
+			C.STTUS,
+			C.CNSLT_REQUST_DE,
+			C.CNSLT_REQUST_HOUR,
+			S.STDNT_NM,
+			K.SKLSTF_NM,
+			C.REQST_DE
+		FROM CNSLT C
+			LEFT JOIN STDNT S ON C.STDNT_NO = S.STDNT_NO
+			LEFT JOIN PROFSR P ON C.PROFSR_NO = P.PROFSR_NO
+			LEFT JOIN SKLSTF K ON P.SKLSTF_ID = K.SKLSTF_ID
+		ORDER BY 1 DESC
+
+	</select>
+
+	<!-- //관리자 상담 디테일 가져오기
+	public CnsltVO selectCnsltDetail(int cnsltInnb); -->
+	<select id="selectCnsltDetail" parameterType="int" resultType="cnsltVO">
+		SELECT
+			C.CNSLT_INNB,
+		    C.CNSLT_REQUST_DE,
+		    C.CNSLT_REQUST_HOUR,
+		    C.CNSLT_REQUST_CN,
+		    C.REQST_DE,
+		    C.STTUS,
+		    C.CNSLT_MTHD,
+		    C.CANCL_REASON,
+		    C.CNSLT_RESULT,
+		    C.PROFSR_NO,
+		    C.STDNT_NO,
+
+		    K.SKLSTF_NM,
+		    S.STDNT_NM,
+
+		    K.CTTPC AS SKLSTF_CTTPC,
+		    S.CTTPC AS STDNT_CTTPC
+		FROM CNSLT C
+			JOIN STDNT S ON C.STDNT_NO = S.STDNT_NO
+			JOIN PROFSR P ON C.PROFSR_NO = P.PROFSR_NO
+			JOIN SKLSTF K ON P.SKLSTF_ID = K.SKLSTF_ID
+
+		WHERE CNSLT_INNB = #{cnsltInnb}
+	</select>
+
+
+	<!--
+	****상담통계****
+	-->
+
+	<!-- //오늘 상담 신청 건수
+	public int selectTodayRequestCount(); -->
+	<select id="selectTodayRequestCount">
+		SELECT COUNT(CNSLT_INNB) AS TODAY_REQUEST_COUNT
+		FROM CNSLT
+		WHERE REQST_DE &gt;= TRUNC(SYSDATE)
+			AND REQST_DE &lt; TRUNC(SYSDATE)+1
+	</select>
+
+	<!-- //이번 달 상담 신청 건수
+	public int selectMonthRequestCount(); -->
+	<select id="selectMonthRequestCount">
+		SELECT COUNT(CNSLT_INNB) AS MONTH_REQUEST_COUNT
+		FROM CNSLT
+		WHERE REQST_DE &gt;= TRUNC(SYSDATE, 'MM')
+			AND REQST_DE &lt; ADD_MONTHS(TRUNC(SYSDATE,'MM'),1)
+	</select>
+
+	<!-- //현재시점 처리안된 상담건수
+	public int selectCurrentWaitingCount(); -->
+	<select id="selectCurrentWaitingCount">
+		SELECT COUNT(CNSLT_INNB) AS CURRENT_WAITING_COUNT
+		FROM CNSLT
+		WHERE STTUS = '1'
+	</select>
+
+	<!-- //상태통계 자료 가져오기
+	public List<Map<String, Object>> selectStatusRatio(); -->
+	<select id="selectStatusRatio" resultType="map">
+		SELECT
+			STTUS,
+			COUNT(*) AS COUNT
+		FROM CNSLT
+		WHERE TO_CHAR(CNSLT_REQUST_DE, 'YYYY') = TO_CHAR(SYSDATE,'YYYY')
+		GROUP BY STTUS
+	</select>
+
+	<!-- //교수 상위 top5 불러오기
+	public List<ProfsrRankVO> selectTopFiveProfsr(); -->
+	<select id="selectTopFiveProfsr" resultType="kr.ac.collage_api.counsel.dto.CounselAdminChartDTO$ProfsrRankVO">
+		SELECT name, count
+			FROM(
+			    SELECT
+			        S.SKLSTF_NM AS name,
+			        COUNT(S.SKLSTF_NM) as count
+			    FROM CNSLT C
+			        JOIN PROFSR P ON C.PROFSR_NO = P.PROFSR_NO
+			        JOIN SKLSTF S ON P.SKLSTF_ID = S.SKLSTF_ID
+			    GROUP BY S.SKLSTF_NM
+			    ORDER BY count DESC
+			)
+			WHERE ROWNUM &lt; 6
+	</select>
+
+
+
+
+
+
+</mapper>

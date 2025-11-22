@@ -16,6 +16,7 @@
 
     <!-- custom -->
     <script type="text/javascript" src="/js/wtModal.js"></script>
+    <script type="text/javascript" src="/js/wtGrid.js"></script>
 
     <script type="text/javascript">
         document.addEventListener("DOMContentLoaded", () => {
@@ -1115,19 +1116,18 @@
                         <div class="tab-content">
                             <div class="tab-pane active show" id="notice" role="tabpanel">
                                 <div class="card h-100">
-                                    <div class="card-header">공지사항</div>
-                                    <div data-simplebar style="max-height: 330px;" class="px-3">
-                                        <div class="card-body">여기에 공지 내용/리스트</div>
-                                        <p>${learnInfo.notice}</p>
+                                    <div data-simplebar style="max-height: 330px;">
+                                        <div class="card-body">
+                                            <div id="noticeTable"></div>
+                                        </div>
                                     </div>
-<%--                                    <div class="card-footer text-end">더보기 버튼 등</div>--%>
                                 </div>
                             </div>
                             <div class="tab-pane" id="resource" role="tabpanel">
-
+                                <div id="resourceTable"></div>
                             </div>
                             <div class="tab-pane" id="question" role="tabpanel">
-
+                                <div id="questionTable"></div>
                             </div>
                         </div>
                     </div>
@@ -1154,14 +1154,29 @@
         </div>
 
     <script type="text/javascript">
-        const bbsHeader = [""]
-        const noticeRows = [
+        function dtFmt(t) {
+            const date = new Date(t);
+
+            const month = String(date.getMonth() + 1).padStart(2, "0");
+            const day   = String(date.getDate()).padStart(2, "0");
+
+            return `\${month}-\${day}`;
+        }
+
+        const columns = ["글번호", "제목", "작성자", "등록일자", "조회수"];
+        const data = [
             <c:forEach var="row" items="${learnInfo.notice.lectureBbsCttVOList}" varStatus="st">
             [
-
-            ]
+                "${row.bbscttNo}",
+                "${row.bbscttSj}",
+                "${row.role} ${row.name}",
+                dtFmt(${row.bbscttWritngDe.time}),
+                "${row.bbscttRdcnt}"
+            ] ,
             </c:forEach>
         ]
+
+        gridInit({ columns, data });
     </script>
 
     <div id="preview-template" style="display:none;">

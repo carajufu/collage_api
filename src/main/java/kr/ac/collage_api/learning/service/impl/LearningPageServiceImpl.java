@@ -3,6 +3,7 @@ package kr.ac.collage_api.learning.service.impl;
 import kr.ac.collage_api.common.attach.service.UploadController;
 import kr.ac.collage_api.learning.vo.*;
 import kr.ac.collage_api.learning.mapper.LearningPageMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @Service
 public class LearningPageServiceImpl {
     @Autowired
@@ -109,6 +111,20 @@ public class LearningPageServiceImpl {
         lectureBbsMap.put("notice", learningPageMapper.getLectureBbs(lecNo, "공지사항"));
         lectureBbsMap.put("resource", learningPageMapper.getLectureBbs(lecNo, "자료실"));
         lectureBbsMap.put("question", learningPageMapper.getLectureBbs(lecNo, "질문"));
+
+        lectureBbsMap.forEach((key, bbs) -> {
+            for(LectureBbsCttVO ctt : bbs.getLectureBbsCttVOList()) {
+                if(ctt.getSklstfNm() != null && ctt.getStdntNm() == null) {
+                    ctt.setRole("교수");
+                    ctt.setName(ctt.getSklstfNm());
+                } else if(ctt.getStdntNm() != null && ctt.getSklstfNm() == null) {
+                    ctt.setRole("학생");
+                    ctt.setName(ctt.getStdntNm());
+                } else {
+                    log.warn("작성자 구분 불가: acntId = {}", ctt.getAcntId());
+                }
+            }
+        });
 
         return lectureBbsMap;
     }
