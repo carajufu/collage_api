@@ -167,31 +167,31 @@ public class EnrollmentController {
 	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("처리 중 오류가 발생했습니다. 관리자에게 문의해주세요.");
 			}
 		}
-			
+
 		//취소
 			@GetMapping("/cancel")
-		    public String cancelEnrollmentRequest(@RequestParam("reqId") String reqId, 
-		                                          Principal principal, 
+		    public String cancelEnrollmentRequest(@RequestParam("reqId") String reqId,
+		                                          Principal principal,
 		                                          RedirectAttributes rttr) {
-		                                            
+
 		        if (principal == null) {
-		            return "redirect:/login"; 
+		            return "redirect:/login";
 		        }
 
-		        String studentId = principal.getName(); 
+		        String studentId = principal.getName();
 		        log.info("신청 취소 시도. reqId: {}, studentId: {}", reqId, studentId);
 
 		        try {
 		            enrollmentService.cancelRequest(reqId, studentId);
 		            rttr.addFlashAttribute("message", "신청이 정상적으로 취소되었습니다.");
 		            log.info("신청 취소 성공. reqId: {}", reqId);
-		            
+
 		        } catch (Exception e) {
 		            log.warn("신청 취소 실패. reqId: {}, error: {}", reqId, e.getMessage());
 		            rttr.addFlashAttribute("error", "취소 처리 중 오류가 발생했습니다: " + e.getMessage());
 		        }
 
-		        return "redirect:/enrollment/status"; 
-		    
+		        return "redirect:/enrollment/status";
+
 		}
 	}

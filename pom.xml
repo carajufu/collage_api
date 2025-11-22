@@ -165,6 +165,17 @@
             <version>0.4.8</version>
         </dependency>
         <!-- 파일업로드 끝  -->
+
+        <!-- 웹소켓 -->
+        <dependency>
+		    <groupId>org.springframework.boot</groupId>
+		    <artifactId>spring-boot-starter-websocket</artifactId>
+        <!--제미나이 api-->
+     	<dependency>
+		    <groupId>org.json</groupId>
+		    <artifactId>json</artifactId>
+		    <version>20240303</version>
+		</dependency>
     </dependencies>
 
     <build>

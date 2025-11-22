@@ -10,26 +10,31 @@
             , task_at               /* 과제 여부 */
             , lrn_thema             /* 학습 주제 */
             , lrn_cn                /* 학습 내용 */
+            , quiz_at               /* 퀴즈 여부 */
         FROM week_accto_lrn         /* 주 별 학습 */
         WHERE estbllctre_code = #{lecNo}
         ORDER BY week
     </select>
 
     <select id="getLectureInfo" parameterType="String" resultType="HashMap">
-        SELECT
-            ec.profsr_no
-            , ec.acqs_pnt
-            , ec.lctrum
-            , ec.compl_se
-            , ec.atnlc_nmpr
-            , ec.lctre_use_lang
-            , ec.evl_mthd
-            , ec.estbl_year
-            , ec.estbl_semstr
-            , ac.lctre_nm
+        SELECT                          /* kr.ac.collage_api.learning.mapper.LearningPageMapper.getLectureInfo */
+            ec.profsr_no                /* 교수 번호 */
+            , ec.acqs_pnt               /* 취득 학점 */
+            , ec.lctrum                 /* 강의실 */
+            , ec.compl_se               /* 이수 구분 */
+            , ec.atnlc_nmpr             /* 수강 인원 */
+            , ec.evl_mthd               /* 평가 방식 */
+            , ec.estbl_year             /* 개설 년도 */
+            , ec.estbl_semstr           /* 개설 학기 */
+            , ac.lctre_nm               /* 강의 명 */
+            , skl.sklstf_nm             /* 교직원 이름 */
         FROM estbl_course ec
             INNER JOIN all_course ac
                 ON ec.lctre_code = ac.lctre_code
+            INNER JOIN profsr prof
+                ON ec.profsr_no = prof.profsr_no
+            INNER JOIN sklstf skl
+                ON prof.sklstf_id = skl.sklstf_id
         WHERE estbllctre_code = #{lecNo}
     </select>
 
@@ -97,6 +102,19 @@
           AND tp.stdnt_no = #{studentNo}
     </select>
 
+    <select id="getSubmitQuiz" resultType="quizPresentnVO">
+        SELECT
+            quiz_presentn_no
+            , stdnt_no
+            , quiz_code
+            , quiz_ex_code
+            , quiz_presentn_de
+            , presentn_at
+        FROM quiz_presentn
+        WHERE quiz_code = #{quizCode}
+            AND stdnt_no = #{name}
+    </select>
+
     <update id="taskFileUpload">
         UPDATE task_presentn                                        /* kr.ac.collage_api.learning.mapper.LearningPageMapper.taskFileUpload */
         SET file_group_no = #{fileGroupNo}                          /* 파일 그룹 번호 */
@@ -104,4 +122,95 @@
             , presentn_at = 1                                       /* 제철 여부 */
         WHERE task_presentn_no = #{taskpresentnNo}                  /* 과제 제출 번호 */
     </update>
+
+    <select id="quizList" parameterType="quizVO">
+        SELECT                      /* kr.ac.collage_api.learning.mapper.LearningPageMapper.quizList */
+            quiz_code               /* 퀴즈 코드 */
+            , week_accto_lrn_no     /* 주 별 학습 번호 */
+            , ques_cn               /* 문제 내용 */
+            , quiz_begin_de         /* 퀴즈 시작 일자 */
+            , quiz_clos_de          /* 퀴즈 마감 일자 */
+        FROM quiz
+        WHERE week_accto_lrn_no = (
+            SELECT week_accto_lrn_no
+            FROM week_accto_lrn
+            WHERE estbllctre_code = #{lecNo}
+              AND week = #{weekNo}
+        )
+    </select>
+
+    <select id="quizExList" parameterType="String">
+        SELECT                  /* kr.ac.collage_api.learning.mapper.LearningPageMapper.quizExList */
+            quiz_ex_code        /* 퀴즈 보기 코드 */
+            , quiz_code         /* 퀴즈 코드 */
+            , ex_no             /* 보기 번호 */
+            , ex_cn             /* 보기 내용 */
+            , cnsl_at           /* 정답 여부 */
+        FROM quiz_ex
+        WHERE quiz_code = #{quizCode}
+    </select>
+
+    <update id="quizSubmit" parameterType="String">
+        UPDATE quiz_presentn                /* kr.ac.collage_api.learning.mapper.LearningPageMapper.quizSubmit */
+        SET
+            quiz_ex_code = #{quizExCode}
+            , quiz_presentn_de = SYSDATE
+            , presentn_at = '1'
+        WHERE stdnt_no = #{stdntNo}
+            AND quiz_code = #{quizCode}
+    </update>
+
+    <select id="isCorrect" resultType="String">
+        SELECT                                  /* kr.ac.collage_api.learning.mapper.LearningPageMapper.isCorrect */
+            cnsl_at
+        FROM quiz_ex
+        WHERE quiz_ex_code = #{quizExCode}
+            AND quiz_code = #{quizCode}------------
+    </select>
+
+    <resultMap id="lectureBbsMap" type="LectureBbsVO">
+        <result property="estbllctreCode" column="ESTBLLCTRE_CODE"/>
+        <result property="bbsNm" column="BBS_NM"/>
+        <result property="bbsDc" column="BBS_DC"/>
+        <result property="bbsCode" column="BBS_CODE"/>
+        <collection property="lectureBbsCttVOList" javaType="ArrayList" ofType="lectureBbsCttVO" select="getLectureBbsCtt" column="BBS_CODE"/>
+    </resultMap>
+
+    <select id="getLectureBbs" parameterType="String" resultMap="lectureBbsMap">
+        SELECT                          /* kr.ac.collage_api.learning.mapper.LearningPageMapper.getLectureBbs */
+            bbs_code
+            , estbllctre_code
+            , bbs_nm
+            , bbs_dc
+        FROM bbs
+        WHERE estbllctre_code = #{lecNo}
+            AND bbs_nm = #{type}
+    </select>
+
+    <select id="getLectureBbsCtt" resultType="lectureBbsCttVO">
+        SELECT                          /* kr.ac.collage_api.learning.mapper.LearningPageMapper.getLectureBbsCtt */
+            ROWNUM
+            , ctt.*
+        FROM (
+            SELECT
+                bbsctt_no
+                 , ctt.acnt_id
+                 , ctt.bbs_code
+                 , ctt.parnts_bbsctt_no
+                 , ctt.file_group_no
+                 , ctt.bbsctt_sj
+                 , ctt.bbsctt_cn
+                 , ctt.bbsctt_writng_de
+                 , ctt.bbsctt_rdcnt
+                 , skl.sklstf_nm
+                 , std.stdnt_nm
+            FROM bbs_ctt ctt
+            LEFT OUTER JOIN sklstf skl
+                ON ctt.acnt_id = skl.acnt_id
+            LEFT OUTER JOIN stdnt std
+                ON ctt.acnt_id = std.acnt_id
+            WHERE bbs_code = #{value}
+            ORDER BY bbsctt_no DESC
+             ) ctt
+    </select>
 </mapper>

@@ -103,9 +103,9 @@
         AND STDNT_NO = #{studentId}
         AND REQST_STTUS = #{currentStatus}
 	</update>
-	
-	
-	<!-- ///////////////////////////관리자//////////////////////////////// -->	
+
+
+	<!-- ///////////////////////////관리자//////////////////////////////// -->
 	
 	<resultMap id="requestStdntMap" type="kr.ac.collage_api.vo.SknrgsChangeReqstVO" autoMapping="true">
 		<id property="skngsChangeInnb" column="requestStdntMap" />

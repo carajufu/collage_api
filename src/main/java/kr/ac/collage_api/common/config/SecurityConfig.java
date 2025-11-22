@@ -39,7 +39,8 @@ public class SecurityConfig {
                         "/js/**",
                         "favicon.ico",
                         "/.well-known/**",
-                        "/assets/**");
+                        "/assets/**",
+                        "/img/**");
     }
 
     @Bean
@@ -69,7 +70,8 @@ public class SecurityConfig {
                                 "/login",
                                 "/admin/**",
                                 "/20*/**",
-                                "/info/**").permitAll()
+                                "/info/**",
+                                "/ws/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .requestCache(cache -> cache.requestCache(requestCache))

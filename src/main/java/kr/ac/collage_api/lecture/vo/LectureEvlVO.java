@@ -76,4 +76,5 @@ public class LectureEvlVO {
 	private String reqstSemstr;          //신청학기
 	private String reqstSttus;           //신청상태
 	private String reqstDe;              //신청일자
+	private String evalCompleted;  // 평가 완료 여부 (Y/N)
 }
