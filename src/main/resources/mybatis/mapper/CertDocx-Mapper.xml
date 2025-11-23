@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+목적
+- 증명서 발급용 조회와 이력 기록 통합 매퍼
+- 기존 기능 유지 + 성적증명서 행/합계 추가
+
+데이터 흐름
+1) selectStudentDocxInfo → 학생 기본정보
+2) insertCrtfIssuRequest → 발급요청 REQ 저장
+3) updateCrtfIssuStatus → 발급 완료 업데이트
+4) selectTranscriptRows → 성적표 행 목록
+5) selectTranscriptSummary → 총 취득학점·총 평점
+6) selectIssueRequestInfo, stdntNoSelectALL, existsByDocNo → 감사 및 검증
+
+계약
+- 파라미터 stdntNo 문자열 필수
+- 컬럼 별칭은 VO 필드와 1:1 매핑
+- 트랜잭션은 서비스 계층에서 관리
+
+보안·안전 전제
+- 입력값은 서버단에서 인증된 사용자 기준
+- 민감정보 노출 금지
+- 감사 가능성 확보 위해 이력 테이블 필수 기록
+
+유지보수 가이드
+- 스키마 변경 시 ResultMap 먼저 갱신
+- SELECT 별칭은 VO 필드와 동일 유지
+- 성적 조인 경로 검증: SEMSTR_SCRE → SBJECT_SCRE → ATNLC_REQST → ESTBL_COURSE → ALL_COURSE
+-->
+
+<mapper namespace="kr.ac.collage_api.certificates.mapper.CertDocxMapper">
+
+  <!-- ===== ResultMap 정의 ===== -->
+
+  <!-- 증명서 종류 -->
+  <resultMap id="CrtfKndMap" type="crtfKndVO">
+    <id     property="crtfKndNo"    column="CRTF_KND_NO"/>
+    <result property="crtfNm"       column="CRTF_NM"/>
+    <result property="crtfDc"       column="CRTF_DC"/>
+    <result property="issuFee"      column="ISSU_FEE"/>
+    <result property="crtfIssuForm" column="CRTF_ISSU_FORM"/>
+  </resultMap>
+
+  <!-- 학생 정보 출력용 -->
+  <resultMap id="StudentDocxMap" type="studentDocxVO">
+    <result property="studentNo"        column="STUDENT_NO"/>
+    <result property="studentNameKor"   column="STUDENT_NAME_KOR"/>
+    <result property="studentNameEng"   column="STUDENT_NAME_ENG"/>
+    <result property="majorName"        column="MAJOR_NAME"/>
+    <result property="status"           column="STATUS"/>
+    <result property="collegeName"      column="COLLEGE_NAME"/>
+    <result property="degreeName"       column="DEGREE_NAME"/>
+    <result property="graduationDate"   column="GRADUATION_DATE"/>
+    <result property="totalCredits"     column="TOTAL_CREDITS"/>
+    <result property="totalGpa"         column="TOTAL_GPA"/>
+    <result property="leaveStartDate"   column="LEAVE_START_DATE"/>
+    <result property="returnDueDate"    column="RETURN_DUE_DATE"/>
+    <result property="leaveReason"      column="LEAVE_REASON"/>
+  </resultMap>
+
+  <!-- 발급 이력 -->
+  <resultMap id="CrtfIssuRequestMap" type="crtfIssuRequestVO">
+    <id     property="crtfIssuInnb" column="CRTF_ISSU_INNB"/>
+    <result property="crtfKndNo"    column="CRTF_KND_NO"/>
+    <result property="fileGroupNo"  column="FILE_GROUP_NO"/>
+    <result property="stdntNo"      column="STDNT_NO"/>
+    <result property="reqstDt"      column="REQST_DT"/>
+    <result property="issuDt"       column="ISSU_DT"/>
+    <result property="issuSttus"    column="ISSU_STTUS"/>
+    <association property="crtfKnd" javaType="crtfKndVO" resultMap="CrtfKndMap"/>
+  </resultMap>
+
+	<!-- 성적표 행 -->
+	<resultMap id="transcriptRowMap" type="transcriptRowVO">
+	  <result property="yearNo"      column="YEAR_NO"/>
+	  <result property="semNo"       column="SEM_NO"/>
+	  <result property="complSe"     column="COMPL_SE"/>
+	  <result property="termLabel"   column="TERM_LABEL"/>
+	  <result property="subjectName" column="SUBJECT_NAME"/>
+	  <result property="credits"     column="CREDITS"/>
+	  <result property="grade"       column="GRADE"/>
+	</resultMap>
+
+
+  <!-- 성적 합계 -->
+  <resultMap id="TranscriptSummaryMap" type="transcriptSummaryVO">
+    <result property="totalCredits" column="TOTAL_CREDITS"/>
+    <result property="totalGpa"     column="TOTAL_GPA"/>
+  </resultMap>
+
+  <!-- ===== 조회 ===== -->
+
+  <!-- 증명서 종류 단건 -->
+  <select id="selectCrtfKndById" parameterType="string" resultMap="CrtfKndMap">
+    SELECT CK.CRTF_KND_NO, CK.CRTF_NM, CK.CRTF_DC, CK.ISSU_FEE, CK.CRTF_ISSU_FORM
+    FROM CRTF_KND CK
+    WHERE CK.CRTF_KND_NO = #{crtfKndNo}
+  </select>
+
+  <!-- 증명서 종류 전체 -->
+  <select id="selectAllCrtfKnd" resultMap="CrtfKndMap">
+    SELECT CK.CRTF_KND_NO, CK.CRTF_NM, CK.CRTF_DC, CK.ISSU_FEE, CK.CRTF_ISSU_FORM
+    FROM CRTF_KND CK
+    ORDER BY CK.CRTF_KND_NO
+  </select>
+
+  <!-- 학생 증명서용 기본정보 -->
+  <select id="selectStudentDocxInfo" parameterType="string" resultMap="StudentDocxMap">
+    SELECT
+      S.STDNT_NO      AS STUDENT_NO,
+      S.STDNT_NM      AS STUDENT_NAME_KOR,
+      NULL            AS STUDENT_NAME_ENG,   /* 영문명 미보유 가정 */
+      MJ.SUBJCT_NM    AS MAJOR_NAME,
+      S.SKNRGS_STTUS  AS STATUS,
+      U.UNIV_NM       AS COLLEGE_NAME,
+      '공학사'        AS DEGREE_NAME,        /* 학위명 고정값 */
+      S.GRDTN_DE      AS GRADUATION_DATE,
+      NULL            AS TOTAL_CREDITS,      /* 합계는 SCORE 템플릿에서 별도 주입 */
+      NULL            AS TOTAL_GPA,
+      NULL            AS LEAVE_START_DATE,
+      NULL            AS RETURN_DUE_DATE,
+      NULL            AS LEAVE_REASON
+    FROM STDNT S
+    LEFT JOIN SUBJCT MJ ON MJ.SUBJCT_CODE = S.SUBJCT_CODE
+    LEFT JOIN UNIV   U  ON U.UNIV_CODE    = MJ.UNIV_CODE
+    WHERE S.STDNT_NO = #{stdntNo}
+  </select>
+
+  <!-- 발급요청 INSERT -->
+  <insert id="insertCrtfIssuRequest" parameterType="crtfIssuRequestVO">
+    INSERT INTO CRTF_ISSU_REQUST (
+      CRTF_ISSU_INNB, CRTF_KND_NO, FILE_GROUP_NO, STDNT_NO, REQST_DT, ISSU_STTUS
+    ) VALUES (
+      #{crtfIssuInnb}, #{crtfKndNo}, #{fileGroupNo}, #{stdntNo}, #{reqstDt}, #{issuSttus}
+    )
+  </insert>
+
+  <!-- 발급완료 UPDATE -->
+  <update id="updateCrtfIssuStatus" parameterType="crtfIssuRequestVO">
+    UPDATE CRTF_ISSU_REQUST
+    SET ISSU_DT = #{issuDt}, ISSU_STTUS = #{issuSttus}
+    WHERE CRTF_ISSU_INNB = #{crtfIssuInnb}
+  </update>
+
+  <!-- 발급 이력 단건 -->
+  <select id="selectIssueRequestInfo" parameterType="string" resultMap="CrtfIssuRequestMap">
+    SELECT
+      R.CRTF_ISSU_INNB, R.CRTF_KND_NO, R.FILE_GROUP_NO, R.STDNT_NO,
+      R.REQST_DT, R.ISSU_DT, R.ISSU_STTUS,
+      K.CRTF_KND_NO AS CRTF_KND_NO, K.CRTF_NM AS CRTF_NM, K.CRTF_DC AS CRTF_DC,
+      K.ISSU_FEE AS ISSU_FEE, K.CRTF_ISSU_FORM AS CRTF_ISSU_FORM
+    FROM CRTF_ISSU_REQUST R
+    LEFT JOIN CRTF_KND K ON K.CRTF_KND_NO = R.CRTF_KND_NO
+    WHERE R.CRTF_ISSU_INNB = #{crtfIssuInnb}
+  </select>
+
+  <!-- 학번별 발급 이력 -->
+  <select id="stdntNoSelectALL" parameterType="string" resultType="crtfIssuRequestVO">
+    SELECT CRTF_ISSU_INNB, CRTF_KND_NO, FILE_GROUP_NO, STDNT_NO, REQST_DT, ISSU_DT, ISSU_STTUS
+    FROM CRTF_ISSU_REQUST
+    WHERE STDNT_NO = #{stdntNo}
+    ORDER BY NVL(ISSU_DT, REQST_DT) DESC, REQST_DT DESC
+  </select>
+
+  <!-- 문서번호 존재 확인 -->
+  <select id="existsByDocNo" parameterType="string" resultType="int">
+    SELECT COUNT(1) FROM CRTF_ISSU_REQUST WHERE CRTF_ISSU_INNB = #{docNo}
+  </select>
+
+  <!-- 성적표 행: 학기, 이수구분, 교과목명, 학점, 등급 -->
+	<select id="selectTranscriptRows" parameterType="string" resultMap="transcriptRowMap">
+	  SELECT
+	    YEAR_NO,
+	    SEM_NO,
+	    COMPL_SE,
+	    TERM_LABEL,
+	    SUBJECT_NAME,
+	    CREDITS,
+	    GRADE
+	  FROM (
+	    SELECT
+	      TO_NUMBER(ss.YEAR) AS YEAR_NO,
+	      CASE
+	        WHEN ss.SEMSTR LIKE '1%' THEN 1
+	        WHEN ss.SEMSTR LIKE '2%' THEN 2
+	        ELSE 99
+	      END               AS SEM_NO,
+	      ec.COMPL_SE       AS COMPL_SE,
+	      ss.YEAR || '-' ||
+	        CASE
+	          WHEN ss.SEMSTR LIKE '1%' THEN '1'
+	          WHEN ss.SEMSTR LIKE '2%' THEN '2'
+	          ELSE ss.SEMSTR
+	        END            AS TERM_LABEL,
+	      ac.LCTRE_NM       AS SUBJECT_NAME,
+	      NVL(sc.ACQS_PNT, ec.ACQS_PNT) AS CREDITS,
+	      sc.PNT_GRAD       AS GRADE
+	    FROM SEMSTR_SCRE  ss
+	    JOIN SBJECT_SCRE  sc ON sc.SEMSTR_SCRE_INNB = ss.SEMSTR_SCRE_INNB
+	    JOIN ATNLC_REQST  ar ON ar.ATNLC_REQST_NO   = sc.ATNLC_REQST_NO
+	    JOIN ESTBL_COURSE ec ON ec.ESTBLLCTRE_CODE  = ar.ESTBLLCTRE_CODE
+	    JOIN ALL_COURSE   ac ON ac.LCTRE_CODE       = ec.LCTRE_CODE
+	    WHERE ss.STDNT_NO = #{stdntNo}
+	  )
+	  ORDER BY YEAR_NO, SEM_NO, TERM_LABEL, SUBJECT_NAME
+	</select>
+
+  	<!-- 성적 합계: 총 취득학점, 총 평점(학기가중) // 쿼리 수정 필요 -->
+	<select id="selectTranscriptSummary" parameterType="string" resultMap="TranscriptSummaryMap">
+	  SELECT
+	    /* 총 취득학점: 통과 등급 + P만 합산 (정책에 따라 조정) */
+	    SUM(
+	      CASE
+	        WHEN grade_raw IN ('A+','A0','B+','B0','C+','C0','D+','D0','P')
+	          THEN credits
+	        ELSE 0
+	      END
+	    ) AS TOTAL_CREDITS,
+	    /* 총 평점: F 포함, P 제외, 과목 가중 평균 (4.5 기준) */
+	    CASE
+	      WHEN SUM(
+	             CASE
+	               WHEN grade_point IS NOT NULL
+	                 THEN credits
+	               ELSE 0
+	             END
+	           ) = 0
+	        THEN 0
+	      ELSE ROUND(
+	        SUM(
+	          CASE
+	            WHEN grade_point IS NOT NULL
+	              THEN grade_point * credits
+	            ELSE 0
+	          END
+	        )
+	        / SUM(
+	            CASE
+	              WHEN grade_point IS NOT NULL
+	                THEN credits
+	              ELSE 0
+	            END
+	          ),
+	        2
+	      )
+	    END AS TOTAL_GPA
+	  FROM (
+	    SELECT
+	      ss.STDNT_NO,
+	      NVL(sc.ACQS_PNT, ec.ACQS_PNT) AS credits,
+	      sc.PNT_GRAD                   AS grade_raw,
+	      CASE
+	        WHEN sc.PNT_GRAD = 'A+' THEN 4.5
+	        WHEN sc.PNT_GRAD = 'A0' THEN 4.0
+	        WHEN sc.PNT_GRAD = 'B+' THEN 3.5
+	        WHEN sc.PNT_GRAD = 'B0' THEN 3.0
+	        WHEN sc.PNT_GRAD = 'C+' THEN 2.5
+	        WHEN sc.PNT_GRAD = 'C0' THEN 2.0
+	        WHEN sc.PNT_GRAD = 'D+' THEN 1.5
+	        WHEN sc.PNT_GRAD = 'D0' THEN 1.0
+	        WHEN sc.PNT_GRAD = 'F'  THEN 0.0
+	        WHEN sc.PNT_GRAD = 'NP' THEN 0.0
+	        WHEN sc.PNT_GRAD = 'W'  THEN 0.0
+	        WHEN sc.PNT_GRAD = 'I'  THEN 0.0
+	        /* P는 취득학점 인정, 평점 계산 제외 */
+	        WHEN sc.PNT_GRAD = 'P'  THEN NULL
+	        ELSE NULL
+	      END AS grade_point
+	    FROM SEMSTR_SCRE  ss
+	    JOIN SBJECT_SCRE  sc ON sc.SEMSTR_SCRE_INNB = ss.SEMSTR_SCRE_INNB
+	    JOIN ATNLC_REQST  ar ON ar.ATNLC_REQST_NO   = sc.ATNLC_REQST_NO
+	    JOIN ESTBL_COURSE ec ON ec.ESTBLLCTRE_CODE  = ar.ESTBLLCTRE_CODE
+	    WHERE ss.STDNT_NO = #{stdntNo}
+	  )
+	</select>
+
+</mapper>

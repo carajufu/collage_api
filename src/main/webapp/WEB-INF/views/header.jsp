@@ -46,6 +46,52 @@
 
 </head>
 <body>
+<script type="text/javascript">
+    document.addEventListener("DOMContentLoaded", function() {
+        var STORAGE_KEY = "openSidebarMenu";
+        var clearStoredMenuState = function () {
+            localStorage.removeItem(STORAGE_KEY);
+        };
+
+        document.querySelectorAll(".nav-link.menu-link:not([data-bs-toggle='collapse'])")
+            .forEach(function(link) {
+                link.addEventListener("click", clearStoredMenuState);
+            });
+
+        document.querySelectorAll(".navbar-brand-box a.logo")
+            .forEach(function(link) {
+                link.addEventListener("click", clearStoredMenuState);
+            });
+
+        var logoutLink = document.querySelector("a[href='/logout']");
+        if (logoutLink) {
+            logoutLink.addEventListener("click", clearStoredMenuState);
+        }
+
+        document.querySelectorAll(".nav-link.menu-link[data-bs-toggle='collapse']")
+            .forEach(function(link) {
+                link.addEventListener("click", function() {
+                    var target = link.getAttribute("href");
+                    if(target && target.startsWith("#")) {
+                        localStorage.setItem(STORAGE_KEY, target);
+                    }
+                });
+            });
+
+        var openId = localStorage.getItem(STORAGE_KEY);
+        if(openId) {
+            var collapse = document.querySelector(openId + ".collapse.menu-dropdown");
+            var trigger = document.querySelector(".nav-link.menu-link[href='" + openId + "']");
+
+            if(collapse) {
+                collapse.classList.add("show");
+            }
+            if(trigger) {
+                trigger.setAttribute("aria-expanded", "true");
+            }
+        }
+    });
+</script>
 <!-- Begin page -->
 <div id="layout-wrapper">
 
@@ -451,7 +497,7 @@
                             <a class="dropdown-item" href="apps-tasks-kanban.html"><i class="mdi mdi-calendar-check-outline text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Taskboard</span></a>
                             <a class="dropdown-item" href="pages-faqs.html"><i class="mdi mdi-lifebuoy text-muted fs-16 align-middle me-1"></i> <span class="align-middle">도움말</span></a>
                             <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="pages-profile-settings.html"><span class="badge bg-success-subtle text-success mt-1 float-end">New</span><i class="mdi mdi-cog-outline text-muted fs-16 align-middle me-1"></i> <span class="align-middle">설정</span></a>
+                            <a class="dropdown-item" href="/"><i class="mdi mdi-home text-muted fs-16 align-middle me-1"></i> <span class="align-middle">홈페이지</span></a>
                             <a class="dropdown-item" href="auth-lockscreen-basic.html"><i class="mdi mdi-lock text-muted fs-16 align-middle me-1"></i> <span class="align-middle">화면 잠그기</span></a>
                             <a class="dropdown-item" href="/logout"><i class="mdi mdi-logout text-muted fs-16 align-middle me-1"></i> <span class="align-middle" data-key="t-logout">로그아웃</span></a>
                         </div>
@@ -617,13 +663,19 @@
                         <div class="collapse menu-dropdown" id="sidebarcertificate">
                             <ul class="nav nav-sm flex-column">
                                 <li class="nav-item">
-                                    <a href="landing.html" class="nav-link" data-key="">발급</a>
+                                    <a href="/certificates/DocxForm" class="nav-link" data-key="">발급</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="nft-landing.html" class="nav-link" data-key="">문서함</a>
+                                    <a href="/certificates/DocxHistory" class="nav-link" data-key="">문서함</a>
                                 </li>
                             </ul>
                         </div>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link menu-link" href="/schedule/calendar" data-key="">
+                            <i class="las la-calendar"></i> <span data-key="">학사일정</span>
+                        </a>
                     </li>
 
                     <li class="menu-title"><span data-key="">학습</span></li>

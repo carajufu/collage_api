@@ -55,7 +55,7 @@
 
   <div class="offcanvas-body d-flex flex-column" style="height:100%; padding: 0;"> <div style="flex: 0 0 auto; border-bottom: 1px solid #ddd; background-color: #f8f9fa; padding: 15px;">
 	  <div class="d-flex align-items-start">
-	    <img src="/img/chatbothandshk.jpg?ver=1"
+	    <img src="/img/chatbot/chatbothandshk.jpg?ver=1"
 	         alt="챗봇"
 	         class="rounded-circle me-2"
 	         draggable="false"
@@ -186,7 +186,7 @@ if (!window.chatbotInitialized) {
             } else {
                 if (type === "card") {
                     wrapper.innerHTML =
-                        '<img src="/img/chatbot.jpg" alt="bot" class="rounded-circle me-2" ' +
+                        '<img src="/img/chatbot/chatbot.jpg" alt="bot" class="rounded-circle me-2" ' +
                         'style="width:40px; height:40px;">' +
                         '<div class="p-3 bg-light border rounded-3 shadow-sm" ' +
                         'style="max-width:85%; word-wrap:break-word;">' +
@@ -194,7 +194,7 @@ if (!window.chatbotInitialized) {
                         '</div>';
                 } else {
                     wrapper.innerHTML =
-                        '<img src="/img/chatbothandshk.jpg" alt="bot" class="rounded-circle me-2" ' +
+                        '<img src="/img/chatbot/chatbothandshk.jpg" alt="bot" class="rounded-circle me-2" ' +
                         'style="width:40px; height:40px;">' +
                         '<div class="p-2 rounded-3 bg-light text-dark shadow-sm" ' +
                         'style="max-width:75%; word-wrap:break-word;">' +
@@ -212,7 +212,7 @@ if (!window.chatbotInitialized) {
             const loader = document.createElement("div");
             loader.classList.add("d-flex", "mb-3");
             loader.innerHTML = `
-                <img src="/img/chatbothandshk.jpg" alt="bot" class="rounded-circle me-2"
+                <img src="/img/chatbot/chatbothandshk.jpg" alt="bot" class="rounded-circle me-2"
                      style="width:40px; height:40px;">
                 <div class="p-2 rounded-3 bg-light text-muted shadow-sm" style="max-width:75%;">...</div>`;
             messages.appendChild(loader);

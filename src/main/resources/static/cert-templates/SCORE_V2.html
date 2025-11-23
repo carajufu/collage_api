@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ko" xml:lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <title>성적증명서</title>
+    <link rel="stylesheet" href="SCORE_cert-common.css" />
+    <style>
+        /* 상단 안내 (문서 내부 전용) */
+        .score-header-line {
+            font-size: 5pt;
+            text-align: center;
+            margin-bottom: 2mm;
+            word-break: keep-all;
+        }
+
+        /* 증명서 외곽 박스 */
+        .cert-border {
+            border: 1px solid #000;
+            padding: 1mm 2mm;
+            margin: 0 auto;
+            box-sizing: border-box;
+        }
+
+        /* 제목 */
+        .doc-title {
+            text-align: center;
+            font-size: 20pt;
+            font-weight: 10;
+            letter-spacing: 2px;
+            margin: 2mm 0 2mm 0;
+        }
+
+        /* 학생 기본정보 표 */
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 7pt;
+            margin-bottom: 2mm;
+        }
+        .info-table th,
+        .info-table td {
+            border: 1px solid #000;
+            padding: 2mm 2mm;
+        }
+        .info-table td.label {
+            width: 25mm;
+            font-weight: 600;
+        }
+        .info-table td.value {
+            font-weight: 400;
+        }
+
+        /* 누적 요약 표 */
+        .summary-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 0 0 2mm 0;
+            font-size: 7pt;
+        }
+        .summary-table th,
+        .summary-table td {
+            border: 1px solid #000;
+            padding: 1mm 2mm;
+            text-align: center;
+            word-break: keep-all;
+        }
+        .summary-table th {
+            background: #f7f7f7;
+            font-weight: 600;
+        }
+
+        /* 발급 안내 / 검증 문구 */
+        .footer-box {
+            font-size: 7pt;
+            line-height: 1.5;
+            border-top: 1px solid #000;
+            padding-top: 2mm;
+            word-break: keep-all;
+        }
+
+        /* 러닝 헤더/푸터용 (필요 시 @page에서 element()로 사용) */
+        .page-header {
+            position: running(pageHeader);
+            font-size: 5pt;
+            line-height: 1.4;
+            text-align: right;
+            border-bottom: 1px solid #000;
+            padding: 2mm 0;
+        }
+        .page-footer {
+            position: running(pageFooter);
+            font-size: 5pt;
+            line-height: 1.4;
+            text-align: left;
+            border-top: 1px solid #000;
+            padding: 2mm 0;
+        }
+
+        /* 성적표 3열 고정 포맷 */
+        .score-table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+            margin: 3mm 0 5mm 0;
+            font-size: 8pt;
+            border: 1px solid #000; /* 외곽 */
+        }
+        .score-table thead th {
+            padding: 2mm 2mm;
+            font-weight: 600;
+            text-align: center;
+            background: #f7f7f7;
+            border-bottom: 1px solid #000;
+        }
+        .score-table tbody td {
+            width: 33.3333%;
+            padding: 2mm 2mm;
+            vertical-align: top;
+            min-height: 147mm;        /* 페이지 내 성적 영역 고정 높이 */
+            box-sizing: border-box;
+        }
+        /* 세로 구분선 */
+        .score-table thead th + th,
+        .score-table tbody td + td {
+            border-left: 1px solid #000;
+        }
+        /* 마지막 행 하단 가로선 */
+        .score-table tr:last-child td {
+            border-bottom: 1px solid #000;
+        }
+
+        /* 학기 라벨 / 과목 라인 */
+        .term-label {
+            text-align: center;
+            font-weight: 600;
+            margin: 0 0 1mm 0;
+            font-size: 7pt;
+        }
+        .course-line {
+            text-align: left;
+            font-size: 7pt;
+            line-height: 1.4;
+            word-break: break-word;
+        }
+    </style>
+</head>
+<body>
+  <!-- 위변조 방지 머릿말(러닝 헤더) -->
+  <div class="page-header">
+    {{univName}} · 증명서 원본확인: {{univVerifyUrl}} · 유효기간 {{validPeriodDesc}}
+  </div>
+
+  <div class="cert-border">
+    <div class="cert-header">
+      <div class="verify-no">제 {{verifyNo}} 호</div>
+    </div>
+    <div class="doc-title">성&#160;적&#160;증&#160;명&#160;서</div>
+
+    <table class="info-table">
+        <tr>
+            <td class="label">학번</td>
+            <td class="value">{{studentNo}}</td>
+            <td class="label">성명</td>
+            <td class="value">{{studentNameKor}}</td>
+        </tr>
+        <tr>
+            <td class="label">영문성명</td>
+            <td class="value">{{studentNameEng}}</td>
+            <td class="label">생년월일</td>
+            <td class="value">{{birthDeKor}}</td>
+        </tr>
+        <tr>
+            <td class="label">대학</td>
+            <td class="value">{{univName}}</td>
+            <td class="label">학과(전공)</td>
+            <td class="value">{{majorName}}</td>
+        </tr>
+        <tr>
+            <td class="label">학위명</td>
+            <td class="value">{{degreeName}}</td>
+            <td class="label">입학일</td>
+            <td class="value">{{entranceDeKor}}</td>
+        </tr>
+        <tr>
+            <td class="label">졸업(예정)일</td>
+            <td class="value">{{graduationDate}}</td>
+            <td class="label">학적상태</td>
+            <td class="value">{{status}}</td>
+        </tr>
+    </table>
+
+    <table class="summary-table">
+        <tr>
+            <th>누적 총 취득학점</th>
+            <th>누적 평점평균</th>
+        </tr>
+        <tr>
+            <td>{{totalCredits}}</td>
+            <td>{{totalGpa}}</td>
+        </tr>
+    </table>
+
+    <table class="score-table">
+        <thead>
+        <tr>
+            <th>구분 | 과목명 | 학점 | 성적</th>
+            <th>구분 | 과목명 | 학점 | 성적</th>
+            <th>구분 | 과목명 | 학점 | 성적</th>
+        </tr>
+        </thead>
+        <tbody>
+        {{scoreRows}}
+        </tbody>
+    </table>
+
+    <div class="sign-block">
+        <div class="issue-date">{{issueDate}}</div>
+        <div class="issuer-block">
+            <div class="issuer-line">
+                <span class="univ-name">{{univName}}</span>
+                <span class="chancellor-block">
+                    <span class="chancellor-inline">{{chancellorTitle}} {{chancellorName}}</span>
+                    <img class="seal-img" src="seal.png" alt="직인" />
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="page-footer">
+        * 본 증명서는 {{univName}}에서 발급되었으며 "{{univVerifyUrl}}"에 접속하여
+        <br/>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;상단의 증명서 "원본확인 문서번호"를 입력하면 증명서 원본여부 및 유효성을 검증할 수 있습니다. ({{validPeriodDesc}})
+        <br/>* 본 증명서는 위·변조 방지를 위해 전자적으로 생성되었습니다.
+</div>
+</body>
+</html>
