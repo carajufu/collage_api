@@ -1,0 +1,347 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.ac.collage_api.schedule.mapper.TimetableMapper">
+
+    <!--
+      [TimetableEventVO 매핑 규칙]
+
+      이 Mapper는 "주간 강의 시간표" 전용 조회에 사용하며,
+      FullCalendar(timeGridWeek)에 바로 물릴 수 있는 형태로 VO를 구성한다.
+
+      VO 필드 ← 쿼리 컬럼 매핑:
+
+        id              : 시간표 슬롯 식별자
+                          - 교수/학생 공통: LCTRE_TIMETABLE.TIMETABLE_NO
+
+        title           : 화면 표시용 문자열
+                          - 교수:   과목명 [수강인원/정원] (강의실)
+                          - 학생:   과목명 / 교수명 (강의실)
+
+        startDateTime   : 강의 시작일시 (ISO 8601, 'YYYY-MM-DDTHH24:MI:SS')
+        endDateTime     : 강의 종료일시 (ISO 8601)
+        type            : 조회 주체
+                          - 'PROF'    : 교수 시간표
+                          - 'STUDENT' : 학생 시간표
+
+        estblLctreCode  : ESTBL_COURSE.ESTBLLCTRE_CODE (개설강의 코드)
+        lectureCode     : ALL_COURSE.LCTRE_CODE         (교과 코드)
+        lectureName     : ALL_COURSE.LCTRE_NM           (교과명)
+        room            : ESTBL_COURSE.LCTRUM           (강의실)
+        year            : ESTBL_COURSE.ESTBL_YEAR       (개설 연도)
+        semstr          : ESTBL_COURSE.ESTBL_SEMSTR     (학기)
+
+        profName        : SKLSTF.SKLSTF_NM              (담당 교수명)
+        profDeptName    : SUBJCT.SUBJCT_NM              (교수 소속 학과명)
+
+        studentCount    : ATNLC_REQST 기준 승인 인원 수
+        maxStudent      : ESTBL_COURSE.ATNLC_NMPR       (정원)
+
+      이 Mapper의 책임
+        - DB 설계상 얻을 수 있는 모든 강의 정보(교실, 담당교수, 정원, 인원)를 단일 조회로 조합.
+        - 컨트롤러/프론트는 TimetableEventVO만 보고 렌더링하도록 단순화.
+
+      사용 테이블 (DDL 기준)
+        - ESTBL_COURSE      : 개설강의 기본 정보
+        - LCTRE_TIMETABLE   : 주차별 강의 교시 정보
+        - ALL_COURSE        : 교과 기본 정보
+        - ATNLC_REQST       : 수강신청 내역
+        - PROFSR, SKLSTF    : 교수 인적 정보
+        - SUBJCT            : 학과 정보
+    -->
+    <resultMap id="TimetableEventMap" type="timetableEventVO">
+        <!-- 기본 식별자 -->
+        <id     property="id"             column="id"/>
+
+        <!-- FullCalendar 표시용 필수 필드 -->
+        <result property="title"          column="title"/>
+        <result property="startDateTime"  column="startDateTime"/>
+        <result property="endDateTime"    column="endDateTime"/>
+        <result property="type"           column="type"/>
+
+        <!-- 개설강의/교과 공통 메타 정보 -->
+        <result property="estblLctreCode" column="estblLctreCode"/>
+        <result property="lectureCode"    column="lectureCode"/>
+        <result property="lectureName"    column="lectureName"/>
+        <result property="room"           column="room"/>
+        <result property="year"           column="year"/>
+        <result property="semstr"         column="semstr"/>
+
+        <!-- 교수 정보 -->
+        <result property="profName"       column="profName"/>
+        <result property="profDeptName"   column="profDeptName"/>
+
+        <!-- 수강 인원 정보 -->
+        <result property="studentCount"   column="studentCount"/>
+        <result property="maxStudent"     column="maxStudent"/>
+    </resultMap>
+
+    <!-- ================================================================== -->
+    <!-- getProfessorTimetable
+         - 입력:
+             profsrNo   : 교수번호
+             startDate  : 조회 주 시작일 (YYYY-MM-DD, 월요일 기준 전달 가정)
+             endDate    : 조회 주 종료일 (YYYY-MM-DD)
+         - 출력:
+             TimetableEventVO 목록 (교수 '본인'이 담당하는 강의 슬롯만)
+         - 특징:
+             1) LCTRE_TIMETABLE의 LCTRE_DFK(요일) + startDate 로 CLASS_DATE 계산.
+             2) BEGIN_TM/END_TM 은 "교시"이므로, 1교시=09:00, 60분 단위로 환산.
+             3) ATNLC_REQST에서 승인 상태(신청완료/APPROVED/승인)만 집계해 수강인원 계산.
+             4) title 에 현재인원/정원, 강의실 포함.
+    =================================================================== -->
+    <select id="getProfessorTimetable" resultMap="TimetableEventMap">
+        SELECT
+            t.TIMETABLE_NO          AS id,
+            t.ESTBLLCTRE_CODE       AS estblLctreCode,
+            t.LCTRE_CODE            AS lectureCode,
+            t.LECTURE_NM            AS lectureName,
+            t.LCTRUM                AS room,
+            t.ESTBL_YEAR            AS year,
+            t.ESTBL_SEMSTR          AS semstr,
+            t.profName              AS profName,
+            t.profDeptName          AS profDeptName,
+            t.studentCount          AS studentCount,
+            t.maxStudent            AS maxStudent,
+            'PROF'                  AS type,
+
+            -- 교수 뷰 타이틀: "과목명 [현재/정원] (강의실)"
+            (t.LECTURE_NM
+                || CASE
+                       WHEN t.studentCount IS NOT NULL
+                        AND t.maxStudent    IS NOT NULL
+                       THEN ' [' || t.studentCount || '/' || t.maxStudent || ']'
+                       ELSE ''
+                   END
+                || CASE
+                       WHEN t.LCTRUM IS NOT NULL
+                       THEN ' (' || t.LCTRUM || ')'
+                       ELSE ''
+                   END
+            )                       AS title,
+
+            -- 교시 → 실제 시작 시각(1교시=09:00, 60분 단위)
+            TO_CHAR(
+                t.CLASS_DATE
+                + NUMTODSINTERVAL((540 + (t.BEGIN_TM - 1) * 60), 'MINUTE'),
+                'YYYY-MM-DD"T"HH24:MI:SS'
+            )                       AS startDateTime,
+
+            -- 교시 → 실제 종료 시각(END_TM 교시 끝 시각)
+            TO_CHAR(
+                t.CLASS_DATE
+                + NUMTODSINTERVAL((540 + (t.END_TM) * 60), 'MINUTE'),
+                'YYYY-MM-DD"T"HH24:MI:SS'
+            )                       AS endDateTime
+
+        FROM (
+            SELECT
+                lt.TIMETABLE_NO,
+                lt.ESTBLLCTRE_CODE,
+                ec.LCTRE_CODE,
+                ac.LCTRE_NM              AS LECTURE_NM,
+                ec.LCTRUM,
+                ec.ESTBL_YEAR,
+                ec.ESTBL_SEMSTR,
+                ec.ATNLC_NMPR            AS maxStudent,
+                NVL(COUNT(arAll.ATNLC_REQST_NO), 0)
+                                        AS studentCount,
+                lt.BEGIN_TM,
+                lt.END_TM,
+                sk.SKLSTF_NM             AS profName,
+                sj.SUBJCT_NM             AS profDeptName,
+
+                -- 요일 코드(한글/영문) -> 해당 주의 실제 날짜
+                CASE lt.LCTRE_DFK
+                    WHEN '월'  THEN TO_DATE(#{startDate}, 'YYYY-MM-DD') + 0
+                    WHEN '화'  THEN TO_DATE(#{startDate}, 'YYYY-MM-DD') + 1
+                    WHEN '수'  THEN TO_DATE(#{startDate}, 'YYYY-MM-DD') + 2
+                    WHEN '목'  THEN TO_DATE(#{startDate}, 'YYYY-MM-DD') + 3
+                    WHEN '금'  THEN TO_DATE(#{startDate}, 'YYYY-MM-DD') + 4
+                    WHEN '토'  THEN TO_DATE(#{startDate}, 'YYYY-MM-DD') + 5
+                    WHEN '일'  THEN TO_DATE(#{startDate}, 'YYYY-MM-DD') + 6
+                    WHEN 'MON' THEN TO_DATE(#{startDate}, 'YYYY-MM-DD') + 0
+                    WHEN 'TUE' THEN TO_DATE(#{startDate}, 'YYYY-MM-DD') + 1
+                    WHEN 'WED' THEN TO_DATE(#{startDate}, 'YYYY-MM-DD') + 2
+                    WHEN 'THU' THEN TO_DATE(#{startDate}, 'YYYY-MM-DD') + 3
+                    WHEN 'FRI' THEN TO_DATE(#{startDate}, 'YYYY-MM-DD') + 4
+                    WHEN 'SAT' THEN TO_DATE(#{startDate}, 'YYYY-MM-DD') + 5
+                    WHEN 'SUN' THEN TO_DATE(#{startDate}, 'YYYY-MM-DD') + 6
+                END                     AS CLASS_DATE
+
+            FROM ESTBL_COURSE ec
+            JOIN LCTRE_TIMETABLE lt
+              ON lt.ESTBLLCTRE_CODE = ec.ESTBLLCTRE_CODE
+            JOIN ALL_COURSE ac
+              ON ac.LCTRE_CODE      = ec.LCTRE_CODE
+            JOIN PROFSR p
+              ON ec.PROFSR_NO       = p.PROFSR_NO
+            JOIN SKLSTF sk
+              ON p.SKLSTF_ID        = sk.SKLSTF_ID
+            LEFT JOIN SUBJCT sj
+              ON p.SUBJCT_CODE      = sj.SUBJCT_CODE
+
+            -- 전체 승인된 수강 신청 수(해당 개설강의 기준)
+            LEFT JOIN ATNLC_REQST arAll
+              ON arAll.ESTBLLCTRE_CODE = ec.ESTBLLCTRE_CODE
+             AND arAll.REQST_STTUS IN ('신청완료','APPROVED','승인')
+
+            WHERE ec.PROFSR_NO = #{profsrNo}
+
+            GROUP BY
+                lt.TIMETABLE_NO,
+                lt.ESTBLLCTRE_CODE,
+                ec.LCTRE_CODE,
+                ac.LCTRE_NM,
+                ec.LCTRUM,
+                ec.ESTBL_YEAR,
+                ec.ESTBL_SEMSTR,
+                ec.ATNLC_NMPR,
+                lt.BEGIN_TM,
+                lt.END_TM,
+                lt.LCTRE_DFK,
+                sk.SKLSTF_NM,
+                sj.SUBJCT_NM
+        ) t
+        WHERE t.CLASS_DATE BETWEEN TO_DATE(#{startDate}, 'YYYY-MM-DD')
+                               AND TO_DATE(#{endDate},   'YYYY-MM-DD')
+        ORDER BY t.CLASS_DATE, t.BEGIN_TM
+    </select>
+
+    <!-- ================================================================== -->
+    <!-- getStudentTimetable
+         - 입력:
+             stdntNo    : 학생번호
+             startDate  : 조회 주 시작일 (YYYY-MM-DD)
+             endDate    : 조회 주 종료일 (YYYY-MM-DD)
+         - 출력:
+             TimetableEventVO 목록 (학생 본인이 "승인된" 강의에 대해 수강 중인 슬롯)
+         - 특징:
+             1) ATNLC_REQST(arSelf)로 대상 학생의 승인 신청만 필터링.
+             2) 동일 개설강의의 전체 승인 인원은 arAll COUNT로 산출.
+             3) 요일/교시 처리 로직은 교수 쿼리와 동일.
+             4) title 은 학생 시점: "과목명 / 교수명 (강의실)".
+    =================================================================== -->
+    <select id="getStudentTimetable" resultMap="TimetableEventMap">
+        SELECT
+            t.TIMETABLE_NO          AS id,
+            t.ESTBLLCTRE_CODE       AS estblLctreCode,
+            t.LCTRE_CODE            AS lectureCode,
+            t.LECTURE_NM            AS lectureName,
+            t.LCTRUM                AS room,
+            t.ESTBL_YEAR            AS year,
+            t.ESTBL_SEMSTR          AS semstr,
+            t.profName              AS profName,
+            t.profDeptName          AS profDeptName,
+            t.studentCount          AS studentCount,
+            t.maxStudent            AS maxStudent,
+            'STUDENT'               AS type,
+
+            -- 학생 뷰 타이틀: "과목명 / 교수명 (강의실)"
+            (t.LECTURE_NM
+                || CASE
+                       WHEN t.profName IS NOT NULL
+                       THEN ' / ' || t.profName
+                       ELSE ''
+                   END
+                || CASE
+                       WHEN t.LCTRUM IS NOT NULL
+                       THEN ' (' || t.LCTRUM || ')'
+                       ELSE ''
+                   END
+            )                       AS title,
+
+            TO_CHAR(
+                t.CLASS_DATE
+                + NUMTODSINTERVAL((540 + (t.BEGIN_TM - 1) * 60), 'MINUTE'),
+                'YYYY-MM-DD"T"HH24:MI:SS'
+            )                       AS startDateTime,
+
+            TO_CHAR(
+                t.CLASS_DATE
+                + NUMTODSINTERVAL((540 + (t.END_TM) * 60), 'MINUTE'),
+                'YYYY-MM-DD"T"HH24:MI:SS'
+            )                       AS endDateTime
+
+        FROM (
+            SELECT
+                lt.TIMETABLE_NO,
+                lt.ESTBLLCTRE_CODE,
+                ec.LCTRE_CODE,
+                ac.LCTRE_NM              AS LECTURE_NM,
+                ec.LCTRUM,
+                ec.ESTBL_YEAR,
+                ec.ESTBL_SEMSTR,
+                lt.BEGIN_TM,
+                lt.END_TM,
+                lt.LCTRE_DFK,
+                sk.SKLSTF_NM             AS profName,
+                sj.SUBJCT_NM             AS profDeptName,
+                ec.ATNLC_NMPR            AS maxStudent,
+                NVL(COUNT(arAll.ATNLC_REQST_NO), 0)
+                                        AS studentCount,
+
+                -- 요일 코드 → 해당 주의 실제 날짜 (교수 쿼리와 동일 규칙)
+                CASE lt.LCTRE_DFK
+                    WHEN '월'  THEN TO_DATE(#{startDate}, 'YYYY-MM-DD') + 0
+                    WHEN '화'  THEN TO_DATE(#{startDate}, 'YYYY-MM-DD') + 1
+                    WHEN '수'  THEN TO_DATE(#{startDate}, 'YYYY-MM-DD') + 2
+                    WHEN '목'  THEN TO_DATE(#{startDate}, 'YYYY-MM-DD') + 3
+                    WHEN '금'  THEN TO_DATE(#{startDate}, 'YYYY-MM-DD') + 4
+                    WHEN '토'  THEN TO_DATE(#{startDate}, 'YYYY-MM-DD') + 5
+                    WHEN '일'  THEN TO_DATE(#{startDate}, 'YYYY-MM-DD') + 6
+                    WHEN 'MON' THEN TO_DATE(#{startDate}, 'YYYY-MM-DD') + 0
+                    WHEN 'TUE' THEN TO_DATE(#{startDate}, 'YYYY-MM-DD') + 1
+                    WHEN 'WED' THEN TO_DATE(#{startDate}, 'YYYY-MM-DD') + 2
+                    WHEN 'THU' THEN TO_DATE(#{startDate}, 'YYYY-MM-DD') + 3
+                    WHEN 'FRI' THEN TO_DATE(#{startDate}, 'YYYY-MM-DD') + 4
+                    WHEN 'SAT' THEN TO_DATE(#{startDate}, 'YYYY-MM-DD') + 5
+                    WHEN 'SUN' THEN TO_DATE(#{startDate}, 'YYYY-MM-DD') + 6
+                END                     AS CLASS_DATE
+
+            FROM ATNLC_REQST arSelf          -- 대상 학생의 수강 신청
+            JOIN ESTBL_COURSE ec
+              ON arSelf.ESTBLLCTRE_CODE = ec.ESTBLLCTRE_CODE
+            JOIN ALL_COURSE ac
+              ON ec.LCTRE_CODE          = ac.LCTRE_CODE
+            JOIN LCTRE_TIMETABLE lt
+              ON lt.ESTBLLCTRE_CODE     = ec.ESTBLLCTRE_CODE
+            JOIN PROFSR p
+              ON ec.PROFSR_NO           = p.PROFSR_NO
+            JOIN SKLSTF sk
+              ON p.SKLSTF_ID            = sk.SKLSTF_ID
+            LEFT JOIN SUBJCT sj
+              ON p.SUBJCT_CODE          = sj.SUBJCT_CODE
+
+            -- 동일 개설강의 전체 승인 인원 (표시용)
+            LEFT JOIN ATNLC_REQST arAll
+              ON arAll.ESTBLLCTRE_CODE = ec.ESTBLLCTRE_CODE
+             AND arAll.REQST_STTUS IN ('신청완료','APPROVED','승인')
+
+            -- 학생 본인의 승인된 신청만 시간표 대상
+            WHERE arSelf.STDNT_NO     = #{stdntNo}
+              AND arSelf.REQST_STTUS IN ('신청완료','APPROVED','승인')
+
+            GROUP BY
+                lt.TIMETABLE_NO,
+                lt.ESTBLLCTRE_CODE,
+                ec.LCTRE_CODE,
+                ac.LCTRE_NM,
+                ec.LCTRUM,
+                ec.ESTBL_YEAR,
+                ec.ESTBL_SEMSTR,
+                lt.BEGIN_TM,
+                lt.END_TM,
+                lt.LCTRE_DFK,
+                sk.SKLSTF_NM,
+                sj.SUBJCT_NM,
+                ec.ATNLC_NMPR
+        ) t
+        WHERE t.CLASS_DATE BETWEEN TO_DATE(#{startDate}, 'YYYY-MM-DD')
+                               AND TO_DATE(#{endDate},   'YYYY-MM-DD')
+        ORDER BY t.CLASS_DATE, t.BEGIN_TM
+    </select>
+
+</mapper>

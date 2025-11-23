@@ -1,0 +1,249 @@
+/* 공통 컨테이너 */
+.docx-form-page,
+.docx-history-page {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 8px 0 24px;
+    font-size: 14px;
+}
+
+/* 제목 */
+.docx-form-page h2,
+.docx-history-page h2 {
+    font-weight: 700;
+    margin: 0 0 18px 0;
+}
+
+/* 박스 공통 */
+.docx-form-page .box,
+.docx-history-page .box {
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 18px 20px;
+    margin-bottom: 20px;
+    background-color: #ffffff;
+}
+
+.docx-form-page .box h3,
+.docx-history-page .box h3 {
+    margin: 0 0 14px 0;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+/* 2열 레이아웃 */
+.docx-form-page .row-2col,
+.docx-history-page .row-2col {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 24px;
+    row-gap: 10px;
+}
+
+.docx-form-page .row-2col > div,
+.docx-history-page .row-2col > div,
+.docx-form-page .row-1col {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 10px;
+}
+
+/* 라벨 */
+.docx-form-page label,
+.docx-history-page label {
+    font-weight: 600;
+    font-size: 13px;
+    margin: 0 0 2px 0;
+}
+
+/* 입력 필드 (form/history 공통) */
+.docx-form-page input[readonly],
+.docx-form-page input[type="text"],
+.docx-form-page input[type="date"],
+.docx-form-page select,
+.docx-history-page input[readonly],
+.docx-history-page input[type="text"] {
+    width: 100%;
+    padding: 7px 10px;
+    box-sizing: border-box;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    background-color: #f8f9fa;
+    font-size: 14px;
+}
+
+/* 힌트 */
+.docx-form-page .hint,
+.docx-history-page .hint {
+    margin-top: 2px;
+    font-size: 11px;
+    color: #6c757d;
+}
+
+/* 발급요청 폼 라벨 간격 */
+.docx-form-page .box form > label {
+    margin-top: 10px;
+}
+.docx-form-page .box form > label:first-of-type {
+    margin-top: 0;
+}
+
+/* 설명 / 휴학 기간 블록 */
+.docx-form-page #crtfDescArea,
+.docx-form-page #leaveRangeRow {
+    margin-top: 4px;
+    margin-bottom: 8px;
+}
+
+/* 발급 버튼 (Form 페이지) */
+.docx-form-page .btn-issue {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 22px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 8px;
+    background-color: #0d6efd;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(13,110,253,0.25);
+    transition: background-color .15s, box-shadow .15s, transform .15s;
+}
+.docx-form-page .btn-issue:hover {
+    background-color: #0b5ed7;
+    box-shadow: 0 4px 10px rgba(13,110,253,0.3);
+    transform: translateY(-1px);
+}
+.docx-form-page .btn-issue:active {
+    background-color: #0a58ca;
+    box-shadow: 0 1px 3px rgba(13,110,253,0.2);
+    transform: translateY(0);
+}
+.docx-form-page .btn-issue:focus-visible {
+    outline: 2px solid #0a58ca;
+    outline-offset: 2px;
+}
+
+/* 발급 이력 버튼 (Form 페이지) */
+.docx-form-page .btn-history {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 20px;
+    margin-top: 10px;
+    margin-left: 8px;
+    border-radius: 8px;
+    border: 1px solid #0d6efd;
+    background-color: #ffffff;
+    color: #0d6efd;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color .15s, color .15s, box-shadow .15s, transform .15s;
+}
+.docx-form-page .btn-history:hover {
+    background-color: #e9f3ff;
+    color: #0b5ed7;
+    box-shadow: 0 2px 6px rgba(13,110,253,0.18);
+    transform: translateY(-1px);
+}
+.docx-form-page .btn-history:active {
+    background-color: #d6e8ff;
+    color: #0a58ca;
+    box-shadow: 0 1px 3px rgba(13,110,253,0.16);
+    transform: translateY(0);
+}
+.docx-form-page .btn-history:focus-visible {
+    outline: 2px solid #0a58ca;
+    outline-offset: 2px;
+}
+
+/* 검색 영역 (History 페이지) */
+.docx-history-page .search-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+    font-size: 13px;
+}
+.docx-history-page .search-row label {
+    margin: 0;
+}
+
+.docx-history-page #searchDocNo {
+    flex: 1 1 260px;
+    padding: 7px 10px;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    font-size: 13px;
+    box-sizing: border-box;
+}
+
+.docx-history-page #docNoMsg {
+    min-width: 80px;
+    font-size: 11px;
+    color: #6c757d;
+}
+
+/* 진위확인 버튼 */
+.docx-history-page .btn-verify {
+    padding: 7px 14px;
+    border: 1px solid #0d6efd;
+    border-radius: 6px;
+    background-color: #ffffff;
+    color: #0d6efd;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color .15s, color .15s, box-shadow .15s, transform .15s;
+    white-space: nowrap;
+}
+.docx-history-page .btn-verify:hover {
+    background-color: #e9f3ff;
+    color: #0b5ed7;
+    box-shadow: 0 2px 6px rgba(13,110,253,0.18);
+    transform: translateY(-1px);
+}
+
+/* 테이블 (History 페이지) */
+.docx-history-page .table-wrap {
+    margin-top: 6px;
+    overflow-x: auto;
+}
+
+.docx-history-page .issue-table {
+    width: 100%;
+    min-width: 720px;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.docx-history-page .issue-table thead th {
+    padding: 8px;
+    border: 1px solid #dee2e6;
+    background-color: #f8f9fa;
+    font-weight: 600;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.docx-history-page .issue-table tbody td {
+    padding: 7px 8px;
+    border: 1px solid #eee;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.docx-history-page .issue-table tbody tr:nth-child(even) {
+    background-color: #fcfcfc;
+}
+
+.docx-history-page .doc-no {
+    font-weight: 600;
+    font-family: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+}
