@@ -272,7 +272,7 @@
                             <h6 class="dropdown-header">${user.affiliation}</h6>
                             <h6 class="dropdown-header">${user.username}</h6>
                             <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="pages-profile.html"><i class="mdi mdi-account-circle text-muted fs-16 align-middle me-1"></i> <span class="align-middle">개인 정보 수정</span></a>
+                            <a class="dropdown-item" href="/stdnt/main/info"><i class="mdi mdi-account-circle text-muted fs-16 align-middle me-1"></i> <span class="align-middle">개인 정보 수정</span></a>
                             <a class="dropdown-item" href="apps-chat.html"><i class="mdi mdi-message-text-outline text-muted fs-16 align-middle me-1"></i> <span class="align-middle">메세지</span></a>
                             <a class="dropdown-item" href="apps-tasks-kanban.html"><i class="mdi mdi-calendar-check-outline text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Taskboard</span></a>
                             <a class="dropdown-item" href="pages-faqs.html"><i class="mdi mdi-lifebuoy text-muted fs-16 align-middle me-1"></i> <span class="align-middle">도움말</span></a>
@@ -492,7 +492,7 @@
                 <div id="two-column-menu">
                 </div>
                 <ul class="navbar-nav" id="navbar-nav">
-                    <li class="menu-title"><span data-key="">학사 행정</span></li>
+                    <li class="menu-title"><span data-key="">학사 정보</span></li>
                     <li class="nav-item">
                         <a class="nav-link menu-link" href="#sidebarLecture" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarDashboards">
                             <i class="las la-compass"></i> <span data-key="">강의</span>
@@ -505,9 +505,26 @@
                                 <li class="nav-item">
                                     <a href="dashboard-crm.html" class="nav-link" data-key="">강의 계획서 제출</a>
                                 </li>
+                                <li class="nav-item">
+                                    <a href="/prof/lecture/main/All" class="nav-link" data-key="">강의 평가</a>
+                                </li>
                             </ul>
                         </div>
                     </li> <!-- end Dashboard Menu -->
+
+                    <li class="nav-item">
+                        <a class="nav-link menu-link" href="#sidebarGrade" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarDashboards">
+                            <i class="las la-comments"></i> <span data-key="">성적</span>
+                        </a>
+                        <div class="collapse menu-dropdown" id="sidebarGrade">
+                            <ul class="nav nav-sm flex-column">
+                                <li class="nav-item">
+                                    <a href="/prof/grade/main/All" class="nav-link" data-key="">성적 관리</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+
                     <li class="nav-item">
                         <a class="nav-link menu-link" href="#sidebarCounsel" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarDashboards">
                             <i class="las la-comments"></i> <span data-key="">상담</span>
@@ -515,7 +532,7 @@
                         <div class="collapse menu-dropdown" id="sidebarCounsel">
                             <ul class="nav nav-sm flex-column">
                                 <li class="nav-item">
-                                    <a href="dashboard-analytics.html" class="nav-link" data-key="">상담 요청</a>
+                                    <a href="/counselprof/prof" class="nav-link" data-key="">상담 요청</a>
                                 </li>
                                 <li class="nav-item">
                                     <a href="dashboard-crm.html" class="nav-link" data-key="">상담 관리</a>

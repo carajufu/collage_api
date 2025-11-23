@@ -2,6 +2,22 @@
 
 <%@ include file="../header.jsp" %>
 
+<div class="row pt-3 px-5">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/dashboard/student"><i class="las la-home"></i></a></li>
+            <li class="breadcrumb-item"><a href="#">학사 정보</a></li>
+            <li class="breadcrumb-item"><a href="/stdnt/lecture/main/All">강의 평가</a></li>
+            <li class="breadcrumb-item active" aria-current="page">${lectureInfo.lctreNm}</li>
+        </ol>
+    </nav>
+    <div class="col-12 page-title mt-2">
+        <h2 class="fw-semibold">${lectureInfo.lctreNm}</h2>
+        <div class="my-4 p-0 bg-primary" style="width: 100px; height:5px;"></div>
+    </div>
+</div>
+<div class="row pt-3 px-5">
+    <div class="col-xxl-12 col-12">
 
   <h2 class="border-bottom pb-3 mb-4 fw-semibold">강의평가</h2>
 
@@ -78,6 +94,8 @@
 
     </div>
   </div>
+    </div>
+</div>
 
 
 <script>

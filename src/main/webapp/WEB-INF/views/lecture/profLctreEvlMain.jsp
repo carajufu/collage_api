@@ -2,8 +2,21 @@
 
 <%@ include file="../header.jsp" %>
 
-
-  <h2 class="border-bottom pb-1 mb-1">강의 목록</h2>
+<div class="row pt-3 px-5">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/dashboard/prof"><i class="las la-home"></i></a></li>
+            <li class="breadcrumb-item"><a href="#">학사 정보</a></li>
+            <li class="breadcrumb-item active" aria-current="page">강의 평가</li>
+        </ol>
+    </nav>
+    <div class="col-12 page-title mt-2">
+        <h2 class="fw-semibold">강의 평가</h2>
+        <div class="my-4 p-0 bg-primary" style="width: 100px; height:5px;"></div>
+    </div>
+</div>
+<div class="row pt-3 px-5">
+    <div class="col-xxl-12 col-12">
 
   <!-- 검색창 추가               -->
   <div class="d-flex justify-content-end mb-1">
@@ -57,6 +70,8 @@
       </table>
     </div>
   </c:if>
+    </div>
+</div>
 
 <script>
 

@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@ include file="../header.jsp" %> 
+<%@ include file="../header.jsp" %>
 
 <c:if test="${not empty msg}">
     <script>
@@ -130,10 +130,22 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 </script>
 
-<div class="page-content py-2">
-  <div class="container-fluid pt-1">
-
-    <h2 class="fw-bold mb-4">과목별 성적 관리</h2>
+<div class="row pt-3 px-5">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/dashboard/prof"><i class="las la-home"></i></a></li>
+            <li class="breadcrumb-item"><a href="#">학사 정보</a></li>
+            <li class="breadcrumb-item"><a href="/prof/grade/main/All">성적 관리</a></li>
+            <li class="breadcrumb-item active" aria-current="page">${selSbject.lctreNm}</li>
+        </ol>
+    </nav>
+    <div class="col-12 page-title mt-2">
+        <h2 class="fw-semibold">${selSbject.lctreNm}</h2>
+        <div class="my-4 p-0 bg-primary" style="width: 100px; height:5px;"></div>
+    </div>
+</div>
+<div class="row pt-3 px-5">
+    <div class="col-xxl-12 col-12">
 
     <div class="alert alert-info mb-4">
       <div class="row g-2">
