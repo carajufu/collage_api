@@ -2,16 +2,16 @@
 
 <%@ include file="../header.jsp" %>
 
-<div class="row p-5">
+<div class="row pt-3 px-5">
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="#"><i class="las la-home"></i></a></li>
+            <li class="breadcrumb-item"><a href="/dashboard/student"><i class="las la-home"></i></a></li>
             <li class="breadcrumb-item"><a href="#">학교 소개</a></li>
             <li class="breadcrumb-item active" aria-current="page">캠퍼스맵</li>
         </ol>
     </nav>
     <div class="col-12 page-title mt-2">
-        <div class="display-6 fw-semibold">캠퍼스맵</div>
+        <h2 class="fw-semibold">캠퍼스맵</h2>
         <div class="my-4 p-0 bg-primary" style="width: 100px; height:5px;"></div>
     </div>
 </div>
@@ -20,7 +20,7 @@
     <div class="col-lg-8 mb-4">
         <div class="card shadow-sm border-0">
             <div class="card-body p-2">
-                <img src="/images/map.png" 
+                <img src="/img/map/map.png"
                      usemap="#campusMap" 
                      id="mainMapImg" 
                      class="img-fluid rounded" 

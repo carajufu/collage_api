@@ -38,6 +38,7 @@
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="/dashboard/student"><i class="las la-home"></i></a></li>
+            <li class="breadcrumb-item"><a href="#">학교 소개</a></li>
             <li class="breadcrumb-item active" aria-current="page">학사일정</li>
         </ol>
     </nav>
