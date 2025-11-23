@@ -16,4 +16,10 @@ public class AcntVO {
 
     private String name;
     private String affiliation;
+
+    // 종우
+    private String user_nm;
+    private String userSttusNm;
+    private String userSubjctNm;
+    private String userNo;
 }
