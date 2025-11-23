@@ -2,84 +2,100 @@
 <%@ include file="../header.jsp" %>
 <!-- 전역 docx css -->
 <link rel="stylesheet" href="<c:url value='${pageContext.request.contextPath}/css/docx.css'/>">
-<div class="docx-history-page">
-    <h2>증명서 발급 이력 조회</h2>
 
-    <!-- 학생 기본 정보 -->
-    <div class="box">
-        <h3>학생 기본 정보</h3>
-        <div class="row-2col">
-            <div>
-                <label>학번</label>
-                <input type="text" value="<c:out value='${studentDocxVO2.studentNo}'/>" readonly />
-            </div>
-            <div>
-                <label>성명(한글)</label>
-                <input type="text" value="<c:out value='${studentDocxVO2.studentNameKor}'/>" readonly />
-            </div>
-        </div>
-        <div class="row-2col">
-            <div>
-                <label>생년월일</label>
-                <input type="text" value="<c:out value='${studentDocxVO2.birthDeKor}'/>" readonly />
-            </div>
-            <div>
-                <label>전공 / 학과(부)</label>
-                <input type="text" value="<c:out value='${studentDocxVO2.majorName}'/>" readonly />
-            </div>
-        </div>
-        <div class="hint">
-            &#160;&#160;증명서 발급 내역과 문서번호는 본인 확인 및 진위 검증 용도로만 사용.
-        </div>
+<div class="row pt-3 px-5">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="#"><i class="las la-home"></i></a></li>
+            <li class="breadcrumb-item active" aria-current="page">증명서 발급 이력</li>
+        </ol>
+    </nav>
+    <div class="col-12 page-title mt-2">
+        <h2 class="fw-semibold">증명서 발급 이력</h2>
+        <div class="my-4 p-0 bg-primary" style="width: 100px; height:5px;"></div>
     </div>
+</div>
 
-    <!-- 발급 이력 -->
-    <div class="box">
-        <h3>증명서 발급 이력</h3>
+<div class="row">
+    <div class="col-xxl-12 col-12">
+        <div class="docx-history-page">
+            <!-- 학생 기본 정보 -->
+            <div class="box">
+                <h3>학생 기본 정보</h3>
+                <div class="row-2col">
+                    <div>
+                        <label>학번</label>
+                        <input type="text" value="<c:out value='${studentDocxVO2.studentNo}'/>" readonly />
+                    </div>
+                    <div>
+                        <label>성명(한글)</label>
+                        <input type="text" value="<c:out value='${studentDocxVO2.studentNameKor}'/>" readonly />
+                    </div>
+                </div>
+                <div class="row-2col">
+                    <div>
+                        <label>생년월일</label>
+                        <input type="text" value="<c:out value='${studentDocxVO2.birthDeKor}'/>" readonly />
+                    </div>
+                    <div>
+                        <label>전공 / 학과(부)</label>
+                        <input type="text" value="<c:out value='${studentDocxVO2.majorName}'/>" readonly />
+                    </div>
+                </div>
+                <div class="hint">
+                    &#160;&#160;증명서 발급 내역과 문서번호는 본인 확인 및 진위 검증 용도로만 사용.
+                </div>
+            </div>
 
-        <!-- 문서번호 검색 + 진위 확인 -->
-        <div class="search-row">
-            <label for="searchDocNo">문서번호 조회</label>
-            <input type="text"
-                   id="searchDocNo"
-                   placeholder="예: REQ2025..."
-                   maxlength="20"
-                   oninput="handleDocNoInput()" />
-            <button type="button" class="btn-verify" onclick="verifyDocNo()">진위 확인</button>
-            <span id="docNoMsg"></span>
-        </div>
+            <!-- 발급 이력 -->
+            <div class="box">
+                <h3>증명서 발급 이력</h3>
 
-        <div class="table-wrap">
-            <table class="issue-table">
-                <thead>
-                <tr>
-                    <th>문서번호</th>
-                    <th>증명서 종류</th>
-                    <th>요청일</th>
-                    <th>발급일</th>
-                    <th>상태</th>
-                </tr>
-                </thead>
-                <tbody id="issueTableBody">
-                <c:if test="${empty CrtfIssuRequestVOlist}">
-                    <tr>
-                        <td colspan="5">발급 이력이 없습니다.</td>
-                    </tr>
-                </c:if>
+                <!-- 문서번호 검색 + 진위 확인 -->
+                <div class="search-row">
+                    <label for="searchDocNo">문서번호 조회</label>
+                    <input type="text"
+                           id="searchDocNo"
+                           placeholder="예: REQ2025..."
+                           maxlength="20"
+                           oninput="handleDocNoInput()" />
+                    <button type="button" class="btn-verify" onclick="verifyDocNo()">진위 확인</button>
+                    <span id="docNoMsg"></span>
+                </div>
 
-                <c:forEach var="row" items="${CrtfIssuRequestVOlist}">
-                    <tr>
-                        <td data-col="docNo" class="doc-no">
-                            <c:out value="${row.crtfIssuInnb}"/>
-                        </td>
-                        <td><c:out value="${row.crtfKndNm}"/></td>
-                        <td><c:out value="${row.reqstDtKor}"/></td>
-                        <td><c:out value="${row.issuDtKor}"/></td>
-                        <td><c:out value="${row.issuSttus}"/></td>
-                    </tr>
-                </c:forEach>
-                </tbody>
-            </table>
+                <div class="table-wrap">
+                    <table class="issue-table">
+                        <thead>
+                        <tr>
+                            <th>문서번호</th>
+                            <th>증명서 종류</th>
+                            <th>요청일</th>
+                            <th>발급일</th>
+                            <th>상태</th>
+                        </tr>
+                        </thead>
+                        <tbody id="issueTableBody">
+                        <c:if test="${empty CrtfIssuRequestVOlist}">
+                            <tr>
+                                <td colspan="5">발급 이력이 없습니다.</td>
+                            </tr>
+                        </c:if>
+
+                        <c:forEach var="row" items="${CrtfIssuRequestVOlist}">
+                            <tr>
+                                <td data-col="docNo" class="doc-no">
+                                    <c:out value="${row.crtfIssuInnb}"/>
+                                </td>
+                                <td><c:out value="${row.crtfKndNm}"/></td>
+                                <td><c:out value="${row.reqstDtKor}"/></td>
+                                <td><c:out value="${row.issuDtKor}"/></td>
+                                <td><c:out value="${row.issuSttus}"/></td>
+                            </tr>
+                        </c:forEach>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 </div>

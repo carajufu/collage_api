@@ -42,7 +42,7 @@
         </ol>
     </nav>
     <div class="col-12 page-title mt-2">
-        <div class="display-6 fw-semibold"> 학사일정</div>
+        <h2 class="fw-semibold">학사일정</h2>
         <div class="my-4 p-0 bg-primary" style="width: 100px; height:5px;"></div>
     </div>
 </div>
