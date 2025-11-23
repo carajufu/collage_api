@@ -77,6 +77,7 @@ public class SecurityConfig {
                                 "/search",
                                 "/admin/**",
                                 "/20*/**",
+                                "/info/**",
                                 "/ws/**").permitAll()
                         .anyRequest().authenticated()
                 )

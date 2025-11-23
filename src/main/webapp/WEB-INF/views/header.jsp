@@ -346,7 +346,8 @@
                 <div id="two-column-menu">
                 </div>
                 <ul class="navbar-nav" id="navbar-nav">
-                    <li class="menu-title"><span data-key="">학사 행정</span></li>
+                    <li class="menu-title"><span data-key="">학사 정보</span></li>
+
                     <li class="nav-item">
                         <a class="nav-link menu-link" href="#sidebarRegist" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarDashboards">
                             <i class="las la-compass"></i> <span data-key="">등록</span>
@@ -411,7 +412,7 @@
                             <ul class="nav nav-sm flex-column">
                                 <li class="nav-item">
                                     <a href="/enrollment/status" class="nav-link" data-key="">
-                                        학적 관리
+                                        학적정보
                                     </a>
                                 </li>
                                 <li class="nav-item">
@@ -452,11 +453,6 @@
                         </div>
                     </li>
 
-                    <li class="nav-item">
-                        <a class="nav-link menu-link" href="/schedule/calendar" data-key="">
-                            <i class="las la-calendar"></i> <span data-key="">학사일정</span>
-                        </a>
-                    </li>
 
                     <li class="menu-title"><span data-key="">학습</span></li>
 
@@ -469,6 +465,19 @@
                     <li class="nav-item">
                         <a class="nav-link menu-link" href="/counsel/std">
                             <i class="las la-comments"></i> <span data-key="">상담</span>
+                        </a>
+                    </li>
+
+                    <li class="menu-title"><span data-key="">학교 소개</span></li>
+
+                    <li class="nav-item">
+                        <a class="nav-link menu-link" href="/schedule/calendar" data-key="">
+                            <i class="las la-calendar"></i> <span data-key="">학사일정</span>
+                        </a>
+
+                    <li class="nav-item">
+                        <a class="nav-link menu-link" href="/info/campus/map" data-key="">
+                            <i class="las la-calendar"></i> <span data-key="">캠퍼스맵</span>
                         </a>
                     </li>
                 </ul>
