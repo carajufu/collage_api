@@ -12,78 +12,101 @@
         WHERE ACNT_ID = #{acntId}
     </select>
     
-	<!-- 학생쪽 -->
-	<select id="getStudentSbjScore" resultType="kr.ac.collage_api.vo.SbjectScreVO">
-		SELECT
-			A.SBJECT_SCRE_INNB
-			,A.SEMSTR_SCRE_INNB
-			,A.ATNLC_REQST_NO
-			,A.PNT_GRAD, ACQS_PNT
-			,A.ATEND_SCORE
-			,A.TASK_SCORE
-			,A.MIDDLE_SCORE
-			,A.TRMEND_SCORE
-			,A.SBJECT_TOTPOINT
-			,A.AVRG_SCORE
-			,B.STDNT_NO
-		FROM SBJECT_SCRE A
-		JOIN SEMSTR_SCRE B
-		  ON A.SEMSTR_SCRE_INNB = B.SEMSTR_SCRE_INNB
-	   WHERE B.STDNT_NO = #{stdntNo}
-	</select>
-	
-	<select id="getStudentAtnlc" resultType="kr.ac.collage_api.chatbot.vo.ChatBotVO">
-		SELECT
-			A.ATNLC_REQST_NO
-			,A.STDNT_NO
-			,A.ESTBLLCTRE_CODE
-			,A.REQST_YEAR
-			,A.REQST_SEMSTR
-			,A.REQST_STTUS
-			,A.REQST_DE
-			,A.RECENT_UPDT_DT
-			,B.PROFSR_NO
-			,B.FILE_GROUP_NO
-			,B.ACQS_PNT
-			,B.LCTRUM
-			,B.COMPL_SE
-			,B.ATNLC_NMPR
-			,B.EVL_MTHD
-			,B.ESTBL_YEAR
-			,B.ESTBL_SEMSTR
-			,C.LCTRE_CODE
-			,C.LCTRE_NM
-		FROM ATNLC_REQST A
-		JOIN ESTBL_COURSE B
-		  ON A.ESTBLLCTRE_CODE = B.ESTBLLCTRE_CODE
-		JOIN ALL_COURSE C
-		  ON B.LCTRE_CODE = C.LCTRE_CODE
-	   WHERE A.STDNT_NO = #{stdntNo}
-	</select>
+    <!-- 학생: 성적 -->
+    <select id="getStudentSbjScore" resultType="kr.ac.collage_api.chatbot.vo.ChatBotVO">
+        SELECT
+            A.SBJECT_SCRE_INNB
+            ,A.SEMSTR_SCRE_INNB
+            ,A.ATNLC_REQST_NO
+            ,A.PNT_GRAD
+            ,A.ACQS_PNT
+            ,A.ATEND_SCORE
+            ,A.TASK_SCORE
+            ,A.MIDDLE_SCORE
+            ,A.TRMEND_SCORE
+            ,A.SBJECT_TOTPOINT
+            ,A.AVRG_SCORE
+            ,B.STDNT_NO
+        FROM SBJECT_SCRE A
+        JOIN SEMSTR_SCRE B
+          ON A.SEMSTR_SCRE_INNB = B.SEMSTR_SCRE_INNB
+       WHERE B.STDNT_NO = #{stdntNo}
+    </select>
     
+    <!-- 학생: 수강내역 -->
+    <select id="getStudentAtnlc" resultType="kr.ac.collage_api.chatbot.vo.ChatBotVO">
+        SELECT
+            A.ATNLC_REQST_NO
+            ,A.STDNT_NO
+            ,A.ESTBLLCTRE_CODE
+            ,A.REQST_YEAR
+            ,A.REQST_SEMSTR
+            ,A.REQST_STTUS
+            ,A.REQST_DE
+            ,A.RECENT_UPDT_DT
+            ,B.PROFSR_NO
+            ,B.FILE_GROUP_NO
+            ,B.ACQS_PNT
+            ,B.LCTRUM
+            ,B.COMPL_SE
+            ,B.ATNLC_NMPR
+            ,B.EVL_MTHD
+            ,B.ESTBL_YEAR
+            ,B.ESTBL_SEMSTR
+            ,C.LCTRE_CODE
+            ,C.LCTRE_NM
+        FROM ATNLC_REQST A
+        JOIN ESTBL_COURSE B
+          ON A.ESTBLLCTRE_CODE = B.ESTBLLCTRE_CODE
+        JOIN ALL_COURSE C
+          ON B.LCTRE_CODE = C.LCTRE_CODE
+       WHERE A.STDNT_NO = #{stdntNo}
+    </select>
+
+    <!-- 학생: 누적 총이수학점 -->
     <select id="getAllPnt" resultType="int">
         SELECT NVL(SUM(TOT_ACQS_PNT), 0)
         FROM SEMSTR_SCRE
-        WHERE STDNT_NO = #{stdntNo}				
+        WHERE STDNT_NO = #{stdntNo}             
     </select>
     
-    <select id="getStudentInfo" resultType="kr.ac.collage_api.vo.StdntVO">
+    <!-- 학생: 기본 정보 -->
+    <select id="getStudentInfo" resultType="kr.ac.collage_api.chatbot.vo.ChatBotVO">
         SELECT 
-            A.STDNT_NO, A.ACNT_ID, A.SUBJCT_CODE, A.STDNT_NM, A.BRTHDY,
-            A.BASS_ADRES, A.DETAIL_ADRES, A.ZIP, A.CTTPC, A.EMGNC_CTTPC,
-            A.GRADE, A.SKNRGS_STTUS, A.ENTSCH_DE, A.GRDTN_DE,
-            A.BANK_NM, A.ACNUTNO, A.LAST_UPDATED_TIME,
-            B.SUBJCT_NM
+            A.STDNT_NO
+            ,A.ACNT_ID
+            ,A.SUBJCT_CODE
+            ,A.STDNT_NM
+            ,A.BRTHDY
+            ,A.BASS_ADRES
+            ,A.DETAIL_ADRES
+            ,A.ZIP
+            ,A.CTTPC
+            ,A.EMGNC_CTTPC
+            ,A.GRADE
+            ,A.SKNRGS_STTUS
+            ,A.ENTSCH_DE
+            ,A.GRDTN_DE
+            ,A.BANK_NM
+            ,A.ACNUTNO
+            ,A.LAST_UPDATED_TIME
+            ,B.SUBJCT_NM
         FROM STDNT A
         LEFT JOIN SUBJCT B ON A.SUBJCT_CODE = B.SUBJCT_CODE
         WHERE A.STDNT_NO = #{stdntNo}
     </select>
     
+    <!-- 학생: 상담 내역 -->
     <select id="getConsult" resultType="map">
         SELECT 
-           A.CNSLT_REQST_INNB, A.CNSLT_INNB, A.STDNT_NO, A.REQST_DE,
-           A.CNSLT_STTUS, A.CNSLT_REQUST_CN, A.CANCL_REASON,
-           D.SKLSTF_NM AS profsrNm
+           A.CNSLT_REQST_INNB
+           ,A.CNSLT_INNB
+           ,A.STDNT_NO
+           ,A.REQST_DE
+           ,A.CNSLT_STTUS
+           ,A.CNSLT_REQUST_CN
+           ,A.CANCL_REASON
+           ,D.SKLSTF_NM AS profsrNm
         FROM CNSLT_REQST A
         LEFT JOIN CNSLT_AT B ON A.CNSLT_INNB = B.CNSLT_INNB
         LEFT JOIN PROFSR C ON B.PROFSR_NO = C.PROFSR_NO
@@ -91,21 +114,23 @@
         WHERE A.STDNT_NO = #{stdntNo}
         ORDER BY A.REQST_DE DESC
     </select>
-	    
-	<select id="getSubjectCompletions" resultType="map">
-	    SELECT
-	         C.COMPL_SE,
-	         D.LCTRE_NM,
-	         D.SUBJCT_CODE,
-	         C.ACQS_PNT
-	    FROM SBJECT_SCRE A 
-	    JOIN ATNLC_REQST B ON A.ATNLC_REQST_NO = B.ATNLC_REQST_NO 
-	    JOIN ESTBL_COURSE C ON B.ESTBLLCTRE_CODE = C.ESTBLLCTRE_CODE 
-	    JOIN ALL_COURSE D ON C.LCTRE_CODE = D.LCTRE_CODE 
-	    WHERE B.STDNT_NO = #{stdntNo}
-	      AND A.PNT_GRAD != 'F'
-	</select>
     
+    <!-- 학생: 이수과목 -->
+    <select id="getSubjectCompletions" resultType="map">
+        SELECT
+             C.COMPL_SE
+             ,D.LCTRE_NM
+             ,D.SUBJCT_CODE
+             ,C.ACQS_PNT
+        FROM SBJECT_SCRE A 
+        JOIN ATNLC_REQST B ON A.ATNLC_REQST_NO = B.ATNLC_REQST_NO 
+        JOIN ESTBL_COURSE C ON B.ESTBLLCTRE_CODE = C.ESTBLLCTRE_CODE 
+        JOIN ALL_COURSE D ON C.LCTRE_CODE = D.LCTRE_CODE 
+        WHERE B.STDNT_NO = #{stdntNo}
+          AND A.PNT_GRAD != 'F'
+    </select>
+
+    <!-- 학생: 누적 GPA -->
     <select id="getCumulativeGpa" resultType="double">
         SELECT 
             NVL(
@@ -117,92 +142,97 @@
         FROM SEMSTR_SCRE
         WHERE STDNT_NO = #{stdntNo}
     </select>
-	
-	<!-- 교수쪽 -->
-	<select id="getProfessorLectureList" resultType="kr.ac.collage_api.vo.EstblCourseVO">
-		SELECT
-			A.LCTRE_NM
-			,B.ESTBL_YEAR
-			,B.ESTBL_SEMSTR
-			,B.COMPL_SE
-			,B.EVL_MTHD
-			,B.ATNLC_NMPR
-	    FROM ALL_COURSE A
-	    JOIN ESTBL_COURSE B
-	      ON A.LCTRE_CODE = B.LCTRE_CODE
-	    WHERE B.PROFSR_NO = #{profsrNo}
-	</select>
-	
-	<select id="getProfessorCounselList" resultType="kr.ac.collage_api.vo.CnsltVO">
-		SELECT
-			A.CNSLT_INNB
-			,A.CNSLT_REQUST_DE
-			,A.CNSLT_REQUST_HOUR
-			,A.CNSLT_REQUST_CN
-			,A.REQST_DE
-			,A.STTUS
-			,A.CNSLT_MTHD
-			,A.CANCL_REASON
-			,A.CNSLT_RESULT
-			,A.PROFSR_NO
-			,A.STDNT_NO
-			,B.STDNT_NM
-		  FROM CNSLT A
-		  JOIN STDNT B
-		    ON A.STDNT_NO = B.STDNT_NO
-		 WHERE PROFSR_NO = #{profsrNo}
-		  AND STTUS = '2'
-	</select>
+    
+    <!-- 교수: 개설과목 -->
+    <select id="getProfessorLectureList" resultType="kr.ac.collage_api.chatbot.vo.ChatBotVO">
+        SELECT
+            A.LCTRE_NM
+            ,B.ESTBL_YEAR
+            ,B.ESTBL_SEMSTR
+            ,B.COMPL_SE
+            ,B.EVL_MTHD
+            ,B.ATNLC_NMPR
+        FROM ALL_COURSE A
+        JOIN ESTBL_COURSE B
+          ON A.LCTRE_CODE = B.LCTRE_CODE
+        WHERE B.PROFSR_NO = #{profsrNo}
+    </select>
+    
+    <!-- 교수: 상담 요청 확인 -->
+    <select id="getProfessorCounselList" resultType="kr.ac.collage_api.chatbot.vo.ChatBotVO">
+        SELECT
+            A.CNSLT_INNB
+            ,A.CNSLT_REQUST_DE
+            ,A.CNSLT_REQUST_HOUR
+            ,A.CNSLT_REQUST_CN
+            ,A.REQST_DE
+            ,A.STTUS
+            ,A.CNSLT_MTHD
+            ,A.CANCL_REASON
+            ,A.CNSLT_RESULT
+            ,A.PROFSR_NO
+            ,A.STDNT_NO
+            ,B.STDNT_NM
+        FROM CNSLT A
+        JOIN STDNT B
+          ON A.STDNT_NO = B.STDNT_NO
+        WHERE A.PROFSR_NO = #{profsrNo}
+          AND A.STTUS = '2'
+    </select>
 
-	<!-- 주별학습, 과제 확인  -->
-	<select id="getProfWeekAcctoLrn" resultType="kr.ac.collage_api.chatbot.vo.ChatBotVO">
-		SELECT
-			A.WEEK_ACCTO_LRN_NO
-			,A.ESTBLLCTRE_CODE
-			,A.WEEK
-			,A.TASK_AT
-			,A.LRN_THEMA
-			,A.LRN_CN
-			,A.QUIZ_AT
-			,B.PROFSR_NO
-			,B.TASK_NO
-			,B.TASK_SJ
-			,B.TASK_CN
-			,B.TASK_BEGIN_DE
-			,B.TASK_CLOS_DE
-			,C.TASK_PRESENTN_NO
-			,C.STDNT_NO
-			,C.PRESENTN_AT
-		  FROM WEEK_ACCTO_LRN A
-		  JOIN TASK B
-		  	ON A.WEEK_ACCTO_LRN_NO = B.WEEK_ACCTO_LRN_NO
-		  JOIN TASK_PRESENTN C
-		    ON B.TASK_NO = C.TASK_NO
-	</select>
+    <!-- 교수: 주별학습 / 과제 확인 → ★ 오류 해결 버전 -->
+    <select id="getProfWeekAcctoLrn" resultType="kr.ac.collage_api.chatbot.vo.ChatBotVO">
+        SELECT
+            A.WEEK_ACCTO_LRN_NO
+            ,A.ESTBLLCTRE_CODE
+            ,A.WEEK
+            ,A.TASK_AT
+            ,A.LRN_THEMA
+            ,A.LRN_CN
+            ,A.QUIZ_AT
+            ,B.TASK_NO
+            ,B.TASK_SJ
+            ,B.TASK_CN
+            ,B.TASK_BEGIN_DE
+            ,B.TASK_CLOS_DE
+            ,C.TASK_PRESENTN_NO
+            ,C.STDNT_NO
+            ,C.PRESENTN_AT
+        FROM WEEK_ACCTO_LRN A
+        JOIN TASK B
+          ON A.WEEK_ACCTO_LRN_NO = B.WEEK_ACCTO_LRN_NO
+        JOIN TASK_PRESENTN C
+          ON B.TASK_NO = C.TASK_NO
+        JOIN ESTBL_COURSE EC
+          ON A.ESTBLLCTRE_CODE = EC.ESTBLLCTRE_CODE
+        WHERE EC.PROFSR_NO = #{profsrNo}
+    </select>
 
-	<!-- 강의시간표 확인 -->
-	<select id="getProfLctreTime" resultType="kr.ac.collage_api.chatbot.vo.ChatBotVO">
-		SELECT
-			A.ESTBLLCTRE_CODE
-			,A.PROFSR_NO
-			,A.ACQS_PNT
-			,A.LCTRUM
-			,A.COMPL_SE
-			,A.ATNLC_NMPR
-			,A.EVL_MTHD
-			,A.ESTBL_YEAR
-			,A.ESTBL_SEMSTR
-			,B.LCTRE_CODE
-			,B.LCTRE_NM
-			,B.OPER_AT
-			,C.TIMETABLE_NO
-			,C.LCTRE_DFK
-			,C.BEGIN_TM
-			,C.END_TM
-		  FROM ESTBL_COURSE A
-		  JOIN ALL_COURSE B
-		  	ON A.LCTRE_CODE = B.LCTRE_CODE
-		  JOIN LCTRE_TIMETABLE C
-		    ON A.ESTBLLCTRE_CODE = C.ESTBLLCTRE_CODE
-	</select>
+    <!-- 교수: 강의시간표 -->
+    <select id="getProfLctreTime" resultType="kr.ac.collage_api.chatbot.vo.ChatBotVO">
+        SELECT
+            A.ESTBLLCTRE_CODE
+            ,A.PROFSR_NO
+            ,A.ACQS_PNT
+            ,A.LCTRUM
+            ,A.COMPL_SE
+            ,A.ATNLC_NMPR
+            ,A.EVL_MTHD
+            ,A.ESTBL_YEAR
+            ,A.ESTBL_SEMSTR
+            ,B.LCTRE_CODE
+            ,B.LCTRE_NM
+            ,B.OPER_AT
+            ,C.TIMETABLE_NO
+            ,C.LCTRE_DFK
+            ,C.BEGIN_TM
+            ,C.END_TM
+        FROM ESTBL_COURSE A
+        JOIN ALL_COURSE B
+          ON A.LCTRE_CODE = B.LCTRE_CODE
+        JOIN LCTRE_TIMETABLE C
+          ON A.ESTBLLCTRE_CODE = C.ESTBLLCTRE_CODE
+        WHERE A.PROFSR_NO = #{profsrNo}
+    </select>
+
 </mapper>

@@ -25,15 +25,17 @@ public class CompetencyController {
     // 메인 폼 조회 (학생별 단일 폼)
     @GetMapping("/main")
     public String main(Model model) {
+
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String stdntNo = auth.getName();
 
-        CompetencyVO data = competencyService.getFormData(stdntNo);
-        if (data == null) {
-            data = new CompetencyVO();
+        CompetencyVO form = competencyService.getFormData(stdntNo);
+        if (form == null) {
+            form = new CompetencyVO();
         }
 
-        model.addAttribute("form", data);
+        model.addAttribute("form", form);
+
         return "competency/selfIntro";
     }
 
@@ -51,6 +53,7 @@ public class CompetencyController {
 
         String resultIntro = competencyService.generateIntro(form);
 
+        // JSP에서 읽는 model 명칭 유지
         model.addAttribute("generatedEssay", resultIntro);
         model.addAttribute("form", form);
 

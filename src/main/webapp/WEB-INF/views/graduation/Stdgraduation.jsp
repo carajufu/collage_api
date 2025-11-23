@@ -1,12 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib prefix="c" uri="jakarta.tags.core"%>
-<%@ taglib prefix="fmt" uri="jakarta.tags.fmt"%>
-<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
 
-<%@ include file="/WEB-INF/views/header.jsp" %>
-
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<%@ include file="../header.jsp" %>
 
 <script>
 document.addEventListener("DOMContentLoaded", function() {
@@ -95,10 +89,21 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 </script>
 
-<div class="page-content">
-  <div class="container-fluid">
-
-    <h4 class="fw-bold mb-4">졸업 신청 현황</h4>
+<div class="row pt-3 px-5">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/dashboard/student"><i class="las la-home"></i></a></li>
+            <li class="breadcrumb-item"><a href="#">학사 정보</a></li>
+            <li class="breadcrumb-item active" aria-current="page">졸업 현황</li>
+        </ol>
+    </nav>
+    <div class="col-12 page-title mt-2">
+        <h2 class="fw-semibold">졸업 현황</h2>
+        <div class="my-4 p-0 bg-primary" style="width: 100px; height:5px;"></div>
+    </div>
+</div>
+<div class="row pt-3 px-5">
+    <div class="col-xxl-12 col-12">
 
     <table class="table table-bordered align-middle mb-4">
       <tbody>
@@ -238,7 +243,7 @@ document.addEventListener("DOMContentLoaded", function() {
       <button class="btn btn-secondary" onclick="history.back()">뒤로가기</button>
     </div>
 
-  </div>
+    </div>
 </div>
 
 <div class="modal fade" id="selectStudentModal" tabindex="-1">
@@ -311,4 +316,4 @@ document.addEventListener("DOMContentLoaded", function() {
     </div>
   </div>
 </div>
-<%@ include file="/WEB-INF/views/footer.jsp" %>
+<%@ include file="../footer.jsp" %>

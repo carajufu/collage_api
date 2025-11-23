@@ -1,8 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib prefix="c" uri="jakarta.tags.core" %>
-<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 
-<%@ include file="/WEB-INF/views/header.jsp" %>
+<%@ include file="../header.jsp" %>
 
 <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 
@@ -169,16 +167,20 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 });
 </script>
-
-
-<!-- ===========================
-       화면 본문
-=========================== -->
-
-<div id="main-container" class="container-fluid">
-  <div class="flex-grow-1 p-3 overflow-auto">
-
-    <h2 class="border-bottom pb-3 mb-4">학생 정보 수정</h2>
+<div class="row pt-3 px-5">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/dashboard/student"><i class="las la-home"></i></a></li>
+            <li class="breadcrumb-item active" aria-current="page">개인 정보 수정</li>
+        </ol>
+    </nav>
+    <div class="col-12 page-title mt-2">
+        <h2 class="fw-semibold">개인 정보 수정</h2>
+        <div class="my-4 p-0 bg-primary" style="width: 100px; height:5px;"></div>
+    </div>
+</div>
+<div class="row pt-3 px-5">
+    <div class="col-xxl-12 col-12">
 
     <form>
 
@@ -257,7 +259,7 @@ document.addEventListener("DOMContentLoaded", function () {
             <div class="card-body text-center">
 
               <img id="previewImg"
-                   src="<c:out value='${empty profileImagePath ? "/assets/images/users/user-dummy-img.jpg" : ("/'/>"
+                   src="<c:out value='${empty profileImagePath ? "/img/default-profile.png" : ("/upload" += profileImagePath)}'/>"
                    style="width:150px;height:150px;object-fit:cover;border-radius:50%;border:1px solid #ddd;" />
 
               <input type="file" id="uploadFile" name="uploadFile" class="form-control mt-3">
@@ -274,9 +276,9 @@ document.addEventListener("DOMContentLoaded", function () {
       </div>
 
     </form>
-  </div>
-</div>
 
+    </div>
+</div>
 
 <!-- 비밀번호 확인 모달 -->
 <div class="modal fade" id="pwCheckModal" tabindex="-1">
@@ -300,4 +302,4 @@ document.addEventListener("DOMContentLoaded", function () {
   </div>
 </div>
 
-<%@ include file="/WEB-INF/views/footer.jsp" %>
+<%@ include file="../footer.jsp" %>

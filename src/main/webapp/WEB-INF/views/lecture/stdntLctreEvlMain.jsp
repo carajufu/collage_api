@@ -1,18 +1,31 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" isELIgnored="false" %>
 <%@ include file="../header.jsp" %>
+<div class="row pt-3 px-5">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/dashboard/student"><i class="las la-home"></i></a></li>
+            <li class="breadcrumb-item"><a href="#">학사 정보</a></li>
+            <li class="breadcrumb-item active" aria-current="page">강의 평가</li>
+        </ol>
+    </nav>
+    <div class="col-12 page-title mt-2">
+        <h2 class="fw-semibold">강의 평가</h2>
+        <div class="my-4 p-0 bg-primary" style="width: 100px; height:5px;"></div>
+    </div>
+</div>
+<div class="row pt-3 px-5">
+    <div class="col-xxl-12 col-12">
 
-
-    <h4 class="fw-bold mb-4">강의평가</h4>
-
+    <!-- 요약 박스 -->
     <div class="border rounded p-3 mb-4 bg-light">
       <div class="d-flex justify-content-between align-items-center">
         <div>
           <span class="fw-semibold">미평가 강의 수:</span>
-          <span class="text-primary fw-bold">
-            <c:out value="${fn:length(atnlcList)}"/>
-          </span> 개
+          <span class="text-primary fw-bold">${fn:length(atnlcList)}</span> 개
         </div>
-        <div class="text-muted small">평가 완료 후 수정은 불가하니 신중히 제출해주세요.</div>
+        <div class="text-muted small">
+          평가 완료 후 수정은 불가하니 신중히 제출해주세요.
+        </div>
       </div>
     </div>
 
@@ -42,7 +55,7 @@
               <th>학점</th>
               <th>정원</th>
               <th>수업언어</th>
-              <th style="width: 12%;">평가상태</th>
+              <th style="width: 12%;">평가하기</th>
             </tr>
           </thead>
 
@@ -58,22 +71,12 @@
                 <td>${lecture.acqsPnt}</td>
                 <td>${lecture.atnlcNmpr}</td>
                 <td>${lecture.lctreUseLang}</td>
-
                 <td class="text-center">
-                  <c:choose>
-                    <c:when test="${lecture.evalCompleted eq 'N'}">
-                      <a href="/stdnt/lecture/main/${lecture.estbllctreCode}"
-                         class="btn btn-primary btn-sm px-3">
-                        평가하기
-                      </a>
-                    </c:when>
-
-                    <c:otherwise>
-                      <span class="badge bg-success px-3 py-2">평가완료</span>
-                    </c:otherwise>
-                  </c:choose>
+                  <a href="/stdnt/lecture/main/${lecture.estbllctreCode}" 
+                     class="btn btn-primary btn-sm px-3">
+                    평가하기
+                  </a>
                 </td>
-
               </tr>
             </c:forEach>
           </tbody>
@@ -81,5 +84,7 @@
         </table>
       </div>
     </c:if>
+    </div>
+</div>
 
 <%@ include file="../footer.jsp" %>

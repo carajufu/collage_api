@@ -33,7 +33,17 @@ public class ChatBotVO {
     private String lctreCode;        // LCTRE_CODE (강의코드)
     private String lctreNm;          // LCTRE_NM (강의명)
 
-
+    // STDNT
+    private String stdntNm;
+    private String grade;
+    private String subjctNm;
+    
+    // ALL_COURSE C
+    private long middleScore;
+    private long trmendScore;
+    private long taskScore;
+    private long atendScore;
+    private long sbjectTotpoint;
 
     /* ----------------------- 교수 영역 ----------------------- */
 
@@ -64,4 +74,8 @@ public class ChatBotVO {
     private String lctreDfk;         // LCTRE_DFK
     private String beginTm;          // BEGIN_TM
     private String endTm;            // END_TM
+    
+    // CNSLT
+    private String cnsltRequstDe; 
+    private String cnsltRequstHour;
 }

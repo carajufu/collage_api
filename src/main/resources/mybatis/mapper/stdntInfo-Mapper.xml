@@ -48,6 +48,12 @@
     WHERE ACNT_ID = #{stdntNo}
   </update>
 
+  <select id="getPassword">
+    SELECT PASSWORD
+    FROM ACNT
+    WHERE ACNT_ID = #{stdntNo}
+  </select>
+
   <select id="getProfileImage" resultType="string">
     SELECT FILE_GROUP_NO
     FROM ACNT
