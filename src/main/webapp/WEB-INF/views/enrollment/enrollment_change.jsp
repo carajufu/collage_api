@@ -4,17 +4,17 @@
 <%@ include file="../header.jsp" %>
 
 <!-- 상단 레이아웃 영역 -->
-<div class="row p-5">
+<div class="row pt-3 px-5">
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="#"><i class="las la-home"></i></a></li>
+            <li class="breadcrumb-item"><a href="/dashboard/student"><i class="las la-home"></i></a></li>
             <li class="breadcrumb-item"><a href="#">학적관리</a></li>
             <li class="breadcrumb-item active" aria-current="page">휴학/복학 신청</li>
         </ol>
     </nav>
 
     <div class="col-12 page-title mt-2">
-        <div class="display-6 fw-semibold">휴학/복학 신청</div>
+        <h2 class="fw-semibold">휴학/복학 신청</h2>
         <div class="my-4 p-0 bg-primary" style="width: 100px; height:5px;"></div>
     </div>
 </div>

@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import kr.ac.collage_api.admin.service.BbsNoticeService;
 import kr.ac.collage_api.common.config.ArticlePage;
-import kr.ac.collage_api.vo.BbsVO;
+import kr.ac.collage_api.vo.BbsCttVO;
 import lombok.extern.slf4j.Slf4j;
 
 
@@ -48,10 +48,10 @@ public class BbsNoticeContorller {
 		int total = this.bbsNoticeService.getTotal(map);
 		
 		//bbsVOList에는 현재 페이지에 맞는 목록 만 가지고 옴
-		List<BbsVO> bbsVOList = this.bbsNoticeService.list(map);
+		List<BbsCttVO> bbsVOList = this.bbsNoticeService.list(map);
 		
 		//페이지네이션
-		ArticlePage<BbsVO> articlePage = new ArticlePage<BbsVO>(total,currentPage,size,bbsVOList,keyword,"/bbs/list");
+		ArticlePage<BbsCttVO> articlePage = new ArticlePage<BbsCttVO>(total,currentPage,size,bbsVOList,keyword,"/bbs/list");
 		
 		model.addAttribute("bbsVOList",bbsVOList);
 		model.addAttribute("articlePage",articlePage);
@@ -64,7 +64,7 @@ public class BbsNoticeContorller {
 	public String detail(Model model
 						,@RequestParam(value="bbscttNo",required=false,defaultValue="") int bbscttNo) {
 		
-		BbsVO bbsVO = this.bbsNoticeService.detail(bbscttNo);
+		BbsCttVO bbsVO = this.bbsNoticeService.detail(bbscttNo);
 		
 		model.addAttribute("bbsVO",bbsVO);
 				

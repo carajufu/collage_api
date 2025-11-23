@@ -24,12 +24,12 @@ import java.util.stream.Collectors;
 public class CustomLoginSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
     private static final LinkedHashMap<String, String> ROLE_TO_URL = new LinkedHashMap<>();
     static {
-        ROLE_TO_URL.put("ROLE_ADMIN", "/admin/welcome");
-        ROLE_TO_URL.put("ROLE_PROF", "/prof/welcome");
-        ROLE_TO_URL.put("ROLE_STUDENT", "/student/welcome");
+        ROLE_TO_URL.put("ROLE_ADMIN", "/");
+        ROLE_TO_URL.put("ROLE_PROF", "/");
+        ROLE_TO_URL.put("ROLE_STUDENT", "/");
     }
 
-    private static final String FALLBACK_URL = "/";
+    private static final String FALLBACK_URL = "/login";
 
     @Override
     protected String determineTargetUrl(HttpServletRequest request,

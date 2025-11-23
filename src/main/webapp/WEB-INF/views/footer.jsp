@@ -4,55 +4,10 @@
 <!-- container-fluid -->
 </div>
 <!-- End Page-content -->
-
-<%--<footer class="footer">--%>
-<%--    <div class="container-fluid">--%>
-<%--        <div class="row">--%>
-<%--            <div class="col-sm-6">--%>
-<%--                <script>document.write(new Date().getFullYear())</script> © Velzon.--%>
-<%--            </div>--%>
-<%--            <div class="col-sm-6">--%>
-<%--                <div class="text-sm-end d-none d-sm-block">--%>
-<%--                    Design & Develop by Themesbrand--%>
-<%--                </div>--%>
-<%--            </div>--%>
-<%--        </div>--%>
-<%--    </div>--%>
-<%--</footer>--%>
 </div>
 <!-- end main content-->
-
 </div>
 <!-- END layout-wrapper -->
-
-
-
-<%--</div>--%>
-<%--</main>--%>
-<%--    <footer>--%>
-<%--        <div class="py-3 my-4">--%>
-<%--            <ul class="nav justify-content-center border-bottom pb-3 mb-3">--%>
-<%--                <li class="nav-item">--%>
-<%--                    <a href="#" class="nav-link px-2 text-body-secondary">Home</a>--%>
-<%--                </li>--%>
-<%--                <li class="nav-item">--%>
-<%--                    <a href="#" class="nav-link px-2 text-body-secondary">Features</a>--%>
-<%--                </li>--%>
-<%--                <li class="nav-item">--%>
-<%--                    <a href="#" class="nav-link px-2 text-body-secondary">Pricing</a>--%>
-<%--                </li>--%>
-<%--                <li class="nav-item">--%>
-<%--                    <a href="#" class="nav-link px-2 text-body-secondary">FAQs</a>--%>
-<%--                </li>--%>
-<%--                <li class="nav-item">--%>
-<%--                    <a href="#" class="nav-link px-2 text-body-secondary">About</a>--%>
-<%--                </li>--%>
-<%--            </ul>--%>
-<%--            <p class="text-center text-body-secondary">© 2025 Company, Inc</p>--%>
-<%--        </div>--%>
-<%--    </footer>--%>
-<%--</div>--%>
-
 
 <!--preloader-->
 <div id="preloader">
@@ -100,7 +55,7 @@
 
   <div class="offcanvas-body d-flex flex-column" style="height:100%; padding: 0;"> <div style="flex: 0 0 auto; border-bottom: 1px solid #ddd; background-color: #f8f9fa; padding: 15px;">
 	  <div class="d-flex align-items-start">
-	    <img src="/img/chatbothandshk.jpg?ver=1"
+	    <img src="/img/chatbot/chatbothandshk.jpg?ver=1"
 	         alt="챗봇"
 	         class="rounded-circle me-2"
 	         draggable="false"
@@ -231,7 +186,7 @@ if (!window.chatbotInitialized) {
             } else {
                 if (type === "card") {
                     wrapper.innerHTML =
-                        '<img src="/img/chatbot.jpg" alt="bot" class="rounded-circle me-2" ' +
+                        '<img src="/img/chatbot/chatbot.jpg" alt="bot" class="rounded-circle me-2" ' +
                         'style="width:40px; height:40px;">' +
                         '<div class="p-3 bg-light border rounded-3 shadow-sm" ' +
                         'style="max-width:85%; word-wrap:break-word;">' +
@@ -239,7 +194,7 @@ if (!window.chatbotInitialized) {
                         '</div>';
                 } else {
                     wrapper.innerHTML =
-                        '<img src="/img/chatbothandshk.jpg" alt="bot" class="rounded-circle me-2" ' +
+                        '<img src="/img/chatbot/chatbothandshk.jpg" alt="bot" class="rounded-circle me-2" ' +
                         'style="width:40px; height:40px;">' +
                         '<div class="p-2 rounded-3 bg-light text-dark shadow-sm" ' +
                         'style="max-width:75%; word-wrap:break-word;">' +
@@ -257,7 +212,7 @@ if (!window.chatbotInitialized) {
             const loader = document.createElement("div");
             loader.classList.add("d-flex", "mb-3");
             loader.innerHTML = `
-                <img src="/img/chatbothandshk.jpg" alt="bot" class="rounded-circle me-2"
+                <img src="/img/chatbot/chatbothandshk.jpg" alt="bot" class="rounded-circle me-2"
                      style="width:40px; height:40px;">
                 <div class="p-2 rounded-3 bg-light text-muted shadow-sm" style="max-width:75%;">...</div>`;
             messages.appendChild(loader);
@@ -346,6 +301,173 @@ if (!window.chatbotInitialized) {
 }
 </script>
 
+
+<!-- 알림창 시작 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+
+<sec:authorize access="isAuthenticated()">
+<script>
+let stompClient = null;
+
+// 문서가 다 로드되면 실행 (위치가 어디든 상관없이 작동하게 해줌)
+$(document).ready(function() {
+    connect();
+    loadOldNotifications();
+});
+
+//시간함수
+const calculateTimeAgo = (dateString) => {
+    if (!dateString) return "방금 전";
+
+    const now = new Date();
+    const past = new Date(dateString);
+    const diffMs = now - past; // 밀리초 차이 계산
+
+    const diffMins = Math.floor(diffMs / (1000 * 60));
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+    if (diffMins < 1) return "방금 전";
+    if (diffMins < 60) return `\${diffMins}분 전`;
+    if (diffHours < 24) {
+        // 1시간이 넘으면 "1시간 20분 전" 처럼 표시
+        const remainMins = diffMins % 60;
+        return `\${diffHours}시간 \${remainMins}분 전`;
+    }
+    if (diffDays < 7) return `\${diffDays}일 전`;
+
+    // 7일이 넘으면 그냥 날짜를 보여줌 (예: 2024-11-21)
+    const year = past.getFullYear();
+    const month = ('0' + (past.getMonth() + 1)).slice(-2);
+    const day = ('0' + past.getDate()).slice(-2);
+    return `\${year}-\${month}-\${day}`;
+};
+
+//안읽은 메시지 불러오기
+const loadOldNotifications = () => {
+	fetch("/ntcn/unread")
+		.then((resp)=> resp.json())
+		.then((list)=>{
+
+			if (!list || list.length ===0) {
+				return;
+			}
+			console.log("list",list);
+
+			list.forEach((item) => {
+				let  msgObj = {
+					id:item.ntcnNo,
+					content:item.ntcnCn,
+					sender:item.sender,
+					url:item.ntcnItnadr,
+					time:item.registDt
+				}
+				showNotification(msgObj);
+			});
+		});
+}
+
+const connect = () => {
+    const socket = new SockJS('${pageContext.request.contextPath}/ws');
+    stompClient = Stomp.over(socket);
+
+    stompClient.connect({}, (frame) => {
+        console.log(`Websocket Connected: ${frame}`);
+
+        stompClient.subscribe('/user/queue/notifications', (notification) => {
+            showNotification(JSON.parse(notification.body));
+        });
+    });
+};
+
+
+const readAndMove = (ntcnNo,targetURL) => {
+	fetch("/ntcn/read",{
+		method : "POST",
+		headers : {
+			"Content-type" :"application/json",
+		},
+		body:JSON.stringify({ntcnNo:ntcnNo})
+	}).then(resp => {
+		if (resp.ok) {
+			console.log("읽음 처리 성공")
+		}else {
+			console.log("읽음처리 실패");
+		}
+
+	}).catch(err => console.error(err))
+	.finally(() => {
+					window.location.href=targetURL
+				}
+	)
+
+}
+
+const showNotification = (messageObj) => {
+    // 1. 종 흔들기 효과
+    const $icon = $("#notification-icon");
+    $icon.addClass("bell-ringing");
+    setTimeout(() => { $icon.removeClass("bell-ringing"); }, 2000);
+
+    // 2. 뱃지 숫자 올리기
+    const $badge = $("#notification-badge");
+    let currentCount = parseInt($badge.text()) || 0;
+    $badge.text(currentCount + 1);
+    $badge.removeClass("d-none");
+
+    // 3. 데이터 준비 (콘솔에 찍힌 내용 가져오기)
+    // messageObj.content가 "241011001 학생이..." 이 텍스트입니다.
+    const content = messageObj.content || "새로운 알림이 도착했습니다.";
+    const sender = messageObj.sender || "시스템 알림";
+    const url = messageObj.url|| messageObj.ntcnItnadr;
+    const id = messageObj.id || messageObj.ntcnNo;
+
+    const timeStr = calculateTimeAgo(messageObj.time);
+
+    // 4. HTML 만들기 (디자인)
+    const newNotiHtml = `
+        <div class="text-reset notification-item d-block dropdown-item position-relative">
+            <div class="d-flex">
+                <div class="avatar-xs me-3 flex-shrink-0">
+                    <span class="avatar-title bg-primary-subtle text-primary rounded-circle fs-16">
+                        <i class='bx bx-message-rounded-dots'></i>
+                    </span>
+                </div>
+                <div class="flex-grow-1">
+                    <a href="javascript:void(0);"
+                    	onClick="readAndMove(\${id},'\${url}')" class="stretched-link">
+                        <h6 class="mt-0 mb-1 fs-13 fw-semibold">\${sender}</h6>
+                    </a>
+                    <div class="fs-13 text-muted">
+                        <p class="mb-1">\${content}</p>
+                    </div>
+                    <p class="mb-0 fs-11 fw-medium text-uppercase text-muted">
+                        <span><i class="mdi mdi-clock-outline"></i> \${timeStr}</span>
+                    </p>
+                </div>
+            </div>
+        </div>`;
+
+    // 5. 리스트에 추가하기 (ID 매칭 성공!)
+    const $container = $("#my-notification-list");
+    const $simpleBarContent = $container.find(".simplebar-content");
+
+    // "알림 없음" 문구 숨기기
+    $container.find(".empty-notification-elem").hide();
+
+    // SimpleBar 라이브러리 사용 시 내부 구조가 바뀔 수 있어서 체크
+    if ($simpleBarContent.length > 0) {
+        $simpleBarContent.prepend(newNotiHtml);
+    } else {
+        $container.prepend(newNotiHtml);
+    }
+};
+
+</script>
+</sec:authorize>
+
+<!-- 알림창 끝 -->
 
 </body>
 </html>

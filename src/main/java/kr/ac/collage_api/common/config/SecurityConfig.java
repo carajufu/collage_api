@@ -40,7 +40,9 @@ public class SecurityConfig {
                         "favicon.ico",
                         "/.well-known/**",
                         "/assets/**",
-                        "/img/**");
+                        "/img/**",
+                        "/cert-templates/**",
+                        "/fonts/**");
     }
 
     @Bean
@@ -65,15 +67,24 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .httpBasic(hbasic -> hbasic.disable())
                 .authorizeHttpRequests(authorize -> authorize
-                        .dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.ASYNC).permitAll()
+                        .dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.ASYNC, DispatcherType.ERROR).permitAll()
                         .requestMatchers("/",
+                                "/index",
+                                "/error",
                                 "/login",
+                                "/account/**",
+                                "/api/account/**",
+                                "/search",
                                 "/admin/**",
-                                "/20*/**").permitAll()
+                                "/20*/**",
+                                "/info/**",
+                                "/ws/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .requestCache(cache -> cache.requestCache(requestCache))
-                .formLogin(formLogin -> formLogin.loginPage("/login")
+                .formLogin(formLogin -> formLogin.usernameParameter("acntId")
+                        .passwordParameter("password")
+                        .loginPage("/login")
                         .successHandler(customLoginSuccessHandler))
                 .sessionManagement(session -> session.maximumSessions(1))
                 .logout(logout -> logout.logoutUrl("/logout")
