@@ -1,25 +1,35 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ include file="../header.jsp" %>
-    <title>강의 시간표</title>
-	<%-- <%@ include file="../header.jsp" %> --%>
+
     <!-- 전역 스케줄러 css -->
     <link rel="stylesheet"
           href="${pageContext.request.contextPath}/css/schedule.css" />
 
     <!-- FullCalendar 정적 리소스 -->
-    <link rel="stylesheet"
-          href="${pageContext.request.contextPath}/js/fullcalendar/main.min.css" />
-    <script src="${pageContext.request.contextPath}/js/fullcalendar/index.global.min.js"></script>
- 	
-</head>
-<body>
+    <script src="${pageContext.request.contextPath}/assets/libs/fullcalendar/index.global.min.js"></script>
 
-<div class="timetable-container">
-    <!-- FullCalendar 마운트 타겟 -->
-    <div id="timetable"></div>
+<div class="row pt-3 px-5">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/dashboard/prof"><i class="las la-home"></i></a></li>
+            <li class="breadcrumb-item"><a href="#">학습</a></li>
+            <li class="breadcrumb-item active" aria-current="page">시간표</li>
+        </ol>
+    </nav>
+    <div class="col-12 page-title mt-2">
+        <h2 class="fw-semibold">시간표</h2>
+        <div class="my-4 p-0 bg-primary" style="width: 100px; height:5px;"></div>
+    </div>
 </div>
-
+<div class="row">
+    <div class="col-xxl-12 col-12">
+        <div class="timetable-container">
+        <!-- FullCalendar 마운트 타겟 -->
+        <div id="timetable"></div>
+        </div>
+    </div>
+</div>
 <!-- 공용 툴팁: 인스턴스 1개 재사용 -->
 <div id="event-tooltip" class="event-tooltip"></div>
 

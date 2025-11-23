@@ -128,4 +128,8 @@ public class LearningPageServiceImpl {
 
         return lectureBbsMap;
     }
+
+    public Map<String, Object> getBoard(Map<String, Object> paramMap) {
+        return learningPageMapper.getBoard(paramMap);
+    }
 }

@@ -927,7 +927,7 @@
                 </div>
                 <div class="my-4 p-0 bg-primary" style="width: 100px; height:5px;"></div>
             </div>
-            <div class="col-xxl-6 col-6">
+            <div class="col-xxl-7 col-7">
                 <!-- 반복문을 통해 아코디언 리스트 생성 -->
                 <div class="card card-height-100 border border-1 shadow rounded-3">
                     <div class="card-title">
@@ -937,6 +937,12 @@
                             </li>
                             <li class="nav-item waves-effect waves-light" role="presentation">
                                 <a href="#info" class="nav-link" role="tab" data-bs-toggle="tab" aria-selected="false"><h6>학습 정보</h6></a>
+                            </li>
+                            <li class="nav-item waves-effect waves-light" role="presentation">
+                                <a href="#task" class="nav-link" role="tab" data-bs-toggle="tab" aria-selected="false"><h6>과제</h6></a>
+                            </li>
+                            <li class="nav-item waves-effect waves-light" role="presentation">
+                                <a href="#quiz" class="nav-link" role="tab" data-bs-toggle="tab" aria-selected="false"><h6>퀴즈</h6></a>
                             </li>
                         </ul>
                     </div>
@@ -980,27 +986,7 @@
                                 <div class="tab-pane" id="info" role="tabpanel">
 
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-xxl-3 col-3">
-                <div class="card card-height-100 border border-1 shadow rounded-3">
-                    <div class="card-title">
-                        <ul class="nav nav-tabs" role="tablist">
-                            <li class="nav-item waves-effect waves-light" role="presentation">
-                                <a href="#task" class="nav-link active" role="tab" data-bs-toggle="tab" aria-selected="true"><h6>과제</h6></a>
-                            </li>
-                            <li class="nav-item waves-effect waves-light" role="presentation">
-                                <a href="#quiz" class="nav-link" role="tab" data-bs-toggle="tab" aria-selected="false"><h6>퀴즈</h6></a>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="card-body p-0" style="min-height: 330px;">
-                        <div data-simplebar style="max-height: 330px;" class="px-3">
-                            <div class="tab-content">
-                                <div class="tab-pane active show" id="task" role="tabpanel">
+                                <div class="tab-pane" id="task" role="tabpanel">
                                     <div class="list-group list-group-flush">
                                         <c:forEach var="week" items="${learnInfo.weekList}">
                                             <c:if test="${week.TASK_AT eq '1'}">
@@ -1058,9 +1044,7 @@
                                                                 <span class="fw-semibold d-block text-truncate">${quiz.quesCn}</span>
                                                             </div>
                                                             <div class="col-3 small text-muted text-nowrap">
-                                                                <small class="text-muted">
-                                                                        ${fn:substring(quiz.quizBeginDe, 4, 8)} ~ ${fn:substring(quiz.quizClosDe, 4, 8)}
-                                                                </small>
+                                                                    ${fn:substring(quiz.quizBeginDe, 4, 8)} ~ ${fn:substring(quiz.quizClosDe, 4, 8)}
                                                             </div>
                                                             <div class="col-3 text-end">
                                                                 <span class="badge rounded-pill text-center lh-sm ms-1 quiz-submit-badge" data-quiz-code="${quiz.quizCode}">확인중</span>
@@ -1077,7 +1061,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-xxl-3 col-3">
+            <div class="col-xxl-5 col-5">
                 <div class="card card-height-100 border border-1 shadow rounded-3">
                     <div class="card-title">
                         <ul class="nav nav-tabs" role="tablist">
@@ -1124,10 +1108,22 @@
                                 </div>
                             </div>
                             <div class="tab-pane" id="resource" role="tabpanel">
-                                <div id="resourceTable"></div>
+                                <div class="card h-100">
+                                    <div data-simplebar style="max-height: 330px;">
+                                        <div class="card-body">
+                                            <div id="resourceTable"></div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <div class="tab-pane" id="question" role="tabpanel">
-                                <div id="questionTable"></div>
+                                <div class="card h-100">
+                                    <div data-simplebar style="max-height: 330px;">
+                                        <div class="card-body">
+                                            <div id="questionTable"></div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1163,20 +1159,68 @@
             return `\${month}-\${day}`;
         }
 
-        const columns = ["글번호", "제목", "작성자", "등록일자", "조회수"];
-        const data = [
+        const notice = document.querySelector("#noticeTable");
+        const noticeColumns = ["글번호", "제목", "등록일자"];
+        const noticeData = [
             <c:forEach var="row" items="${learnInfo.notice.lectureBbsCttVOList}" varStatus="st">
             [
                 "${row.bbscttNo}",
-                "${row.bbscttSj}",
-                "${row.role} ${row.name}",
-                dtFmt(${row.bbscttWritngDe.time}),
-                "${row.bbscttRdcnt}"
+                gridjs.html(
+                    "<a href='/learning/student/board?no=${row.bbscttNo}&code=${row.bbsCode}'>${row.bbscttSj}</a>"
+                ),
+                dtFmt(${row.bbscttWritngDe.time})
             ] ,
             </c:forEach>
         ]
 
-        gridInit({ columns, data });
+        gridInit({ columns: noticeColumns, data: noticeData }, notice);
+
+        let resourceInited = false;
+        let questionInited = false;
+
+        const resourceColumns = ["글번호", "제목", "등록일자"];
+        const resourceData = [
+            <c:forEach var="row" items="${learnInfo.notice.lectureBbsCttVOList}" varStatus="st">
+            [
+                "${row.bbscttNo}",
+                gridjs.html(
+                    "<a href='/learning/student/board?no=${row.bbscttNo}&code=${row.bbsCode}'>${row.bbscttSj}</a>"
+                ),
+                dtFmt(${row.bbscttWritngDe.time})
+            ] ,
+            </c:forEach>
+        ]
+
+        const questionColumns = ["글번호", "제목", "등록일자"];
+        const questionData = [
+            <c:forEach var="row" items="${learnInfo.notice.lectureBbsCttVOList}" varStatus="st">
+            [
+                "${row.bbscttNo}",
+                gridjs.html(
+                    "<a href='/learning/student/board?no=${row.bbscttNo}'>${row.bbscttSj}</a>"
+                ),
+                dtFmt(${row.bbscttWritngDe.time})
+            ] ,
+            </c:forEach>
+        ]
+
+        document.querySelectorAll('a[data-bs-toggle="tab"]').forEach(tab => {
+            tab.addEventListener('shown.bs.tab', (e) => {
+                const targetId = e.target.getAttribute('href'); // "#notice", "#resource", "#question"
+
+                if (targetId === '#resource' && !resourceInited) {
+                    const node = document.querySelector("#resourceTable");
+                    gridInit({ columns: resourceColumns, data: resourceData }, node);
+                    resourceInited = true;
+                }
+
+                if (targetId === '#question' && !questionInited) {
+                    const node = document.querySelector("#questionTable");
+                    gridInit({ columns: questionColumns, data: questionData }, node);
+                    questionInited = true;
+                }
+            });
+        });
     </script>
 
     <div id="preview-template" style="display:none;">

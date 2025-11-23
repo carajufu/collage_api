@@ -188,4 +188,13 @@ public class LearningPageController {
 
         return respMap;
     }
+
+    @GetMapping("/board")
+    public String getBoard(@RequestParam  Map<String, Object> paramMap,
+                           Model model) {
+        Map<String, Object> respMap = learningPageService.getBoard(paramMap);
+
+        model.addAttribute("result", respMap);
+        return "learning/student/learnBoard";
+    }
 }
