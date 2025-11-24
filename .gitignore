@@ -109,3 +109,9 @@ build/
 !/src/main/resources/static/assets/
 !/src/main/resources/static/assets/css/
 !/src/main/resources/static/assets/css/custom*
+!/src/main/resources/static/assets/js
+!/src/main/resources/static/assets/js/*.js
+!/src/main/resources/static/assets/json/
+!/src/main/resources/static/assets/json/**
+!/src/main/resources/static/assets/lang/
+!/src/main/resources/static/assets/lang/**

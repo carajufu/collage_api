@@ -2,9 +2,22 @@
 
 <%@ include file="../header.jsp" %>
 
-<div class="flex-grow-1 p-3 overflow-auto">
-
-  <h2 class="border-bottom pb-3 mb-4">과목별 성적 상세</h2>
+<div class="row pt-3 px-5">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/dashboard/student"><i class="las la-home"></i></a></li>
+            <li class="breadcrumb-item"><a href="#">학사 정보</a></li>
+            <li class="breadcrumb-item"><a href="/prof/grade/main/All>">학기별 성적 상세</a></li>
+            <li class="breadcrumb-item active" aria-current="page">과목별 성적 상세</li>
+        </ol>
+    </nav>
+    <div class="col-12 page-title mt-2">
+        <h2 class="fw-semibold">과목별 성적 상세</h2>
+        <div class="my-4 p-0 bg-primary" style="width: 100px; height:5px;"></div>
+    </div>
+</div>
+<div class="row pt-3 px-5">
+    <div class="col-xxl-12 col-12">
 
   <c:if test="${empty subjectList}">
     <div class="alert alert-warning">과목 성적 정보가 없습니다.</div>

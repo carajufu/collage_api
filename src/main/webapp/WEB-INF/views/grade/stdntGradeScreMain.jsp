@@ -2,10 +2,23 @@
 
 <%@ include file="../header.jsp" %>
 
-<div class="flex-grow-1 p-3 overflow-auto">
+<div class="row pt-3 px-5">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/dashboard/student"><i class="las la-home"></i></a></li>
+            <li class="breadcrumb-item"><a href="#">학사 정보</a></li>
+            <li class="breadcrumb-item active" aria-current="page">학기별 성적 조회</li>
+        </ol>
+    </nav>
+    <div class="col-12 page-title mt-2">
+        <h2 class="fw-semibold">학기별 성적 조회</h2>
+        <div class="my-4 p-0 bg-primary" style="width: 100px; height:5px;"></div>
+    </div>
+</div>
+<div class="row pt-3 px-5">
+    <div class="col-xxl-12 col-12">
 
-  <h2 class="border-bottom pb-3 mb-2 fw-semibold">학기별 성적 조회</h2>
-  <p class="text-muted mb-4">이수한 학기별 종합 성적 정보를 확인할 수 있습니다.</p>
+<%--  <p class="text-muted mb-4">이수한 학기별 종합 성적 정보를 확인할 수 있습니다.</p>--%>
 
   <c:if test="${empty getAllSemstr}">
     <div class="alert alert-warning text-center">
@@ -96,4 +109,6 @@
   </c:if>
 
 </div>
+</div>
+
 <%@ include file="../footer.jsp" %>

@@ -2,7 +2,21 @@
 
 <%@ include file="../header.jsp" %>
 
-    <h4 class="fw-bold mb-4">개설 강의 목록</h4>
+<div class="row pt-3 px-5">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/dashboard/prof"><i class="las la-home"></i></a></li>
+            <li class="breadcrumb-item"><a href="#">학사 정보</a></li>
+            <li class="breadcrumb-item active" aria-current="page">성적 관리</li>
+        </ol>
+    </nav>
+    <div class="col-12 page-title mt-2">
+        <h2 class="fw-semibold">성적 관리</h2>
+        <div class="my-4 p-0 bg-primary" style="width: 100px; height:5px;"></div>
+    </div>
+</div>
+<div class="row pt-3 px-5">
+    <div class="col-xxl-12 col-12">
 
     <div class="d-flex justify-content-end mb-3 mt-0">
       <input type="text" id="lectureSearch" class="form-control w-25" placeholder="강의명 / 코드 / 연도 / 학기 검색">
@@ -49,6 +63,8 @@
         </table>
       </div>
     </c:if>
+    </div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 

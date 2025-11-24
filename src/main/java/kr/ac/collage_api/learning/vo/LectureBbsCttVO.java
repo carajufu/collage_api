@@ -18,5 +18,9 @@ public class LectureBbsCttVO {
     private Date bbscttWritngDe;
     private int bbscttRdcnt;
 
-//    private
+    private int rownum;
+    private String sklstfNm;
+    private String stdntNm;
+    private String role;
+    private String name;
 }
