@@ -117,7 +117,7 @@ public class CompetencyController {
 
         competencyService.saveForm(form);
 
-        return "redirect:/compe/detail?save=ok";
+        return "redirect:/compe/manage?save=ok";
     }
 
     //선택 자소서 버전 삭제
