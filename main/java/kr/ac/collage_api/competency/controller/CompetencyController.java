@@ -28,7 +28,7 @@ public class CompetencyController {
     @Autowired
     private CompetencyService competencyService;
 
-    // 메인 페이지 (기본 폼 조회)
+    // 메인 페이지
     @GetMapping("/main")
     public String main(Model model) {
 
@@ -44,7 +44,6 @@ public class CompetencyController {
         return "competency/selfIntroMain";
     }
 
-
     // AI 자기소개서 생성 + 버전 저장
     @PostMapping("/generateAjax")
     public ResponseEntity<Map<String, Object>> generateAjax(@ModelAttribute CompetencyVO form) {
@@ -53,13 +52,10 @@ public class CompetencyController {
         String stdntNo = auth.getName();
         form.setStdntNo(stdntNo);
 
-        // 1) 기본 입력데이터 저장
         competencyService.saveForm(form);
 
-        // 2) AI 생성
         String resultIntro = competencyService.generateIntro(form);
 
-        // 3) 생성된 자소서 한 건 저장
         competencyService.insertManageCn(stdntNo, resultIntro);
 
         Map<String, Object> res = new HashMap<>();
@@ -68,7 +64,6 @@ public class CompetencyController {
         return ResponseEntity.ok(res);
     }
 
-
     // 이어쓰기(detail) 페이지
     @GetMapping("/detail")
     public String detail(Model model) {
@@ -76,17 +71,31 @@ public class CompetencyController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String stdntNo = auth.getName();
 
-        // 저장된 자소서 목록
         List<CompetencyVO> manageList = competencyService.getManageCnList(stdntNo);
 
-        // 기본 폼도 불러오기 (학력/군필/자격증/성격/프로젝트)
         CompetencyVO form = competencyService.getFormData(stdntNo);
-        if (form == null) form = new CompetencyVO();
+        if (form == null) {
+            form = new CompetencyVO();
+        }
+
         model.addAttribute("manageList", manageList);
         model.addAttribute("form", form);
 
         return "competency/selfIntroDetail";
     }
+    
+    // 버전 1건 삭제
+    @PostMapping("/detail/delete")
+    public String deleteOneManageCn(@RequestParam("formId") int formId) {
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String stdntNo = auth.getName();
+
+        competencyService.deleteOneManageCn(stdntNo, formId);
+
+        return "redirect:/compe/detail";
+    }
+
 
     // 기본 이력 관리 페이지
     @GetMapping("/manage")
@@ -96,13 +105,22 @@ public class CompetencyController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String stdntNo = auth.getName();
 
+        // 기본 폼 : 해당 학생의 최신 이력 1건
         CompetencyVO form = competencyService.getFormData(stdntNo);
         if (form == null) {
             form = new CompetencyVO();
         }
 
+        // 전체 COMPETENCY 데이터 (관리용 리스트)
+        List<CompetencyVO> allList = competencyService.getAllByStdntNo(stdntNo);
+
         model.addAttribute("form", form);
+        model.addAttribute("allList", allList);
         model.addAttribute("save", save);
+
+        log.info("form = {}", form);
+        log.info("allList = {}", allList);
+        log.info("save = {}", save);
 
         return "competency/selfIntroManage";
     }
@@ -115,26 +133,21 @@ public class CompetencyController {
         String stdntNo = auth.getName();
         form.setStdntNo(stdntNo);
 
+        // 최신 1건 기준 insert / update
         competencyService.saveForm(form);
 
-        return "redirect:/compe/detail?save=ok";
+        return "redirect:/compe/manage?save=ok";
     }
 
-    //선택 자소서 버전 삭제
-    @PostMapping("/detail/delete")
-    public String deleteOneManageCn(
-            @RequestParam(value="formId", required=false) Integer formId) {
-
-        if (formId == null) {
-            return "redirect:/compe/detail?err=noFormId";
-        }
+    // 전체 자소서 버전 삭제
+    @PostMapping("/manage/delete")
+    public String deleteManageCn() {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String stdntNo = auth.getName();
 
-        competencyService.deleteOneManageCn(stdntNo, formId);
+        competencyService.deleteManageCn(stdntNo);
 
-        return "redirect:/compe/detail";
+        return "redirect:/compe/main";
     }
-
 }

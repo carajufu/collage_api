@@ -232,7 +232,7 @@ if (!window.chatbotInitialized) {
                 if (type === "card") {
                     wrapper.innerHTML =
                         '<img src="/img/chatbot.jpg" alt="bot" class="rounded-circle me-2" ' +
-                        'style="width:40px; height:40px;">' +
+                        'style="width:10px; height:10px;">' +
                         '<div class="p-3 bg-light border rounded-3 shadow-sm" ' +
                         'style="max-width:85%; word-wrap:break-word;">' +
                         text +

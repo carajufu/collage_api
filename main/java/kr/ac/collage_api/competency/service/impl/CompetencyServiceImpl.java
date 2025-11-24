@@ -20,7 +20,6 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
-@Slf4j
 @Service
 public class CompetencyServiceImpl implements CompetencyService {
 
@@ -36,17 +35,31 @@ public class CompetencyServiceImpl implements CompetencyService {
         return competencyMapper.getFormData(stdntNo);
     }
 
-    //기본 정보 저장 처리
+    // 기본 정보
     @Override
     public int insertFormData(CompetencyVO vo) {
         return competencyMapper.insertFormData(vo);
     }
 
+    // 기본 정보
     @Override
     public int updateFormData(CompetencyVO vo) {
         return competencyMapper.updateFormData(vo);
     }
 
+    // 내 이력 전체 조회
+    @Override
+    public List<CompetencyVO> getAllByStdntNo(String stdntNo) {
+        return competencyMapper.getAllByStdntNo(stdntNo);
+    }
+    
+    @Override
+    public void deleteOneManageCn(String stdntNo, int formId) {
+        competencyMapper.deleteManageCnOne(stdntNo, formId);
+    }
+
+
+    // 기본 폼 저장
     @Override
     public void saveForm(CompetencyVO form) {
 
@@ -63,39 +76,10 @@ public class CompetencyServiceImpl implements CompetencyService {
         }
     }
 
-    // AI 자소서 버전 저장
-    @Override
-    public void saveManageCn(CompetencyVO vo) {
-
-        // 기본 데이터 가져오기
-        CompetencyVO base = competencyMapper.getFormData(vo.getStdntNo());
-
-        // 새 버전
-        int nextId = competencyMapper.getNextFormNo();
-
-        CompetencyVO insertVo = new CompetencyVO();
-        insertVo.setFormId(nextId);
-        insertVo.setStdntNo(vo.getStdntNo());
-
-        if (base != null) {
-            insertVo.setLastAcdmcr(base.getLastAcdmcr());
-            insertVo.setMiltrAt(base.getMiltrAt());
-            insertVo.setDesireJob(base.getDesireJob());
-            insertVo.setCrqfc(base.getCrqfc());
-            insertVo.setEdcHistory(base.getEdcHistory());
-            insertVo.setMainProject(base.getMainProject());
-            insertVo.setCharacter(base.getCharacter());
-        }
-
-        insertVo.setManageCn(vo.getManageCn());
-
-        competencyMapper.insertManageCn(insertVo);
-    }
-
     // 자소서 버전 전체 삭제
     @Override
-    public void deleteOneManageCn(String stdntNo, int formId) {
-        competencyMapper.deleteManageCnOne(stdntNo, formId);
+    public void deleteManageCn(String stdntNo) {
+        competencyMapper.deleteManageCnAll(stdntNo);
     }
 
     // 저장된 전체 자소서 리스트
@@ -217,28 +201,53 @@ public class CompetencyServiceImpl implements CompetencyService {
         return s == null ? "" : s;
     }
 
-	@Override
-	public void insertManageCn(String stdntNo, String resultIntro) {
+    // AI 자소서 버전 INSERT (최신 이력 기반으로 새 행 추가)
+    @Override
+    public void insertManageCn(String stdntNo, String resultIntro) {
 
-		    CompetencyVO base = competencyMapper.getFormData(stdntNo);
-		    int nextId = competencyMapper.getNextFormNo();
+        CompetencyVO base = competencyMapper.getFormData(stdntNo);
+        int nextId = competencyMapper.getNextFormNo();
 
-		    CompetencyVO vo = new CompetencyVO();
-		    vo.setFormId(nextId);
-		    vo.setStdntNo(stdntNo);
+        CompetencyVO vo = new CompetencyVO();
+        vo.setFormId(nextId);
+        vo.setStdntNo(stdntNo);
 
-		    if (base != null) {
-		        vo.setLastAcdmcr(base.getLastAcdmcr());
-		        vo.setMiltrAt(base.getMiltrAt());
-		        vo.setDesireJob(base.getDesireJob());
-		        vo.setCrqfc(base.getCrqfc());
-		        vo.setEdcHistory(base.getEdcHistory());
-		        vo.setMainProject(base.getMainProject());
-		        vo.setCharacter(base.getCharacter());
-		    }
+        if (base != null) {
+            vo.setLastAcdmcr(base.getLastAcdmcr());
+            vo.setMiltrAt(base.getMiltrAt());
+            vo.setDesireJob(base.getDesireJob());
+            vo.setCrqfc(base.getCrqfc());
+            vo.setEdcHistory(base.getEdcHistory());
+            vo.setMainProject(base.getMainProject());
+            vo.setCharacter(base.getCharacter());
+        }
 
-		    vo.setManageCn(resultIntro);
-		    competencyMapper.insertManageCn(vo);
-		
-	}
+        vo.setManageCn(resultIntro);
+        competencyMapper.insertManageCn(vo);
+    }
+
+    // (사용 시) saveManageCn 구현도 유지할 수 있음
+    @Override
+    public void saveManageCn(CompetencyVO vo) {
+
+        CompetencyVO base = competencyMapper.getFormData(vo.getStdntNo());
+        int nextId = competencyMapper.getNextFormNo();
+
+        CompetencyVO insertVo = new CompetencyVO();
+        insertVo.setFormId(nextId);
+        insertVo.setStdntNo(vo.getStdntNo());
+
+        if (base != null) {
+            insertVo.setLastAcdmcr(base.getLastAcdmcr());
+            insertVo.setMiltrAt(base.getMiltrAt());
+            insertVo.setDesireJob(base.getDesireJob());
+            insertVo.setCrqfc(base.getCrqfc());
+            insertVo.setEdcHistory(base.getEdcHistory());
+            insertVo.setMainProject(base.getMainProject());
+            insertVo.setCharacter(base.getCharacter());
+        }
+
+        insertVo.setManageCn(vo.getManageCn());
+        competencyMapper.insertManageCn(insertVo);
+    }
 }

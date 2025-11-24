@@ -15,4 +15,14 @@ public interface CompetencyService {
     int updateFormData(CompetencyVO vo);
 
 	void saveForm(CompetencyVO form);
+		
+	void deleteOneManageCn(String stdntNo, int formId);
+
+	void saveManageCn(CompetencyVO vo);
+
+	List<CompetencyVO> getManageCnList(String stdntNo);
+
+	void insertManageCn(String stdntNo, String resultIntro);
+
+
 }
