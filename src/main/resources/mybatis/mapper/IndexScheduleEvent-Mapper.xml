@@ -59,27 +59,23 @@
     - SELECT * FROM ( ... UNION ALL ... ) ORDER BY 로 정렬
     - START_DT/END_DT 전부 VARCHAR로 통일
     -->
-      <!--
-      [1] 강의 일정: LECTURE (index.jsp 메인에서는 강의 시간표 비노출)
+      <!-- [1] 강의 일정: LECTURE (index.jsp 메인에서는 강의 시간표 비노출)
 
-      - 주의사항 : LCTRE_TIMETABLE.BEGIN_TM / END_TM 은 NUMBER(4,0) "교시" 컬럼임.
-        · 예: 1,2,3 교시 / 0900, 1030 같은 형태의 정수 (시간 슬롯)일 뿐,
-          DATE 타입이 아니고, 'YYYYMMDD' 와 직접 비교 불가. -->
+      	- 주의사항 : LCTRE_TIMETABLE.BEGIN_TM / END_TM 은 NUMBER(4,0) "교시" 컬럼임.
+        	· 예: 1,2,3 교시 / 0900, 1030 같은 형태의 정수 (시간 슬롯)일 뿐,
+          	  DATE 타입이 아니고, 'YYYYMMDD' 와 직접 비교 불가. -->
+          
       <!-- [2] 과제 일정: TASK (TASK_BEGIN_DE / TASK_CLOS_DE = VARCHAR2(8, YYYYMMDD)) -->
       <!-- [3] 팀 프로젝트 일정: TEAM_PRJCT (BEGIN_DE / CLOS_DE = VARCHAR2(8, YYYYMMDD)) -->
          
       <!-- [4-1] 상담 가능 슬롯: CNSLT_AT (DATE + VARCHAR2(2) 시간) -->
-
       <!-- [4-2] 실제 상담: CNSLT (DATE + VARCHAR2(2) 시간) -->
 
       <!-- [5] 수강신청: ATNLC_REQST.REQST_DE = VARCHAR2(8, YYYYMMDD) -->
  
       <!-- [6-1] 증명서 발급: CRTF_ISSU_REQUST (REQST_DT / ISSU_DT = DATE) -->
- 
       <!-- [6-2] 학적변동: SKNRGS_CHANGE_HIST.CHANGE_DE = VARCHAR2(8, YYYYMMDD) -->
- 
       <!-- [6-3] 졸업요건 등록: GRDTN_RQISIT.REGIST_DE = VARCHAR2(8, YYYYMMDD) -->
-    
       <!-- [6-4] 등록금 납부 기간: REGIST_CT.RQEST_DE / PAY_ENDDE = VARCHAR2(8, YYYYMMDD) -->
       
 	<select id="selectIndexScheduleEvents"

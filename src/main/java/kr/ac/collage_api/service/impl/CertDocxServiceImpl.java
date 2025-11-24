@@ -90,7 +90,7 @@ public class CertDocxServiceImpl implements CertDocxService {
         req.setCrtfKndNo(crtfKndNo);
         req.setStdntNo(studentNo);
         req.setReqstDt(LocalDateTime.now());
-        req.setIssuSttus("Request");
+        req.setIssuSttus("요청 완료");
         req.setIssuResn(reasonNorm);
         certDocxMapper.insertCrtfIssuRequest(req);
 
@@ -102,7 +102,7 @@ public class CertDocxServiceImpl implements CertDocxService {
 
         // 5. 완료 업데이트
         req.setIssuDt(LocalDateTime.now());
-        req.setIssuSttus("DONE");
+        req.setIssuSttus("발급 완료");
         certDocxMapper.updateCrtfIssuStatus(req);
 
         return pdfBytes;
