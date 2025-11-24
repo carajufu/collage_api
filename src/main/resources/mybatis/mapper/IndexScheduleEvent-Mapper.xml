@@ -361,16 +361,18 @@
                 JOIN SUBJCT sj       ON sj.SUBJCT_CODE     = ac.SUBJCT_CODE
             WHERE REGEXP_LIKE(ar.REQST_DE, '^[0-9]{8}$')
               AND ar.REQST_DE BETWEEN #{startDate} AND #{endDate}
-              AND (
-                    CASE
-                        WHEN #{role} = 'ROLE_STUDENT' THEN
-                            CASE WHEN ar.STDNT_NO = #{stdntNo} THEN 1 ELSE 0 END
-                        WHEN #{role} = 'ROLE_PROF' THEN
-                            CASE WHEN ec.PROFSR_NO = #{profsrNo} THEN 1 ELSE 0 END
-                        ELSE 0
-                    END
-                  ) = 1
-
+			  AND (
+			      CASE
+			          WHEN #{role} = 'ROLE_STUDENT' THEN
+			              CASE WHEN ar.STDNT_NO = #{stdntNo} THEN 1 ELSE 0 END
+			          WHEN #{role} = 'ROLE_PROF' THEN
+			              CASE WHEN ec.PROFSR_NO = #{profsrNo} THEN 1 ELSE 0 END
+			          WHEN #{role} = 'ROLE_ADMIN' THEN
+			              1                         -- 관리자: 전체 수강신청 이벤트 조회
+			          ELSE
+			              1                         -- guest/기타: 개인정보 없는 전역 수강신청 이벤트 허용
+			      END
+			    ) = 1
             UNION ALL
 	     SELECT
                 'CERT_' || ci.CRTF_ISSU_INNB AS EVENT_ID,

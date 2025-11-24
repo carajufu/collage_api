@@ -27,5 +27,6 @@ createRoot(rootElement).render(
   // - 두 번 렌더 등으로 부작용 있는 코드 감지에 도움
   <StrictMode>
     <App />
+	
   </StrictMode>
 );

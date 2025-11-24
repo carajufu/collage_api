@@ -10,805 +10,733 @@
     <!-- 메인페이지 전용 CSS -->
     <link rel="stylesheet"
           href="${pageContext.request.contextPath}/css/main-pages.css" />
-	<style>
-		/* ============================================
-		   0. 공통 레이아웃 / 타이포
-		   - 메인 페이지 공통 섹션 상하 패딩과
-		     섹션 타이틀 타이포를 통일 관리
-		   - 다른 CSS에서 동일 섹션 클래스를 써도
-		     여기 선언이 최종 기준축이 됨
-		   ============================================ */
-		.news-section,
-		.section-main-bbs,
-		.section-main-events,
-		#research-section {
-		    padding: 4rem 0; /* 위아래 여백 통일로 섹션 간 리듬 확보 */
-		}
-		
-		/* 메인 섹션 타이틀 공통 스타일
-		   - 뉴스, 공지, 학사일정, 행사, 학술 등 상단 h2에 사용
-		   - 다른 곳의 h2와 구분되는 메인 전용 느낌 제공 */
-		.research-section-title {
-		    font-size: 1.9rem;
-		    font-weight: 450;
-		}
-		
-		/* 공통 2줄 말줄임
-		   - 긴 텍스트를 두 줄까지만 보여주고 나머지는 생략
-		   - display: -webkit-box 기반 멀티라인 말줄임 처리 */
-		.text-truncate-2 {
-		    overflow: hidden;
-		    display: -webkit-box;
-		    -webkit-line-clamp: 2;
-		    -webkit-box-orient: vertical;
-		}
-		
-		/* 공통 3줄 말줄임
-		   - 연구 요약, 뉴스 본문 등에서 사용
-		   - 세 줄까지 출력 후 나머지를 숨김 */
-		.line-clamp-3 {
-		    display: -webkit-box;
-		    -webkit-line-clamp: 3;
-		    -webkit-box-orient: vertical;
-		    overflow: hidden;
-		}
-		
-		/* ============================================
-		   1. 메인 게시판(공지사항 + 학사일정) 레이아웃
-		   - 공지 카드와 학사일정 카드가 한 행에서
-		     균형 잡힌 폭과 높이를 갖도록 만드는 레이아웃
-		   ============================================ */
-		
-		/* 공지사항 + 학사일정 섹션의 내부 컨테이너
-		   - 부트스트랩 container 위에 최대 폭을 따로 제한
-		   - margin-inline auto 로 좌우 중앙 정렬
-		   - padding-left/right 는 현재 시안 기준값 유지
-		     (음수 값이라도 실제 레이아웃이 맞다면 그대로 사용) */
-		.section-main-bbs .main-bbs-container {
-		    max-width: 1250px;
-		    margin-inline: auto;
-		    padding-left: -4.75rem;
-		    padding-right: -4.75rem;
-		}
-		
-		/* 공지사항 / 학사일정 컬럼 사이 가로 간격
-		   - 부트스트랩 row 의 gutter 변수를 직접 조정
-		   - 양쪽 컬럼 여백 감각을 통일 */
-		.section-main-bbs .row {
-		    --bs-gutter-x: 2rem;
-		}
-		
-		/* 메인 게시판 영역 카드 공통 둥근 모서리
-		   - 공지와 학사일정 상단 card 요소에 공통 적용
-		   - 실제 시각적으로는 내부 흰색 카드(main bbs inner,
-		     main calendar inner)가 더 크게 작용함 */
-		.section-main-bbs .card {
-		    border-radius: 14px;
-		}
-		
-		/* 메인 게시판 카드 헤더 상하 여백 조정
-		   - 타이틀 바로 아래 부제의 세로 간격을 미세 조정
-		   - 이 값은 메인 섹션에서만 사용되도록 scope 제한 */
-		.section-main-bbs .card-header {
-		    padding-top: 0.8rem;
-		    padding-bottom: 0.8rem;
-		}
-		
-		/* 메인 게시판 리스트 항목 상하 패딩
-		   - 공지, 학사일정 리스트 항목 높이를 적당히 줄여
-		     한 화면에 더 많은 행이 보이도록 함 */
-		.section-main-bbs .list-group-item {
-		    padding-top: 0.35rem;
-		    padding-bottom: 0.55rem;
-		}
-		
-		/* 게시판 목록 썸네일
-		   - 현재는 사용하지 않거나 선택적으로 사용
-		   - 리스트 왼쪽에 작은 이미지 또는 카테고리 아이콘 배치 용도 */
-		.section-main-bbs .main-bbs-thumb {
-		    width: 64px;
-		    height: 64px;
-		    object-fit: cover;
-		    border-radius: 0.9rem;
-		    background-color: #0f172a;
-		    flex-shrink: 0;
-		}
-		
-		/* 공지사항 리스트 한 행 전체 레이아웃
-		   - 썸네일과 텍스트 영역을 좌우로 배치 */
-		.section-main-bbs .main-bbs-item {
-		    display: flex;
-		    align-items: flex-start;
-		    gap: 0.75rem;
-		}
-		
-		/* 공지사항 본문 텍스트 래퍼
-		   - flex: 1 로 남은 공간을 전부 사용
-		   - min-width: 0 으로 말줄임 처리가 제대로 동작하도록 함 */
-		.section-main-bbs .main-bbs-body {
-		    flex: 1 1 auto;
-		    min-width: 0;
-		}
-		
-		/* 공지사항 카드 전체 틀
-		   - 높이를 학사일정 카드와 맞추기 위해 고정값 사용
-		   - 바깥 배경은 투명, 실제 배경은 main bbs inner 에서 처리 */
-		.section-main-bbs .main-bbs-card {
-		    width: 100%;
-		    height: 420px;
-		    min-height: 420px;
-		    display: flex;
-		    flex-direction: column;
-		    background: transparent;
-		    padding: 0;
-		    box-shadow: none;
-		}
-		
-		/* 공지사항 상단 설명 텍스트
-		   - h2 타이틀 아래 설명 한 줄을 card header 안에 배치
-		   - margin 을 살짝 줘서 흰색 카드와 분리감 확보 */
-		.section-main-bbs .main-bbs-card-header {
-		    flex: 0 0 auto;
-		    padding: 4px 0 8px;
-		    margin: 0 4px 4px;
-		    border: 0;
-		}
-		
-		/* 공지사항 흰색 내부 카드
-		   - 실제 테두리, 배경, 그림자, 내부 패딩을 담당
-		   - 스크롤 영역을 포함한 공지 리스트 전체의 시각적인 카드 역할 */
-		.main-bbs-card .main-bbs-inner {
-		    flex: 1 1 auto;
-		    display: flex;
-		    flex-direction: column;
-		    background: #ffffff;
-		    border-radius: 18px;
-		    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
-		    padding: 14px 18px 14px;
-		    box-sizing: border-box;
-		}
-		
-		/* 공지사항 리스트 영역
-		   - 카드 높이에 맞춰 내부에서만 세로 스크롤
-		   - 가로 스크롤은 강제로 숨김 처리 */
-		.main-bbs-card .main-bbs-list {
-		    flex: 1 1 auto;
-		    height: 100%;
-		    margin-bottom: 0;
-		    overflow-y: auto;
-		    overflow-x: hidden;
-		    padding-right: 4px;
-		    box-sizing: border-box;
-		}
-		
-		/* 공지 리스트 스크롤바
-		   - 크롬 기준 가느다란 스크롤바 표현 */
-		.main-bbs-card .main-bbs-list::-webkit-scrollbar {
-		    width: 6px;
-		}
-		.main-bbs-card .main-bbs-list::-webkit-scrollbar-track {
-		    background: transparent;
-		}
-		.main-bbs-card .main-bbs-list::-webkit-scrollbar-thumb {
-		    background: #cbd5f5;
-		    border-radius: 999px;
-		}
-		
-		/* ============================================
-		   1-2. 메인 학사일정 카드 레이아웃
-		   - 공지사항 카드와 같은 행에서 균형을 맞추기 위해
-		     높이, 폭, 화살표 위치 등을 별도로 정의
-		   ============================================ */
-		
-		/* 학사일정 카드 전체 래퍼
-		   - position: relative 로 화살표 위치 기준
-		   - width 를 100% 보다 살짝 넓혀 공지와 시각적 균형 조정
-		   - min height 를 고정해 카드가 줄어들지 않게 함 */
-		.section-main-bbs .main-calendar-card {
-		    position: relative;
-		    width: 112%;
-		    height: 470px;
-		    min-height: 470px;
-		    display: flex;
-		    flex-direction: column;
-		    background: transparent;
-		    padding: 0 46px;
-		    box-shadow: none;
-		}
-		
-		/* 학사일정 카드 헤더
-		   - 설명 텍스트를 담는 상단 영역
-		   - margin 으로 흰색 내부 카드와 분리 */
-		.section-main-bbs .main-calendar-card .card-header {
-		    flex: 0 0 auto;
-		    padding: 4px 0 8px;
-		    margin: 0 4px 4px;
-		    border: 0;
-		}
-		
-		/* 학사일정 카드 내부 탭(필요 시 사용)
-		   - 공지와 동일 카드 안에서 탭 형태를 사용할 수 있도록
-		     폰트 크기와 패딩을 조정 */
-		.main-calendar-card .main-calendar-tabs .nav-link {
-		    font-size: 0.85rem;
-		    padding-inline: 0.75rem;
-		}
-		
-		/* 활성 탭 스타일
-		   - 부트스트랩 기본 active 스타일 대신
-		     학사일정 전용 진한 파란색 배경으로 강조 */
-		.main-calendar-card .main-calendar-tabs .nav-link.active {
-		    background-color: #0d6efd;
-		    color: #fff;
-		}
-		
-		/* 학사일정 리스트 항목 border 처리
-		   - 상단만 얇은 구분선으로 항목간 경계 표시 */
-		.main-calendar-card .list-group-item {
-		    border: 0;
-		    border-top: 1px solid rgba(148, 163, 184, 0.35);
-		}
-		
-		/* 학사일정 YYYY MM 표시 라인
-		   - 월 텍스트를 중앙 정렬
-		   - 위아래 여백으로 내부 카드 상단과 분리 */
-		.main-calendar-card .calendar-month-row {
-		    display: flex;
-		    align-items: center;
-		    justify-content: center;
-		    gap: 1.25rem;
-		    margin-top: 0.25rem;
-		    margin-bottom: 10px;
-		}
-		
-		/* 서버에서 초기로 사용하는 월 라벨
-		   - data year, data month 를 숨겨두고
-		     눈에는 YYYY MM 형식으로 보이게 함 */
-		.main-calendar-card #miniCalendarMonthLabel {
-		    min-width: 120px;
-		    text-align: center;
-		    font-weight: 600;
-		    line-height: 2.3;
-		}
-		
-		/* javascript 가 최종 세팅하는 월 라벨
-		   - 글꼴 두께와 letter spacing 으로
-		     메인 포털 전용 월 라벨 느낌을 부여 */
-		.main-calendar-card .calendar-month-label {
-		    font-weight: 700;
-		    font-size: 1rem;
-		    letter-spacing: 0.04em;
-		    color: #0f172a;
-		}
-		
-		/* 학사일정 흰색 내부 카드
-		   - 학사일정 리스트 전체를 감싸는 실제 카드
-		   - position relative 로 화살표 위치 기준이 되며
-		     flex column 으로 상단 라벨, 중앙 리스트를 배치 */
-		.main-calendar-card .main-calendar-inner {
-		    position: relative;
-		    flex: 1 1 auto;
-		    min-height: 0;
-		    display: flex;
-		    flex-direction: column;
-		    background: #ffffff;
-		    border-radius: 18px;
-		    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
-		    padding: 5px 8px 8px;
-		    box-sizing: border-box;
-		}
-		
-		/* 리스트 + 좌우 화살표 한 줄
-		   - 화살표와 리스트가 같은 수평선상에 오는 행
-		   - flex 1 로 카드 내부 남은 높이를 전부 사용 */
-		.main-calendar-card .main-calendar-row {
-		    position: relative;
-		    display: flex;
-		    align-items: flex-start;
-		    gap: 0.75rem;
-		    flex: 1 1 auto;
-		    min-height: 0;
-		    padding: 0.5rem 0 1rem;
-		}
-		
-		/* 학사일정 전용 화살표 버튼
-		   - event arrow 와 구분되는 별도 스타일
-		   - 카드 밖으로 살짝 튀어나오도록 absolute 포지셔닝
-		   - z index 로 공지 카드 등 다른 요소보다 위에 오게 함 */
-		.main-calendar-card .calendar-arrow {
-		    position: absolute;
-		    top: 50%;
-		    transform: translateY(-50%);
-		    width: 34px;
-		    height: 34px;
-		    flex: 0 0 34px;
-		    border-radius: 999px;
-		    border: none;
-		    background: #0f172a;
-		    color: #f9fafb;
-		    display: inline-flex;
-		    align-items: center;
-		    justify-content: center;
-		    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.45);
-		    padding: 0;
-		    cursor: pointer;
-		    z-index: 5;
-		}
-		
-		/* 학사일정 화살표 내부 아이콘 크기 */
-		.main-calendar-card .calendar-arrow i {
-		    font-size: 18px;
-		}
-		
-		/* 학사일정 화살표 hover 시 약간 더 어두운 배경 */
-		.main-calendar-card .calendar-arrow:hover {
-		    background: #111827;
-		}
-		
-		/* 왼쪽 화살표 위치
-		   - 흰색 카드 바깥으로 빠져나오도록 음수 left 값 사용 */
-		.main-calendar-card .calendar-arrow-prev {
-		    left: -58px;
-		}
-		
-		/* 오른쪽 화살표 위치 */
-		.main-calendar-card .calendar-arrow-next {
-		    right: -58px;
-		}
-		
-		/* 학사일정 리스트 UL
-		   - flex 1 로 세로 공간을 모두 차지
-		   - 내부에서만 세로 스크롤이 발생하도록 설정
-		   - 가로 스크롤은 숨김 */
-		.main-calendar-card .main-calendar-list {
-		    width: 100%;
-		    box-sizing: border-box;
-		    flex: 1 1 auto;
-		    min-height: 0;
-		    height: 100%;
-		    max-height: none;
-		    margin-bottom: 0;
-		    overflow-y: auto;
-		    overflow-x: hidden;
-		    padding-right: 4px;
-		}
-		
-		/* 학사일정 리스트 항목에서 flex grow 영역이
-		   텍스트 잘림 없이 동작하도록 최소 너비를 0 으로 설정 */
-		.main-calendar-card .main-calendar-item .flex-grow-1 {
-		    min-width: 0;
-		}
-		
-		/* 학사일정 리스트 스크롤바
-		   - 공지와 동일한 스타일로 얇게 표현 */
-		.main-calendar-card .main-calendar-list::-webkit-scrollbar {
-		    width: 6px;
-		}
-		.main-calendar-card .main-calendar-list::-webkit-scrollbar-track {
-		    background: transparent;
-		}
-		.main-calendar-card .main-calendar-list::-webkit-scrollbar-thumb {
-		    background: #cbd5f5;
-		    border-radius: 999px;
-		}
-		
-		/* ============================================
-		   2. 학교 행사 카드 포스터 스타일
-		   - 행사 섹션에서 단일 카드 레이아웃이 필요한 경우 사용
-		   ============================================ */
-		
-		/* 행사 포스터 카드
-		   - 어두운 배경과 흰 글씨로 플라이어 느낌 구현 */
-		.index-event-card {
-		    max-width: 280px;
-		    margin-inline: auto;
-		    border-radius: 1rem;
-		    border: none;
-		    background: #0f172a;
-		    color: #fff;
-		}
-		
-		/* 행사 카드 내부 썸네일 영역 padding */
-		.index-event-thumb-wrap {
-		    padding: 1rem 1rem 0.5rem;
-		}
-		
-		/* 행사 포스터 이미지 비율 유지
-		   - padding top 으로 세로 비율을 고정하고
-		     배경 이미지를 덮어 씌울 수 있도록 함 */
-		.index-event-thumb {
-		    position: relative;
-		    width: 100%;
-		    padding-top: 135%;
-		    border-radius: 0.9rem;
-		    overflow: hidden;
-		    background: #020617 center/cover no-repeat;
-		}
-		
-		/* 행사 카드 본문 텍스트 정렬 */
-		.index-event-body {
-		    padding: 0.75rem 1.25rem 1.1rem;
-		    text-align: center;
-		}
-		
-		/* 행사 제목 */
-		.index-event-title {
-		    font-size: 0.98rem;
-		    font-weight: 600;
-		    margin-bottom: 0.25rem;
-		}
-		
-		/* 행사 부가 설명 텍스트
-		   - 일정 높이를 확보해 카드 높이를 일정하게 맞춤 */
-		.index-event-desc {
-		    font-size: 0.8rem;
-		    color: rgba(248, 250, 252, 0.7);
-		    min-height: 2.4em;
-		}
-		
-		/* ============================================
-		   3. 학교 행사 포커 카드 캐러셀 event card
-		   - 여러 행사 포스터를 가운데 포커스 카드와
-		     양옆 스택으로 보여주는 캐러셀
-		   ============================================ */
-		
-		.section-main-events {
-		    /* 섹션 자체는 상단 공통 padding 사용 */
-		}
-		
-		/* 행사 캐러셀 전체 래퍼
-		   - 좌우에 화살표가 들어갈 수 있도록
-		     내부에 넉넉한 padding 설정 */
-		.event-carousel {
-		    position: relative;
-		    max-width: 920px;
-		    margin: 0 auto;
-		    padding: 40px 60px;
-		}
-		
-		/* 포스터 카드들을 수평으로 쌓는 트랙
-		   - 높이를 고정해 position absolute 카드들이
-		     동일한 영역 안에서만 이동하도록 함 */
-		.event-card-track {
-		    position: relative;
-		    list-style: none;
-		    margin: 0;
-		    padding: 0;
-		    height: 260px;
-		}
-		
-		/* 개별 행사 카드 컨테이너
-		   - 중앙을 기준으로 좌우로 이동시키기 위해
-		     left 50퍼센트와 translateX minus 50퍼센트 사용 */
-		.event-card {
-		    position: absolute;
-		    top: 0;
-		    left: 50%;
-		    width: 180px;
-		    height: 260px;
-		    transform: translateX(-50%);
-		    transition:
-		        transform 0.35s ease,
-		        opacity 0.35s ease,
-		        z-index 0.35s ease;
-		    opacity: 0;
-		    pointer-events: none;
-		}
-		
-		/* 카드 내부 실제 내용 영역
-		   - 어두운 배경과 큰 그림자, 둥근 모서리로
-		     카드 자체가 집중 포인트가 되도록 설계 */
-		.event-card-inner {
-		    position: relative;
-		    background: #020617;
-		    border-radius: 22px;
-		    overflow: hidden;
-		    height: 100%;
-		    box-shadow: 0 20px 40px rgba(15, 23, 42, 0.45);
-		}
-		
-		/* 포스터 이미지 wrapper */
-		.event-card-thumb {
-		    position: absolute;
-		    inset: 0;
-		}
-		
-		/* 포스터 이미지 크기 맞추기 */
-		.event-card-thumb img {
-		    width: 100%;
-		    height: 100%;
-		    object-fit: cover;
-		    display: block;
-		}
-		
-		/* 카드 하단 텍스트 영역
-		   - 그라디언트 배경으로 위쪽 이미지를 살짝 덮어
-		     제목과 설명이 더 잘 보이게 함 */
-		.event-card-body {
-		    position: absolute;
-		    left: 0;
-		    right: 0;
-		    bottom: 0;
-		    padding: 14px 14px 16px;
-		    background: linear-gradient(to top, rgba(15, 23, 42, 0.94), rgba(15, 23, 42, 0));
-		    text-align: left;
-		}
-		
-		/* 행사 제목 텍스트 */
-		.event-card-title {
-		    font-size: 0.9rem;
-		    font-weight: 600;
-		    color: #f9fafb;
-		    margin-bottom: 4px;
-		}
-		
-		/* 행사 설명 텍스트 */
-		.event-card-desc {
-		    font-size: 0.78rem;
-		    color: rgba(226, 232, 240, 0.9);
-		    line-height: 1.35;
-		    margin-bottom: 0;
-		}
-		
-		/* 포커스 카드 data pos 0
-		   - 가운데 카드가 살짝 커 보이도록 scale 적용
-		   - pointer events 를 허용해 클릭 가능한 카드로 설정 */
-		.event-card[data-pos="0"] {
-		    transform: translateX(-50%) scale(1.05);
-		    z-index: 5;
-		    opacity: 1;
-		    pointer-events: auto;
-		}
-		
-		/* 왼쪽 오른쪽 첫 번째 카드
-		   - 약간 축소된 크기로 포커스 카드 양쪽에 배치 */
-		.event-card[data-pos="1"] {
-		    transform: translateX(calc(-50% + 190px)) scale(0.95);
-		    z-index: 4;
-		    opacity: 1;
-		}
-		
-		.event-card[data-pos="-1"] {
-		    transform: translateX(calc(-50% - 190px)) scale(0.95);
-		    z-index: 4;
-		    opacity: 1;
-		}
-		
-		/* 두 번째 줄 카드들
-		   - 더 멀리 있고 더 작게 보이도록 설정 */
-		.event-card[data-pos="2"] {
-		    transform: translateX(calc(-50% + 330px)) scale(0.88);
-		    z-index: 3;
-		    opacity: 0.95;
-		}
-		
-		.event-card[data-pos="-2"] {
-		    transform: translateX(calc(-50% - 330px)) scale(0.88);
-		    z-index: 3;
-		    opacity: 0.95;
-		}
-		
-		/* 나머지 스택 카드들 오른쪽 */
-		.event-card[data-pos="right-stack"] {
-		    transform: translateX(calc(-50% + 430px)) scale(0.78) rotateY(-15deg);
-		    z-index: 2;
-		    opacity: 0.7;
-		}
-		
-		/* 나머지 스택 카드들 왼쪽 */
-		.event-card[data-pos="left-stack"] {
-		    transform: translateX(calc(-50% - 430px)) scale(0.78) rotateY(15deg);
-		    z-index: 2;
-		    opacity: 0.7;
-		}
-		
-		/* 학교 행사 캐러셀 화살표
-		   - event carousel 전용 좌우 이동 버튼
-		   - 학사일정 화살표와는 클래스가 다름 */
-		.event-arrow {
-		    position: absolute;
-		    top: 50%;
-		    transform: translateY(-50%);
-		    width: 34px;
-		    height: 34px;
-		    border-radius: 999px;
-		    border: none;
-		    background: #0f172a;
-		    color: #f9fafb;
-		    display: inline-flex;
-		    align-items: center;
-		    justify-content: center;
-		    cursor: pointer;
-		    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.45);
-		    z-index: 10;
-		}
-		
-		/* 행사 화살표 hover */
-		.event-arrow:hover {
-		    background: #111827;
-		}
-		
-		/* 왼쪽 화살표 위치 */
-		.event-arrow-prev {
-		    left: -85px;
-		}
-		
-		/* 오른쪽 화살표 위치 */
-		.event-arrow-next {
-		    right: -85px;
-		}
-		
-		/* ============================================
-		   4. 학술 논문 리서치 캐러셀
-		   - 부트스트랩 carousel 위에서 카드 스타일만 조정
-		   ============================================ */
-		
-		/* 연구 카드 전체
-		   - 흰색 배경과 큰 둥근 모서리, 그림자로
-		     메인 강조 카드 느낌 구현 */
-		.research-carousel .research-card {
-		    background: #ffffff;
-		    border-radius: 1.5rem;
-		    box-shadow: 0 20px 45px rgba(15, 23, 42, 0.18);
-		    overflow: hidden;
-		}
-		
-		/* 연구 이미지 영역
-		   - 최소 높이를 지정해 텍스트가 적어도
-		     카드가 너무 낮아지지 않도록 함 */
-		.research-image-wrap {
-		    min-height: 260px;
-		    height: 100%;
-		}
-		
-		/* 연구 이미지 크기 맞추기 */
-		.research-image-wrap img {
-		    width: 100%;
-		    height: 100%;
-		    object-fit: cover;
-		    display: block;
-		}
-		
-		/* 연구 본문 영역 배경 */
-		.research-body {
-		    background: #ffffff;
-		}
-		
-		/* 연구 메타 텍스트
-		   - Research 와 날짜 정보, 대문자로 표기 */
-		.research-body .research-meta {
-		    font-size: 0.85rem;
-		    letter-spacing: 0.04em;
-		    text-transform: uppercase;
-		}
-		
-		/* 연구 제목 텍스트 */
-		.research-body .research-title {
-		    font-size: 1.4rem;
-		    font-weight: 600;
-		    line-height: 1.4;
-		}
-		
-		/* 연구 요약 설명 */
-		.research-body .research-desc {
-		    font-size: 0.95rem;
-		}
-		
-		/* 부트스트랩 캐러셀 기본 컨트롤 너비 확장
-		   - 좌우 화살표 버튼을 더 넓게 가져가 클릭 영역 확보 */
-		.research-carousel .carousel-control-prev,
-		.research-carousel .carousel-control-next {
-		    width: 3.5rem;
-		}
-		
-		/* 캐러셀 화살표 아이콘 색 반전
-		   - 어두운 배경에서도 흰색 아이콘으로 보이도록 처리 */
-		.research-carousel .carousel-control-prev-icon,
-		.research-carousel .carousel-control-next-icon {
-		    filter: invert(1);
-		}
-		
-		/* ============================================
-		   5. 메인 학사일정 legend 타입 토글
-		   - 메인 인덱스 학사일정 카드 오른쪽 상단에
-		     타입별 색상 범례를 출력할 때 사용하는 스타일
-		   ============================================ */
-		
-		/* legend 전체 래퍼
-		   - flex wrap 으로 여러 타입이 줄바꿈되면서 나열 */
-		.section-main-bbs .main-legend {
-		    display: flex;
-		    flex-wrap: wrap;
-		    gap: 0.75rem;
-		    align-items: center;
-		}
-		
-		/* ============================================
-		   6. hero 섹션 배경 및 딤 레이어
-		   - index jsp 상단 hero 영역의 배경 이미지를
-		     javascript 로 교체하면서도 텍스트 가독성을 유지
-		   ============================================ */
-		
-		/* hero 전체 섹션
-		   - 배경 이미지는 javascript 에서 background image 로 주입
-		   - overflow hidden 으로 내부 요소가 튀어나오지 않도록 함 */
-		.hero-section {
-		    position: relative;
-		    overflow: hidden;
-		    background-size: cover;
-		    background-position: center center;
-		    background-repeat: no-repeat;
-		}
-		
-		/* hero 내부 실제 콘텐츠 컨테이너
-		   - 배경 위에 놓이도록 z index 1 지정
-		   - 배경 딤 레이어 아래로 깔리지 않도록 보장 */
-		.hero-section > .container {
-		    position: relative;
-		    z-index: 1;
-		}
-		
-		/* hero 딤 레이어
-		   - hero bg layer 클래스는 javascript 에서
-		     opacity 를 조절하며 페이드 효과를 구현
-		   - pointer events none 으로 클릭 동작에 간섭하지 않음 */
-		.hero-bg-layer {
-		    position: absolute;
-		    inset: 0;
-		    z-index: 0;
-		    background: rgba(15, 23, 42, 0.75);
-		    opacity: 0.02;
-		    transition: opacity 0.9s ease-in-out;
-		    pointer-events: none;
-		}
-		
-		/* ============================================
-		   7. 섹션 상단 View More 링크 버튼
-		   - 뉴스, 공지, 학사일정, 행사, 학술 등
-		     각 섹션 우측 상단의 더보기 링크 공통 스타일
-		   ============================================ */
-		
-		/* View More 공통 스타일
-		   - 실제 a 태그지만 버튼처럼 보이는 얇은 텍스트 링크
-		   - 오른쪽에 plus 기호 애니메이션 부여 */
-		.section-link-more {
-		    position: relative;
-		    display: inline-flex;
-		    align-items: center;
-		    gap: 0.25rem;
-		    font-size: 0.9rem;
-		    font-weight: 600;
-		    letter-spacing: 0.03em;
-		    margin-right: 18px;
-		
-		    color: #3284fa;
-		    text-decoration: none;
-		
-		    border: none;
-		    background: none;
-		    padding: 4px 0;
-		    cursor: pointer;
-		}
-		
-		/* View More 텍스트 오른쪽 plus 기호
-		   - hover 시 회전 애니메이션으로 인터랙션 느낌 제공 */
-		.section-link-more::after {
-		    content: "+";
-		    display: inline-block;
-		    font-size: 1.6em;
-		    margin-left: 0.02rem;
-		    transform: rotate(0deg);
-		    transform-origin: center center;
-		    transition: transform 0.4s ease-out, opacity 0.4s ease-out;
-		    opacity: 0.8;
-		}
-		
-		/* hover 시 plus 아이콘 회전 */
-		.section-link-more:hover::after {
-		    transform: rotate(180deg);
-		    opacity: 1;
-		}
-	</style>
+<style>
+	/* ============================================
+	   0. 공통 레이아웃 / 타이포
+	   - 메인 섹션 상하 패딩 및 타이틀 타이포 통일
+	   ============================================ */
+	.news-section,
+	.section-main-bbs,
+	.section-main-events,
+	#research-section {
+	    padding: 4rem 0;
+	}
+
+	/* 메인 섹션 공통 타이틀 (뉴스/공지/학사일정/행사/학술) */
+	.research-section-title {
+	    font-size: 1.9rem;
+	    font-weight: 450;
+	}
+
+	/* 공통 2줄 말줄임 처리 */
+	.text-truncate-2 {
+	    overflow: hidden;
+	    display: -webkit-box;
+	    -webkit-line-clamp: 2;
+	    -webkit-box-orient: vertical;
+	}
+
+	/* 공통 3줄 말줄임 처리 */
+	.line-clamp-3 {
+	    display: -webkit-box;
+	    -webkit-line-clamp: 3;
+	    -webkit-box-orient: vertical;
+	    overflow: hidden;
+	}
+
+	/* ============================================
+	   1. 메인 게시판(공지사항 + 학사일정) 레이아웃
+	   ============================================ */
+
+	/* 공지+학사일정 컨테이너 (폭/센터 정렬) */
+	.section-main-bbs .main-bbs-container {
+	    max-width: 1250px;
+	    margin-inline: auto;
+	    padding-left: -4.75rem;
+	    padding-right: -4.75rem;
+	}
+
+	/* 공지/학사일정 컬럼 gutter 조정 */
+	.section-main-bbs .row {
+	    --bs-gutter-x: 2rem;
+	}
+
+	/* 메인 게시판 카드 공통 모서리 */
+	.section-main-bbs .card {
+	    border-radius: 14px;
+	}
+
+	/* 공지/학사일정 카드 헤더 상하 패딩 */
+	.section-main-bbs .card-header {
+	    padding-top: 0.8rem;
+	    padding-bottom: 0.8rem;
+	}
+
+	/* 공지/학사일정 리스트 행 패딩 */
+	.section-main-bbs .list-group-item {
+	    padding-top: 0.35rem;
+	    padding-bottom: 0.55rem;
+	}
+
+	/* 공지 썸네일(아이콘/이미지) */
+	.section-main-bbs .main-bbs-thumb {
+	    width: 64px;
+	    height: 64px;
+	    object-fit: cover;
+	    border-radius: 0.9rem;
+	    background-color: #0f172a;
+	    flex-shrink: 0;
+	}
+
+	/* 공지 한 행 전체 레이아웃 */
+	.section-main-bbs .main-bbs-item {
+	    display: flex;
+	    align-items: flex-start;
+	    gap: 0.75rem;
+	}
+
+	/* 공지 텍스트 영역 래퍼 */
+	.section-main-bbs .main-bbs-body {
+	    flex: 1 1 auto;
+	    min-width: 0;
+	}
+
+	/* 공지사항 카드 전체 틀(높이 고정) */
+	.section-main-bbs .main-bbs-card {
+	    width: 100%;
+	    height: 420px;
+	    min-height: 420px;
+	    display: flex;
+	    flex-direction: column;
+	    background: transparent;
+	    padding: 0;
+	    box-shadow: none;
+	}
+
+	/* 공지 상단 부제 영역 */
+	.section-main-bbs .main-bbs-card-header {
+	    flex: 0 0 auto;
+	    padding: 4px 0 8px;
+	    margin: 0 4px 4px;
+	    border: 0;
+	}
+
+	/* 공지사항 실제 흰색 카드(스크롤 포함) */
+	.main-bbs-card .main-bbs-inner {
+	    flex: 1 1 auto;
+	    display: flex;
+	    flex-direction: column;
+	    background: #ffffff;
+	    border-radius: 18px;
+	    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+	    padding: 14px 18px 14px;
+	    box-sizing: border-box;
+	}
+
+	/* 공지 리스트 스크롤 영역 */
+	.main-bbs-card .main-bbs-list {
+	    flex: 1 1 auto;
+	    height: 100%;
+	    margin-bottom: 0;
+	    overflow-y: auto;
+	    overflow-x: hidden;
+	    padding-right: 4px;
+	    box-sizing: border-box;
+	}
+
+	/* 공지 리스트 스크롤바 스타일 */
+	.main-bbs-card .main-bbs-list::-webkit-scrollbar {
+	    width: 6px;
+	}
+	.main-bbs-card .main-bbs-list::-webkit-scrollbar-track {
+	    background: transparent;
+	}
+	.main-bbs-card .main-bbs-list::-webkit-scrollbar-thumb {
+	    background: #cbd5f5;
+	    border-radius: 999px;
+	}
+
+	/* ============================================
+	   1-2. 메인 학사일정 카드 레이아웃
+	   ============================================ */
+
+	/* 학사일정 카드 전체 래퍼(폭/높이/패딩) */
+	.section-main-bbs .main-calendar-card {
+	    position: relative;
+	    width: 112%;
+	    height: 470px;
+	    min-height: 470px;
+	    display: flex;
+	    flex-direction: column;
+	    background: transparent;
+	    padding: 0 46px;
+	    box-shadow: none;
+	}
+
+	/* 학사일정 카드 헤더(부제) */
+	.section-main-bbs .main-calendar-card .card-header {
+	    flex: 0 0 auto;
+	    padding: 4px 0 8px;
+	    margin: 0 4px 4px;
+	    border: 0;
+	}
+
+	/* 학사일정 탭(nav-link) 폰트/패딩 */
+	.main-calendar-card .main-calendar-tabs .nav-link {
+	    font-size: 0.85rem;
+	    padding-inline: 0.75rem;
+	}
+
+	/* 학사일정 탭 active 상태 */
+	.main-calendar-card .main-calendar-tabs .nav-link.active {
+	    background-color: #0d6efd;
+	    color: #fff;
+	}
+
+	/* 학사일정 리스트 항목 경계선 */
+	.main-calendar-card .list-group-item {
+	    border: 0;
+	    border-top: 1px solid rgba(148, 163, 184, 0.35);
+	}
+
+	/* YYYY.MM 라벨 행 레이아웃 */
+	.main-calendar-card .calendar-month-row {
+	    display: flex;
+	    align-items: center;
+	    justify-content: center;
+	    gap: 1.25rem;
+	    margin-top: 0.25rem;
+	    margin-bottom: 10px;
+	}
+
+	/* 초기 서버 렌더 월 라벨 숨김용(data-year/month) */
+	.main-calendar-card #miniCalendarMonthLabel {
+	    min-width: 120px;
+	    text-align: center;
+	    font-weight: 600;
+	    line-height: 2.3;
+	}
+
+	/* 최종 표시용 월 라벨 스타일 */
+	.main-calendar-card .calendar-month-label {
+	    font-weight: 700;
+	    font-size: 1rem;
+	    letter-spacing: 0.04em;
+	    color: #0f172a;
+	}
+
+	/* 학사일정 내부 흰색 카드 */
+	.main-calendar-card .main-calendar-inner {
+	    position: relative;
+	    flex: 1 1 auto;
+	    min-height: 0;
+	    display: flex;
+	    flex-direction: column;
+	    background: #ffffff;
+	    border-radius: 18px;
+	    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+	    padding: 5px 8px 8px;
+	    box-sizing: border-box;
+	}
+
+	/* 리스트 + 좌우 화살표 한 줄 레이아웃 */
+	.main-calendar-card .main-calendar-row {
+	    position: relative;
+	    display: flex;
+	    align-items: flex-start;
+	    gap: 0.75rem;
+	    flex: 1 1 auto;
+	    min-height: 0;
+	    padding: 0.5rem 0 1rem;
+	}
+
+	/* 학사일정 화살표 공통 스타일 */
+	.main-calendar-card .calendar-arrow {
+	    position: absolute;
+	    top: 50%;
+	    transform: translateY(-50%);
+	    width: 34px;
+	    height: 34px;
+	    flex: 0 0 34px;
+	    border-radius: 999px;
+	    border: none;
+	    background: #0f172a;
+	    color: #f9fafb;
+	    display: inline-flex;
+	    align-items: center;
+	    justify-content: center;
+	    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.45);
+	    padding: 0;
+	    cursor: pointer;
+	    z-index: 5;
+	}
+
+	/* 학사일정 화살표 아이콘 */
+	.main-calendar-card .calendar-arrow i {
+	    font-size: 18px;
+	}
+
+	/* 학사일정 화살표 hover 상태 */
+	.main-calendar-card .calendar-arrow:hover {
+	    background: #111827;
+	}
+
+	/* 학사일정 이전 달 화살표 위치 */
+	.main-calendar-card .calendar-arrow-prev {
+	    left: -55px;
+	}
+
+	/* 학사일정 다음 달 화살표 위치 */
+	.main-calendar-card .calendar-arrow-next {
+	    right: -55px;
+	}
+
+	/* 학사일정 리스트 UL(스크롤 영역) */
+	.main-calendar-card .main-calendar-list {
+	    width: 100%;
+	    box-sizing: border-box;
+	    flex: 1 1 auto;
+	    min-height: 0;
+	    height: 100%;
+	    max-height: none;
+	    margin-bottom: 0;
+	    overflow-y: auto;
+	    overflow-x: hidden;
+	    padding-right: 4px;
+	}
+
+	/* 학사일정 리스트 내 flex 영역 너비 보정 */
+	.main-calendar-card .main-calendar-item .flex-grow-1 {
+	    min-width: 0;
+	}
+
+	/* 학사일정 리스트 스크롤바 스타일 */
+	.main-calendar-card .main-calendar-list::-webkit-scrollbar {
+	    width: 6px;
+	}
+	.main-calendar-card .main-calendar-list::-webkit-scrollbar-track {
+	    background: transparent;
+	}
+	.main-calendar-card .main-calendar-list::-webkit-scrollbar-thumb {
+	    background: #cbd5f5;
+	    border-radius: 999px;
+	}
+
+	/* 학사일정 비어 있을 때 리스트 아이템 스타일 */
+	.main-calendar-empty {
+	    border: 0;
+	    background-color: #f9fafb;
+	}
+
+	/* 빈 상태 래퍼 레이아웃 */
+	.calendar-empty-wrapper {
+	    display: inline-flex;
+	    flex-direction: column;
+	    align-items: center;
+	    gap: 0.35rem;
+	}
+
+	/* 빈 상태 아이콘 크기(텍스트보다 약간 크게) */
+	.calendar-empty-icon {
+	    font-size: 1.5rem;
+	}
+
+	/* 빈 상태 안내 문구 텍스트 */
+	.calendar-empty-text {
+	    font-size: 1.2rem;
+	    font-weight: 500;
+	}
+
+	/* ============================================
+	   2. 학교 행사 단일 포스터 카드(index-event-card)
+	   ============================================ */
+
+	/* 단일 행사 포스터 카드 */
+	.index-event-card {
+	    max-width: 280px;
+	    margin-inline: auto;
+	    border-radius: 1rem;
+	    border: none;
+	    background: #0f172a;
+	    color: #fff;
+	}
+
+	/* 단일 행사 카드 썸네일 영역 패딩 */
+	.index-event-thumb-wrap {
+	    padding: 1rem 1rem 0.5rem;
+	}
+
+	/* 단일 행사 포스터 비율 유지 */
+	.index-event-thumb {
+	    position: relative;
+	    width: 100%;
+	    padding-top: 135%;
+	    border-radius: 0.9rem;
+	    overflow: hidden;
+	    background: #020617 center/cover no-repeat;
+	}
+
+	/* 단일 행사 카드 본문 텍스트 */
+	.index-event-body {
+	    padding: 0.75rem 1.25rem 1.1rem;
+	    text-align: center;
+	}
+
+	/* 단일 행사 제목 */
+	.index-event-title {
+	    font-size: 0.98rem;
+	    font-weight: 600;
+	    margin-bottom: 0.25rem;
+	}
+
+	/* 단일 행사 설명 */
+	.index-event-desc {
+	    font-size: 0.8rem;
+	    color: rgba(248, 250, 252, 0.7);
+	    min-height: 2.4em;
+	}
+
+	/* ============================================
+	   3. 학교 행사 포커 카드 캐러셀(event-card)
+	   ============================================ */
+
+	/* 행사 섹션(상단 공통 패딩만 사용) */
+	.section-main-events {
+	    /* 추가 스타일 없음 */
+	}
+
+	/* 행사 캐러셀 래퍼(폭/패딩/가운데 정렬) */
+	.event-carousel {
+	    position: relative;
+	    max-width: 920px;
+	    margin: 0 auto;
+	    padding: 35px 55px;
+	}
+
+	/* 포스터 카드 트랙(카드 높이 10% 확대 반영) */
+	.event-card-track {
+	    position: relative;
+	    list-style: none;
+	    margin: 0;
+	    padding: 0;
+	    height: 310px; /* 확대 */
+	}
+
+	/* 개별 행사 카드 컨테이너(10% 확대) */
+	.event-card {
+	    position: absolute;
+	    top: 0;
+	    left: 50%;
+	    width: 220px;  /* 확대 */
+	    height: 320px; /* 확대 */
+	    transform: translateX(-50%);
+	    transition:
+	        transform 0.35s ease,
+	        opacity 0.35s ease,
+	        z-index 0.35s ease;
+	    opacity: 0;
+	    pointer-events: none;
+	}
+
+	/* 행사 카드 내부 실제 내용 영역 */
+	.event-card-inner {
+	    position: relative;
+	    background: #020617;
+	    border-radius: 22px;
+	    overflow: hidden;
+	    height: 100%;
+	    box-shadow: 0 20px 40px rgba(15, 23, 42, 0.45);
+	}
+
+	/* 행사 카드 포스터 이미지 wrapper */
+	.event-card-thumb {
+	    position: absolute;
+	    inset: 0;
+	}
+
+	/* 행사 카드 포스터 이미지 크기 */
+	.event-card-thumb img {
+	    width: 100%;
+	    height: 100%;
+	    object-fit: cover;
+	    display: block;
+	}
+
+	/* 행사 카드 하단 텍스트 영역 */
+	.event-card-body {
+	    position: absolute;
+	    left: 0;
+	    right: 0;
+	    bottom: 0;
+	    padding: 14px 14px 16px;
+	    background: linear-gradient(to top, rgba(15, 23, 42, 0.94), rgba(15, 23, 42, 0));
+	    text-align: left;
+	}
+
+	/* 행사 카드 제목(10% 확대) */
+	.event-card-title {
+	    font-size: 1rem;  
+	    font-weight: 600;
+	    color: #f9fafb;
+	    margin-bottom: 4px;
+	}
+
+	/* 행사 카드 설명(10% 확대) */
+	.event-card-desc {
+	    font-size: 0.90rem;  
+	    color: rgba(226, 232, 240, 0.9);
+	    line-height: 1.35;
+	    margin-bottom: 0;
+	}
+
+	/* 중앙 포커스 카드 (data-pos="0") */
+	.event-card[data-pos="0"] {
+	    transform: translateX(-50%) scale(1.05);
+	    z-index: 5;
+	    opacity: 1;
+	    pointer-events: auto;
+	}
+
+	/* 양 옆 1단계 카드 (data-pos="1", "-1") */
+	.event-card[data-pos="1"] {
+	    transform: translateX(calc(-50% + 209px)) scale(0.95); /* 190px → 10% 확대 */
+	    z-index: 4;
+	    opacity: 1;
+	}
+	.event-card[data-pos="-1"] {
+	    transform: translateX(calc(-50% - 209px)) scale(0.95);
+	    z-index: 4;
+	    opacity: 1;
+	}
+
+	/* 양 옆 2단계 카드 (data-pos="2", "-2") */
+	.event-card[data-pos="2"] {
+	    transform: translateX(calc(-50% + 363px)) scale(0.88); /* 330px → 10% 확대 */
+	    z-index: 3;
+	    opacity: 0.95;
+	}
+	.event-card[data-pos="-2"] {
+	    transform: translateX(calc(-50% - 363px)) scale(0.88);
+	    z-index: 3;
+	    opacity: 0.95;
+	}
+
+	/* 오른쪽 스택 카드 */
+	.event-card[data-pos="right-stack"] {
+	    transform: translateX(calc(-50% + 473px)) scale(0.78) rotateY(-15deg); /* 430px → 10% 확대 */
+	    z-index: 2;
+	    opacity: 0.7;
+	}
+
+	/* 왼쪽 스택 카드 */
+	.event-card[data-pos="left-stack"] {
+	    transform: translateX(calc(-50% - 473px)) scale(0.78) rotateY(15deg);
+	    z-index: 2;
+	    opacity: 0.7;
+	}
+
+	/* 행사 캐러셀 화살표 공통 스타일 */
+	.event-arrow {
+	    position: absolute;
+	    top: 50%;
+	    transform: translateY(-50%);
+	    width: 34px;
+	    height: 34px;
+	    border-radius: 999px;
+	    border: none;
+	    background: #0f172a;
+	    color: #f9fafb;
+	    display: inline-flex;
+	    align-items: center;
+	    justify-content: center;
+	    cursor: pointer;
+	    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.45);
+	    z-index: 10;
+	}
+
+	/* 행사 화살표 hover 상태 */
+	.event-arrow:hover {
+	    background: #111827;
+	}
+
+	/* 행사 캐러셀 이전 화살표 위치(바깥으로 더 띄움) */
+	.event-arrow-prev {
+	    left: -130px;
+	}
+
+	/* 행사 캐러셀 다음 화살표 위치 */
+	.event-arrow-next {
+	    right: -130px;
+	}
+
+	/* ============================================
+	   4. 학술 논문 리서치 캐러셀
+	   ============================================ */
+
+	/* 연구 카드 전체(둥근 모서리+그림자) */
+	.research-carousel .research-card {
+	    background: #ffffff;
+	    border-radius: 1.5rem;
+	    box-shadow: 0 20px 45px rgba(15, 23, 42, 0.18);
+	    overflow: hidden;
+	}
+
+	/* 연구 이미지 영역 최소 높이 */
+	.research-image-wrap {
+	    min-height: 260px;
+	    height: 100%;
+	}
+
+	/* 연구 이미지 크기 */
+	.research-image-wrap img {
+	    width: 100%;
+	    height: 100%;
+	    object-fit: cover;
+	    display: block;
+	}
+
+	/* 연구 본문 영역 배경 */
+	.research-body {
+	    background: #ffffff;
+	}
+
+	/* 연구 메타 텍스트(Research + 날짜) */
+	.research-body .research-meta {
+	    font-size: 0.85rem;
+	    letter-spacing: 0.04em;
+	    text-transform: uppercase;
+	}
+
+	/* 연구 제목 텍스트 */
+	.research-body .research-title {
+	    font-size: 1.4rem;
+	    font-weight: 600;
+	    line-height: 1.4;
+	}
+
+	/* 연구 요약 텍스트 */
+	.research-body .research-desc {
+	    font-size: 0.95rem;
+	}
+
+	/* 캐러셀 컨트롤(화살표) 너비 확장 */
+	.research-carousel .carousel-control-prev,
+	.research-carousel .carousel-control-next {
+	    width: 3.5rem;
+	}
+
+	/* 캐러셀 화살표 아이콘 색 반전 */
+	.research-carousel .carousel-control-prev-icon,
+	.research-carousel .carousel-control-next-icon {
+	    filter: invert(1);
+	}
+
+	/* ============================================
+	   5. 메인 학사일정 legend 타입 토글
+	   ============================================ */
+
+	/* 학사일정 legend 전체 래퍼 */
+	.section-main-bbs .main-legend {
+	    display: flex;
+	    flex-wrap: wrap;
+	    gap: 0.75rem;
+	    align-items: center;
+	}
+
+	/* ============================================
+	   6. hero 섹션 배경 및 딤 레이어
+	   ============================================ */
+
+	/* hero 전체 섹션(배경 이미지 컨테이너) */
+	.hero-section {
+	    position: relative;
+	    overflow: hidden;
+	    background-size: cover;
+	    background-position: center center;
+	    background-repeat: no-repeat;
+	}
+
+	/* hero 내부 실제 콘텐츠 컨테이너 */
+	.hero-section > .container {
+	    position: relative;
+	    z-index: 1;
+	}
+
+	/* hero 딤 레이어(배경 어둡게 + 페이드 전환) */
+	.hero-bg-layer {
+	    position: absolute;
+	    inset: 0;
+	    z-index: 0;
+	    background: rgba(15, 23, 42, 0.75);
+	    opacity: 0.02;
+	    transition: opacity 0.9s ease-in-out;
+	    pointer-events: none;
+	}
+
+	/* ============================================
+	   7. 섹션 상단 View More 링크 버튼
+	   ============================================ */
+
+	/* View More 링크 공통 스타일 */
+	.section-link-more {
+	    position: relative;
+	    display: inline-flex;
+	    align-items: center;
+	    gap: 0.25rem;
+	    font-size: 0.9rem;
+	    font-weight: 600;
+	    letter-spacing: 0.03em;
+	    margin-right: 18px;
+	    color: #3284fa;
+	    text-decoration: none;
+	    border: none;
+	    background: none;
+	    padding: 4px 0;
+	    cursor: pointer;
+	}
+
+	/* View More plus 기호(hover 회전) */
+	.section-link-more::after {
+	    content: "+";
+	    display: inline-block;
+	    font-size: 1.7em;
+	    margin-left: 0.02rem;
+	    transform: rotate(0deg);
+	    transform-origin: center center;
+	    transition: transform 0.4s ease-out, opacity 0.4s ease-out;
+	    opacity: 0.9;
+	}
+
+	/* View More hover 상태 */
+	.section-link-more:hover::after {
+	    transform: rotate(180deg);
+	    opacity: 1;
+	}
+	
+	/* 공지사항 | 학사일정, 가운데 세로 구분선 */
+	.main-bbs-row-divider {
+	    position: relative;
+	}
+	
+	/* 가운데 세로 구분선 */
+	.main-bbs-row-divider::before {
+	    content: "";
+	    position: absolute;
+	    top: 16px;        /* 위 여백 (필요하면 조절) */
+	    bottom: 16px;     /* 아래 여백 (필요하면 조절) */
+	    left: 50%;        /* 가운데 정렬 */
+	    width: 3px;
+	    background: #e3e6ee;  /* 연한 회색 */
+	}
+	
+	/* 공지사항 컬럼 -> 구분선 사이 패딩 추가 */
+	.main-bbs-row-divider > .col-xl-6:first-child,
+	.main-bbs-row-divider > .col-lg-6:first-child,
+	.main-bbs-row-divider > .col-md-6:first-child {
+	    padding-right: 2.5rem; /* 기존보다 오른쪽 패딩 늘림 */
+	}
+</style>
+
 
 </head>
 <body>
@@ -928,159 +856,167 @@
         </div>
     </section>
 
-    <!-- 공지사항 + 학사일정 -->
-    <section class="section section-main-bbs">
-        <div class="container main-bbs-container">
-            <div class="row gy-1 justify-content-center">
-				<!-- 공지사항 -->
-				<div class="col-xl-6 col-lg-6 col-md-6">
-				    <div class="d-flex justify-content-between align-items-center mb-0">
-				        <h2 class="research-section-title mb-0">&nbsp;&nbsp;공지사항</h2>
-				        <a href="${cPath}/bbs/notice" class="section-link-more">View More</a>
-				    </div>
-				
-				    <!-- 공지사항 메인 카드 래퍼 -->
-				    <div class="main-bbs-card">
-				        <!-- 상단 설명 텍스트 -->
-				        <div class="card-header main-bbs-card-header">
-				            <p class="card-subtitle text-muted mb-0">
-				                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;학사·등록·장학 등 주요 안내
-				            </p>
-				        </div>
-				
-				        <!-- 흰색 카드 + 스크롤 리스트 -->
-				        <div class="main-bbs-inner">
-				            <ul class="list-group list-group-flush main-bbs-list">
-				                <c:if test="${empty notices_bbs}">
-				                    <li class="list-group-item main-bbs-empty text-muted">
-				                        등록된 공지사항이 없습니다.
-				                    </li>
-				                </c:if>
-				
-				                <c:forEach var="row" items="${notices_bbs}" varStatus="st">
-				                    <c:if test="${st.index lt 6}">
-				                        <li class="list-group-item">
-				                            <div class="d-flex flex-column">
-				                                <div class="d-flex justify-content-between align-items-start">
-				                                    <a href="#"
-				                                       class="main-bbs-title text-body text-truncate">
-				                                        <c:out value="${row.bbscttSj}" />
-				                                    </a>
-				                                    <span class="text-muted main-bbs-meta ms-2">
-				                                        <fmt:formatDate value="${row.bbscttWritngDe}"
-				                                                        pattern="yyyy.MM.dd" />
-				                                    </span>
-				                                </div>
-				                                <p class="text-muted mb-0 main-bbs-meta text-truncate-2">
-				                                    <c:out value="${row.bbscttCn}" />
-				                                </p>
-				                            </div>
-				                        </li>
-				                    </c:if>
-				                </c:forEach>
-				            </ul>
-				        </div>
-				    </div>
-				</div>
+	<!-- 공지사항 + 학사일정 -->
+	<section class="section section-main-bbs">
+	    <div class="container main-bbs-container">
+	        <!-- 여기 row에 클래스 하나 추가 -->
+	        <div class="row gy-1 justify-content-center main-bbs-row-divider">
+	            <!-- 공지사항 -->
+	            <div class="col-xl-6 col-lg-6 col-md-6">
+	                <div class="d-flex justify-content-between align-items-center mb-0">
+	                    <h2 class="research-section-title mb-0">&nbsp;&nbsp;&nbsp;&nbsp;공지사항</h2>
+	                    <a href="${cPath}/bbs/notice" class="section-link-more">View More</a>
+	                </div>
+	
+	                <!-- 공지사항 메인 카드 래퍼 -->
+	                <div class="main-bbs-card">
+	                    <!-- 상단 설명 텍스트 -->
+	                    <div class="card-header main-bbs-card-header">
+	                        <p class="card-subtitle text-muted mb-0">
+	                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;학사·등록·장학 등 주요 안내
+	                        </p>
+	                    </div>
+	
+	                    <!-- 흰색 카드 + 스크롤 리스트 -->
+	                    <div class="main-bbs-inner">
+	                        <ul class="list-group list-group-flush main-bbs-list">
+	                            <c:if test="${empty notices_bbs}">
+	                                <li class="list-group-item main-bbs-empty text-muted">
+	                                    등록된 공지사항이 없습니다.
+	                                </li>
+	                            </c:if>
+	
+	                            <c:forEach var="row" items="${notices_bbs}" varStatus="st">
+	                                <c:if test="${st.index lt 6}">
+	                                    <li class="list-group-item">
+	                                        <div class="d-flex flex-column">
+	                                            <div class="d-flex justify-content-between align-items-start">
+	                                                <a href="#"
+	                                                   class="main-bbs-title text-body text-truncate">
+	                                                    <c:out value="${row.bbscttSj}" />
+	                                                </a>
+	                                                <span class="text-muted main-bbs-meta ms-2">
+	                                                    <fmt:formatDate value="${row.bbscttWritngDe}"
+	                                                                    pattern="yyyy.MM.dd" />
+	                                                </span>
+	                                            </div>
+	                                            <p class="text-muted mb-0 main-bbs-meta text-truncate-2">
+	                                                <c:out value="${row.bbscttCn}" />
+	                                            </p>
+	                                        </div>
+	                                    </li>
+	                                </c:if>
+	                            </c:forEach>
+	                        </ul>
+	                    </div>
+	                </div>
+	            </div>
+	
+	            <!-- 학사일정 카드 -->
+	            <div class="col-xl-6 col-lg-6 col-md-6">
+	                <div class="d-flex justify-content-between align-items-center mb-0">
+	                    <h2 class="research-section-title mb-0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;학사일정</h2>
+	                    <a href="/schedule/calendar" class="section-link-more">View More</a>
+	                </div>
+	
+	                <!-- 학사일정 메인 카드: 백그라운드, 그림자, 패딩 포함 -->
+	                <div class="main-calendar-card"
+	                     data-calendar-endpoint="/api/index/calendar">
+	                    <div class="card-header">
+	                        <p class="card-subtitle text-muted mb-0 ps-3">
+	                            학사·등록·행사 등 월간 주요 일정
+	                        </p>
+	                    </div>
+	
+	                    <!-- 흰색 내부 카드 (YYYY.MM + 리스트 + 좌우 이동 버튼) -->
+	                    <div class="main-calendar-inner">
+	                        <!-- 카드 내부 중앙 정렬된 YYYY.MM 라벨 -->
+	                        <div class="calendar-month-row">
+	                            <div id="miniCalendarMonthLabel"
+	                                 class="calendar-month-label"
+	                                 data-year="${currentYear}"
+	                                 data-month="${currentMonth}">
+	                                ${currentYear}.
+	                                <fmt:formatNumber value="${currentMonth}" pattern="00"/>
+	                            </div>
+	                        </div>
+	
+	                        <!-- 좌우 화살표 + 일정 리스트 -->
+	                        <div class="main-calendar-row">
+	                            <!-- 이전 달 -->
+	                            <button type="button"
+	                                    class="calendar-arrow calendar-nav calendar-arrow-prev"
+	                                    data-year="${prevYear}"
+	                                    data-month="${prevMonth}">
+	                                <i class="ri-arrow-left-s-line"></i>
+	                            </button>
+	
+	                            <!-- 일정 리스트: 서버 렌더 + AJAX 공통 타겟 -->
+	                            <ul class="list-group list-group-flush main-calendar-list flex-grow-1">
+	                                <c:if test="${empty academicSchedules}">
+	                                    <li class="list-group-item main-calendar-item main-calendar-empty text-muted text-center py-5">
+	                                        <div class="calendar-empty-wrapper">
+	                                            <i class="ri-calendar-line calendar-empty-icon" aria-hidden="true"></i>
+	                                            <div class="calendar-empty-text">
+	                                                등록된 학사일정이 없습니다.
+	                                            </div>
+	                                        </div>
+	                                    </li>
+	                                </c:if>
+	
+	                                <c:forEach var="sch" items="${academicSchedules}" varStatus="st">
+	                                    <c:if test="${st.index lt 6}">
+	                                        <c:set var="calGroup"
+	                                               value="${sch.type eq 'ADMIN_REGIST' ? 'REGI'
+	                                                        : (sch.type eq 'ADMIN_EVENT' ? 'EVENT' : 'ACAD')}"/>
+	
+	                                        <li class="list-group-item d-flex main-calendar-item"
+	                                            data-event-type="${sch.type}"
+	                                            data-cal-group="${calGroup}">
+	                                            <div class="me-3 text-center" style="min-width:4.5rem;">
+	                                                <div class="fw-semibold fs-6">
+	                                                    <fmt:parseDate value="${sch.startDate}"
+	                                                                   pattern="yyyy-MM-dd"
+	                                                                   var="startDateObj" />
+	                                                    <fmt:formatDate value="${startDateObj}" pattern="MM.dd" />
+	                                                </div>
+	                                            </div>
+	                                            <div class="flex-grow-1">
+	                                                <div class="fw-semibold mb-1 text-truncate">
+	                                                    <c:out value="${sch.title}"/>
+	                                                </div>
+	                                                <p class="mb-0 text-muted small text-truncate">
+	                                                    <c:out value="${sch.memo}"/>
+	                                                </p>
+	                                            </div>
+	                                        </li>
+	                                    </c:if>
+	                                </c:forEach>
+	                            </ul>
+	
+	                            <!-- 다음 달 -->
+	                            <button type="button"
+	                                    class="calendar-arrow calendar-nav calendar-arrow-next"
+	                                    data-year="${nextYear}"
+	                                    data-month="${nextMonth}">
+	                                <i class="ri-arrow-right-s-line"></i>
+	                            </button>
+	                        </div>
+	                    </div>
+	                </div>
+	            </div>
+	            <!-- 학사일정 섹션 종료 -->
+	
+	        </div>
+	    </div>
+	</section>
 
-
-                <!-- 학사일정 카드 -->
-                <div class="col-xl-6 col-lg-6 col-md-6">
-                    <div class="d-flex justify-content-between align-items-center mb-0">
-                        <h2 class="research-section-title mb-0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;학사일정</h2>
-                        <a href="/schedule/calendar" class="section-link-more">View More</a>
-                    </div>
-
-                    <!-- 학사일정 메인 카드: 백그라운드, 그림자, 패딩 포함 -->
-                    <div class="main-calendar-card"
-                         data-calendar-endpoint="/api/index/calendar">
-                        <div class="card-header">
-                            <p class="card-subtitle text-muted mb-0">
-                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;학사·등록·행사 등 월간 주요 일정
-                            </p>
-                        </div>
-
-                        <!-- 흰색 내부 카드 (YYYY.MM + 리스트 + 좌우 이동 버튼) -->
-                        <div class="main-calendar-inner">
-                            <!-- 카드 내부 중앙 정렬된 YYYY.MM 라벨 -->
-                            <div class="calendar-month-row">
-                                <div id="miniCalendarMonthLabel"
-                                     class="calendar-month-label"
-                                     data-year="${currentYear}"
-                                     data-month="${currentMonth}">
-                                    ${currentYear}.
-                                    <fmt:formatNumber value="${currentMonth}" pattern="00"/>
-                                </div>
-                            </div>
-
-                            <!-- 좌우 화살표 + 일정 리스트 -->
-                            <div class="main-calendar-row">
-                                <!-- 이전 달 -->
-                                <button type="button"
-                                        class="calendar-arrow calendar-nav calendar-arrow-prev"
-                                        data-year="${prevYear}"
-                                        data-month="${prevMonth}">
-                                    <i class="ri-arrow-left-s-line"></i>
-                                </button>
-
-                                <!-- 일정 리스트: 서버 렌더 + AJAX 공통 타겟 -->
-                                <ul class="list-group list-group-flush main-calendar-list flex-grow-1">
-                                    <c:if test="${empty academicSchedules}">
-                                        <li class="list-group-item main-calendar-item main-calendar-empty text-muted small">
-                                            등록된 학사일정이 없습니다.
-                                        </li>
-                                    </c:if>
-
-                                    <c:forEach var="sch" items="${academicSchedules}" varStatus="st">
-                                        <c:if test="${st.index lt 6}">
-                                            <c:set var="calGroup"
-                                                   value="${sch.type eq 'ADMIN_REGIST' ? 'REGI'
-                                                            : (sch.type eq 'ADMIN_EVENT' ? 'EVENT' : 'ACAD')}"/>
-
-                                            <li class="list-group-item d-flex main-calendar-item"
-                                                data-event-type="${sch.type}"
-                                                data-cal-group="${calGroup}">
-                                                <div class="me-3 text-center" style="min-width:4.5rem;">
-                                                    <div class="fw-semibold fs-6">
-                                                        <fmt:parseDate value="${sch.startDate}"
-                                                                       pattern="yyyy-MM-dd"
-                                                                       var="startDateObj" />
-                                                        <fmt:formatDate value="${startDateObj}" pattern="MM.dd" />
-                                                    </div>
-                                                </div>
-                                                <div class="flex-grow-1">
-                                                    <div class="fw-semibold mb-1 text-truncate">
-                                                        <c:out value="${sch.title}"/>
-                                                    </div>
-                                                    <p class="mb-0 text-muted small text-truncate">
-                                                        <c:out value="${sch.memo}"/>
-                                                    </p>
-                                                </div>
-                                            </li>
-                                        </c:if>
-                                    </c:forEach>
-                                </ul>
-
-                                <!-- 다음 달 -->
-                                <button type="button"
-                                        class="calendar-arrow calendar-nav calendar-arrow-next"
-                                        data-year="${nextYear}"
-                                        data-month="${nextMonth}">
-                                    <i class="ri-arrow-right-s-line"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
 
     <!-- 학교 행사 -->
     <section class="section-main-events">
         <div class="container-xxl">
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <h2 class="research-section-title mb-0">학교 행사</h2>
+                <h2 class="research-section-title mb-0">학교 내외부 행사</h2>
                 <a href="${cPath}/bbs/list?bbsCode=2" class="section-link-more">View More</a>
             </div>
 
@@ -1413,18 +1349,26 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         }
 
-        // AJAX 응답 렌더링
-        function renderEvents(events) {
-            listEl.innerHTML = '';
-
-            if (!events || !events.length) {
-                const emptyRow = document.createElement('div');
-                emptyRow.className = 'main-calendar-item main-calendar-empty text-muted small px-3 pb-3';
-                emptyRow.textContent = '등록된 학사일정이 없습니다.';
-                listEl.appendChild(emptyRow);
-                return;
-            }
-
+     	// AJAX 응답 렌더링
+		function renderEvents(events) {
+		    listEl.innerHTML = '';
+		
+		    if (!events || !events.length) {
+		        const emptyRow = document.createElement('li');
+		        emptyRow.className =
+		            'list-group-item main-calendar-item main-calendar-empty text-muted text-center py-5';
+		        emptyRow.innerHTML = `
+		            <div class="calendar-empty-wrapper">
+		                <i class="ri-calendar-line calendar-empty-icon" aria-hidden="true"></i>
+		                <div class="calendar-empty-text">
+		                    등록된 학사일정이 없습니다.
+		                </div>
+		            </div>
+		        `;
+		        listEl.appendChild(emptyRow);
+		        return;
+		    }
+		    
             events.forEach(function (ev) {
                 const row = document.createElement('div');
                 row.className = 'main-calendar-item d-flex align-items-start px-3 pb-3';
