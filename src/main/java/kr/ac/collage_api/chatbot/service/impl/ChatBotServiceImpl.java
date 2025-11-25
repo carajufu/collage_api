@@ -117,17 +117,29 @@ public class ChatBotServiceImpl implements ChatBotService {
 
         JSONObject root = new JSONObject();
 
-        // 성적
-        ChatBotVO score = chatBotMapper.getStudentSbjScore(stdntNo);
-        if (score != null) {
-            JSONObject s = new JSONObject();
-            s.put("middle", score.getMiddleScore());
-            s.put("final", score.getTrmendScore());
-            s.put("task", score.getTaskScore());
-            s.put("attendance", score.getAtendScore());
-            s.put("total", score.getSbjectTotpoint());
-            root.put("score", s);
+        // 성적 (과목이 여러개로 넘어와 LIST형식으로 변경)
+        List<ChatBotVO> scoreList = chatBotMapper.getStudentSbjScore(stdntNo);
+
+        if (scoreList != null && !scoreList.isEmpty()) {
+
+            JSONArray arr = new JSONArray();
+
+            for (ChatBotVO vo : scoreList) {
+
+                JSONObject s = new JSONObject();
+                s.put("middle", vo.getMiddleScore());
+                s.put("final",  vo.getTrmendScore());
+                s.put("task",   vo.getTaskScore());
+                s.put("attendance", vo.getAtendScore());
+                s.put("total",  vo.getSbjectTotpoint());
+                s.put("subjectName", vo.getSubjctNm());   // 과목명 있을 경우
+
+                arr.put(s);
+            }
+
+            root.put("score", arr);
         }
+
 
         // 전체 이수학점
         int totalPnt = chatBotMapper.getAllPnt(stdntNo);

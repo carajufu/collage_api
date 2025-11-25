@@ -353,6 +353,7 @@ document.addEventListener("DOMContentLoaded", function() {
     </table>
 
     <div class="text-end mt-4">
+      <button class="btn btn-outline-primary"><a  href="/compe/main">자기소개서 생성</a></button>
       <button class="btn btn-outline-primary" onclick="history.back()">뒤로가기</button>
     </div>
 
