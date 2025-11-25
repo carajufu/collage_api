@@ -21,17 +21,17 @@
             <div class="col-12">
                 <div class="row row-cols-xxl-4 row-cols-lg-2 row-cols-1">
                     <c:forEach items="${lectureList}" var="lecture">
-                    <div class="col">
-                        <div class="card card-body rounded-3 shadow-sm" data-lec-no="${lecture.estbllctreCode}">
-                                <h4 class="card-title">${lecture.lctreNm}</h4>
-                                <h1>우리 반에 <br>
-                                악마가 <br>
-                                살고있어요</h1>
-                                <p class="card-subtitle">${lecture.lctrum}</p>
-                                <p class="card-subtitle">${lecture.sklstfNm}</p>
-                        </div>
-                    </div>
-                    </c:forEach>
+					  <div class="col">
+					    <div class="card card-body rounded-3 shadow-sm" data-lec-no="${lecture.estbllctreCode}">
+					        <h4 class="card-title"
+					            data-key="${lecture.lctreNm}">${lecture.lctreNm}</h4>
+					        <p class="card-subtitle"
+					           data-key="${lecture.lctrum}">${lecture.lctrum}</p>
+					        <p class="card-subtitle"
+					           data-key="${lecture.sklstfNm}">${lecture.sklstfNm}</p>
+					    </div>
+					  </div>
+					</c:forEach>
 
                 </div>
             </div>
