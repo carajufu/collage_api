@@ -238,4 +238,19 @@
             ON bc.acnt_id = skl.acnt_id
         WHERE  bc.bbsctt_no = #{no}
     </select>
+
+    <select id="getAttend" parameterType="hashMap" resultType="atendAbsncVO">
+        SELECT
+            aa.atend_absnc_no
+             , aa.week_accto_lrn_no
+             , aa.stdnt_no
+             , aa.atend_sttus_code
+             , TO_CHAR(SYSDATE, 'YYYYMMDD') AS lctre_de
+        FROM atend_absnc aa
+                 INNER JOIN week_accto_lrn wal
+                            ON aa.week_accto_lrn_no = wal.week_accto_lrn_no
+        WHERE wal.estbllctre_code = #{estbllctreCode}
+          AND aa.stdnt_no = #{stdntNo}
+        ORDER BY wal.week
+    </select>
 </mapper>

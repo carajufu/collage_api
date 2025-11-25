@@ -355,10 +355,10 @@
                         <div class="collapse menu-dropdown" id="sidebarRegist">
                             <ul class="nav nav-sm flex-column">
                                 <li class="nav-item">
-                                    <a href="dashboard-analytics.html" class="nav-link" data-key=""> 납부 </a>
+                                    <a href="/payinfo/studentView/${user.username}" class="nav-link" data-key=""> 납부 </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="dashboard-crm.html" class="nav-link" data-key=""> 납부 내역 조회 </a>
+                                    <a href="/payinfo/stdnt/list" class="nav-link" data-key=""> 납부 내역 조회 </a>
                                 </li>
                             </ul>
                         </div>

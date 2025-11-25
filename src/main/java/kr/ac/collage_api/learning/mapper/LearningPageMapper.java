@@ -33,4 +33,7 @@ public interface LearningPageMapper {
     LectureBbsVO getLectureBbs(String lecNo, String type);
 
     Map<String, Object> getBoard(Map<String, Object> paramMap);
+
+    List<AtendAbsncVO> getAttend(@Param("estbllctreCode") String estbllctreCode,
+                                 @Param("stdntNo") String stdntNo);
 }

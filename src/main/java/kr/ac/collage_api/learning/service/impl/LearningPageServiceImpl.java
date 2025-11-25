@@ -132,4 +132,43 @@ public class LearningPageServiceImpl {
     public Map<String, Object> getBoard(Map<String, Object> paramMap) {
         return learningPageMapper.getBoard(paramMap);
     }
+
+    public Map<String, Object> getAttend(String estbllctreCode, String stdntNo) {
+        List<AtendAbsncVO> attendList = learningPageMapper.getAttend(estbllctreCode, stdntNo);
+
+        long attendCnt = attendList.stream()
+                .filter(vo -> "1".equals(vo.getAtendSttusCode()))
+                .count();
+        long lateCnt = attendList.stream()
+                .filter(vo -> "2".equals(vo.getAtendSttusCode()))
+                .count();
+        long absentCnt = attendList.stream()
+                .filter(vo -> !"1".equals(vo.getAtendSttusCode()) && !"2".equals(vo.getAtendSttusCode()))
+                .count();
+
+        int total = attendList.size();
+        long tardyAsAbsence = lateCnt / 3;
+        long adjustedAbsentCnt = absentCnt + tardyAsAbsence;
+        double absenceThreshold = total * 0.25;
+        double attendanceRate = total == 0 ? 0.0 : (attendCnt * 100.0) / total;
+        double absenceRate = absenceThreshold == 0 ? 0.0 : Math.min(100.0, (adjustedAbsentCnt * 100.0) / absenceThreshold);
+
+        Map<String, Object> summary = new HashMap<>();
+        summary.put("total", total);
+        summary.put("attendCount", attendCnt);
+        summary.put("lateCount", lateCnt);
+        summary.put("rawAbsentCount", absentCnt);
+        summary.put("absentCount", adjustedAbsentCnt);
+        summary.put("tardyAsAbsence", tardyAsAbsence);
+        summary.put("absenceThreshold", absenceThreshold);
+        summary.put("attendanceRate", attendanceRate);
+        summary.put("absenceRate", absenceRate);
+
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("list", attendList);
+        payload.put("summary", summary);
+
+        return payload;
+    }
+
 }

@@ -1,8 +1,10 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+
+<%@ include file="../header.jsp" %>
+
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.0/dist/sweetalert2.min.css">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.0/dist/sweetalert2.all.min.js"></script>
 
-<%@ include file="../header.jsp" %>
 
 <div class="row pt-3 px-5">
     <nav aria-label="breadcrumb">
@@ -337,7 +339,7 @@ document.addEventListener("DOMContentLoaded",function()  {
       </div>
       <form>
         <div class="modal-body">
-                <input type="hidden" id="modalStdntNo"/ >
+                <input type="hidden" id="modalStdntNo"/>
     <!-- 입력 받아야 할것 -->
             <label for="myprofsr" class="form-label">상담 교수님 선택</label>
             <select class="form-select form-select-lg" id="myprofsr" required="">

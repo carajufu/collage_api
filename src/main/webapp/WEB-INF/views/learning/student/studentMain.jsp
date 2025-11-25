@@ -936,13 +936,13 @@
                                 <a href="#lecture" class="nav-link active" role="tab" data-bs-toggle="tab" aria-selected="true"><h6>주차 학습</h6></a>
                             </li>
                             <li class="nav-item waves-effect waves-light" role="presentation">
-                                <a href="#info" class="nav-link" role="tab" data-bs-toggle="tab" aria-selected="false"><h6>학습 정보</h6></a>
-                            </li>
-                            <li class="nav-item waves-effect waves-light" role="presentation">
                                 <a href="#task" class="nav-link" role="tab" data-bs-toggle="tab" aria-selected="false"><h6>과제</h6></a>
                             </li>
                             <li class="nav-item waves-effect waves-light" role="presentation">
                                 <a href="#quiz" class="nav-link" role="tab" data-bs-toggle="tab" aria-selected="false"><h6>퀴즈</h6></a>
+                            </li>
+                            <li class="nav-item waves-effect waves-light" role="presentation">
+                                <a href="#info" class="nav-link" role="tab" data-bs-toggle="tab" aria-selected="false"><h6>학습 정보</h6></a>
                             </li>
                         </ul>
                     </div>
@@ -1066,14 +1066,78 @@
                     <div class="card-title">
                         <ul class="nav nav-tabs" role="tablist">
                             <li class="nav-item waves-effect waves-light" role="presentation">
-                                <a href="#attend" class="nav-link active" role="tab" data-bs-toggle="tab" aria-selected="true"><h6>출결</h6></a>
+                                <a href="#attend" class="nav-link active" role="tab" data-bs-toggle="tab" aria-selected="true"><h6>출석률</h6></a>
+                            </li>
+                            <li class="nav-item waves-effect waves-light" role="presentation">
+                                <a href="#attendList" class="nav-link" role="tab" data-bs-toggle="tab" aria-selected="false"><h6>출결현황</h6></a>
                             </li>
                         </ul>
                     </div>
                     <div class="card-body p-0" style="min-height: 330px;">
                         <div class="tab-content">
                             <div class="tab-pane active show" id="attend" role="tabpanel">
+                                <div class="card h-100" id="attend-root">
+                                    <div data-simplebar style="max-height: 330px;">
+                                        <div class="card-body">
+                                            <div id="attend-loading" class="text-muted" style="display:none;">출석 정보를 불러오는 중입니다...</div>
+                                            <div id="attend-error" class="alert alert-danger d-none" role="alert"></div>
+                                            <div id="attend-content" class="d-none">
+                                                <div class="mb-4">
+                                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                                        <span class="fw-semibold">전체 출석률</span>
+                                                        <span id="attend-rate-text" class="text-muted">0.0%</span>
+                                                    </div>
+                                                    <div class="progress" style="height:10px;">
+                                                        <div id="attend-rate-bar" class="progress-bar bg-primary" role="progressbar"
+                                                             style="width:0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                                                    </div>
+                                                </div>
 
+                                                <div class="mb-4">
+                                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                                        <span class="fw-semibold">지각</span>
+                                                        <span id="tardy-count-text" class="text-muted">0</span>
+                                                    </div>
+                                                    <div class="progress" style="height:10px;">
+                                                        <div id="tardy-rate-bar" class="progress-bar bg-warning text-dark" role="progressbar"
+                                                             style="width:0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="mb-4">
+                                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                                        <span class="fw-semibold">결석</span>
+                                                        <span id="absence-count-text" class="text-muted">0 / 0</span>
+                                                    </div>
+                                                    <div class="progress" style="height:10px;">
+                                                        <div id="absence-rate-bar" class="progress-bar bg-danger" role="progressbar"
+                                                             style="width:0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="mb-4">
+                                                    <div class="small text-muted">
+                                                        <p>출석 인정 기준 : 강의 80% 이상 수강</p>
+                                                        <p>지각 3회 = 결석 1회 처리</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane" id="attendList" role="tabpanel">
+                                <div class="card h-100" id="attend-root">
+                                    <div data-simplebar style="max-height: 330px;">
+                                        <div class="card-body">
+                                            <div class="card shadow-sm">
+                                                <div class="card-body p-0">
+                                                    <div id="attend-list" class="list-group list-group-flush"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1140,8 +1204,70 @@
                     </div>
                     <div class="card-body p-0" style="min-height: 330px;">
                         <div class="tab-content">
-                            <div class="tab-pane" id="progress" role="tabpanel">
+                            <div class="tab-pane active show" id="progress" role="tabpanel">
+                                <div class="card h-100">
+                                    <div data-simplebar style="max-height: 330px;">
+                                        <div class="card-body">
+                                            <div class="mb-3">
+                                                <div class="d-flex align-items-center mb-2">
+                                                    <h6 class="mb-0 fw-semibold">이번 주 할 일</h6>
+                                                </div>
+                                                <div class="list-group list-group-flush">
+                                                    <div class="list-group-item d-flex align-items-center justify-content-between px-0">
+                                                        <span>[2주차] 과제 제출</span>
+                                                        <span class="badge bg-danger rounded-pill px-3">D-1</span>
+                                                    </div>
+                                                    <div class="list-group-item d-flex align-items-center justify-content-between px-0">
+                                                        <span>[2주차] 퀴즈 응시</span>
+                                                        <span class="badge bg-warning text-dark rounded-pill px-3">D-2</span>
+                                                    </div>
+                                                    <div class="list-group-item d-flex align-items-center justify-content-between px-0">
+                                                        <span>질문게시판 답변 확인</span>
+                                                        <span class="text-muted small">읽지않음 2</span>
+                                                    </div>
+                                                </div>
+                                            </div>
 
+                                            <hr class="my-3">
+
+                                            <div>
+                                                <div class="d-flex align-items-center mb-2">
+                                                    <h6 class="mb-0 fw-semibold">나의 학습 진척도</h6>
+                                                </div>
+
+                                                <div class="mb-3">
+                                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                                        <span class="fw-medium">영상 시청</span>
+                                                        <span class="text-muted">70%</span>
+                                                    </div>
+                                                    <div class="progress" style="height:10px;">
+                                                        <div class="progress-bar bg-primary" style="width:70%;" role="progressbar" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100"></div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="mb-3">
+                                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                                        <span class="fw-medium">과제</span>
+                                                        <span class="text-muted">5 / 7</span>
+                                                    </div>
+                                                    <div class="progress" style="height:10px;">
+                                                        <div class="progress-bar bg-primary" style="width:71.4%;" role="progressbar" aria-valuenow="71.4" aria-valuemin="0" aria-valuemax="100"></div>
+                                                    </div>
+                                                </div>
+
+                                                <div>
+                                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                                        <span class="fw-medium">퀴즈</span>
+                                                        <span class="text-muted">4 / 5</span>
+                                                    </div>
+                                                    <div class="progress" style="height:10px;">
+                                                        <div class="progress-bar bg-primary" style="width:80%;" role="progressbar" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1222,6 +1348,7 @@
             });
         });
     </script>
+    <script type="text/javascript" src="/js/student-attend.js"></script>
 
     <div id="preview-template" style="display:none;">
         <div class="dz-preview dz-file-preview border rounded p-2">
