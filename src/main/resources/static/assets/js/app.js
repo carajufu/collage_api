@@ -12,7 +12,8 @@
     }
 
     function n(e) {
-        document.getElementById("header-lang-img") && ("kr" == e ? document.getElementById("header-lang-img").src = "/assets/images/flags/kr.svg" :
+        document.getElementById("header-lang-img") && (
+				"kr" == e ? document.getElementById("header-lang-img").src = "/assets/images/flags/kr.svg" :
                 "en" == e ? document.getElementById("header-lang-img").src = "/assets/images/flags/us.svg" :
                 "sp" == e ? document.getElementById("header-lang-img").src = "/assets/images/flags/spain.svg" :
                 "gr" == e ? document.getElementById("header-lang-img").src = "/assets/images/flags/germany.svg" :

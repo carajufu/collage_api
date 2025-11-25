@@ -55,7 +55,7 @@
                     <!-- 버튼 -->
                     <div class="d-flex justify-content-end gap-2 mt-4">
                         <a href="${pageContext.request.contextPath}/compe/main"
-                           class="btn btn-warning btn-sm px-3">
+                           class="btn btn-outline-primary btn-sm px-3">
                             AI자기소개서 생성기
                         </a>
 

@@ -33,4 +33,7 @@ public class GradeScreVO {
     private double semstrTotpoint;  // 학기 총점 (SEMSTR_TOTPOINT)
     private int totAcqsPnt;         // 학기 총취득학점 (TOT_ACQS_PNT)
     private int acqsPnt;            // 이수학점 (ACQS_PNT)
+    
+    // 학기별 과목 성적 개수 (4개 이상일 때만 총점/평균/등급 표시용)
+    private Integer sbjectCnt;
 }

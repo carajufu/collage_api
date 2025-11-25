@@ -18,7 +18,7 @@
                         data-cn="${fn:escapeXml(item.manageCn)}">
 
                         <div class="d-flex justify-content-between align-items-center mb-1">
-                            <span class="badge bg-primary-subtle text-primary">#${item.formId}</span>
+                            <span class="badge bg-primary-subtle text-primary">#${item.formId-1}</span>
                             <span class="text-muted small">버전 ${st.count}</span>
                         </div>
 
@@ -47,25 +47,24 @@
         </div>
 
         <!-- 삭제 폼 -->
-        <form id="delManageCnForm"
-              action="${pageContext.request.contextPath}/compe/detail/delete"
-              method="post"
-              class="d-inline">
-
-            <input type="hidden" name="formId" id="selectedFormId">
-
-            <button type="submit" class="btn btn-danger btn-sm me-2">
-                선택 버전 삭제
-            </button>
-        </form>
-
-        <div class="card-header d-flex align-items-center">
-            <a href="${pageContext.request.contextPath}/compe/main"
-               class="btn btn-primary btn-sm ms-auto">
-                자기소개서 생성으로 돌아가기
-            </a>
-        </div>
-
+        <div class="card-header d-flex align-items-center justify-content-end">
+		    <form id="delManageCnForm"
+		          action="${pageContext.request.contextPath}/compe/detail/delete"
+		          method="post"
+		          class="d-inline mb-0">
+		
+		        <input type="hidden" name="formId" id="selectedFormId">
+		
+		        <button type="submit" class="btn btn-outline-primary btn-sm me-2">
+		            선택 버전 삭제
+		        </button>
+		    </form>
+		
+		    <a href="${pageContext.request.contextPath}/compe/main"
+		       class="btn btn-primary btn-sm">
+		        자기소개서 생성으로 돌아가기
+		    </a>
+		</div>
     </div>
 </div>
 

@@ -13,22 +13,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Collage</title>
 
-    <!-- App favicon -->
     <link rel="shortcut icon" href="/favicon.ico">
 
-    <!-- plugin css -->
     <link href="/assets/libs/jsvectormap/jsvectormap.min.css" rel="stylesheet" type="text/css" />
 
-    <!-- Bootstrap Css -->
     <link href="/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
-    <!-- Icons Css -->
     <link href="/assets/css/icons.min.css" rel="stylesheet" type="text/css" />
-    <!-- App Css-->
     <link href="/assets/css/app.min.css" rel="stylesheet" type="text/css" />
-    <!-- custom Css-->
     <link href="/assets/css/custom.css" rel="stylesheet" type="text/css" />
 
-    <!-- JAVASCRIPT -->
     <script src="/assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="/assets/js/pages/plugins/lord-icon-2.1.0.js"></script>
     <script src="/assets/js/plugins.js"></script>
@@ -38,10 +31,8 @@
     <script src="/assets/libs/simplebar/simplebar.min.js"></script>
     <script src="/assets/libs/node-waves/waves.min.js"></script>
 
-    <!-- jQuery-3.6.0.min -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 
-    <!-- axios -->
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
 </head>
@@ -92,7 +83,6 @@
         }
     });
 </script>
-<!-- Begin page -->
 <div id="layout-wrapper">
 
     <header id="page-topbar">
@@ -118,74 +108,61 @@
                         </button>
                         <div class="dropdown-menu dropdown-menu-end">
 
-                            <!-- item-->
                             <a href="javascript:void(0);" class="dropdown-item notify-item language py-2" data-lang="kr" title="Korean">
                                 <img src="/assets/images/flags/kr.svg" alt="user-image" class="me-2 rounded" height="18">
                                 <span class="align-middle">한국어</span>
                             </a>
 
-                            <!-- item-->
                             <a href="javascript:void(0);" class="dropdown-item notify-item language py-2" data-lang="en" title="English">
                                 <img src="/assets/images/flags/us.svg" alt="user-image" class="me-2 rounded" height="18">
                                 <span class="align-middle">English</span>
                             </a>
 
-                            <!-- item-->
                             <a href="javascript:void(0);" class="dropdown-item notify-item language" data-lang="sp" title="Spanish">
                                 <img src="/assets/images/flags/spain.svg" alt="user-image" class="me-2 rounded" height="18">
                                 <span class="align-middle">Española</span>
                             </a>
 
-                            <!-- item-->
                             <a href="javascript:void(0);" class="dropdown-item notify-item language" data-lang="gr" title="German">
                                 <img src="/assets/images/flags/germany.svg" alt="user-image" class="me-2 rounded" height="18"> <span class="align-middle">Deutsche</span>
                             </a>
 
-							<!-- item-->
-                            <a href="javascript:void(0);" class="dropdown-item notify-item language" data-lang="jp" title="Japen">
+							<a href="javascript:void(0);" class="dropdown-item notify-item language" data-lang="jp" title="Japen">
                                 <img src="/assets/images/flags/jp.svg" alt="user-image" class="me-2 rounded" height="18"> <span class="align-middle">日本語</span>
                             </a>
 
-							<!-- item-->
-                            <a href="javascript:void(0);" class="dropdown-item notify-item language" data-lang="vi" title="Vitenam">
+							<a href="javascript:void(0);" class="dropdown-item notify-item language" data-lang="vi" title="Vitenam">
                                 <img src="/assets/images/flags/vi.svg" alt="user-image" class="me-2 rounded" height="18"> <span class="align-middle">Tiếng Việt</span>
                             </a>
 
-							<!-- item-->
-                            <a href="javascript:void(0);" class="dropdown-item notify-item language" data-lang="mn" title="Mongol">
+							<a href="javascript:void(0);" class="dropdown-item notify-item language" data-lang="mn" title="Mongol">
                                 <img src="/assets/images/flags/mn.svg" alt="user-image" class="me-2 rounded" height="18"> <span class="align-middle">Монгол хэл</span>
                             </a>
 
-							<!-- item-->
-                            <a href="javascript:void(0);" class="dropdown-item notify-item language" data-lang="ne" title="Nepal">
+							<a href="javascript:void(0);" class="dropdown-item notify-item language" data-lang="ne" title="Nepal">
                                 <img src="/assets/images/flags/ne.svg" alt="user-image" class="me-2 rounded" height="18"> <span class="align-middle">नेपाली</span>
                             </a>
 
-                            <!-- item-->
                             <a href="javascript:void(0);" class="dropdown-item notify-item language" data-lang="it" title="Italian">
                                 <img src="/assets/images/flags/italy.svg" alt="user-image" class="me-2 rounded" height="18">
                                 <span class="align-middle">Italiana</span>
                             </a>
 
-                            <!-- item-->
                             <a href="javascript:void(0);" class="dropdown-item notify-item language" data-lang="ru" title="Russian">
                                 <img src="/assets/images/flags/russia.svg" alt="user-image" class="me-2 rounded" height="18">
                                 <span class="align-middle">русский</span>
                             </a>
 
-                            <!-- item-->
                             <a href="javascript:void(0);" class="dropdown-item notify-item language" data-lang="ch" title="Chinese">
                                 <img src="/assets/images/flags/china.svg" alt="user-image" class="me-2 rounded" height="18">
                                 <span class="align-middle">中国人</span>
                             </a>
 
-                            <!-- item-->
                             <a href="javascript:void(0);" class="dropdown-item notify-item language" data-lang="fr" title="French">
                                 <img src="/assets/images/flags/french.svg" alt="user-image" class="me-2 rounded" height="18">
                                 <span class="align-middle">français</span>
                             </a>
 
-                            <!-- item-->
                             <a href="javascript:void(0);" class="dropdown-item notify-item language" data-lang="ar" title="Arabic">
                                 <img src="/assets/images/flags/ae.svg" alt="user-image" class="me-2 rounded" height="18">
                                 <span class="align-middle">Arabic</span>
@@ -268,17 +245,16 @@
                         </span>
                         </button>
                         <div class="dropdown-menu dropdown-menu-end" style="width: 300px">
-                            <!-- item-->
                             <h6 class="dropdown-header">${user.affiliation}</h6>
                             <h6 class="dropdown-header">${user.username}</h6>
                             <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="/stdnt/main/info"><i class="mdi mdi-account-circle text-muted fs-16 align-middle me-1"></i> <span class="align-middle">개인 정보 수정</span></a>
-                            <a class="dropdown-item" href="apps-chat.html"><i class="mdi mdi-message-text-outline text-muted fs-16 align-middle me-1"></i> <span class="align-middle">메세지</span></a>
-                            <a class="dropdown-item" href="apps-tasks-kanban.html"><i class="mdi mdi-calendar-check-outline text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Taskboard</span></a>
-                            <a class="dropdown-item" href="pages-faqs.html"><i class="mdi mdi-lifebuoy text-muted fs-16 align-middle me-1"></i> <span class="align-middle">도움말</span></a>
+                            <a class="dropdown-item" href="/stdnt/main/info"><i class="mdi mdi-account-circle text-muted fs-16 align-middle me-1"></i> <span class="align-middle" data-key="t-profile-edit">개인 정보 수정</span></a>
+                            <a class="dropdown-item" href="apps-chat.html"><i class="mdi mdi-message-text-outline text-muted fs-16 align-middle me-1"></i> <span class="align-middle" data-key="t-messages">메세지</span></a>
+                            <a class="dropdown-item" href="apps-tasks-kanban.html"><i class="mdi mdi-calendar-check-outline text-muted fs-16 align-middle me-1"></i> <span class="align-middle" data-key="t-taskboard">Taskboard</span></a>
+                            <a class="dropdown-item" href="pages-faqs.html"><i class="mdi mdi-lifebuoy text-muted fs-16 align-middle me-1"></i> <span class="align-middle" data-key="t-help">도움말</span></a>
                             <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="/"><i class="mdi mdi-home text-muted fs-16 align-middle me-1"></i> <span class="align-middle">홈페이지</span></a>
-                            <a class="dropdown-item" href="auth-lockscreen-basic.html"><i class="mdi mdi-lock text-muted fs-16 align-middle me-1"></i> <span class="align-middle">화면 잠그기</span></a>
+                            <a class="dropdown-item" href="/"><i class="mdi mdi-home text-muted fs-16 align-middle me-1"></i> <span class="align-middle" data-key="t-home">홈페이지</span></a>
+                            <a class="dropdown-item" href="auth-lockscreen-basic.html"><i class="mdi mdi-lock text-muted fs-16 align-middle me-1"></i> <span class="align-middle" data-key="t-lock-screen">화면 잠그기</span></a>
                             <a class="dropdown-item" href="/logout"><i class="mdi mdi-logout text-muted fs-16 align-middle me-1"></i> <span class="align-middle" data-key="t-logout">로그아웃</span></a>
                         </div>
                     </div>
@@ -288,7 +264,6 @@
         </div>
     </header>
 
-    <!-- removeNotificationModal -->
     <div id="removeNotificationModal" class="modal fade zoomIn" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -309,15 +284,8 @@
                     </div>
                 </div>
 
-            </div><!-- /.modal-content -->
-        </div><!-- /.modal-dialog -->
-    </div><!-- /.modal -->
-
-    <!-- ========== App Menu ========== -->
-    <div class="app-menu navbar-menu">
-        <!-- LOGO -->
+            </div></div></div><div class="app-menu navbar-menu">
         <div class="navbar-brand-box">
-            <!-- Dark Logo-->
             <a href="/student/welcome" class="logo logo-dark">
                     <span class="logo-sm">
                         <img src="/assets/images/logo-sm.png" alt="" height="22">
@@ -326,7 +294,6 @@
                         <img src="/assets/images/logo-dark.png" alt="" height="17">
                     </span>
             </a>
-            <!-- Light Logo-->
             <a href="/student/welcome" class="logo logo-light">
                     <span class="logo-sm">
                         <img src="/assets/images/logo-sm.png" alt="" height="22">
@@ -346,41 +313,40 @@
                 <div id="two-column-menu">
                 </div>
                 <ul class="navbar-nav" id="navbar-nav">
-                    <li class="menu-title"><span data-key="">학사 정보</span></li>
+                    <li class="menu-title"><span data-key="t-academic-info">학사 정보</span></li>
 
                     <li class="nav-item">
                         <a class="nav-link menu-link" href="#sidebarRegist" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarDashboards">
-                            <i class="las la-compass"></i> <span data-key="">등록</span>
+                            <i class="las la-compass"></i> <span data-key="t-registration">등록</span>
                         </a>
                         <div class="collapse menu-dropdown" id="sidebarRegist">
                             <ul class="nav nav-sm flex-column">
                                 <li class="nav-item">
-                                    <a href="dashboard-analytics.html" class="nav-link" data-key=""> 납부 </a>
+                                    <a href="dashboard-analytics.html" class="nav-link" data-key="t-payment"> 납부 </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="dashboard-crm.html" class="nav-link" data-key=""> 납부 내역 조회 </a>
+                                    <a href="dashboard-crm.html" class="nav-link" data-key="t-payment-history"> 납부 내역 조회 </a>
                                 </li>
                             </ul>
                         </div>
-                    </li> <!-- end Dashboard Menu -->
-                    <li class="nav-item">
+                    </li> <li class="nav-item">
                         <a class="nav-link menu-link" href="#sidebarLecture" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarApps">
-                            <i class="las la-book"></i> <span data-key="">수강</span>
+                            <i class="las la-book"></i> <span data-key="t-course">수강</span>
                         </a>
                         <div class="collapse menu-dropdown" id="sidebarLecture">
                             <ul class="nav nav-sm flex-column">
                                 <li class="nav-item">
-                                    <a href="/atnlc/submit" class="nav-link" data-key="">
+                                    <a href="/atnlc/submit" class="nav-link" data-key="t-course-registration">
                                         수강 신청
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="/atnlc/cart" class="nav-link" data-key="">
+                                    <a href="/atnlc/cart" class="nav-link" data-key="t-cart">
                                         장바구니
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="/atnlc/stdntLctreList" class="nav-link" data-key="">
+                                    <a href="/atnlc/stdntLctreList" class="nav-link" data-key="t-registration-history">
                                         신청 내역 조회
                                     </a>
                                 </li>
@@ -390,33 +356,31 @@
 
                     <li class="nav-item">
                         <a class="nav-link menu-link" href="#sidebarGrade" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
-                            <i class="las la-scroll"></i> <span data-key="">성적</span>
+                            <i class="las la-scroll"></i> <span data-key="t-grade">성적</span>
                         </a>
                         <div class="collapse menu-dropdown" id="sidebarGrade">
                             <ul class="nav nav-sm flex-column">
                                 <li class="nav-item">
-                                    <a href="/stdnt/grade/main/All" class="nav-link" data-key="">학기별 성적</a>
+                                    <a href="/stdnt/grade/main/All" class="nav-link" data-key="t-semester-grade">학기별 성적</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="/stdnt/lecture/main/All" class="nav-link" data-key="">강의 평가</a>
+                                    <a href="/stdnt/lecture/main/All" class="nav-link" data-key="t-lecture-evaluation">강의 평가</a>
                                 </li>
                             </ul>
                         </div>
-                    </li> <!-- end Dashboard Menu -->
-
-                    <li class="nav-item">
+                    </li> <li class="nav-item">
                         <a class="nav-link menu-link" href="#sidebarEnrollment" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarAuth">
-                            <i class="las la-id-card"></i> <span data-key="">학적</span>
+                            <i class="las la-id-card"></i> <span data-key="t-enrollment">학적</span>
                         </a>
                         <div class="collapse menu-dropdown" id="sidebarEnrollment">
                             <ul class="nav nav-sm flex-column">
                                 <li class="nav-item">
-                                    <a href="/enrollment/status" class="nav-link" data-key="">
+                                    <a href="/enrollment/status" class="nav-link" data-key="t-enrollment-info">
                                         학적정보
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="/enrollment/change" class="nav-link" data-key="">
+                                    <a href="/enrollment/change" class="nav-link" data-key="t-leave-return-app">
                                         휴학/복학 신청
                                     </a>
                                 </li>
@@ -426,12 +390,12 @@
 
                     <li class="nav-item">
                         <a class="nav-link menu-link" href="#sidebargraduation" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarPages">
-                            <i class="las la-graduation-cap"></i> <span data-key="">졸업</span>
+                            <i class="las la-graduation-cap"></i> <span data-key="t-graduation">졸업</span>
                         </a>
                         <div class="collapse menu-dropdown" id="sidebargraduation">
                             <ul class="nav nav-sm flex-column">
                                 <li class="nav-item">
-                                    <a href="/stdnt/gradu/main/All" class="nav-link" data-key=""> 졸업 현황 </a>
+                                    <a href="/stdnt/gradu/main/All" class="nav-link" data-key="t-graduation-status"> 졸업 현황 </a>
                                 </li>
                             </ul>
                         </div>
@@ -439,51 +403,50 @@
 
                     <li class="nav-item">
                         <a class="nav-link menu-link" href="#sidebarcertificate" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLanding">
-                            <i class="las la-certificate"></i> <span data-key="">제증명 발급</span>
+                            <i class="las la-certificate"></i> <span data-key="t-certificates">제증명 발급</span>
                         </a>
                         <div class="collapse menu-dropdown" id="sidebarcertificate">
                             <ul class="nav nav-sm flex-column">
                                 <li class="nav-item">
-                                    <a href="/certificates/DocxForm" class="nav-link" data-key="">발급</a>
+                                    <a href="/certificates/DocxForm" class="nav-link" data-key="t-issuance">발급</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="/certificates/DocxHistory" class="nav-link" data-key="">문서함</a>
+                                    <a href="/certificates/DocxHistory" class="nav-link" data-key="t-document-box">문서함</a>
                                 </li>
                             </ul>
                         </div>
                     </li>
 
 
-                    <li class="menu-title"><span data-key="">학습</span></li>
+                    <li class="menu-title"><span data-key="t-learning">학습</span></li>
 
                     <li class="nav-item">
-                        <a class="nav-link menu-link" href="/dashboard/student" data-key="">
-                            <i class="las la-university"></i> <span data-key="">학습 관리</span>
+                        <a class="nav-link menu-link" href="/dashboard/student" data-key="t-learning-management">
+                            <i class="las la-university"></i> <span data-key="t-learning-management">학습 관리</span>
                         </a>
                     </li>
 
                     <li class="nav-item">
                         <a class="nav-link menu-link" href="/counsel/std">
-                            <i class="las la-comments"></i> <span data-key="">상담</span>
+                            <i class="las la-comments"></i> <span data-key="t-counseling">상담</span>
                         </a>
                     </li>
 
-                    <li class="menu-title"><span data-key="">학교 소개</span></li>
+                    <li class="menu-title"><span data-key="t-school-intro">학교 소개</span></li>
 
                     <li class="nav-item">
-                        <a class="nav-link menu-link" href="/schedule/calendar" data-key="">
-                            <i class="las la-calendar"></i> <span data-key="">학사일정</span>
+                        <a class="nav-link menu-link" href="/schedule/calendar" data-key="t-academic-calendar">
+                            <i class="las la-calendar"></i> <span data-key="t-academic-calendar">학사일정</span>
                         </a>
 
                     <li class="nav-item">
-                        <a class="nav-link menu-link" href="/info/campus/map" data-key="">
-                            <i class="las la-calendar"></i> <span data-key="">캠퍼스맵</span>
+                        <a class="nav-link menu-link" href="/info/campus/map" data-key="t-campus-map">
+                            <i class="las la-calendar"></i> <span data-key="t-campus-map">캠퍼스맵</span>
                         </a>
                     </li>
                 </ul>
             </div>
-            <!-- Sidebar -->
-        </div>
+            </div>
         </sec:authorize>
 
         <sec:authorize access="hasRole('ROLE_PROF')">
@@ -492,34 +455,32 @@
                 <div id="two-column-menu">
                 </div>
                 <ul class="navbar-nav" id="navbar-nav">
-                    <li class="menu-title"><span data-key="">학사 정보</span></li>
+                    <li class="menu-title"><span data-key="t-academic-info">학사 정보</span></li>
                     <li class="nav-item">
                         <a class="nav-link menu-link" href="#sidebarLecture" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarDashboards">
-                            <i class="las la-compass"></i> <span data-key="">강의</span>
+                            <i class="las la-compass"></i> <span data-key="t-lecture">강의</span>
                         </a>
                         <div class="collapse menu-dropdown" id="sidebarLecture">
                             <ul class="nav nav-sm flex-column">
                                 <li class="nav-item">
-                                    <a href="dashboard-analytics.html" class="nav-link" data-key=""> 나의 강의 </a>
+                                    <a href="dashboard-analytics.html" class="nav-link" data-key="t-my-lecture"> 나의 강의 </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="dashboard-crm.html" class="nav-link" data-key="">강의 계획서 제출</a>
+                                    <a href="dashboard-crm.html" class="nav-link" data-key="t-syllabus-submission">강의 계획서 제출</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="/prof/lecture/main/All" class="nav-link" data-key="">강의 평가</a>
+                                    <a href="/prof/lecture/main/All" class="nav-link" data-key="t-lecture-evaluation">강의 평가</a>
                                 </li>
                             </ul>
                         </div>
-                    </li> <!-- end Dashboard Menu -->
-
-                    <li class="nav-item">
+                    </li> <li class="nav-item">
                         <a class="nav-link menu-link" href="#sidebarGrade" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarDashboards">
-                            <i class="las la-comments"></i> <span data-key="">성적</span>
+                            <i class="las la-comments"></i> <span data-key="t-grade">성적</span>
                         </a>
                         <div class="collapse menu-dropdown" id="sidebarGrade">
                             <ul class="nav nav-sm flex-column">
                                 <li class="nav-item">
-                                    <a href="/prof/grade/main/All" class="nav-link" data-key="">성적 관리</a>
+                                    <a href="/prof/grade/main/All" class="nav-link" data-key="t-grade-management">성적 관리</a>
                                 </li>
                             </ul>
                         </div>
@@ -527,38 +488,28 @@
 
                     <li class="nav-item">
                         <a class="nav-link menu-link" href="#sidebarCounsel" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarDashboards">
-                            <i class="las la-comments"></i> <span data-key="">상담</span>
+                            <i class="las la-comments"></i> <span data-key="t-counseling">상담</span>
                         </a>
                         <div class="collapse menu-dropdown" id="sidebarCounsel">
                             <ul class="nav nav-sm flex-column">
                                 <li class="nav-item">
-                                    <a href="/counselprof/prof" class="nav-link" data-key="">상담 요청</a>
+                                    <a href="/counselprof/prof" class="nav-link" data-key="t-counseling-request">상담 요청</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="dashboard-crm.html" class="nav-link" data-key="">상담 관리</a>
+                                    <a href="dashboard-crm.html" class="nav-link" data-key="t-counseling-management">상담 관리</a>
                                 </li>
                             </ul>
                         </div>
-                    </li> <!-- end Dashboard Menu -->
-                </ul>
+                    </li> </ul>
             </div>
         </div>
         </sec:authorize>
 
         <div class="sidebar-background"></div>
     </div>
-    <!-- Left Sidebar End -->
-    <!-- Vertical Overlay-->
     <div class="vertical-overlay"></div>
 
-    <!-- ============================================================== -->
-    <!-- Start right Content here -->
-    <!-- ============================================================== -->
     <div class="main-content">
 
         <div class="page-content">
             <div id="main-container" class="container-fluid">
-
-
-
-

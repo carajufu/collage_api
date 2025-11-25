@@ -10,6 +10,7 @@ import kr.ac.collage_api.common.attach.service.UploadController;
 import kr.ac.collage_api.stdnt.mapper.StdntInfoMapper;
 import kr.ac.collage_api.stdnt.service.StdntInfoService;
 import kr.ac.collage_api.vo.AcntVO;
+import kr.ac.collage_api.vo.FileDetailVO;
 import kr.ac.collage_api.vo.StdntVO;
 import lombok.extern.slf4j.Slf4j;
 
@@ -45,15 +46,27 @@ public class StdntInfoServiceImpl implements StdntInfoService {
     public int updateInfo(StdntVO vo) {
         return stdntMapper.updateInfo(vo);
     }
+    
+    @Override
+    public FileDetailVO getProfileImageDetail(String acntId) {
+        return stdntMapper.getProfileImageDetail(acntId);
+    }
 
     /* ------------------------------------------
-       프로필 이미지 파일 업로드 → FILE_GROUP_NO 저장
+       프로필 이미지 업로드 (UploadController 활용)
+       → fileGroupNo 생성 후 DB 저장
     ------------------------------------------- */
     @Override
     public long updateProfileImage(String acntId, MultipartFile uploadFile) {
 
+        if (uploadFile == null || uploadFile.isEmpty()) {
+            return 0;
+        }
+
+        // 파일 업로드 처리 (파일 1개)
         long fileGroupNo = uploadService.fileUpload(new MultipartFile[]{uploadFile});
 
+        // 학생 테이블에 fileGroupNo 저장
         stdntMapper.updateProfileImage(acntId, fileGroupNo);
 
         return fileGroupNo;
@@ -69,7 +82,7 @@ public class StdntInfoServiceImpl implements StdntInfoService {
     }
 
     /* ------------------------------------------
-       비밀번호 검증 (비밀번호 확인 모달)
+       비밀번호 확인 (모달)
     ------------------------------------------- */
     @Override
     public boolean checkPassword(String stdntNo, String rawPassword) {
@@ -79,14 +92,17 @@ public class StdntInfoServiceImpl implements StdntInfoService {
         if (encodedPw == null || encodedPw.isEmpty()) {
             return false;
         }
+
         return passwordEncoder.matches(rawPassword, encodedPw);
     }
 
     /* ------------------------------------------
-       프로필 이미지 파일 경로 조회
+       프로필 이미지 경로 조회
+       (fileGroupNo → FILE_DETAIL 경로 조회)
     ------------------------------------------- */
     @Override
     public String getProfileImage(String acntId) {
         return stdntMapper.getProfileImage(acntId);
     }
+
 }

@@ -157,11 +157,20 @@
     
     <select id="getStudentSemstrList" resultType="kr.ac.collage_api.grade.vo.GradeScreVO">
         SELECT
-            SEMSTR_SCRE_INNB, YEAR, SEMSTR
+            SEMSTR_SCRE_INNB
+            ,YEAR
+            ,SEMSTR
             ,NVL(SEMSTR_TOTPOINT, 0) AS semstrTotpoint
             ,NVL(PNT_AVRG, 0) AS pntAvrg
             ,NVL(PNT_GRAD, '-') AS pntGrad
             ,NVL(TOT_ACQS_PNT, 0) AS totAcqsPnt
+
+            ,(
+                SELECT COUNT(*)
+                FROM SBJECT_SCRE S
+                WHERE S.SEMSTR_SCRE_INNB = SEMSTR_SCRE_INNB
+            ) AS sbjectCnt
+
         FROM SEMSTR_SCRE
         WHERE STDNT_NO = #{stdntNo}
         ORDER BY YEAR DESC, SEMSTR DESC

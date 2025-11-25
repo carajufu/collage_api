@@ -24,6 +24,9 @@
                     <div class="col">
                         <div class="card card-body rounded-3 shadow-sm" data-lec-no="${lecture.estbllctreCode}">
                                 <h4 class="card-title">${lecture.lctreNm}</h4>
+                                <h1>우리 반에 <br>
+                                악마가 <br>
+                                살고있어요</h1>
                                 <p class="card-subtitle">${lecture.lctrum}</p>
                                 <p class="card-subtitle">${lecture.sklstfNm}</p>
                         </div>

@@ -13,7 +13,7 @@
             <div class="card-body">
 
 				<div class="d-flex justify-content-end mb-2">
-				    <button type="button" class="btn btn-outline-secondary btn-sm" id="fillSampleBtn">
+				    <button type="button" class="btn btn-outline-primary btn-sm" id="fillSampleBtn">
 				        샘플 데이터 입력
 				    </button>
 				</div>
@@ -272,9 +272,9 @@
                         </tbody>
                     </table>
 
-                    <div class="d-flex justify-content-between">
                         <h6 style="color: LightSalmon;">AI가 작성하는 내용은 실수를 할 수 있습니다. 중요한 정보는 재차 확인하세요</h6>
-                        <a href="/compe/detail" class="btn btn-primary btn-sm">생성된 자기소개서 확인하기</a>
+                    <div class="d-flex justify-content-end">
+                        <a href="/compe/detail" class="btn btn-primary btn-sm me-2">생성된 자기소개서 확인하기</a>
                         <button type="submit" class="btn btn-primary btn-sm" id="generateBtn">자기소개서 생성</button>
                     </div>
 

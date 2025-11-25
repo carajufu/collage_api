@@ -1,5 +1,4 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" isELIgnored="false" %>
-
 <%@ include file="../header.jsp" %>
 
 <div class="row pt-3 px-5">
@@ -18,7 +17,6 @@
 <div class="row pt-3 px-5">
     <div class="col-xxl-12 col-12">
 
-  <!-- 검색창 추가               -->
   <div class="d-flex justify-content-end mb-1">
     <input type="text" id="lectureSearch" class="form-control w-25" placeholder="강의명 / 코드 / 연도 / 학기 검색">
   </div>
@@ -59,7 +57,7 @@
               <td class="text-center">${lecture.lctreUseLang}</td>
 
               <td class="text-center">
-                <a href="/prof/lecture/main/detail/${lecture.estbllctreCode}" class="btn btn-success btn-sm">
+                <a href="/prof/lecture/main/detail/${lecture.estbllctreCode}" class="btn btn-outline-primary btn-sm">
                   상세
                 </a>
               </td>
@@ -78,12 +76,17 @@
 document.addEventListener("DOMContentLoaded", () => {
   const searchInput = document.getElementById("lectureSearch");
   const table = document.getElementById("lectureTable");
+
+  if (!table || !searchInput) {
+    return;
+  }
+
   const rows = table.getElementsByTagName("tr");
 
   searchInput.addEventListener("keyup", () => {
     const keyword = searchInput.value.toLowerCase();
 
-    for (let i = 1; i < rows.length; i++) {
+    for (let i = 1; i < rows.length; i++) { 
       const rowText = rows[i].innerText.toLowerCase();
 
       if (rowText.includes(keyword)) {
