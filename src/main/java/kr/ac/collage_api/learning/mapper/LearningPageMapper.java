@@ -31,4 +31,9 @@ public interface LearningPageMapper {
     String isCorrect(String quizCode, String quizExCode);
 
     LectureBbsVO getLectureBbs(String lecNo, String type);
+
+    Map<String, Object> getBoard(Map<String, Object> paramMap);
+
+    List<AtendAbsncVO> getAttend(@Param("estbllctreCode") String estbllctreCode,
+                                 @Param("stdntNo") String stdntNo);
 }

@@ -17,40 +17,36 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Collage</title>
 
-<!-- App favicon -->
-<link rel="shortcut icon" href="/favicon.ico">
+    <!-- App favicon -->
+    <link rel="shortcut icon" href="/favicon.ico">
 
-<!-- plugin css -->
-<link href="/assets/libs/jsvectormap/jsvectormap.min.css"
-	rel="stylesheet" type="text/css" />
+    <!-- plugin css -->
+    <link href="/assets/libs/jsvectormap/jsvectormap.min.css" rel="stylesheet" type="text/css" />
 
-<!-- Bootstrap Css -->
-<link href="/assets/css/bootstrap.min.css" rel="stylesheet"
-	type="text/css" />
-<!-- Icons Css -->
-<link href="/assets/css/icons.min.css" rel="stylesheet" type="text/css" />
-<!-- App Css-->
-<link href="/assets/css/app.min.css" rel="stylesheet" type="text/css" />
-<!-- custom Css-->
-<link href="/assets/css/custom.css" rel="stylesheet" type="text/css" />
+    <!-- Bootstrap Css -->
+    <link href="/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <!-- Icons Css -->
+    <link href="/assets/css/icons.min.css" rel="stylesheet" type="text/css" />
+    <!-- App Css-->
+    <link href="/assets/css/app.min.css" rel="stylesheet" type="text/css" />
+    <!-- custom Css-->
+    <link href="/assets/css/custom.css" rel="stylesheet" type="text/css" />
 
-<!-- JAVASCRIPT -->
-<script src="/assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
-<script src="/assets/js/pages/plugins/lord-icon-2.1.0.js"></script>
-<script src="/assets/js/plugins.js"></script>
-<script src="/assets/js/app.js" defer></script>
-<script src="/assets/js/layout.js"></script>
+    <!-- JAVASCRIPT -->
+    <script src="/assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="/assets/js/pages/plugins/lord-icon-2.1.0.js"></script>
+    <script src="/assets/js/plugins.js"></script>
+    <script src="/assets/js/app.js" defer></script>
+    <script src="/assets/js/layout.js"></script>
 
 <script src="/assets/libs/simplebar/simplebar.min.js"></script>
 <script src="/assets/libs/node-waves/waves.min.js"></script>
 
-<!-- jQuery-3.6.0.min -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"
-	integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
-	crossorigin="anonymous"></script>
+    <!-- jQuery-3.6.0.min -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 
-<!-- axios -->
-<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <!-- axios -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
 </head>
 <body>
@@ -96,17 +92,17 @@
 						.querySelector(".nav-link.menu-link[href='" + openId
 								+ "']");
 
-				if (collapse) {
-					collapse.classList.add("show");
-				}
-				if (trigger) {
-					trigger.setAttribute("aria-expanded", "true");
-				}
-			}
-		});
-	</script>
-	<!-- Begin page -->
-	<div id="layout-wrapper">
+            if(collapse) {
+                collapse.classList.add("show");
+            }
+            if(trigger) {
+                trigger.setAttribute("aria-expanded", "true");
+            }
+        }
+    });
+</script>
+<!-- Begin page -->
+<div id="layout-wrapper">
 
 		<header id="page-topbar">
 			<div class="layout-width">

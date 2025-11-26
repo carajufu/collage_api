@@ -106,12 +106,22 @@ document.addEventListener("DOMContentLoaded", function () {
     if (result !== "success") {
       pwFailCount++;
       if (pwFailCount >= 3) {
-        alert("비밀번호 3회 오류. 정보 수정이 제한됩니다.");
+          Swal.fire({
+              icon: 'error',
+              text: "비밀번호 3회 오류. 정보 수정이 제한됩니다.",
+              confirmButtonColor: '#222E83',
+              confirmButtonText: '확인'
+          });
         pwCheckModal.hide();
         pwCheckInput.value = "";
         return;
       }
-      alert("비밀번호가 일치하지 않습니다.");
+        Swal.fire({
+            icon: 'error',
+            text: "비밀번호가 일치하지 않습니다.",
+            confirmButtonColor: '#222E83',
+            confirmButtonText: '확인'
+        });
       pwCheckInput.value = "";
       return;
     }
@@ -147,7 +157,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const result = await res.text();
     if (result.trim() !== "success") {
-      alert("정보 수정 중 오류가 발생했습니다.");
+        Swal.fire({
+            icon: 'error',
+            text: "정보 수정 중 오류가 발생했습니다.",
+            confirmButtonColor: '#222E83',
+            confirmButtonText: '확인'
+        });
       return;
     }
 
