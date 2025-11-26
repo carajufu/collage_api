@@ -1,6 +1,4 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" isELIgnored="false" %>
-<%@ taglib prefix="c" uri="jakarta.tags.core" %>
-<%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 
 <%@ include file="../header.jsp" %>
 
@@ -81,7 +79,7 @@
                                            value="${evlDoneMap[lecture.estbllctreCode]}" />
                                     <c:choose>
                                         <c:when test="${done}">
-                                            <button class="btn btn-danger btn-sm px-3" disabled>
+                                            <button class="btn btn-outline-primary btn-sm px-3" disabled>
                                                 평가완료
                                             </button>
                                         </c:when>

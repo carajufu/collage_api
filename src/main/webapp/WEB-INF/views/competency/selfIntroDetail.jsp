@@ -1,11 +1,21 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ include file="../header.jsp" %>
 
-<div class="card-header">
-    <h3 class="fw-bold fs-3">자기소개서 이어쓰기 & 버전관리</h3>
-</div>
-
-<div class="card-body">
+    <div class="row pt-3 px-5">
+        <div class="col-xxl-12 col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item active"><a href="/dashboard/student"><i class="las la-home"></i></a></li>
+                    <li class="breadcrumb-item active"><a href="#">졸업</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">자기소개서 목록</li>
+                </ol>
+            </nav>
+        </div>
+        <div class="col-12 page-title mt-2">
+            <h2 class="fw-semibold">자기소개서 목록</h2>
+            <div class="my-4 p-0 bg-primary" style="width: 100px; height:5px;"></div>
+        </div>
+        <div class="col-xxl-12 col-12">
 
     <!-- 저장된 자소서 목록 -->
     <div class="mb-3">
@@ -67,6 +77,7 @@
 		</div>
     </div>
 </div>
+    </div>
 
 <script>
 document.querySelectorAll(".manage-item").forEach(function(item) {

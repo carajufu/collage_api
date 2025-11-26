@@ -13,15 +13,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Collage</title>
 
+    <!-- App favicon -->
     <link rel="shortcut icon" href="/favicon.ico">
 
+    <!-- plugin css -->
     <link href="/assets/libs/jsvectormap/jsvectormap.min.css" rel="stylesheet" type="text/css" />
 
+    <!-- Bootstrap Css -->
     <link href="/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <!-- Icons Css -->
     <link href="/assets/css/icons.min.css" rel="stylesheet" type="text/css" />
+    <!-- App Css-->
     <link href="/assets/css/app.min.css" rel="stylesheet" type="text/css" />
+    <!-- custom Css-->
     <link href="/assets/css/custom.css" rel="stylesheet" type="text/css" />
 
+    <!-- JAVASCRIPT -->
     <script src="/assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="/assets/js/pages/plugins/lord-icon-2.1.0.js"></script>
     <script src="/assets/js/plugins.js"></script>
@@ -31,8 +38,10 @@
     <script src="/assets/libs/simplebar/simplebar.min.js"></script>
     <script src="/assets/libs/node-waves/waves.min.js"></script>
 
+    <!-- jQuery-3.6.0.min -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 
+    <!-- axios -->
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
 </head>
@@ -83,6 +92,7 @@
         }
     });
 </script>
+<!-- Begin page -->
 <div id="layout-wrapper">
 
     <header id="page-topbar">
@@ -264,6 +274,7 @@
         </div>
     </header>
 
+    <!-- removeNotificationModal -->
     <div id="removeNotificationModal" class="modal fade zoomIn" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -286,6 +297,7 @@
 
             </div></div></div><div class="app-menu navbar-menu">
         <div class="navbar-brand-box">
+            <!-- Dark Logo-->
             <a href="/student/welcome" class="logo logo-dark">
                     <span class="logo-sm">
                         <img src="/assets/images/logo-sm.png" alt="" height="22">
@@ -294,6 +306,7 @@
                         <img src="/assets/images/logo-dark.png" alt="" height="17">
                     </span>
             </a>
+            <!-- Light Logo-->
             <a href="/student/welcome" class="logo logo-light">
                     <span class="logo-sm">
                         <img src="/assets/images/logo-sm.png" alt="" height="22">
@@ -322,14 +335,15 @@
                         <div class="collapse menu-dropdown" id="sidebarRegist">
                             <ul class="nav nav-sm flex-column">
                                 <li class="nav-item">
-                                    <a href="dashboard-analytics.html" class="nav-link" data-key="t-payment"> 납부 </a>
+                                    <a href="/payinfo/studentView/${user.username}" class="nav-link" data-key="t-payment"> 납부 </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="dashboard-crm.html" class="nav-link" data-key="t-payment-history"> 납부 내역 조회 </a>
+                                    <a href="/payinfo/stdnt/list" class="nav-link" data-key="t-payment-history"> 납부 내역 조회 </a>
                                 </li>
                             </ul>
                         </div>
-                    </li> <li class="nav-item">
+                    </li> <!-- end Dashboard Menu -->
+                    <li class="nav-item">
                         <a class="nav-link menu-link" href="#sidebarLecture" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarApps">
                             <i class="las la-book"></i> <span data-key="t-course">수강</span>
                         </a>
@@ -368,7 +382,9 @@
                                 </li>
                             </ul>
                         </div>
-                    </li> <li class="nav-item">
+                    </li> <!-- end Dashboard Menu -->
+
+                    <li class="nav-item">
                         <a class="nav-link menu-link" href="#sidebarEnrollment" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarAuth">
                             <i class="las la-id-card"></i> <span data-key="t-enrollment">학적</span>
                         </a>
@@ -397,6 +413,12 @@
                                 <li class="nav-item">
                                     <a href="/stdnt/gradu/main/All" class="nav-link" data-key="t-graduation-status"> 졸업 현황 </a>
                                 </li>
+                                <li class="nav-item">
+                                    <a href="/compe/main" class="nav-link" data-key=""> 자기소개서 도우미 </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="/compe/detail" class="nav-link" data-key=""> 자기소개서 목록 </a>
+                                </li>
                             </ul>
                         </div>
                     </li>
@@ -421,7 +443,7 @@
                     <li class="menu-title"><span data-key="t-learning">학습</span></li>
 
                     <li class="nav-item">
-                        <a class="nav-link menu-link" href="/dashboard/student" data-key="t-learning-management">
+                        <a class="nav-link menu-link" href="/dashboard/student">
                             <i class="las la-university"></i> <span data-key="t-learning-management">학습 관리</span>
                         </a>
                     </li>
@@ -432,21 +454,29 @@
                         </a>
                     </li>
 
+                    <li class="nav-item">
+                        <a class="nav-link menu-link" href="/schedule/timetable">
+                            <i class="las la-table"></i> <span data-key="t-timetable">시간표</span>
+                        </a>
+                    </li>
+
                     <li class="menu-title"><span data-key="t-school-intro">학교 소개</span></li>
 
                     <li class="nav-item">
-                        <a class="nav-link menu-link" href="/schedule/calendar" data-key="t-academic-calendar">
+                        <a class="nav-link menu-link" href="/schedule/calendar">
                             <i class="las la-calendar"></i> <span data-key="t-academic-calendar">학사일정</span>
                         </a>
+                    </li>
 
                     <li class="nav-item">
-                        <a class="nav-link menu-link" href="/info/campus/map" data-key="t-campus-map">
-                            <i class="las la-calendar"></i> <span data-key="t-campus-map">캠퍼스맵</span>
+                        <a class="nav-link menu-link" href="/info/campus/map">
+                            <i class="las la-map-marked"></i> <span data-key="t-campus-map">캠퍼스맵</span>
                         </a>
                     </li>
                 </ul>
             </div>
-            </div>
+            <!-- Sidebar -->
+        </div>
         </sec:authorize>
 
         <sec:authorize access="hasRole('ROLE_PROF')">
@@ -475,7 +505,7 @@
                         </div>
                     </li> <li class="nav-item">
                         <a class="nav-link menu-link" href="#sidebarGrade" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarDashboards">
-                            <i class="las la-comments"></i> <span data-key="t-grade">성적</span>
+                            <i class="las la-scroll"></i> <span data-key="t-grade">성적</span>
                         </a>
                         <div class="collapse menu-dropdown" id="sidebarGrade">
                             <ul class="nav nav-sm flex-column">
@@ -500,16 +530,38 @@
                                 </li>
                             </ul>
                         </div>
-                    </li> </ul>
+                    </li> <!-- end Dashboard Menu -->
+
+                    <li class="nav-item">
+                        <a class="nav-link menu-link" href="/schedule/calendar">
+                            <i class="las la-calendar"></i> <span data-key="t-academic-calendar">학사일정</span>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link menu-link" href="/info/campus/map" data-key="">
+                            <i class=" las la-map-marked"></i> <span data-key="t-campus-map">캠퍼스맵</span>
+                        </a>
+                    </li>
+                </ul>
             </div>
         </div>
         </sec:authorize>
 
         <div class="sidebar-background"></div>
     </div>
+    <!-- Left Sidebar End -->
+    <!-- Vertical Overlay-->
     <div class="vertical-overlay"></div>
 
+    <!-- ============================================================== -->
+    <!-- Start right Content here -->
+    <!-- ============================================================== -->
     <div class="main-content">
 
         <div class="page-content">
             <div id="main-container" class="container-fluid">
+
+
+
+

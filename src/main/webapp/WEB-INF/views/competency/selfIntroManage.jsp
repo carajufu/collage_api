@@ -1,18 +1,21 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="../header.jsp" %>
 
-        <div class="card shadow-sm border-0">
-            <div class="card-header bg-white border-bottom">
-                <h3 class="fw-bold fs-4 mb-0">
-                    자기소개서 데이터 관리
-                </h3>
-                <small class="text-muted">
-                    AI 자기소개서 생성 시 자동으로 반영되는 개인 정보를 설정합니다.
-                </small>
-            </div>
-
-            <!-- 바디 시작 -->
-            <div class="card-body" style="padding: 15px 20px;">
+    <div class="row pt-3 px-5">
+        <div class="col-xxl-12 col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item active"><a href="/dashboard/student"><i class="las la-home"></i></a></li>
+                    <li class="breadcrumb-item active"><a href="#">졸업</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">자기소개서 도우미</li>
+                </ol>
+            </nav>
+        </div>
+        <div class="col-12 page-title mt-2">
+            <h2 class="fw-semibold">자기소개서 도우미</h2>
+            <div class="my-4 p-0 bg-primary" style="width: 100px; height:5px;"></div>
+        </div>
+        <div class="col-xxl-12 col-12">
 
                 <form action="${pageContext.request.contextPath}/compe/manage/save" method="post">
 
@@ -67,7 +70,7 @@
 
             </div>
         </div>
-
+    </div.
 <!-- SweetAlert2 -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
@@ -79,7 +82,7 @@ document.addEventListener("DOMContentLoaded", function () {
             icon: 'success',
             title: '저장되었습니다',
             text: '입력하신 내용이 성공적으로 저장되었습니다.',
-            confirmButtonColor: '#556ee6',
+            confirmButtonColor: '#222E83',
             confirmButtonText: '확인'
         });
     }
