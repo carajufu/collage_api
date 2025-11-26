@@ -159,7 +159,7 @@
 <div class="row pt-3 px-5">
     <div class="col-xxl-12 col-12">
 		<h4 class="fw-bold mt-5 mb-3 text-primary">
-			<i class="bi bi-list-check me-2"></i>납부 내역
+			<i class="bi bi-list-check me-2"></i>납부 상세
 		</h4>
     </div>
     <div class="col-xxl-12 col-12">
