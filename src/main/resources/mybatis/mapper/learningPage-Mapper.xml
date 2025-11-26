@@ -213,4 +213,44 @@
             ORDER BY bbsctt_no DESC
              ) ctt
     </select>
+
+    <select id="getBoard" parameterType="hashMap">
+        SELECT
+            bc.bbsctt_no
+            , bc.bbs_code
+            , bc.parnts_bbsctt_no
+            , bc.file_group_no
+            , bc.bbsctt_sj
+            , bc.bbsctt_cn
+            , bc.bbsctt_writng_de
+            , bc.bbsctt_rdcnt
+            , b.bbs_nm
+            , ac.lctre_nm
+            , skl.sklstf_nm
+        FROM bbs_ctt bc
+        INNER JOIN bbs b
+            ON b.bbs_code = #{code}
+        INNER JOIN estbl_course e
+            ON b.estbllctre_code = e.estbllctre_code
+        INNER JOIN all_course ac
+            ON e.lctre_code = ac.lctre_code
+        INNER JOIN sklstf skl
+            ON bc.acnt_id = skl.acnt_id
+        WHERE  bc.bbsctt_no = #{no}
+    </select>
+
+    <select id="getAttend" parameterType="hashMap" resultType="atendAbsncVO">
+        SELECT
+            aa.atend_absnc_no
+             , aa.week_accto_lrn_no
+             , aa.stdnt_no
+             , aa.atend_sttus_code
+             , TO_CHAR(SYSDATE, 'YYYYMMDD') AS lctre_de
+        FROM atend_absnc aa
+                 INNER JOIN week_accto_lrn wal
+                            ON aa.week_accto_lrn_no = wal.week_accto_lrn_no
+        WHERE wal.estbllctre_code = #{estbllctreCode}
+          AND aa.stdnt_no = #{stdntNo}
+        ORDER BY wal.week
+    </select>
 </mapper>

@@ -5,9 +5,11 @@ import kr.ac.collage_api.learning.service.impl.LearningPageServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
@@ -187,5 +189,40 @@ public class LearningPageController {
         respMap = learningPageService.quizSubmit(quizCode, quizExCode, principal.getName());
 
         return respMap;
+    }
+
+    @GetMapping("/board")
+    public String getBoard(@RequestParam  Map<String, Object> paramMap,
+                           Model model) {
+        Map<String, Object> respMap = learningPageService.getBoard(paramMap);
+
+        model.addAttribute("result", respMap);
+        return "learning/student/learnBoard";
+    }
+
+    @GetMapping("/attend")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> getAttend(@RequestParam(required = false) String estbllctreCode,
+                                                         Principal principal) {
+        if (!StringUtils.hasText(estbllctreCode)) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("status", "error", "message", "estbllctreCode is required"));
+        }
+
+        Map<String, Object> attendPayload = learningPageService.getAttend(estbllctreCode, principal.getName());
+        @SuppressWarnings("unchecked")
+        List<AtendAbsncVO> attendList = (List<AtendAbsncVO>) attendPayload.getOrDefault("list", List.of());
+
+        if (attendList.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("status", "error", "message", "no attendance data"));
+        }
+
+        Map<String, Object> resp = new HashMap<>();
+        resp.put("status", "success");
+        resp.put("data", attendList);
+        resp.put("summary", attendPayload.get("summary"));
+
+        return ResponseEntity.ok(resp);
     }
 }

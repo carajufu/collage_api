@@ -1,13 +1,26 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.0/dist/sweetalert2.min.css">
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.0/dist/sweetalert2.all.min.js"></script>
 
 <%@ include file="../header.jsp" %>
 
-    <div id="main-container" class="container-fluid">
-        <div class="flex-grow-1 p-5 overflow-auto">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.0/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.0/dist/sweetalert2.all.min.js"></script>
 
-			<h2 class="section-title">나의 상담 관리</h2>
+
+<div class="row pt-3 px-5">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/dashboard/student"><i class="las la-home"></i></a></li>
+            <li class="breadcrumb-item"><a href="#">학습</a></li>
+            <li class="breadcrumb-item active" aria-current="page">나의 상담 관리</li>
+        </ol>
+    </nav>
+    <div class="col-12 page-title mt-2">
+        <h2 class="fw-semibold">나의 상담 관리</h2>
+        <div class="my-4 p-0 bg-primary" style="width: 100px; height:5px;"></div>
+    </div>
+</div>
+<div class="row pt-3 px-5">
+    <div class="col-xxl-12 col-12">
 
             <div class="row g-4">
                 <div class="col-md-4">
@@ -326,7 +339,7 @@ document.addEventListener("DOMContentLoaded",function()  {
       </div>
       <form>
         <div class="modal-body">
-                <input type="hidden" id="modalStdntNo"/ >
+                <input type="hidden" id="modalStdntNo"/>
     <!-- 입력 받아야 할것 -->
             <label for="myprofsr" class="form-label">상담 교수님 선택</label>
             <select class="form-select form-select-lg" id="myprofsr" required="">
