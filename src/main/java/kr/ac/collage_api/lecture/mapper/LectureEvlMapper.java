@@ -52,4 +52,16 @@ public interface LectureEvlMapper {
     void insertLctreEvlIem(Map<String, Object> param);
     
     int getNextEvlNo();
+
+	int countEvlItems(Integer evlNo);
+
+	int isLectureEvaluatedByStdnt(Map<String, Object> param);
+
+	List<LectureEvlVO> getEvlItemsByEvlNo(Integer evlNo);
+
+	List<LectureEvlVO> getEvalItemsByEstbllctreCode(String estbllctreCode);
+
+	List<LectureEvlVO> getLectureEvalNarratives(String estbllctreCode);
+
+	List<Map<String, Object>> getLectureEvalScoreCountsMap(String estbllctreCode);
 }

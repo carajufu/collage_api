@@ -52,7 +52,7 @@
             <td>${grade.pntGrad}</td>
             <td>
               <button type="button"
-                      class="btn btn-sm btn-outline-secondary btn-chart"
+                      class="btn btn-sm btn-outline-primary btn-chart"
                       data-bs-toggle="modal"
                       data-bs-target="#chartModal"
                       data-att="${grade.atendScore}"
@@ -68,8 +68,8 @@
     </table>
   </c:if>
 
-  <div class="mt-3">
-    <a href="/stdnt/grade/main/All" class="btn btn-secondary btn-sm">뒤로가기</a>
+  <div class="mt-3 text-end">
+    <a href="/stdnt/grade/main/All" class="btn btn-primary btn-sm">뒤로가기</a>
   </div>
 
 <!-- 평균 그래프 모달 -->

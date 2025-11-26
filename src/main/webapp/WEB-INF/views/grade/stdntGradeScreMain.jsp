@@ -46,49 +46,68 @@
           <tr>
             <td>${sem.year}</td>
 
-            <!-- 학기 배지는 색 통일 -->
             <td>
               <span class="badge bg-primary-subtle text-primary px-3 py-2">
                 ${sem.semstr}
               </span>
             </td>
 
-            <!-- 숫자는 오른쪽 정렬이 보기 편함 -->
-            <td class="text-end">${sem.semstrTotpoint}</td>
-            <td class="text-end">${sem.pntAvrg}</td>
+            <td class="text-end">
+              <c:choose>
+                <c:when test="${sem.sbjectCnt >= 4}">
+                  ${sem.semstrTotpoint}
+                </c:when>
+                <c:otherwise>-</c:otherwise>
+              </c:choose>
+            </td>
 
-            <!-- 등급 배지 색상 조건 -->
+            <td class="text-end">
+              <c:choose>
+                <c:when test="${sem.sbjectCnt >= 4}">
+                  ${sem.pntAvrg}
+                </c:when>
+                <c:otherwise>-</c:otherwise>
+              </c:choose>
+            </td>
+
             <td>
               <c:choose>
-                <c:when test="${sem.pntGrad == 'A+'}">
-                  <span class="badge bg-success px-3 py-2">A+</span>
-                </c:when>
-                <c:when test="${sem.pntGrad == 'A-'}">
-                  <span class="badge bg-success px-3 py-2">A-</span>
-                </c:when>
-                <c:when test="${sem.pntGrad == 'A0'}">
-                  <span class="badge bg-success px-3 py-2">A0</span>
-                </c:when>
-                <c:when test="${sem.pntGrad == 'B+'}">
-                  <span class="badge bg-info px-3 py-2">B+</span>
-                </c:when>
-                <c:when test="${sem.pntGrad == 'B-'}">
-                  <span class="badge bg-success px-3 py-2">B-</span>
-                </c:when>
-                <c:when test="${sem.pntGrad == 'B0'}">
-                  <span class="badge bg-success px-3 py-2">B0</span>
-                </c:when>
-                <c:when test="${sem.pntGrad == 'C+'}">
-                  <span class="badge bg-warning px-3 py-2">C+</span>
-                </c:when>
-                <c:when test="${sem.pntGrad == 'C-'}">
-                  <span class="badge bg-success px-3 py-2">C-</span>
-                </c:when>
-                <c:when test="${sem.pntGrad == 'C0'}">
-                  <span class="badge bg-success px-3 py-2">C0</span>
+                <c:when test="${sem.sbjectCnt < 4}">
+                  <span class="badge bg-danger px-3 py-2">-</span>
                 </c:when>
                 <c:otherwise>
-                  <span class="badge bg-danger px-3 py-2">${sem.pntGrad}</span>
+                  <c:choose>
+                    <c:when test="${sem.pntGrad == 'A+'}">
+                      <span class="badge bg-success px-3 py-2">A+</span>
+                    </c:when>
+                    <c:when test="${sem.pntGrad == 'A-'}">
+                      <span class="badge bg-success px-3 py-2">A-</span>
+                    </c:when>
+                    <c:when test="${sem.pntGrad == 'A0'}">
+                      <span class="badge bg-success px-3 py-2">A0</span>
+                    </c:when>
+                    <c:when test="${sem.pntGrad == 'B+'}">
+                      <span class="badge bg-info px-3 py-2">B+</span>
+                    </c:when>
+                    <c:when test="${sem.pntGrad == 'B-'}">
+                      <span class="badge bg-success px-3 py-2">B-</span>
+                    </c:when>
+                    <c:when test="${sem.pntGrad == 'B0'}">
+                      <span class="badge bg-success px-3 py-2">B0</span>
+                    </c:when>
+                    <c:when test="${sem.pntGrad == 'C+'}">
+                      <span class="badge bg-warning px-3 py-2">C+</span>
+                    </c:when>
+                    <c:when test="${sem.pntGrad == 'C-'}">
+                      <span class="badge bg-success px-3 py-2">C-</span>
+                    </c:when>
+                    <c:when test="${sem.pntGrad == 'C0'}">
+                      <span class="badge bg-success px-3 py-2">C0</span>
+                    </c:when>
+                    <c:otherwise>
+                      <span class="badge bg-danger px-3 py-2">${sem.pntGrad}</span>
+                    </c:otherwise>
+                  </c:choose>
                 </c:otherwise>
               </c:choose>
             </td>

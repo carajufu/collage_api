@@ -226,8 +226,8 @@ document.addEventListener("DOMContentLoaded", function () {
         </table>
       </c:if>
 
-      <div class="mt-4 d-flex justify-content-between">
-        <a href="/prof/grade/main/All" class="btn btn-secondary">목록으로</a>
+      <div class="mt-4 d-flex justify-content-end">
+        <a href="/prof/grade/main/All" class="btn btn-outline-primary me-2">목록으로</a>
 
         <c:if test="${not empty sbjectScr}">
           <button type="submit" id="saveBtn" class="btn btn-primary">저장</button>

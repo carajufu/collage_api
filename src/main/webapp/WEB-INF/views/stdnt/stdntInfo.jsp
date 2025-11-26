@@ -3,6 +3,7 @@
 <%@ include file="../header.jsp" %>
 
 <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script type="text/javascript">
 document.addEventListener("DOMContentLoaded", function () {
@@ -105,12 +106,22 @@ document.addEventListener("DOMContentLoaded", function () {
     if (result !== "success") {
       pwFailCount++;
       if (pwFailCount >= 3) {
-        alert("비밀번호 3회 오류. 정보 수정이 제한됩니다.");
+          Swal.fire({
+              icon: 'error',
+              text: "비밀번호 3회 오류. 정보 수정이 제한됩니다.",
+              confirmButtonColor: '#222E83',
+              confirmButtonText: '확인'
+          });
         pwCheckModal.hide();
         pwCheckInput.value = "";
         return;
       }
-      alert("비밀번호가 일치하지 않습니다.");
+        Swal.fire({
+            icon: 'error',
+            text: "비밀번호가 일치하지 않습니다.",
+            confirmButtonColor: '#222E83',
+            confirmButtonText: '확인'
+        });
       pwCheckInput.value = "";
       return;
     }
@@ -146,7 +157,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const result = await res.text();
     if (result.trim() !== "success") {
-      alert("정보 수정 중 오류가 발생했습니다.");
+        Swal.fire({
+            icon: 'error',
+            text: "정보 수정 중 오류가 발생했습니다.",
+            confirmButtonColor: '#222E83',
+            confirmButtonText: '확인'
+        });
       return;
     }
 
@@ -162,11 +178,18 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     }
 
-    alert("학생 정보가 정상적으로 수정되었습니다.");
-    location.href = "/stdnt/main/info";
+      Swal.fire({
+          icon: 'success',
+          title: '저장되었습니다',
+          text: '입력하신 내용이 성공적으로 저장되었습니다.',
+          confirmButtonColor: '#222E83',
+          confirmButtonText: '확인'
+      })
+          .then(() => location.href = "/stdnt/main/info");
   }
 });
 </script>
+
 <div class="row pt-3 px-5">
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
@@ -179,6 +202,7 @@ document.addEventListener("DOMContentLoaded", function () {
         <div class="my-4 p-0 bg-primary" style="width: 100px; height:5px;"></div>
     </div>
 </div>
+
 <div class="row pt-3 px-5">
     <div class="col-xxl-12 col-12">
 
@@ -233,7 +257,7 @@ document.addEventListener("DOMContentLoaded", function () {
                   <label class="form-label">우편번호</label>
                   <div class="input-group">
                     <input type="text" id="zipcode" name="zip" class="form-control editable" value="${stdntInfo.zip}" readonly>
-                    <button type="button" onclick="execDaumPostcode()" class="btn btn-secondary">찾기</button>
+                    <button type="button" onclick="execDaumPostcode()" class="btn btn-outline-primary">찾기</button>
                   </div>
                 </div>
 
@@ -252,16 +276,24 @@ document.addEventListener("DOMContentLoaded", function () {
           </div>
         </div>
 
-        <!-- 오른쪽: 프로필 / 이미지 -->
+        <!-- 오른쪽 프로필 이미지 카드 -->
         <div class="col-md-4">
           <div class="card">
             <div class="card-header">프로필 이미지</div>
             <div class="card-body text-center">
-
-              <img id="previewImg"
-                   src="<c:out value='${empty profileImagePath ? "/img/default-profile.png" : ("/upload" += profileImagePath)}'/>"
-                   style="width:150px;height:150px;object-fit:cover;border-radius:50%;border:1px solid #ddd;" />
-
+              <c:choose>
+				  <c:when test="${not empty profileImageUrl}">
+				    <img id="previewImg"
+				         src="${profileImageUrl}"
+				         style="width:150px;height:150px;object-fit:cover;border-radius:50%;border:1px solid #ddd;">
+				  </c:when>
+				
+				  <c:otherwise>
+				    <img id="previewImg"
+				         src="/static/assets/images/users/user-dummy-img.jpg"
+				         style="width:150px;height:150px;object-fit:cover;border-radius:50%;border:1px solid #ddd;">
+				  </c:otherwise>
+				</c:choose>
               <input type="file" id="uploadFile" name="uploadFile" class="form-control mt-3">
             </div>
           </div>
@@ -270,8 +302,8 @@ document.addEventListener("DOMContentLoaded", function () {
       </div>
 
       <div class="text-end">
-        <button type="button" id="editBtn" class="btn btn-warning">정보 수정</button>
-        <button type="button" id="cancelBtn" class="btn btn-secondary" style="display:none;">수정 취소</button>
+        <button type="button" id="editBtn" class="btn btn-primary">정보 수정</button>
+        <button type="button" id="cancelBtn" class="btn btn-danger" style="display:none;">수정 취소</button>
         <button type="button" id="saveBtn" class="btn btn-primary" style="display:none;">정보 저장</button>
       </div>
 
@@ -294,7 +326,7 @@ document.addEventListener("DOMContentLoaded", function () {
       </div>
 
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">취소</button>
         <button type="button" id="pwCheckBtn" class="btn btn-primary">확인</button>
       </div>
 
