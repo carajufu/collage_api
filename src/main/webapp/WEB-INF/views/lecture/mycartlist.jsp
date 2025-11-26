@@ -1,21 +1,22 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
 
-			<hr/>
-			<h5 class="card-title mb-3">나의 장바구니</h5>
+			<h5 class="card-title py-4">나의 장바구니</h5>
 	       		<div id="mycart-section">
 	       			<form>
-	       				<div id="cartTable">
-							<table class="table">
-							  <thead class="table-light">
-							  	<tr>
-							  		<th>교과목ID</th><th>이수구분</th><th>강의명</th><th>교수명</th><th>취득학점</th><th>강의실</th><th>강의시간</th><th>수강인원</th><th>신청/취소</th>
-							  	</tr>
-							  </thead>
-							  <tbody id="mycartTbody" class="align-middle">
-							  	<tr><td colspan="9">장바구니 목록을 불러오는 중...</td></tr>
-							  </tbody>
-							</table>
+	       				<div class="card card-custom p-4" id="cartTable">
+	       					<div style="border-radius: 8px;">
+								<table class="table">
+								  <thead class="table-light">
+								  	<tr>
+								  		<th>교과목ID</th><th>이수구분</th><th>강의명</th><th>교수명</th><th>취득학점</th><th>강의실</th><th>강의시간</th><th>수강인원</th><th>신청/취소</th>
+								  	</tr>
+								  </thead>
+								  <tbody id="mycartTbody" class="align-middle">
+								  	<tr><td colspan="9">장바구니 목록을 불러오는 중...</td></tr>
+								  </tbody>
+								</table>
+							</div>
 						</div>
 					</form>
 				</div>
@@ -68,7 +69,7 @@ const mycartTbody = document.getElementById("mycartTbody");
 			  			<td>\${l.allCourse.lctreNm}</td>
 			  			<td>\${l.sklstf.sklstfNm}</td>
 			  			<td>\${l.estblCourse.acqsPnt}</td>
-			  			<td>\${l.estblCourse.lctrum}</td>
+			  			<td>\${l.estblCourse.cmmn} \${l.estblCourse.lctrum.substring(1,4)}호</td>
 			  			<td>\${timeInfo}</td>
 			  			<td>\${l.estblCourse.atnlcNmpr}</td>
 						<td><button type="button" class="btn btn-primary single-submit-btn" id="submitBtn" data-code="\${l.estbllctreCode}">신청</button>
@@ -96,27 +97,41 @@ const mycartTbody = document.getElementById("mycartTbody");
 				estbllctreCode : estbllctreCode
 		};
 
-		if(confirm("선택한 강의를 장바구니에서 삭제하시겠습니까?")) {
-
-			fetch("/atnlc/cart/mycart/edit", {
+		Swal.fire({
+			icon: "question",
+			html: "선택한 강의를 장바구니에서 삭제하시겠습니까?",
+			showCancelButton: true,
+			confirmButtonText: "예",
+			cancelButtonText: "아니오"
+		})
+		.then((result) => {
+			if (result.isConfirmed) {
+				
+				fetch("/atnlc/cart/mycart/edit", {
 				method: "post",
 				headers: {"Content-Type":"application/json;charset=UTF-8"},
 				body: JSON.stringify(data)
-			})
-			.then(response => {
-				if(!response.ok) {
-					throw new Error("서버 오류 발생");
-				}
-				return response.json();
-			})
-			.then(data => {
-				alert("장바구니에서 삭제되었습니다.");
-				loadMyCart();
-			})
-			.catch(error => {
-				console.error("fetch 요청 오류 발생 : ", error);
-			});
-		}
+				})
+				.then(response => {
+					if(!response.ok) {
+						throw new Error("서버 오류 발생");
+					}
+					return response.json();
+				})
+				.then(data => {
+					Swal.fire({
+						icon: "success",
+						title: "삭제 성공",
+						text: "선택하신 강의를 장바구니에서 삭제했습니다."
+					});
+					loadMyCart();
+				})
+				.catch(error => {
+					console.error("fetch 요청 오류 발생 : ", error);
+				});
+			}
+			
+		})
 	});
 
 
@@ -134,35 +149,46 @@ const mycartTbody = document.getElementById("mycartTbody");
 				stdntNo : stdntNo,
 				estbllctreCode : estbllctreCode
 		};
-
-		if(confirm("선택한 강의를 신청하시겠습니까?")) {
-
-			fetch("/atnlc/cart/mycart/submit", {
-				method: "post",
-				headers: {"Content-Type":"application/json;charset=UTF-8"},
-				body: JSON.stringify(data)
-			})
-			.then(response => {
-				if(!response.ok) {
-					throw new Error("서버 오류 발생");
-				}
-				return response.json();
-			})
-			.then(data => {
-
-				const result = data.result;
-
-				alert(`강의가 신청되었습니다.`);
-
-				loadMyCart();
-				loadCourseList();
-			})
-			.catch(error => {
-
-				console.error("fetch 요청 오류 발생 : ", error);
-			});
-
-		}
+		
+		Swal.fire({
+			icon: "question",
+			html: "선택한 강의를 신청하시겠습니까?",
+			showCancelButton: true,
+			confirmButtonText: "예",
+			cancelButtonText: "아니오"
+		})
+		.then((result) => {
+			if (result.isConfirmed) {
+				fetch("/atnlc/cart/mycart/submit", {
+					method: "post",
+					headers: {"Content-Type":"application/json;charset=UTF-8"},
+					body: JSON.stringify(data)
+				})
+				.then(response => {
+					if(!response.ok) {
+						throw new Error("서버 오류 발생");
+					}
+					return response.json();
+				})
+				.then(data => {
+	
+					const result = data.result;
+	
+					Swal.fire({
+						icon: "success",
+						title: "신청 성공",
+						text: "강의가 신청되었습니다."
+					});
+	
+					loadMyCart();
+					loadCourseList();
+				})
+				.catch(error => {
+	
+					console.error("fetch 요청 오류 발생 : ", error);
+				});
+			}
+		})
 
 	})
 
