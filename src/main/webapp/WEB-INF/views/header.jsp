@@ -532,11 +532,9 @@
                         <div class="collapse menu-dropdown" id="sidebarCounsel">
                             <ul class="nav nav-sm flex-column">
                                 <li class="nav-item">
-                                    <a href="/counselprof/prof" class="nav-link" data-key="">상담 요청</a>
+                                    <a href="/counselprof/prof" class="nav-link" data-key="">상담 관리</a>
                                 </li>
-                                <li class="nav-item">
-                                    <a href="dashboard-crm.html" class="nav-link" data-key="">상담 관리</a>
-                                </li>
+
                             </ul>
                         </div>
                     </li> <!-- end Dashboard Menu -->

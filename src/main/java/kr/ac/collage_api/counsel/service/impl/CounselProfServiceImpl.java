@@ -61,7 +61,7 @@ public class CounselProfServiceImpl implements CounselProfService {
 		int result = this.counselProfMapper.patchAccept(cnsltVO);
 
 		if (result>0) {
-			sendNotification(targetId, "상담예약이 완료되었습니다.");
+			sendNotification(targetId, "상담예약이 완료되었습니다.","/counsel/std");
 		}
 		return result;
 	}
@@ -77,7 +77,7 @@ public class CounselProfServiceImpl implements CounselProfService {
 
 		int result = this.counselProfMapper.patchCancl(cnsltVO);
 		if (result > 0) {
-			sendNotification(targetId, "상담이 취소되었습니다. 상담 취소사유를 확인하세요.");
+			sendNotification(targetId, "상담이 취소되었습니다. 상담 취소사유를 확인하세요.","/counsel/std");
 		}
 		return result;
 	}
@@ -92,15 +92,15 @@ public class CounselProfServiceImpl implements CounselProfService {
 
 		int result = this.counselProfMapper.patchResult(cnsltVO);
 		if(result > 0) {
-			sendNotification(targetId,"상담이 완료되었습니다. 상담결과를 확인하세요.");
+			sendNotification(targetId,"상담이 완료되었습니다. 상담결과를 확인하세요.","/counsel/std");
 		}
 		return result;
 	}
 
 
-	public void sendNotification(String targetId, String ntcnCn) {
+	public void sendNotification(String targetId, String ntcnCn,String ntcnItnadr) {
 		String sender = "System 알림";
-		String ntcnItnadr = "/counsel/std";
+
 
 
 		NtcnVO ntcnVO = new NtcnVO();
@@ -127,6 +127,23 @@ public class CounselProfServiceImpl implements CounselProfService {
 				targetId,
 				"/queue/notifications",
 				notification);
+
+	}
+
+	//알림보내기
+	@Transactional
+	@Override
+	public void cnsltnotificate(CnsltVO cnsltVO) {
+		int cnsltInnb = cnsltVO.getCnsltInnb();
+
+		log.info("cnsltnotificate() -> cnsltVO : {}", cnsltVO);
+		String targetId = this.counselProfMapper.selectCnsltStdntNo(cnsltInnb);
+
+		log.info("cnsltnotificate() -> targetId : {}", targetId);
+
+		String url = "/counsel/room/" + cnsltInnb;
+
+		sendNotification(targetId,"상담이 진행됩니다.",url);
 
 	}
 

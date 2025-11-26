@@ -24,7 +24,8 @@ public class BbsCttVO {
 	private int rnum;
 
 	// 작성자 : 교직원
-	private String sklstfNo;
+	private String sklstfId;
+	private String sklstfNm;
 
 	// 작성자 : 학생
 	private String stdntNo;

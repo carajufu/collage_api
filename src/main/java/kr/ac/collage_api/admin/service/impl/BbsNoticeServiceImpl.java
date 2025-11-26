@@ -35,8 +35,11 @@ public class BbsNoticeServiceImpl implements BbsNoticeService {
 		return this.bbsNoticeMapper.list(map);
 	}
 
+	@Transactional
 	@Override
 	public BbsCttVO detail(int bbscttNo) {
+		this.bbsNoticeMapper.updateCount(bbscttNo);
+
 		return this.bbsNoticeMapper.detail(bbscttNo);
 	}
 
