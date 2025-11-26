@@ -81,7 +81,7 @@
                                            value="${evlDoneMap[lecture.estbllctreCode]}" />
                                     <c:choose>
                                         <c:when test="${done}">
-                                            <button class="btn btn-danger btn-sm px-3" disabled>
+                                            <button class="btn btn-outline btn-sm px-3" disabled>
                                                 평가완료
                                             </button>
                                         </c:when>

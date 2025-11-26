@@ -2,17 +2,23 @@
 
 <%@ include file="../header.jsp" %>
 
-<div class="row">
-    <div class="col-xl">
-        <div class="card">
-            <div class="card-header d-flex align-items-center">
-                <h3>자기소개서 생성 도우미</h3>
-                <a href="${pageContext.request.contextPath}/compe/manage"
-                   class="btn btn-primary btn-md ms-auto">내 이력 관리</a>
-            </div>
-            <div class="card-body">
-
+<div class="row pt-3 px-5">
+    <div class="col-xxl-12 col-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item active"><a href="/dashboard/student"><i class="las la-home"></i></a></li>
+                <li class="breadcrumb-item active" aria-current="page"></li>
+            </ol>
+        </nav>
+    </div>
+    <div class="col-12 page-title mt-2">
+        <h2 class="fw-semibold">자기소개서 생성 도우미</h2>
+    </div>
+    <div class="col-xxl-12 col-12">
+            <div class="card-body-text-end">
 				<div class="d-flex justify-content-end mb-2">
+                <a href="${pageContext.request.contextPath}/compe/manage"
+                   class="btn btn-primary me-2">내 이력 관리</a>
 				    <button type="button" class="btn btn-outline-primary btn-sm" id="fillSampleBtn">
 				        샘플 데이터 입력
 				    </button>

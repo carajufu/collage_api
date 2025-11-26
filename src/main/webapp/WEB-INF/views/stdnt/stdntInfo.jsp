@@ -3,6 +3,7 @@
 <%@ include file="../header.jsp" %>
 
 <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script type="text/javascript">
 document.addEventListener("DOMContentLoaded", function () {
@@ -162,8 +163,15 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     }
 
-    alert("학생 정보가 정상적으로 수정되었습니다.");
-    location.href = "/stdnt/main/info";
+        Swal.fire({
+            icon: 'success',
+            title: '저장되었습니다',
+            text: '입력하신 내용이 성공적으로 저장되었습니다.',
+            confirmButtonColor: '#556ee6',
+            confirmButtonText: '확인'
+        }); then(()=>{
+        	location.href = "/stdnt/main/info";        	
+        });
   }
 });
 </script>

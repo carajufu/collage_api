@@ -62,13 +62,10 @@ public class Prof_GradeScreController {
         try {
             gradeService.saveGrades(gradeForm.getGrades(), estbllctreCode);
 
-            redirectAttr.addFlashAttribute("msg", "성적이 저장되었습니다.");
-
-            return "redirect:/prof/grade/main/detail/" + estbllctreCode;
+            return "redirect:/prof/grade/main/detail/" + estbllctreCode + "?saved=Y";
 
         } catch (Exception e) {
-            redirectAttr.addFlashAttribute("msg", "오류가 발생했습니다.");
-            return "redirect:/prof/grade/main/detail/" + estbllctreCode;
+            return "redirect:/prof/grade/main/detail/" + estbllctreCode + "?saved=N";
         }
     }
 
