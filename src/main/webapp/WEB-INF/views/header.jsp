@@ -493,10 +493,10 @@
                         <div class="collapse menu-dropdown" id="sidebarLecture">
                             <ul class="nav nav-sm flex-column">
                                 <li class="nav-item">
-                                    <a href="dashboard-analytics.html" class="nav-link" data-key="t-my-lecture"> 나의 강의 </a>
+                                    <a href="/prof/lecture/list" class="nav-link" data-key="t-my-lecture"> 나의 강의 </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="dashboard-crm.html" class="nav-link" data-key="t-syllabus-submission">강의 계획서 제출</a>
+                                    <a href="/prof/lecture/mng/list" class="nav-link" data-key="t-syllabus-submission">개설 강의 관리</a>
                                 </li>
                                 <li class="nav-item">
                                     <a href="/prof/lecture/main/All" class="nav-link" data-key="t-lecture-evaluation">강의 평가</a>

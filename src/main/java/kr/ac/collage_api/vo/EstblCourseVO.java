@@ -25,15 +25,21 @@ public class EstblCourseVO {
 	private int trmendTestScoreReflctRate;   //기말시험점수반영비율	TRMEND_TEST_SCORE_REFLCT_RATE
 	private String estblYear;                //개설년도	ESTBL_YEAR
 	private String estblSemstr;              //개설학기	ESTBL_SEMSTR
+	private String estblSttus;               //개설상태	ESTBL_STTUS
 
 	private String keyword;					 // 강의 검색 키워드
 	private int totalReqst;				 	 // 총 신청중 인원(=장바구니)
 	private int totalSubmit;				 // 총 신청완료 인원(=수강신청)
+	private String subjctNm;				 // 개설 학과
+	private String cmmn;				 	 // 강의실 건물
+	private String jsonTimetable;
+	private String jsonWeeklyGoals;
 
 	private LctreTimetableVO timetable;		//lctreDfk(LCTRE_DFK), beginTm(BEGIN_TM), endTm(END_TM)
 	private AllCourseVO allCourse;			//lctreNm(LCTRE_NM)
 	private SklstfVO sklstf;				//sklstfNm(SKLSTF_NM), cttpc(CTTPC)
 	private ProfsrVO profsr;				//labrumLc(LABRUM_LC)
+	private List<WeekAcctoLrnVO> weekAcctoLrnVO;
 	private FileDetailVO file;				//FILE_NO, FILE_GROUP_NO, FILE_NM, FILE_STRE_NM, FILE_STREPLACE, FILE_STRE_DE
 
 

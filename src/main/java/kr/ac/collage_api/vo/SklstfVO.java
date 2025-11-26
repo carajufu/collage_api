@@ -21,6 +21,8 @@ public class SklstfVO {
 	private String bassAdres;      //기본주소	BASS_ADRES
 	private String detailAdres;    //상세주소	DETAIL_ADRES
 	private String zip;            //우편번호	ZIP
+	
+	private String profsrNo;
 }
 
 
