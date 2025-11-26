@@ -355,10 +355,10 @@
                         <div class="collapse menu-dropdown" id="sidebarRegist">
                             <ul class="nav nav-sm flex-column">
                                 <li class="nav-item">
-                                    <a href="dashboard-analytics.html" class="nav-link" data-key=""> 납부 </a>
+                                    <a href="/payinfo/studentView/${user.username}" class="nav-link" data-key=""> 납부 </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="dashboard-crm.html" class="nav-link" data-key=""> 납부 내역 조회 </a>
+                                    <a href="/payinfo/stdnt/list" class="nav-link" data-key=""> 납부 내역 조회 </a>
                                 </li>
                             </ul>
                         </div>
@@ -468,16 +468,23 @@
                         </a>
                     </li>
 
+                    <li class="nav-item">
+                        <a class="nav-link menu-link" href="/schedule/timetable">
+                            <i class="las la-table"></i> <span data-key="">시간표</span>
+                        </a>
+                    </li>
+
                     <li class="menu-title"><span data-key="">학교 소개</span></li>
 
                     <li class="nav-item">
                         <a class="nav-link menu-link" href="/schedule/calendar" data-key="">
                             <i class="las la-calendar"></i> <span data-key="">학사일정</span>
                         </a>
+                    </li>
 
                     <li class="nav-item">
                         <a class="nav-link menu-link" href="/info/campus/map" data-key="">
-                            <i class="las la-calendar"></i> <span data-key="">캠퍼스맵</span>
+                            <i class=" las la-map-marked"></i> <span data-key="">캠퍼스맵</span>
                         </a>
                     </li>
                 </ul>
@@ -514,7 +521,7 @@
 
                     <li class="nav-item">
                         <a class="nav-link menu-link" href="#sidebarGrade" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarDashboards">
-                            <i class="las la-comments"></i> <span data-key="">성적</span>
+                            <i class="las la-scroll"></i> <span data-key="">성적</span>
                         </a>
                         <div class="collapse menu-dropdown" id="sidebarGrade">
                             <ul class="nav nav-sm flex-column">
@@ -540,6 +547,18 @@
                             </ul>
                         </div>
                     </li> <!-- end Dashboard Menu -->
+
+                    <li class="nav-item">
+                        <a class="nav-link menu-link" href="/schedule/calendar" data-key="">
+                            <i class="las la-calendar"></i> <span data-key="">학사일정</span>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link menu-link" href="/info/campus/map" data-key="">
+                            <i class=" las la-map-marked"></i> <span data-key="">캠퍼스맵</span>
+                        </a>
+                    </li>
                 </ul>
             </div>
         </div>
