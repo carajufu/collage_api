@@ -19,4 +19,6 @@ public class TaskPresentnVO {
 
     private FileGroupVO fileGroupVO;
     private List<FileDetailVO> fileDetailVOList;
+
+    private String stdntNm;
 }

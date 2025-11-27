@@ -13,6 +13,7 @@
     <!-- girdJs -->
     <link href="/assets/libs/gridjs/theme/mermaid.min.css" rel="stylesheet" type="text/css" />
     <script type="text/javascript" src="/assets/libs/gridjs/gridjs.umd.js"></script>
+    <link href="/assets/css/custom.css" rel="stylesheet" type="text/css" />
 
     <!-- custom -->
     <script type="text/javascript" src="/js/wtModal.js"></script>
