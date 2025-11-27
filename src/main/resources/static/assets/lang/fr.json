@@ -192,6 +192,8 @@
   "t-timetable": "Emploi du temps",
 
   "t-campus-intro": "Présentation de l’école",
-  "t-campus-map": "Plan du campus",
-  "t-academic-schedule": "Planning académique"
+  "t-academic-schedule": "Planning académique",
+
+  "t-selfInfo-helper": "Assistant de lettre de motivation",
+  "t-selfInfo-list": "Liste des lettres de motivation"
 }

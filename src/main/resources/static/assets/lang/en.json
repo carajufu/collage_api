@@ -192,6 +192,8 @@
 	"t-timetable": "Timetable",
 
 	"t-campus-intro": "Campus Introduction",
-	"t-campus-map": "Campus Map",
-	"t-academic-schedule": "Academic Schedule"
+	"t-academic-schedule": "Academic Schedule",
+
+    "t-selfInfo-helper": "Cover Letter Assistant",
+    "t-selfInfo-list": "Cover Letter List"
 }

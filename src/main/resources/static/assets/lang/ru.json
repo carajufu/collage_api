@@ -192,6 +192,8 @@
   "t-timetable": "Расписание",
 
   "t-campus-intro": "О университете",
-  "t-campus-map": "Карта кампуса",
-  "t-academic-schedule": "Учебное расписание"
+  "t-academic-schedule": "Учебное расписание",
+
+  "t-selfInfo-helper": "Помощник по резюме",
+  "t-selfInfo-list": "Список резюме"
 }

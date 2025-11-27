@@ -192,6 +192,8 @@
 	"t-timetable": "课程表",
 
 	"t-campus-intro": "校园介绍",
-	"t-campus-map": "校园地图",
-	"t-academic-schedule": "学事日程"
+	"t-academic-schedule": "学事日程",
+
+    "t-selfInfo-helper": "求职信/个人介绍助手",
+    "t-selfInfo-list": "求职信/个人介绍清单"
 }
