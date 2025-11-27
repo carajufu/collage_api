@@ -89,8 +89,7 @@
 				var collapse = document.querySelector(openId
 						+ ".collapse.menu-dropdown");
 				var trigger = document
-						.querySelector(".nav-link.menu-link[href='" + openId
-								+ "']");
+						.querySelector(".nav-link.menu-link[href='" + openId + "']");
 
             if(collapse) {
                 collapse.classList.add("show");
