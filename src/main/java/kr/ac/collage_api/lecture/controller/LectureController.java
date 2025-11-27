@@ -132,4 +132,15 @@ public class LectureController {
 		}
 		
 	}
+	
+	@GetMapping("/etc")
+	public String etc(Model model, String estbllctreCode) {
+		
+		String no = "A106001";
+		EstblCourseVO estblCourseVO = lectureService.detail(no);
+		
+		model.addAttribute("estblCourseVO", estblCourseVO);
+		
+		return "lecture/etc";
+	}
 }

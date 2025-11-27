@@ -1,4 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <%@ include file="../header.jsp" %>
 
@@ -27,7 +28,7 @@
 								  			<td>${l.estbllctreCode}</td><td>${l.estblCourse.complSe}</td>
 								  			<td>
 								  				<a type="button"
-							  					data-bs-toggle="modal" data-bs-target="#modalPlan" data-item-id="${l.estbllctreCode}">${l.allCourse.lctreNm}&nbsp;
+							  					data-bs-toggle="modal" data-bs-target="#modalDetail" data-item-id="${l.estbllctreCode}">${l.allCourse.lctreNm}&nbsp;
 							  					<i class="ri-search-line"></i></a>
 								  			</td>
 								  			
@@ -82,49 +83,82 @@
 				estbllctreCode : estbllctreCode
 		};
 		
-		if(confirm("수강신청을 취소하시겠습니까?")) {
-			
-			fetch("/atnlc/stdntLctreList/edit", {
-				method: "post",
-				headers: {"Content-Type":"application/json;charset=UTF-8"},
-				body: JSON.stringify(data)
-			})
-			.then(response => {
-				if(!response.ok) {
-					throw new Error("서버 오류 발생");
-				}
-				return response.json();
-			})
-			.then(data => {
-				
-				const result = data.result;
-				
-				if(result < 0) {
-					alert("취소 실패 : 알 수 없는 오류");
-				}
-				
-				alert("취소되었습니다.");
-				
-				location.reload();
-				
-			})
-			.catch(error => {
-				console.error("fetch 요청 오류 발생 : ", error);
-			});
-		}
+		Swal.fire({
+			icon: "question",
+			html: "수강신청을 취소하시겠습니까?",
+			showCancelButton: true,
+			confirmButtonText: "예",
+			cancelButtonText: "아니오"
+		})
+		.then((result) => {
+			if (result.isConfirmed) {
+				fetch("/atnlc/stdntLctreList/edit", {
+					method: "post",
+					headers: {"Content-Type":"application/json;charset=UTF-8"},
+					body: JSON.stringify(data)
+				})
+				.then(response => {
+					if(!response.ok) {
+						throw new Error("서버 오류 발생");
+					}
+					return response.json();
+				})
+				.then(data => {
+					
+					const result = data.result;
+					
+					if(result < 0) {
+						Swal.fire({
+							icon: "error",
+							title: "취소 실패",
+							text: "알 수 없는 오류로 취소에 실패했습니다."
+						});
+					} else {
+						Swal.fire({
+							icon: "success",
+							title: "취소 성공",
+							text: "선택하신 강의의 수강신청을 성공적으로 취소했습니다."
+						})
+						.then(() => {
+							location.reload();
+						})
+					}
+					
+					
+				})
+				.catch(error => {
+					console.error("fetch 요청 오류 발생 : ", error);
+				});
+			}
+		})
 		
 	});
 	
 	
-	// 강의계획서 모달
-	const modalPlan = document.getElementById("modalPlan");
+	// 강의 세부 정보 모달
+	const modalDetail = document.getElementById("modalDetail");
 
-	modalPlan.addEventListener("show.bs.modal",(event)=>{
+	modalDetail.addEventListener("show.bs.modal",(event)=>{
+		console.log("모달 버튼 click");
 		const modalPlanBtn = event.relatedTarget;
 		const estbllctreCode = modalPlanBtn.getAttribute("data-item-id");
+		console.log("estbllctreCode : ", estbllctreCode);
 		
-		const modalBody = modalPlan.querySelector(".modal-body");
+		const modalBody = modalDetail.querySelector(".modal-body");
 		modalBody.innerHTML = `<p>강의 정보를 불러오는 중...</p>`;
+		
+		infoHtml = `
+		        <div class="card-body">
+		            <ul class="nav nav-pills nav-primary mb-3" role="tablist">
+		                <li class="nav-item waves-effect waves-light" role="presentation">
+		                    <a class="nav-link active" data-bs-toggle="tab" href="#home-1" role="tab" aria-selected="true">강의 정보</a>
+		                </li>
+		                <li class="nav-item waves-effect waves-light" role="presentation">
+		                    <a class="nav-link" data-bs-toggle="tab" href="#profile-1" role="tab" aria-selected="false" tabindex="-1">주차별 학습 목표</a>
+		                </li>
+		            </ul>
+		            <div class="tab-content table-fixed-width">
+		`;
 		
 		console.log("체크 : ", estbllctreCode);
 		
@@ -140,83 +174,159 @@
 				
 				let fileHtml = "";
 				
+				// 강의 정보 탭 렌더링
 				if(vo.file) {
 					const fileName = vo.file.fileNm;
 					const fileGroupNo = vo.file.fileGroupNo;
 					const fileStreplace = vo.file.fileStreplace;
 					
 					fileHtml = `
-								<div class="col-sm-4"> 
-									<label for="planFile" class="form-label"> 강의계획서 </label> 
-									<button class="btn btn-outline-primary" id="fileDownload"  data-filegroupno="\${fileGroupNo}">\${fileName}</button>
-									<input type="file" class="form-control" id="planFile" placeholder="Apartment or suite" style="display:none">
-								</div>
+								<td class="text-nowrap text-center">강의계획서</td>
+			                    <th colspan="2">
+			                    	<a href="" id="fileDownload"  
+									   style="margin-left:10px" 
+									   data-filegroupno="\${fileGroupNo}"
+									>
+										파일명 &nbsp;
+										<i class="ri-folder-download-line"></i>
+									</a>
+			                    </th>
 					`;
 				} else {
 					fileHtml = `
-								<div class="col-sm-4"> 
-									<label for="planFile" class="form-label"> 강의계획서 </label> 
-									<a class="btn btn-outline-secondary"  id="fileDownload"  data-filegroupno="0" readonly>파일 없음</a>
-									<input type="file" class="form-control" id="planFile" placeholder="Apartment or suite" style="display:none">
-								</div>
+								<td class="text-nowrap text-center">강의계획서</td>
+			                    <th colspan="2">
+			                    	<a id="fileDownload"  
+									   style="margin-left:10px" 
+									   data-filegroupno="0"
+									>
+									    \${fileName} &nbsp;
+										<i class="ri-folder-download-line"></i>
+									</a>
+			                    </th>
 					`;
 				}
 				
 				let modalHtml = "";
 				
-				modalHtml = `
-					<div class="row g-3"> 
-					<div class="col-md-5"> 
-					<label for="lctreNm" class="form-label">강의명</label>
-						<h5>\${vo.allCourse.lctreNm}</h5>
-					</div> 
-					
-					<div class="col-md-4"> 
-					<label for="lctreCode" class="form-label">강의 코드</label> 
-					<h5>\${vo.estbllctreCode}</h5>
-					</div> 
-
-					<div class="col-sm-3"> 
-					<label for="lctreNm" class="form-label">수강 인원</label> 
-						<h5>\${vo.atnlcNmpr}</h5>
-					</div>
-					
-					
-					<div class="col-md-4"> 
-						<label for="complSe" class="form-label">이수 구분</label> 
-						<h5>\${vo.complSe}</h5>
-					</div>
-					
-					<div class="col-md-1"> </div>
-					<div class="col-md-3"> 
-						<label for="evlMthd" class="form-label">평가 방식</label> 
-						<h5>\${vo.evlMthd}</h5>
-						</select> 
-					</div>
-					
-					<div class="col-md-1"> </div>
-					<div class="col-md-3"> 
-						<label for="acqsPnt" class="form-label">취득 학점</label> 
-						<h5>\${vo.acqsPnt}</h5>
-					</div>
-					
-					<div class="col-sm-5"> 
-					<label for="lctreDfk" class="form-label">강의일</label>
-						<div id="lctreDfk"><h5>\${vo.timetable.lctreDfk} \${vo.timetable.beginTm}, \${vo.timetable.endTm}</h5></div>
-					</div>
-					
-					<div class="col-sm-4"> 
-						<label for="address2" class="form-label">강의실 </label> 
-						<h5>\${vo.lctrum}</h5>
-					</div> 
+				modalHtml += infoHtml;
+				modalHtml += `
+                    <div class="tab-pane active" id="home-1" role="tabpanel">
+						<div class="d-flex">
+							<div class="table-responsive">
+			                    <table class="table table-bordered table-nowrap table-fixed-layout">
+			                        <tr>
+			                            <td class="text-nowrap text-center">강의명</td>
+			                            <th colspan="4">\${vo.allCourse.lctreNm}</th>
+			                            <td class="text-nowrap text-center" scope="row">강의코드</td>
+			                            <th>\${vo.estbllctreCode}</th>
+			                        </tr>
+			                        <tr>
+			                            <td class="text-nowrap text-center">이수구분</td>
+			                            <th colspan="3">\${vo.complSe}</th>
+			                            <td class="text-nowrap text-center">수강인원</td>
+			                            <th colspan="2">\${vo.atnlcNmpr}</th>
+			                        </tr>
+			                        <tr>
+			                            <td class="text-nowrap text-center">평가방식</td>
+			                            <th colspan="3">\${vo.evlMthd}</th>
+			                            <td class="text-nowrap text-center">취득학점</td>
+			                            <th colspan="2">\${vo.acqsPnt}</th>
+			                        </tr>
+			                        <tr>
+			                            <td class="text-nowrap text-center">강의실</td>
+			                            <th colspan="3">\${vo.cmmn}&nbsp;\${vo.lctrum.substring(1,4)}호</th>
+			                            <td class="text-nowrap text-center">강의시간</td>
+			                            <th colspan="2">\${vo.timetable.lctreDfk} \${vo.timetable.beginTm}, \${vo.timetable.endTm}</th>
+			                        </tr>
+			                        <tr>
+			                            <td class="text-nowrap text-center">수업언어</td>
+			                            <th colspan="3">\${vo.lctreUseLang}</th>
+	            `;
+	            
+				modalHtml += fileHtml;
+				
+				modalHtml += `		
+									</tr>
+					                <tr>
+					                    <td colspan="7"></td>
+					                </tr>
+					                <tr>
+					                    <td class="text-nowrap text-center">교수</td>
+					                    <th colspan="3">\${vo.sklstf.sklstfNm}</th>
+					                    <td class="text-nowrap text-center">연구실</td>
+					                    <th colspan="2">\${vo.profsr.labrumLc}</th>
+					                </tr>
+					                <tr>
+					                    <td class="text-nowrap text-center">e-mail</td>
+					                    <th colspan="3">\${vo.profsr.emailAdres}</th>
+					                    <td class="text-nowrap text-center">연락처</td>
+					                    <th colspan="2">\${vo.sklstf.cttpc}</th>
+					                </tr>
+					                <tr>
+					                    <td colspan="7"></td>
+					                </tr>
+					            </table>
+					        </div>
+				        </div>
+			        </div>
 				`;
 				
-				modalBody.innerHTML = modalHtml;
-			})
-			.catch(error => {
-				console.error('fetch 에러 : ', error);
-				modalBody.innerHTML = '<p class="text-danger">강의 정보를 불러오는 데 실패했습니다.</p>';
-			});
+				// 주차별 학습 목표 탭 렌더링
+				
+				if(vo.weekAcctoLrnVO.length = 0) {
+						modalHtml += `
+							<div class="tab-pane" id="profile-1" role="tabpanel">
+			                    <div class="d-flex">
+									<p>주차별 학습 목표가 입력되지 않았습니다.</p>
+								</div>
+	                        </div>	
+						`;
+				} else {
+					
+					modalHtml += `
+						<div class="tab-pane" id="profile-1" role="tabpanel">
+		                    <div class="d-flex">
+								<div class="accordion custom-accordionwithicon-plus" id="accordionWithplusicon" style="width:100%;">
+					`;
+					
+					vo.weekAcctoLrnVO.forEach(w=>{
+						
+						let weekNo = w.week;
+						
+						modalHtml += `
+							<div class="accordion-item">
+						        <h2 class="accordion-header" id="week\${weekNo}">
+						            <button class="accordion-button \${weekNo=='1' ? '' : 'collapsed'}" type="button" data-bs-toggle="collapse" data-bs-target="#week\${weekNo}Content" aria-expanded="true" aria-controls="week\${weekNo}Content">
+						                \${weekNo}주차&nbsp;&nbsp;\${w.lrnThema}
+						            </button>
+						        </h2>
+						        <div id="week\${weekNo}Content" class="accordion-collapse collapse \${weekNo=='1' ? 'show' : ''}" aria-labelledby="week\${weekNo}" data-bs-parent="#weekInfo">
+						            <div class="accordion-body">
+							            <div class="d-flex mb-2 align-items-center">
+						            		<label class="form-label me-2 mb-0" style="width:80%;">\${w.lrnCn}</label>
+							            </div>
+						            </div>
+						        </div>
+						    </div>
+						`;
+					});
+					
+					modalHtml += `
+										</div>
+				                    </div>
+				                </div>
+				            </div>
+				        </div>
+					`;
+			}
+				
+			modalBody.innerHTML = modalHtml;
+		})
+		.catch(error => {
+			console.error('fetch 에러 : ', error);
+			modalBody.innerHTML = '<p class="text-danger">강의 정보를 불러오는 데 실패했습니다.</p>';
+		});
 	});
 	
 	
@@ -244,8 +354,26 @@
 </script>
 <style>
 #form {
-	max-height: 270px;
+	max-height: 600px;
 	overflow-y: auto;
+}
+
+
+.table-fixed-layout {
+	width: 100%;
+	table-layout: fixed;
+}
+
+.table-fixed-height th,
+.table-fixed-height td {
+  /* ⭐️ 핵심: 모든 셀에 최소 높이를 강제 지정 */
+  min-height: 50px; 
+  height: 50px; /* 모든 셀 높이를 50px로 고정 */
+  vertical-align: middle; /* (선택 사항) 셀 내용 세로 중앙 정렬 */
+}
+
+.table-fixed-layout td {
+	background-color: #f3f6f9;
 }
 </style>
 
