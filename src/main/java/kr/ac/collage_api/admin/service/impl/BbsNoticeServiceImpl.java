@@ -11,14 +11,14 @@ import org.springframework.web.multipart.MultipartFile;
 import kr.ac.collage_api.admin.mapper.BbsNoticeMapper;
 import kr.ac.collage_api.admin.service.BbsNoticeService;
 import kr.ac.collage_api.common.attach.service.UploadController;
-import kr.ac.collage_api.vo.BbsVO;
+import kr.ac.collage_api.vo.BbsCttVO;
 import kr.ac.collage_api.vo.FileDetailVO;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
 public class BbsNoticeServiceImpl implements BbsNoticeService {
-	
+
 	@Autowired
 	BbsNoticeMapper bbsNoticeMapper;
 
@@ -31,12 +31,12 @@ public class BbsNoticeServiceImpl implements BbsNoticeService {
 	}
 
 	@Override
-	public List<BbsVO> list(Map<String, Object> map) {
+	public List<BbsCttVO> list(Map<String, Object> map) {
 		return this.bbsNoticeMapper.list(map);
 	}
 
 	@Override
-	public BbsVO detail(int bbscttNo) {
+	public BbsCttVO detail(int bbscttNo) {
 		return this.bbsNoticeMapper.detail(bbscttNo);
 	}
 
@@ -46,12 +46,12 @@ public class BbsNoticeServiceImpl implements BbsNoticeService {
 	}
 
 	@Override
-	public List<BbsVO> adminList() {
+	public List<BbsCttVO> adminList() {
 		return this.bbsNoticeMapper.adminList();
 	}
 
 	@Override
-	public int adminPutDetail(BbsVO bbsVO) {
+	public int adminPutDetail(BbsCttVO bbsVO) {
 		return this.bbsNoticeMapper.adminPutDetail(bbsVO);
 	}
 
@@ -62,7 +62,7 @@ public class BbsNoticeServiceImpl implements BbsNoticeService {
 
 	@Transactional
 	@Override
-	public int adminPostDetail(BbsVO bbsVO) {
+	public int adminPostDetail(BbsCttVO bbsVO) {
 		if(bbsVO.getAttachmentFiles() !=null &&  bbsVO.getAttachmentFiles().length>0) {
 			Long fileGroupNo = uploadController.fileUpload(bbsVO.getAttachmentFiles());
 			log.info("adminPostDetail() -> fileGroupNo : {}", fileGroupNo);
@@ -73,7 +73,7 @@ public class BbsNoticeServiceImpl implements BbsNoticeService {
 	}
 
 	@Override
-	public BbsVO adminDetail(int bbscttNo) {
+	public BbsCttVO adminDetail(int bbscttNo) {
 
 		return this.bbsNoticeMapper.adminDetail(bbscttNo);
 	}
@@ -87,7 +87,7 @@ public class BbsNoticeServiceImpl implements BbsNoticeService {
 
 	@Transactional
 	@Override
-	public int adminPutDetail(BbsVO bbsVO, List<MultipartFile> files, List<Integer> deletedFileSns) {
+	public int adminPutDetail(BbsCttVO bbsVO, List<MultipartFile> files, List<Integer> deletedFileSns) {
 
 		Long fileGroupNo = bbsVO.getFileGroupNo();
 

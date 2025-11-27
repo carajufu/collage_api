@@ -13,7 +13,6 @@ import kr.ac.collage_api.grade.vo.GradeScreVO;
 @Service
 public class GradeScreServiceImpl implements GradeScreService {
 
-    // Mapper Bean을 주입받습니다.
     @Autowired
     private GradeScreMapper gradeMapper;
 
@@ -78,5 +77,6 @@ public class GradeScreServiceImpl implements GradeScreService {
 	public List<GradeScreVO> getStudentSemstrDetail(String semstrScreInnb) {
 		 return gradeMapper.getStudentSemstrDetail(semstrScreInnb);
 	}
+
 
 }

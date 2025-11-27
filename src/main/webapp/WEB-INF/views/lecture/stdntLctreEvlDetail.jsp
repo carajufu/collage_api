@@ -1,169 +1,174 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" isELIgnored="false" %>
-<%@ taglib prefix="c" uri="jakarta.tags.core" %>
-<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
-
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="../header.jsp" %>
 
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-    const submitBtn = document.getElementById("submitBtn");
-    
-    if (submitBtn) {
-        submitBtn.addEventListener("click", function() {
-            
-            const form = document.getElementById("evalForm");
-            
-            const radioGroups = document.querySelectorAll(".eval-score-group");
-            let allAnswered = true;
-            radioGroups.forEach((group, index) => {
-                if (!form.querySelector(`input[name="evlScore_${index + 1}"]:checked`)) {
-                    allAnswered = false;
-                }
-            });
+<div class="row pt-3 px-5">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/dashboard/student"><i class="las la-home"></i></a></li>
+            <li class="breadcrumb-item"><a href="#">학사 정보</a></li>
+            <li class="breadcrumb-item"><a href="/stdnt/lecture/main/All">강의 평가</a></li>
+            <li class="breadcrumb-item active" aria-current="page">${lectureInfo.lctreNm}</li>
+        </ol>
+    </nav>
+    <div class="col-12 page-title mt-2">
+        <h2 class="fw-semibold">${lectureInfo.lctreNm}</h2>
+        <div class="my-4 p-0 bg-primary" style="width: 100px; height:5px;"></div>
+    </div>
+</div>
 
-            if (!allAnswered) {
-                alert("모든 평가 항목(1~5점)에 응답해야 합니다.");
+<div class="row pt-3 px-5">
+    <div class="col-xxl-12 col-12">
+
+        <h2 class="border-bottom pb-3 mb-4 fw-semibold">강의평가</h2>
+
+        <!-- 강의 기본 정보 -->
+        <div class="card mb-4 shadow-sm">
+            <div class="card-header bg-light fw-semibold">강의 정보</div>
+            <div class="card-body p-4">
+                <table class="table table-bordered align-middle mb-0">
+                    <tbody>
+                    <tr>
+                        <th class="table-light" style="width:20%;">강의명</th>
+                        <td>${lectureInfo.lctreNm}</td>
+                    </tr>
+                    <tr>
+                        <th class="table-light">교수명</th>
+                        <td>${lectureInfo.profsrNm}</td>
+                    </tr>
+                    <tr>
+                        <th class="table-light">운영년도</th>
+                        <td>${lectureInfo.estblYear}</td>
+                    </tr>
+                    <tr>
+                        <th class="table-light">학기</th>
+                        <td>${lectureInfo.estblSemstr}</td>
+                    </tr>
+                    <tr>
+                        <th class="table-light">취득학점</th>
+                        <td>${lectureInfo.acqsPnt}학점</td>
+                    </tr>
+                    <tr>
+                        <th class="table-light">이수구분</th>
+                        <td>${lectureInfo.complSe}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 강의 평가 입력 -->
+        <div class="card shadow-sm">
+            <div class="card-header bg-light fw-semibold">평가 항목</div>
+            <div class="card-body p-4">
+
+                <input type="hidden" id="estbllctreCode" value="${estbllctreCode}" />
+
+                <form id="evalForm">
+
+                    <c:forEach var="item" items="${evalItemList}" varStatus="vs">
+                        <div class="mb-4 pb-3 border-bottom eval-block">
+
+                            <input type="hidden"
+                                   class="lctreEvlInnb"
+                                   value="${item.lctreEvlInnb}" />
+
+                            <!-- 문항 내용 -->
+                            <p class="fw-semibold mb-3">
+                                ${vs.count}. ${item.evlCn}
+                            </p>
+
+                            <!-- 점수 선택 (1~5점) -->
+                            <div class="d-flex gap-2 justify-content-center">
+                                <c:forEach var="score" begin="1" end="5">
+                                    <input type="radio"
+                                           class="btn-check"
+                                           name="score_group_${vs.index}"
+                                           id="score_${vs.index}_${score}"
+                                           value="${score}">
+                                    <label class="btn btn-outline-primary w-100"
+                                           for="score_${vs.index}_${score}">
+                                        ${score}점
+                                    </label>
+                                </c:forEach>
+                            </div>
+
+                            <!-- 주관식 의견 -->
+                            <textarea class="form-control mt-3 eval-cn"
+                                      rows="2"
+                                      placeholder="주관식 의견을 입력하세요."></textarea>
+
+                        </div>
+                    </c:forEach>
+
+                    <div class="d-flex justify-content-end mt-4">
+                        <a href="/stdnt/lecture/main/All" class="btn btn-outline-primary me-2">목록으로</a>
+                        <button type="button" id="submitBtn" class="btn btn-primary">평가 제출하기</button>
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+    const submitBtn = document.getElementById("submitBtn");
+
+    submitBtn.addEventListener("click", () => {
+
+        const blocks = document.querySelectorAll(".eval-block");
+
+        const lctreEvlInnb = [];
+        const evlScore = [];
+        const evlCn = [];
+
+        for (let i = 0; i < blocks.length; i++) {
+            const block = blocks[i];
+
+            const innb = block.querySelector(".lctreEvlInnb").value;
+            const checked = block.querySelector("input[type='radio']:checked");
+            const textarea = block.querySelector(".eval-cn");
+
+            if (!checked) {
+                alert((i + 1) + "번 항목의 점수를 선택하세요.");
                 return;
             }
 
-            const evlScore = [];
-            radioGroups.forEach((group, index) => {
-                const score = form.querySelector(`input[name="evlScore_${index + 1}"]:checked`).value;
-                evlScore.push(parseInt(score)); 
-            });
+            lctreEvlInnb.push(Number(innb));
+            evlScore.push(Number(checked.value));
+            evlCn.push(textarea.value.trim());
+        }
 
-            const evlCn = [];
-            document.querySelectorAll(".eval-cn").forEach(textarea => {
-                evlCn.push(textarea.value);
-            });
-            
-            const estbllctreCode = document.getElementById("estbllctreCode").value;
-            
-            const data = {
-                estbllctreCode: estbllctreCode,
+        fetch("/stdnt/lecture/save", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                estbllctreCode: document.getElementById("estbllctreCode").value,
+                lctreEvlInnb: lctreEvlInnb,
                 evlScore: evlScore,
                 evlCn: evlCn
-            };
-
-            if (!confirm("강의평가를 제출하시겠습니까? 제출 후 수정할 수 없습니다.")) {
-                return;
+            })
+        })
+        .then(r => r.text())
+        .then(result => {
+            if (result === "success") {
+                alert("강의평가가 정상적으로 제출되었습니다.");
+                location.href = "/stdnt/lecture/main/All";
+            } else {
+                alert("오류가 발생했습니다.");
             }
-            
-            fetch("/stdnt/lecture/main/detail/post/submit", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(data)
-            })
-            .then(response => response.text())
-            .then(result => {
-                if (result === "success") {
-                    alert("강의평가가 성공적으로 제출되었습니다.");
-                    location.href = "/stdnt/lecture/main/All";
-                } else if (result === "fail_auth") {
-                    alert("인증 정보가 올바르지 않습니다. 다시 로그인해주세요.");
-                } else {
-                    alert("서버 오류로 제출에 실패했습니다. 관리자에게 문의하세요.");
-                }
-            })
-            .catch(error => {
-                console.error("Submit Error:", error);
-                alert("전송 중 오류가 발생했습니다.");
-            });
+        })
+        .catch(err => {
+            console.error(err);
+            alert("서버 통신 중 오류가 발생했습니다.");
         });
-    }
+
+    });
 });
 </script>
 
-<div id="main-container" class="container-fluid">
-  <div class="flex-grow-1 p-3 overflow-auto">
-
-    <h2 class="border-bottom pb-3 mb-4">강의평가</h2>
-
-    <section class="card shadow-sm mb-4">
-      <div class="card-header bg-light">
-        <h5 class="card-title mb-0"><i class="bi bi-journal-text"></i> 강의 정보</h5>
-      </div>
-      <div class="card-body p-4">
-        <div class="row mb-2">
-          <div class="col-md-6"><strong>강의명:</strong> ${lectureInfo.lctreNm}</div>
-          <div class="col-md-6"><strong>교수명:</strong> ${lectureInfo.profsrNm}</div>
-        </div>
-        <div class="row mb-2">
-          <div class="col-md-6"><strong>운영년도:</strong> ${lectureInfo.estblYear}</div>
-          <div class="col-md-6"><strong>학기:</strong> ${lectureInfo.estblSemstr}</div>
-        </div>
-        <div class="row mb-2">
-          <div class="col-md-6"><strong>취득학점:</strong> ${lectureInfo.acqsPnt}</div>
-          <div class="col-md-6"><strong>이수구분:</strong> ${lectureInfo.complSe}</div>
-        </div>
-      </div>
-    </section>
-
-    <section class="card shadow-sm mb-4">
-      <div class="card-header bg-light">
-        <h5 class="card-title mb-0"><i class="bi bi-check2-square"></i> 평가 항목</h5>
-      </div>
-      <div class="card-body p-4">
-        
-        <input type="hidden" id="estbllctreCode" value="${estbllctreCode}" />
-
-        <c:if test="${empty evalItemList}">
-          <div class="alert alert-warning">
-            등록된 평가 항목이 없습니다. 관리자에게 문의하세요.
-          </div>
-        </c:if>
-
-        <c:if test="${not empty evalItemList}">
-          <form id="evalForm">
-            <c:forEach var="item" items="${evalItemList}" varStatus="status">
-              <div class="mb-4 p-3 border rounded">
-                <h6 class="mb-3">
-                  ${status.count}. ${item.evlCn}
-                </h6>
-                
-                <div class="mb-3 d-flex justify-content-center eval-score-group">
-                  <input type="radio" class="btn-check" name="evlScore_${status.count}" id="score_${status.count}_1" value="1" required>
-                  <label class="btn btn-outline-secondary me-2" for="score_${status.count}_1">1점 (매우 불만족)</label>
-
-                  <input type="radio" class="btn-check" name="evlScore_${status.count}" id="score_${status.count}_2" value="2" required>
-                  <label class="btn btn-outline-secondary me-2" for="score_${status.count}_2">2점 (불만족)</label>
-
-                  <input type="radio" class="btn-check" name="evlScore_${status.count}" id="score_${status.count}_3" value="3" required>
-                  <label class="btn btn-outline-primary me-2" for="score_${status.count}_3">3점 (보통)</label>
-
-                  <input type="radio" class="btn-check" name="evlScore_${status.count}" id="score_${status.count}_4" value="4" required>
-                  <label class="btn btn-outline-primary me-2" for="score_${status.count}_4">4점 (만족)</label>
-
-                  <input type="radio" class="btn-check" name="evlScore_${status.count}" id="score_${status.count}_5" value="5" required>
-                  <label class="btn btn-outline-primary" for="score_${status.count}_5">5점 (매우 만족)</label>
-                </div>
-                
-                <div class="mb-2">
-                  <textarea class="form-control eval-cn" rows="2" placeholder="주관식 의견을 남겨주세요 (선택)"></textarea>
-                </div>
-              </div>
-            </c:forEach>
-            
-            <div class="mt-4 d-flex justify-content-between">
-              <a href="/stdnt/lecture/main/All" class="btn btn-secondary">
-                <i class="bi bi-arrow-left"></i> 목록으로
-              </a>
-              <button type="button" id="submitBtn" class="btn btn-primary">
-                <i class="bi bi-send"></i> 평가 제출하기
-              </button>
-            </div>
-          </form>
-        </c:if>
-      </div>
-    </section>
-
-<!--	<%@ include file="../footer.jsp" %>-->
-	
-  </div>
-</div>
-
-
-
-
+<%@ include file="../footer.jsp" %>

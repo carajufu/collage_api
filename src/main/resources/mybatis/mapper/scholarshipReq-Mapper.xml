@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper
+	namespace="kr.ac.collage_api.scholarship.mapper.ScholarshipReqMapper">
+
+	<!-- 신규 등록 -->
+	<insert id="insertScholarship"
+		parameterType="kr.ac.collage_api.vo.ScholarshipReqVO">
+		<selectKey keyProperty="schlReqNo" resultType="int"
+			order="BEFORE">
+			SELECT SCHL_REQ_SEQ.NEXTVAL FROM DUAL
+		</selectKey>
+		INSERT INTO SCHOLARSHIP_REQ (
+		SCHL_REQ_NO, STDNT_NO, SCHL_TYPE,
+		SCHL_AMOUNT, STATUS, DOC_FILE, MEMO, REQ_DE
+		) VALUES (
+		#{schlReqNo},
+		#{stdntNo}, #{schlType}, #{schlAmount},
+		'대기', #{docFile}, #{memo},
+		TO_CHAR(SYSDATE,'YYYYMMDD')
+		)
+	</insert>
+
+
+	<!-- 단건 조회 -->
+	<select id="selectOne" parameterType="int"
+		resultType="kr.ac.collage_api.vo.ScholarshipReqVO">
+		SELECT *
+		FROM SCHOLARSHIP_REQ
+		WHERE SCHL_REQ_NO =
+		#{schlReqNo}
+	</select>
+
+	<!-- 상태 변경 -->
+	<update id="updateStatus" parameterType="map">
+		UPDATE SCHOLARSHIP_REQ
+		SET STATUS = #{status},
+		REJECT_REASON = #{rejectReason}
+		WHERE
+		SCHL_REQ_NO = #{schlReqNo}
+	</update>
+
+	<!-- 지급 처리 (계좌 + 지급일 + 상태) -->
+	<update id="updatePayInfo" parameterType="map">
+		UPDATE SCHOLARSHIP_REQ
+		SET PAY_BANK = #{payBank},
+		PAY_ACNT = #{payAcnt},
+		PAY_DE =
+		TO_CHAR(SYSDATE,'YYYYMMDD'),
+		STATUS = '지급완료'
+		WHERE SCHL_REQ_NO =
+		#{schlReqNo}
+	</update>
+
+	<!-- 신청 정보 수정 (종류/금액/메모) -->
+	<update id="updateScholarship" parameterType="scholarshipReqVO">
+		UPDATE
+		SCHOLARSHIP_REQ
+		SET
+		SCHL_TYPE = #{schlType},
+		SCHL_AMOUNT = #{schlAmount},
+		MEMO = #{memo}
+		WHERE SCHL_REQ_NO = #{schlReqNo}
+	</update>
+
+	<!-- 신청 삭제 -->
+	<delete id="deleteScholarship" parameterType="int">
+		DELETE FROM
+		SCHOLARSHIP_REQ
+		WHERE SCHL_REQ_NO = #{schlReqNo}
+	</delete>
+
+
+	<!-- 종류별 통계 -->
+	<select id="getTypeStats" resultType="map">
+		SELECT SCHL_TYPE AS label,
+		COUNT(*) AS cnt,
+		NVL(SUM(SCHL_AMOUNT),0) AS totalAmount
+		FROM
+		SCHOLARSHIP_REQ
+		GROUP BY SCHL_TYPE
+		ORDER BY SCHL_TYPE
+	</select>
+
+	<!-- 상태별 통계 -->
+	<select id="getStatusStats" resultType="map">
+		SELECT STATUS AS label,
+		COUNT(*) AS cnt
+		FROM SCHOLARSHIP_REQ
+		GROUP BY STATUS
+		ORDER BY STATUS
+	</select>
+
+	<!-- 최근 6개월 월별 지급액 (지급완료만) -->
+	<select id="getMonthlyPayStats" resultType="map">
+		SELECT
+		TO_CHAR(TO_DATE(PAY_DE, 'YYYY/MM/DD'), 'YYYY-MM') AS ym,
+		NVL(SUM(SCHL_AMOUNT), 0) AS totalAmount
+		FROM SCHOLARSHIP_REQ
+		WHERE
+		PAY_DE IS NOT NULL
+		AND TO_DATE(PAY_DE, 'YYYY/MM/DD') >=
+		ADD_MONTHS(TRUNC(SYSDATE, 'MM'), -5)
+		GROUP BY TO_CHAR(TO_DATE(PAY_DE,
+		'YYYY/MM/DD'), 'YYYY-MM')
+		ORDER BY ym
+	</select>
+
+	<select id="selectScholarshipTotal" parameterType="map"
+		resultType="int">
+		SELECT COUNT(*)
+		FROM SCHOLARSHIP_REQ
+		<where>
+			<if test="stdntNo != null and stdntNo != ''">
+				AND STDNT_NO = #{stdntNo}
+			</if>
+			<if test="status != null and status != ''">
+				AND STATUS = #{status}
+			</if>
+			<if test="schlType != null and schlType != ''">
+				AND SCHL_TYPE = #{schlType}
+			</if>
+		</where>
+	</select>
+
+	<select id="selectScholarshipList" parameterType="map"
+		resultType="kr.ac.collage_api.vo.ScholarshipReqVO">
+
+		SELECT *
+		FROM (
+		SELECT A.*, ROWNUM RN
+		FROM (
+		SELECT *
+		FROM SCHOLARSHIP_REQ
+		<where>
+			<if test="stdntNo != null and stdntNo != ''">
+				AND STDNT_NO = #{stdntNo}
+			</if>
+			<if test="status != null and status != ''">
+				AND STATUS = #{status}
+			</if>
+			<if test="schlType != null and schlType != ''">
+				AND SCHL_TYPE = #{schlType}
+			</if>
+		</where>
+		ORDER BY SCHL_REQ_NO DESC
+		) A
+		WHERE ROWNUM &lt;= #{offset} + #{size}
+		)
+		WHERE RN > #{offset}
+	</select>
+
+
+</mapper>

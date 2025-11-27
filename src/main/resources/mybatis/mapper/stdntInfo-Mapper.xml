@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.ac.collage_api.stdnt.mapper.StdntInfoMapper">
+
+  <resultMap type="kr.ac.collage_api.vo.StdntVO" id="stdntResultMap">
+    <id property="stdntNo" column="STDNT_NO"/>
+    <result property="stdntNm" column="STDNT_NM"/>
+  </resultMap>
+
+  <select id="selectStdntInfo" parameterType="string" resultMap="stdntResultMap">
+    SELECT * FROM STDNT WHERE STDNT_NO = #{stdntNo}
+  </select>
+
+  <select id="selectStdntInfoByName" parameterType="string" resultMap="stdntResultMap">
+    SELECT * FROM STDNT WHERE STDNT_NM = #{stdntNm}
+  </select>
+
+  <select id="getAcntInfo" resultType="kr.ac.collage_api.vo.AcntVO">
+    SELECT ACNT_ID, PASSWORD, ACNT_TY, FILE_GROUP_NO
+    FROM ACNT
+    WHERE ACNT_ID = #{acntId}
+  </select>
+
+  <update id="updateInfo">
+    UPDATE STDNT
+    SET BRTHDY = #{brthdy}
+        ,BASS_ADRES = #{bassAdres}
+        ,DETAIL_ADRES = #{detailAdres}
+        ,ZIP = #{zip}
+        ,CTTPC = #{cttpc}
+        ,EMGNC_CTTPC = #{emgncCttpc}
+        ,BANK_NM = #{bankNm}
+        ,ACNUTNO = #{acnutno}
+        ,LAST_UPDATED_TIME = SYSDATE
+    WHERE STDNT_NO = #{stdntNo}
+  </update>
+
+  <update id="updateProfileImage">
+    UPDATE ACNT
+    SET FILE_GROUP_NO = #{fileGroupNo}
+    WHERE ACNT_ID = #{acntId}
+  </update>
+
+  <update id="updatePwInfo">
+    UPDATE ACNT
+    SET PASSWORD = #{encodedPw}
+    WHERE ACNT_ID = #{stdntNo}
+  </update>
+
+  <select id="getPassword">
+    SELECT PASSWORD
+    FROM ACNT
+    WHERE ACNT_ID = #{stdntNo}
+  </select>
+
+  <select id="getProfileImage" resultType="string">
+     SELECT FILE_STREPLACE || '/' || FILE_STRE_NM AS FILE_PATH
+     FROM FILE_DETAIL
+     WHERE FILE_GROUP_NO = (
+         SELECT FILE_GROUP_NO
+         FROM ACNT
+         WHERE ACNT_ID = #{acntId}
+     )
+     FETCH FIRST 1 ROWS ONLY
+  </select>
+
+  <select id="getProfileImageDetail" resultType="kr.ac.collage_api.vo.FileDetailVO">
+	 SELECT 
+	    FILE_STREPLACE AS fileStrePlace,
+	    FILE_STRE_NM   AS fileStreNm
+	 FROM FILE_DETAIL
+	 WHERE FILE_GROUP_NO = (
+	     SELECT FILE_GROUP_NO FROM ACNT WHERE ACNT_ID = #{acntId}
+	 )
+	 FETCH FIRST 1 ROWS ONLY
+  </select>
+</mapper>

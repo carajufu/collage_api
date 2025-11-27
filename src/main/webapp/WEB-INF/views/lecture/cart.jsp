@@ -1,10 +1,24 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
 <%@ include file="../header.jsp" %>
 
-    <div id="main-container" class="container-fluid">
-		<h5 class="card-title py-4">장바구니 강의</h5>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <div class="row pt-3 px-5">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/dashboard/student"><i class="las la-home"></i></a></li>
+                <li class="breadcrumb-item"><a href="#">강의</a></li>
+                <li class="breadcrumb-item active" aria-current="page">장바구니 강의</li>
+            </ol>
+        </nav>
+        <div class="col-12 page-title mt-2">
+            <h2 class="fw-semibold">장바구니 강의</h2>
+            <div class="my-4 p-0 bg-primary" style="width: 100px; height:5px;"></div>
+        </div>
+    </div>
+
+    <div class="row pt-3 px-5">
+        <div class="col-xxl-12 col-12">
 		    <div class="card card-custom p-4">
 	        	<div class="overflow-visible" style="margin-bottom:10px">
 		       		<div class="w-100 p-0" id="searchBox" style="border-radius: 8px;"> 

@@ -1,5 +1,6 @@
 package kr.ac.collage_api.lecture.controller;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -27,110 +28,84 @@ public class Stdnt_LectureEvlController {
     @Autowired
     private LectureEvlService lectureService;
 
-    /**
-     * 1) 학생: 강의평가 목록 조회
-     */
+    // 학생 강의 평가 메인
     @GetMapping("/main/All")
     public String evalForm(Model model) {
-        
-        // 세션에서 현재 로그인한 사용자의 ACNT_ID를 가져옵니다.
+
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String acntId = (auth != null) ? auth.getName() : null;
-        
+
         if (acntId == null) {
-            log.warn("강의평가 목록 조회: 사용자 인증 정보를 찾을 수 없습니다.");
-            return "redirect:/login"; // 예: 로그인 페이지로 리다이렉트
-        }
-        
-        // ACNT_ID를 STDNT_NO (학번)로 변환
-        String stdntNo = lectureService.getStdntNoByAcntId(acntId);
-        
-        if (stdntNo == null) {
-             log.warn("강의평가 목록 조회: ACNT_ID {} 에 해당하는 STDNT_NO가 없습니다.", acntId);
-             model.addAttribute("atnlcList", List.of());
-             return "lecture/stdntLctreEvlMain";
+            return "redirect:/login";
         }
 
-        //변환된 stdntNo를 사용해 '모든' 수강 강의 목록을 조회
+        String stdntNo = lectureService.getStdntNoByAcntId(acntId);
         List<LectureEvlVO> atnlcList = lectureService.getAllLecturesByStdntNo(stdntNo);
-        
+
+        Map<String, Boolean> evlDoneMap = new HashMap<>();
+        for (LectureEvlVO lecture : atnlcList) {
+            String estbllctreCode = lecture.getEstbllctreCode();
+            boolean done = lectureService.isLectureEvaluatedByStdnt(estbllctreCode, stdntNo);
+            evlDoneMap.put(estbllctreCode, done);
+        }
+
         model.addAttribute("atnlcList", atnlcList);
-        //로그 메시지 변경
-        log.info("학생 {} (계정: {}) 의 '전체' 수강 강의 목록 {} 건 조회", stdntNo, acntId, atnlcList.size());
-        
+        model.addAttribute("evlDoneMap", evlDoneMap); // JSP에서 사용
+
         return "lecture/stdntLctreEvlMain";
     }
 
-    /**
-     * 2) 학생: 강의평가 작성 상세 페이지
-     */
+    // 학생 강의 평가 상세
     @GetMapping("/main/{estbllctreCode}")
-    public String evalpage(@PathVariable String estbllctreCode, Model model) {
+    public String evalPage(@PathVariable String estbllctreCode, Model model) {
 
-        // 강의 기본정보 (강의명, 교수명, 학점 등)
         LectureEvlVO lectureInfo = lectureService.getEstblCourseById(estbllctreCode);
-        
-        // 강의평가 질문지 (평가 항목)
         Integer evlNo = lectureService.getEvlNoByEstbllctreCode(estbllctreCode);
-        
-        if (evlNo == null) {
-            log.warn("{} 에 해당하는 평가(EVL_NO)가 LCTRE_EVL에 없습니다. 기본 평가지를 생성합니다.", estbllctreCode);
-            try {
-                evlNo = lectureService.createDefaultEvaluation(estbllctreCode);
-                log.info("새로운 평가(EVL_NO: {})가 생성되었습니다.", evlNo);
-                
-            } catch (Exception e) {
-                log.error("기본 평가 생성 중 오류 발생", e);
-                model.addAttribute("errorMessage", "평가지 생성 중 오류가 발생했습니다.");
-                return "redirect:/stdnt/lecture/main/All"; 
-            }
+
+        // 평가 마스터 & 항목 자동 생성
+        if (evlNo == null || lectureService.countEvlItems(evlNo) == 0) {
+            evlNo = lectureService.createDefaultEvaluation(estbllctreCode);
         }
 
-        List<LectureEvlVO> evalItemList = lectureService.getEvlIem(evlNo);
+        // 방금 생성된 EVL_NO 기준으로 항목 목록 조회
+        List<LectureEvlVO> evalItemList = lectureService.getEvalItemsByEstbllctreCode(estbllctreCode);
 
-        model.addAttribute("estbllctreCode", estbllctreCode); // hidden input 용
-        model.addAttribute("lectureInfo", lectureInfo);     // 강의정보 표시용
-        model.addAttribute("evalItemList", evalItemList);   // 질문지 반복문용
+        model.addAttribute("lectureInfo", lectureInfo);
+        model.addAttribute("estbllctreCode", estbllctreCode);
+        model.addAttribute("evalItemList", evalItemList);
 
         return "lecture/stdntLctreEvlDetail";
     }
 
-    /**
-     * 3) 학생: 강의평가 제출
-     */
-    @PostMapping("/main/detail/post/submit")
+    // 학생 강의 평가 제출
+    @PostMapping("/save")
     @ResponseBody
     public String evalSubmit(@RequestBody Map<String, Object> body) {
+
         try {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             String acntId = (auth != null) ? auth.getName() : null;
-            
-            if (acntId == null) {
-                log.error("강의평가 제출: 세션이 만료되었거나 로그인되지 않은 사용자입니다.");
-                return "fail_auth"; // 인증 실패
-            }
 
-            String stdntNo = lectureService.getStdntNoByAcntId(acntId);
-            if (stdntNo == null) {
-                log.error("강의평가 제출: ACNT_ID {} 에 해당하는 STDNT_NO가 없습니다.", acntId);
+            if (acntId == null) {
                 return "fail_auth";
             }
 
+            String stdntNo = lectureService.getStdntNoByAcntId(acntId);
+
+            @SuppressWarnings("unchecked")
+            List<Integer> lctreEvlInnb = (List<Integer>) body.get("lctreEvlInnb");
             @SuppressWarnings("unchecked")
             List<Integer> evlScore = (List<Integer>) body.get("evlScore");
             @SuppressWarnings("unchecked")
             List<String> evlCn = (List<String>) body.get("evlCn");
             String estbllctreCode = (String) body.get("estbllctreCode");
 
-            log.info("강의평가 제출 시도 → estbllctreCode: {}, stdntNo: {}",
-                     estbllctreCode, stdntNo);
+            lectureService.insertLectureEval(estbllctreCode, stdntNo, lctreEvlInnb, evlScore, evlCn);
 
-            lectureService.insertLectureEval(estbllctreCode, stdntNo, evlScore, evlCn);
-            
             return "success";
 
         } catch (Exception e) {
-            log.error("강의평가 등록 중 오류 발생", e);
+            log.error("강의평가 등록 오류", e);
             return "fail_server";
         }
     }

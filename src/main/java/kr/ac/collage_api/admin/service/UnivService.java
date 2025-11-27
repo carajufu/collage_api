@@ -4,7 +4,10 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import kr.ac.collage_api.admin.dto.SubjctUpdateRequestDto;
+import kr.ac.collage_api.admin.dto.UnivUpdateRequestDto;
 import kr.ac.collage_api.vo.ProfsrVO;
+import kr.ac.collage_api.vo.SubjctVO;
 import kr.ac.collage_api.vo.UnivVO;
 
 @Service
@@ -20,6 +23,21 @@ public interface UnivService {
 	List<ProfsrVO> findDeanCandidates(String univCode);   
 	
 	//학과장후보
-    List<ProfsrVO> findDeptHeadCandidates(String subjctCode); 
+    List<ProfsrVO> findDeptHeadCandidates(String subjctCode);
+
+    //단과대 정보 업데이트
+	UnivUpdateRequestDto updateUniv(UnivUpdateRequestDto univDto);
+
+	//학과 정보 업데이트
+	SubjctUpdateRequestDto updateSubjct(SubjctUpdateRequestDto subjctDto);
+
+	//학과 추가
+	SubjctVO createSubject(SubjctUpdateRequestDto dto);
+
+	//단과대 삭제
+	void deleteUniv(String univCode);
+
+	//학과 삭제
+	void deleteSubjct(String subjctCode);
 
 }

@@ -1,58 +1,71 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <%@ include file="../header.jsp" %>
 
-	    <div id="main-container" class="container-fluid">
-			<h5 class="card-title py-4">수강신청</h5>
-			<div class="card card-custom p-4">
-		        <div class="overflow-visible" style="margin-bottom:10px">
-		       		<div class="w-100 p-0" id="searchBox" style="border-radius: 8px;"> 
-				      <form class="w-100 align-items-center py-2 d-flex p-3" role="search">
-					      <div class="fw-bold me-3 flex-shrink-0" style="padding-right:500px">강의 검색</div>
-					      <div class="me-4 d-flex align-items-center flex-shrink-0">
-						    <span class="me-2">이수구분</span>
-					        <select class="form-select" style="width:100px;" name="complSe" value="${param.complSe}">
-							  <option value="" selected>---</option>
-							  <option value="전필">전필</option>
-							  <option value="전선">전선</option>
-							  <option value="교필">교필</option>
-							  <option value="교선">교선</option>
-							  <option value="일선">일선</option>
-							</select>
-						  </div>
-						  <div class="d-flex align-items-center flex-grow-1 me-3">
-						  	<span class="me-2 flex-shrink-0">강의명</span>
-					        <input type="search" placeholder="Search" class="form-control flex-grow-1" aria-label="Search" name="keyword" value="${param.keyword}"/>
-					      </div>
-					      <div class="flex-shrink-0">
-					        <button class="btn btn-outline-primary" type="submit">검색</button>
-					      </div>
-				      </form>
-	       			</div>
-		       	</div>
-	       		<div id="course-section">
-	       			<form>
-	       				<input type="hidden" name="stdntNo" value="${stdntNo}">
-	       				<div id="courseTable" style="border-radius: 8px;">
-							<table class="table" style="border-radius: 8px; overflow: hidden;">
-								<thead class="table-light">
-									<tr>
-								  		<th>교과목ID</th><th>이수구분</th><th>강의명</th><th>교수명</th><th>취득학점</th><th>강의실</th><th>강의시간</th><th>신청인원</th><th>신청</th>
-								  	</tr>
-								</thead>   
-								<tbody id="courseTbody" class="align-middle">
-						  			<tr><td colspan="10">강의 목록을 불러오는 중...</td></tr>
-						  		</tbody>
-							</table>
-						</div>
-					</form>
-				</div>
-			</div>
-	    </div>
-	    
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<div class="row pt-3 px-5">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/dashboard/student"><i class="las la-home"></i></a></li>
+            <li class="breadcrumb-item"><a href="#">강의</a></li>
+            <li class="breadcrumb-item active" aria-current="page">수강신청</li>
+        </ol>
+    </nav>
+    <div class="col-12 page-title mt-2">
+        <h2 class="fw-semibold">수강신청</h2>
+        <div class="my-4 p-0 bg-primary" style="width: 100px; height:5px;"></div>
     </div>
-</main>
+</div>
+
+<div class="row pt-3 px-5">
+    <div class="col-xxl-12 col-12">
+        <div class="card card-custom p-4">
+            <div class="overflow-visible" style="margin-bottom:10px">
+                <div class="w-100 p-0" id="searchBox" style="border-radius: 8px;">
+                  <form class="w-100 align-items-center py-2 d-flex p-3" role="search">
+                      <div class="fw-bold me-3 flex-shrink-0" style="padding-right:500px">강의 검색</div>
+                      <div class="me-4 d-flex align-items-center flex-shrink-0">
+                        <span class="me-2">이수구분</span>
+                        <select class="form-select" style="width:100px;" name="complSe" value="${param.complSe}">
+                          <option value="" selected>---</option>
+                          <option value="전필">전필</option>
+                          <option value="전선">전선</option>
+                          <option value="교필">교필</option>
+                          <option value="교선">교선</option>
+                          <option value="일선">일선</option>
+                        </select>
+                      </div>
+                      <div class="d-flex align-items-center flex-grow-1 me-3">
+                        <span class="me-2 flex-shrink-0">강의명</span>
+                        <input type="search" placeholder="Search" class="form-control flex-grow-1" aria-label="Search" name="keyword" value="${param.keyword}"/>
+                      </div>
+                      <div class="flex-shrink-0">
+                        <button class="btn btn-outline-primary" type="submit">검색</button>
+                      </div>
+                  </form>
+                </div>
+            </div>
+            <div id="course-section">
+                <form>
+                    <input type="hidden" name="stdntNo" value="${stdntNo}">
+                    <div id="courseTable" style="border-radius: 8px;">
+                        <table class="table" style="border-radius: 8px; overflow: hidden;">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>교과목ID</th><th>이수구분</th><th>강의명</th><th>교수명</th><th>취득학점</th><th>강의실</th><th>강의시간</th><th>신청인원</th><th>신청</th>
+                                </tr>
+                            </thead>
+                            <tbody id="courseTbody" class="align-middle">
+                                <tr><td colspan="10">강의 목록을 불러오는 중...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
 <div class="modal" tabindex="-1" id="modalPlan">
   <div class="modal-dialog modal-lg">

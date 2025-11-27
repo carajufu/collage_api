@@ -46,6 +46,7 @@
 	<select id="selectHistoryList" parameterType="String" resultType="kr.ac.collage_api.vo.SknrgsChangeReqstVO">
 		SELECT  
 			EFECT_OCCRRNC_SEMSTR
+			, SKNRGS_CHANGE_INNB
 			, REQST_STTUS
 			, CHANGE_REQST_DT
 			, REQST_RESN
@@ -92,7 +93,19 @@
         	, #{fileGroupNo} )
 	</insert>
 	
-	<!-- ///////////////////////////관리자//////////////////////////////// -->	
+	<!-- 취소 -->
+	<update id="updateRequestStatus" parameterType="map">
+	    UPDATE SKNRGS_CHANGE_REQST
+	    SET
+	        REQST_STTUS = #{newStatus}
+	    WHERE
+	        SKNRGS_CHANGE_INNB = #{reqId}
+        AND STDNT_NO = #{studentId}
+        AND REQST_STTUS = #{currentStatus}
+	</update>
+
+
+	<!-- ///////////////////////////관리자//////////////////////////////// -->
 	
 	<resultMap id="requestStdntMap" type="kr.ac.collage_api.vo.SknrgsChangeReqstVO" autoMapping="true">
 		<id property="skngsChangeInnb" column="requestStdntMap" />

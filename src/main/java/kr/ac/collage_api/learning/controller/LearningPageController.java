@@ -1,12 +1,15 @@
 package kr.ac.collage_api.learning.controller;
 
-import kr.ac.collage_api.learning.vo.TaskPresentnVO;
-import kr.ac.collage_api.learning.vo.TaskVO;
+import kr.ac.collage_api.learning.vo.*;
 import kr.ac.collage_api.learning.service.impl.LearningPageServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
@@ -18,9 +21,16 @@ import java.util.List;
 import java.util.Map;
 
 @Controller
-@RequestMapping("/learning")
+@RequestMapping("/learning/student")
 @Slf4j
 public class LearningPageController {
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public class QuizBadRequestException extends RuntimeException {
+        public QuizBadRequestException(String message) {
+            super(message);
+        }
+    }
+
     @Autowired
     LearningPageServiceImpl learningPageService;
 
@@ -31,7 +41,7 @@ public class LearningPageController {
      * @param lecNo
      * @return
      */
-    @GetMapping("/student")
+    @GetMapping
     public String getLearningPage(Model model,
                                   Principal principal,
                                   @RequestParam String lecNo) {
@@ -47,7 +57,7 @@ public class LearningPageController {
      * @param reqMap
      * @return
      */
-    @PostMapping("student/task")
+    @PostMapping("/task")
     @ResponseBody
     public Map<String, Object> taskList(@RequestBody Map<String, Object> reqMap) {
         log.debug("chkng taskList > {}", reqMap);
@@ -75,7 +85,7 @@ public class LearningPageController {
         return respMap;
     }
 
-    @GetMapping("/student/isSubmit")
+    @GetMapping("/isSubmit")
     @ResponseBody
     public Map<String, Object> getSubmitTask(String taskNo,
                                              Principal principal) {
@@ -91,12 +101,25 @@ public class LearningPageController {
         return respMap;
     }
 
+    @GetMapping("/isQuizSubmit")
     @ResponseBody
-    @PostMapping("/student/fileUpload")
+    public Map<String, Object> getSubmitQuiz(String quizCode,
+                                             Principal principal) {
+        QuizPresentnVO quizPresentnVO = learningPageService.getSubmitQuiz(quizCode, principal.getName());
+        Map<String, Object> respMap = new HashMap<>();
+
+        respMap.put("status", "success");
+        respMap.put("data", quizPresentnVO);
+
+        return respMap;
+    }
+
+    @ResponseBody
+    @PostMapping("/fileUpload")
     public Map<String, Object> taskFileUpload(MultipartHttpServletRequest req,
-                                              @RequestBody String taskPresentnNo,
-                                              @RequestBody String[] retainedExisting,
-                                              @RequestBody String[] deletedExisting)
+                                              @RequestParam String taskPresentnNo,
+                                              @RequestParam(required = false) String[] retainedExisting,
+                                              @RequestParam(required = false) String[] deletedExisting)
     {
         List<MultipartFile> files = new ArrayList<>();
 
@@ -116,5 +139,90 @@ public class LearningPageController {
         respMap.put("status", "success");
 
         return respMap;
+    }
+
+    @ResponseBody
+    @PostMapping("/quiz")
+    public Map<String, Object> quizList(@RequestBody Map<String, Object> reqMap) {
+        log.debug("chkng taskList > {}", reqMap);
+
+        Map<String, Object> respMap = new HashMap<>();
+
+        // TODO: 인자가 둘 중 하나만 와도 통과 될 수 있으므로 개별 널 체크 필요
+        if(reqMap.isEmpty()) {
+            respMap.put("status", "error");
+            respMap.put("message", "invalid request");
+
+            return respMap;
+        }
+
+        String lecNo = reqMap.get("lecNo").toString();
+        String weekNo = reqMap.get("weekNo").toString();
+
+        List<QuizVO> quizByWeekList = learningPageService.quizList(lecNo, weekNo);
+
+        for(QuizVO quiz : quizByWeekList) {
+            List<QuizExVO> quizExByQuiz = learningPageService.quizExList(quiz.getQuizCode());
+            quiz.setQuizeExVOList(quizExByQuiz);
+        }
+
+        respMap.put("status", "success");
+        respMap.put("result", quizByWeekList);
+
+        log.debug("chkng taskByWeekList > {}", quizByWeekList);
+
+        return respMap;
+    }
+
+    @ResponseBody
+    @GetMapping("/quizSubmit")
+    public Map<String, Object> quizSubmit(@RequestParam String quizExCode,
+                                          @RequestParam String quizCode,
+                                          Principal principal) {
+        Map<String, Object> respMap = new HashMap<>();
+
+        // todo: 제출 데이터 db insert 후 정답인지 아닌지 알려주는 응답 바디 작성하기
+        if(quizCode == null || quizExCode == null) {
+            throw new QuizBadRequestException("Required field is missing");
+        }
+
+        respMap = learningPageService.quizSubmit(quizCode, quizExCode, principal.getName());
+
+        return respMap;
+    }
+
+    @GetMapping("/board")
+    public String getBoard(@RequestParam  Map<String, Object> paramMap,
+                           Model model) {
+        Map<String, Object> respMap = learningPageService.getBoard(paramMap);
+
+        model.addAttribute("result", respMap);
+        return "learning/student/learnBoard";
+    }
+
+    @GetMapping("/attend")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> getAttend(@RequestParam(required = false) String estbllctreCode,
+                                                         Principal principal) {
+        if (!StringUtils.hasText(estbllctreCode)) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("status", "error", "message", "estbllctreCode is required"));
+        }
+
+        Map<String, Object> attendPayload = learningPageService.getAttend(estbllctreCode, principal.getName());
+        @SuppressWarnings("unchecked")
+        List<AtendAbsncVO> attendList = (List<AtendAbsncVO>) attendPayload.getOrDefault("list", List.of());
+
+        if (attendList.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("status", "error", "message", "no attendance data"));
+        }
+
+        Map<String, Object> resp = new HashMap<>();
+        resp.put("status", "success");
+        resp.put("data", attendList);
+        resp.put("summary", attendPayload.get("summary"));
+
+        return ResponseEntity.ok(resp);
     }
 }

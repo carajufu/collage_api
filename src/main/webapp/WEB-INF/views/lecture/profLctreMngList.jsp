@@ -1,172 +1,187 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <%@ include file="../header.jsp" %>
 
-	    <div id="main-container" class="container-fluid">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <div class="row pt-3 px-5">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/dashboard/prof"><i class="las la-home"></i></a></li>
+                <li class="breadcrumb-item"><a href="#">강의</a></li>
+                <li class="breadcrumb-item active" aria-current="page">개설 강의 관리</li>
+            </ol>
+        </nav>
+        <div class="col-12 page-title mt-2">
+            <h2 class="fw-semibold">개설 강의 관리</h2>
+            <div class="my-4 p-0 bg-primary" style="width: 100px; height:5px;"></div>
+        </div>
+    </div>
+
+    <div class="row pt-3 px-5">
+        <div class="col-xxl-12 col-12">
 			<h5 class="card-title py-4">개설 강의 관리</h5>
 				
-			<!-- 상태 카드 시작 -->
-			<div class="row">
-				<div class="col-xl-3 col-md-6">
-	                <!-- card -->
-	                <div class="card card-animate border-0 border-start border-3" style="border-color:#3577f1 !important;">
-	                    <div class="card-body">
-	                        <div class="d-flex align-items-center">
-	                            <div class="flex-grow-1">
-	                                <p class="text-uppercase fw-medium text-muted mb-0">전체 강의</p>
-	                            </div>
-	                            <div class="flex-shrink-0">
-	                                <h5 class="text-primary fs-14 mb-0">
-	                                    total
-	                                </h5>
-	                            </div>
-	                        </div>
-	                        <div class="d-flex align-items-end justify-content-between mt-4">
-	                            <div>
-	                                <h4 class="fs-22 fw-semibold ff-primary mb-4"><span id="totalInput">0</span>개</h4>
-	                            </div>
-	                            <div class="avatar-sm flex-shrink-0">
-	                                <span class="avatar-title bg-primary-subtle rounded fs-3">
-	                                    <i class="ri-list-check text-primary"></i>
-	                                </span>
-	                            </div>
-	                        </div>
-	                    </div><!-- end card body -->
-	                </div><!-- end card -->
+				<!-- 상태 카드 시작 -->
+				<div class="row">
+					<div class="col-xl-3 col-md-6">
+		                <!-- card -->
+		                <div class="card card-animate border-0 border-start border-3" style="border-color:#3577f1 !important;">
+		                    <div class="card-body">
+		                        <div class="d-flex align-items-center">
+		                            <div class="flex-grow-1">
+		                                <p class="text-uppercase fw-medium text-muted mb-0">전체 강의</p>
+		                            </div>
+		                            <div class="flex-shrink-0">
+		                                <h5 class="text-primary fs-14 mb-0">
+		                                    total
+		                                </h5>
+		                            </div>
+		                        </div>
+		                        <div class="d-flex align-items-end justify-content-between mt-4">
+		                            <div>
+		                                <h4 class="fs-22 fw-semibold ff-primary mb-4"><span class="counter-value" data-target="">2</span>개</h4>
+		                            </div>
+		                            <div class="avatar-sm flex-shrink-0">
+		                                <span class="avatar-title bg-primary-subtle rounded fs-3">
+		                                    <i class="ri-list-check text-primary"></i>
+		                                </span>
+		                            </div>
+		                        </div>
+		                    </div><!-- end card body -->
+		                </div><!-- end card -->
+		            </div>
+					<div class="col-xl-3 col-md-6">
+		                <!-- card -->
+		                <div class="card card-animate border-0 border-start border-3 border-success">
+		                    <div class="card-body">
+		                        <div class="d-flex align-items-center">
+		                            <div class="flex-grow-1">
+		                                <p class="text-uppercase fw-medium text-muted mb-0">승인 강의</p>
+		                            </div>
+		                            <div class="flex-shrink-0">
+		                                <h5 class="text-success fs-14 mb-0">
+		                                    Approved
+		                                </h5>
+		                            </div>
+		                        </div>
+		                        <div class="d-flex align-items-end justify-content-between mt-4">
+		                            <div>
+		                                <h4 class="fs-22 fw-semibold ff-success mb-4"><span class="counter-value" data-target="">2</span>개</h4>
+		                            </div>
+		                            <div class="avatar-sm flex-shrink-0">
+		                                <span class="avatar-title bg-success-subtle rounded fs-3">
+		                                    <i class=" ri-checkbox-circle-line text-success"></i>
+		                                </span>
+		                            </div>
+		                        </div>
+		                    </div><!-- end card body -->
+		                </div><!-- end card -->
+		            </div>
+					<div class="col-xl-3 col-md-6">
+		                <!-- card -->
+		                <div class="card card-animate border-0 border-start border-3 border-danger">
+		                    <div class="card-body">
+		                        <div class="d-flex align-items-center">
+		                            <div class="flex-grow-1">
+		                                <p class="text-uppercase fw-medium text-muted mb-0">반려 강의</p>
+		                            </div>
+		                            <div class="flex-shrink-0">
+		                                <h5 class="text-danger fs-14 mb-0">
+		                                    Rejected
+		                                </h5>
+		                            </div>
+		                        </div>
+		                        <div class="d-flex align-items-end justify-content-between mt-4">
+		                            <div>
+		                                <h4 class="fs-22 fw-semibold ff-danger mb-4"><span class="counter-value" data-target="">2</span>개</h4>
+		                            </div>
+		                            <div class="avatar-sm flex-shrink-0">
+		                                <span class="avatar-title bg-danger-subtle rounded fs-3">
+		                                    <i class="ri-forbid-line text-danger"></i>
+		                                </span>
+		                            </div>
+		                        </div>
+		                    </div><!-- end card body -->
+		                </div><!-- end card -->
+		            </div>
+					<div class="col-xl-3 col-md-6">
+		                <!-- card -->
+		                <div class="card card-animate border-0 border-start border-3" style="border-color:#ced4da !important;">
+		                    <div class="card-body">
+		                        <div class="d-flex align-items-center">
+		                            <div class="flex-grow-1">
+		                                <p class="text-uppercase fw-medium text-muted mb-0">미입력 강의</p>
+		                            </div>
+		                            <div class="flex-shrink-0">
+		                                <h5 class="text-dark fs-14 mb-0">
+		                                    Pending
+		                                </h5>
+		                            </div>
+		                        </div>
+		                        <div class="d-flex align-items-end justify-content-between mt-4">
+		                            <div>
+		                                <h4 class="fs-22 fw-semibold ff-secondary mb-4"><span class="counter-value" data-target="">2</span>개</h4>
+		                            </div>
+		                            <div class="avatar-sm flex-shrink-0">
+		                                <span class="avatar-title bg-dark-subtle rounded fs-3">
+		                                    <i class="ri-file-edit-line text-dark"></i>
+		                                </span>
+		                            </div>
+		                        </div>
+		                    </div><!-- end card body -->
+		                </div><!-- end card -->
+		            </div>
+		        </div>
+				<!-- 상태 카드 끝 -->
+				
+				<div class="card">
+	                <div class="card-body">
+	                    <!-- Nav tabs -->
+	                    <ul class="nav nav-tabs nav-justified mb-3" role="tablist">
+	                        <li class="nav-item" role="presentation">
+	                            <a class="nav-link active" data-bs-toggle="tab" href="#nav-badge-home" data-filter="all" role="tab" aria-selected="true" tabindex="-1" >
+	                                전체
+	                            </a>
+	                        </li>
+	                        <li class="nav-item" role="presentation">
+	                            <a class="nav-link align-middle" data-bs-toggle="tab" href="#nav-badge-home" data-filter="1" role="tab" aria-selected="false" tabindex="-1">
+	                                처리중 <span class="badge rounded-pill text-bg-success" id="doneBadge"></span>
+	                            </a>
+	                        </li>
+	                        <li class="nav-item" role="presentation">
+	                            <a class="nav-link align-middle" data-bs-toggle="tab" href="#nav-badge-home" data-filter="0"  role="tab" aria-selected="false" tabindex="-1">
+	                                미입력
+	                                <span class="badge rounded-pill text-bg-danger" id="errorBadge"></span>
+	                            </a>
+	                        </li>
+	                    </ul>
+	                    <!-- Nav tabs -->
+	                    <div class="tab-pane active show" id="nav-badge-home" role="tabpanel">
+		                    <div class="tab-content text-muted">
+		                        <div id="form">
+					       			<form id="form">
+					       				<input type="hidden" name="profsrNo" value="${profsrNo}">
+					       				<div id="courseTable" style="border-radius: 8px;">
+											<table class="table" style="border-radius: 8px; overflow: hidden;">
+											  <thead class="table-light" id="tableHead">
+											  </thead>   
+												<c:if test="${empty estblCourseVOList}">
+											  		<tbody>
+												  		<tr><td colspan="11">개설된 강의가 없습니다.</td></tr>
+													</tbody>
+												</c:if>
+												<c:if test="${!empty estblCourseVOList}">
+													<tbody class="align-middle" id="tableBody"></tbody>
+												</c:if>
+											</table>
+										</div>
+									</form>
+								</div>
+		                    </div>
+		            	</div>
+	                </div><!-- end card-body -->
 	            </div>
-				<div class="col-xl-3 col-md-6">
-	                <!-- card -->
-	                <div class="card card-animate border-0 border-start border-3 border-success">
-	                    <div class="card-body">
-	                        <div class="d-flex align-items-center">
-	                            <div class="flex-grow-1">
-	                                <p class="text-uppercase fw-medium text-muted mb-0">승인 강의</p>
-	                            </div>
-	                            <div class="flex-shrink-0">
-	                                <h5 class="text-success fs-14 mb-0">
-	                                    Approved
-	                                </h5>
-	                            </div>
-	                        </div>
-	                        <div class="d-flex align-items-end justify-content-between mt-4">
-	                            <div>
-	                                <h4 class="fs-22 fw-semibold ff-success mb-4"><span id="approvedInput">0</span>개</h4>
-	                            </div>
-	                            <div class="avatar-sm flex-shrink-0">
-	                                <span class="avatar-title bg-success-subtle rounded fs-3">
-	                                    <i class=" ri-checkbox-circle-line text-success"></i>
-	                                </span>
-	                            </div>
-	                        </div>
-	                    </div><!-- end card body -->
-	                </div><!-- end card -->
-	            </div>
-				<div class="col-xl-3 col-md-6">
-	                <!-- card -->
-	                <div class="card card-animate border-0 border-start border-3 border-danger">
-	                    <div class="card-body">
-	                        <div class="d-flex align-items-center">
-	                            <div class="flex-grow-1">
-	                                <p class="text-uppercase fw-medium text-muted mb-0">반려 강의</p>
-	                            </div>
-	                            <div class="flex-shrink-0">
-	                                <h5 class="text-danger fs-14 mb-0">
-	                                    Rejected
-	                                </h5>
-	                            </div>
-	                        </div>
-	                        <div class="d-flex align-items-end justify-content-between mt-4">
-	                            <div>
-	                                <h4 class="fs-22 fw-semibold ff-danger mb-4"><span id="rejectedInput">0</span>개</h4>
-	                            </div>
-	                            <div class="avatar-sm flex-shrink-0">
-	                                <span class="avatar-title bg-danger-subtle rounded fs-3">
-	                                    <i class="ri-forbid-line text-danger"></i>
-	                                </span>
-	                            </div>
-	                        </div>
-	                    </div><!-- end card body -->
-	                </div><!-- end card -->
-	            </div>
-				<div class="col-xl-3 col-md-6">
-	                <!-- card -->
-	                <div class="card card-animate border-0 border-start border-3" style="border-color:#ced4da !important;">
-	                    <div class="card-body">
-	                        <div class="d-flex align-items-center">
-	                            <div class="flex-grow-1">
-	                                <p class="text-uppercase fw-medium text-muted mb-0">미입력 강의</p>
-	                            </div>
-	                            <div class="flex-shrink-0">
-	                                <h5 class="text-dark fs-14 mb-0">
-	                                    Pending
-	                                </h5>
-	                            </div>
-	                        </div>
-	                        <div class="d-flex align-items-end justify-content-between mt-4">
-	                            <div>
-	                                <h4 class="fs-22 fw-semibold ff-secondary mb-4"><span id="pendingInput">0</span>개</h4>
-	                            </div>
-	                            <div class="avatar-sm flex-shrink-0">
-	                                <span class="avatar-title bg-dark-subtle rounded fs-3">
-	                                    <i class="ri-file-edit-line text-dark"></i>
-	                                </span>
-	                            </div>
-	                        </div>
-	                    </div><!-- end card body -->
-	                </div><!-- end card -->
-	            </div>
-	        </div>
-			<!-- 상태 카드 끝 -->
-			
-			<div class="card">
-                <div class="card-body">
-                    <!-- Nav tabs -->
-                    <ul class="nav nav-tabs nav-justified mb-3" role="tablist">
-                        <li class="nav-item" role="presentation">
-                            <a class="nav-link active" data-bs-toggle="tab" href="#nav-badge-home" data-filter="all" role="tab" aria-selected="true" tabindex="-1" >
-                                전체
-                            </a>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <a class="nav-link align-middle" data-bs-toggle="tab" href="#nav-badge-home" data-filter="1" role="tab" aria-selected="false" tabindex="-1">
-                                처리중 <span class="badge rounded-pill text-bg-success" id="doneBadge"></span>
-                            </a>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <a class="nav-link align-middle" data-bs-toggle="tab" href="#nav-badge-home" data-filter="0"  role="tab" aria-selected="false" tabindex="-1">
-                                미입력
-                                <span class="badge rounded-pill text-bg-danger" id="errorBadge"></span>
-                            </a>
-                        </li>
-                    </ul>
-                    <!-- Nav tabs -->
-                    <div class="tab-pane active show" id="nav-badge-home" role="tabpanel">
-	                    <div class="tab-content text-muted">
-	                        <div id="form">
-				       			<form id="form">
-				       				<input type="hidden" name="profsrNo" value="${profsrNo}">
-				       				<div id="courseTable" style="border-radius: 8px;">
-										<table class="table" style="border-radius: 8px; overflow: hidden;">
-										  <thead class="table-light" id="tableHead">
-										  </thead>   
-											<c:if test="${empty estblCourseVOList}">
-										  		<tbody>
-											  		<tr><td colspan="11">개설된 강의가 없습니다.</td></tr>
-												</tbody>
-											</c:if>
-											<c:if test="${!empty estblCourseVOList}">
-												<tbody class="align-middle" id="tableBody"></tbody>
-											</c:if>
-										</table>
-									</div>
-								</form>
-							</div>
-	                    </div>
-	            	</div>
-                </div><!-- end card-body -->
-            </div>
-            
 	    </div>
     </div>
 </main>

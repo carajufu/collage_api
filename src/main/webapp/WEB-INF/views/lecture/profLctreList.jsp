@@ -2,60 +2,72 @@
  
 <%@ include file="../header.jsp" %>
 
-    <div id="main-container" class="container-fluid">
-			<h5 class="card-title py-4">나의 강의</h5>
-				
-				<div class="card">
-	                <div class="card-body">
-	                    <!-- Nav tabs -->
-	                    <ul class="nav nav-tabs nav-justified mb-3" role="tablist">
-	                        <li class="nav-item" role="presentation">
-	                            <a class="nav-link active" data-bs-toggle="tab" href="#nav-badge-home" data-filter="all" role="tab" aria-selected="true" tabindex="-1" >
-	                                전체
-	                            </a>
-	                        </li>
-	                        <li class="nav-item" role="presentation">
-	                            <a class="nav-link align-middle" data-bs-toggle="tab" href="#nav-badge-home" data-filter="1" role="tab" aria-selected="false" tabindex="-1">
-	                                현재 학기 <span class="badge rounded-pill text-bg-success">now</span>
-	                            </a>
-	                        </li>
-	                        <li class="nav-item" role="presentation">
-	                            <a class="nav-link align-middle" data-bs-toggle="tab" href="#nav-badge-home" data-filter="2"  role="tab" aria-selected="false" tabindex="-1">
-	                                지난 학기
-	                            </a>
-	                        </li>
-	                    </ul>
-	                    <!-- Nav tabs -->
-	                    <div class="tab-pane active show" id="nav-badge-home" role="tabpanel">
-		                    <div class="tab-content text-muted">
-		                        <div id="form">
-					       			<form id="form">
-					       				<input type="hidden" name="profsrNo" value="${profsrNo}">
-					       				<div id="courseTable" style="border-radius: 8px;">
-											<table class="table" style="border-radius: 8px; overflow: hidden;">
-											  <thead class="table-light" id="tableHead">
-											  </thead>   
-												<c:if test="${empty estblCourseVOList}">
-											  		<tbody>
-												  		<tr><td colspan="11">개설된 강의가 없습니다.</td></tr>
-													</tbody>
-												</c:if>
-												<c:if test="${!empty estblCourseVOList}">
-													<tbody class="align-middle" id="tableBody"></tbody>
-												</c:if>
-											</table>
-										</div>
-									</form>
-								</div>
-		                    </div>
-		            	</div>
-	                </div><!-- end card-body -->
-	            
+    <div class="row pt-3 px-5">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/dashboard/prof"><i class="las la-home"></i></a></li>
+                <li class="breadcrumb-item"><a href="#">강의</a></li>
+                <li class="breadcrumb-item active" aria-current="page">내 강의</li>
+            </ol>
+        </nav>
+        <div class="col-12 page-title mt-2">
+            <h2 class="fw-semibold">내 강의</h2>
+            <div class="my-4 p-0 bg-primary" style="width: 100px; height:5px;"></div>
+        </div>
+    </div>
+
+    <div class="row pt-3 px-5">
+        <div class="col-xxl-12 col-12">
+            <div class="card">
+                <div class="card-body">
+                    <!-- Nav tabs -->
+                    <ul class="nav nav-tabs nav-justified mb-3" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <a class="nav-link active" data-bs-toggle="tab" href="#nav-badge-home" data-filter="all" role="tab" aria-selected="true" tabindex="-1" >
+                                전체
+                            </a>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <a class="nav-link align-middle" data-bs-toggle="tab" href="#nav-badge-home" data-filter="1" role="tab" aria-selected="false" tabindex="-1">
+                                현재 학기 <span class="badge rounded-pill text-bg-success">now</span>
+                            </a>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <a class="nav-link align-middle" data-bs-toggle="tab" href="#nav-badge-home" data-filter="2"  role="tab" aria-selected="false" tabindex="-1">
+                                지난 학기
+                            </a>
+                        </li>
+                    </ul>
+                    <!-- Nav tabs -->
+                    <div class="tab-pane active show" id="nav-badge-home" role="tabpanel">
+                        <div class="tab-content text-muted">
+                            <div id="form">
+                                <form id="form">
+                                    <input type="hidden" name="profsrNo" value="${profsrNo}">
+                                    <div id="courseTable" style="border-radius: 8px;">
+                                        <table class="table" style="border-radius: 8px; overflow: hidden;">
+                                          <thead class="table-light" id="tableHead">
+                                          </thead>
+                                            <c:if test="${empty estblCourseVOList}">
+                                                <tbody>
+                                                    <tr><td colspan="11">개설된 강의가 없습니다.</td></tr>
+                                                </tbody>
+                                            </c:if>
+                                            <c:if test="${!empty estblCourseVOList}">
+                                                <tbody class="align-middle" id="tableBody"></tbody>
+                                            </c:if>
+                                        </table>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div><!-- end card-body -->
+
 	            
 	        </div>
 	    </div>
     </div>
-</main>
 
 <div class="modal" tabindex="-1" id="modalDetail">
   <div class="modal-dialog modal-lg">

@@ -32,7 +32,7 @@
     <script src="/assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="/assets/js/pages/plugins/lord-icon-2.1.0.js"></script>
     <script src="/assets/js/plugins.js"></script>
-    <script src="/assets/js/app.js"></script>
+    <script src="/assets/js/app.js" defer></script>
     <script src="/assets/js/layout.js"></script>
 
     <script src="/assets/libs/simplebar/simplebar.min.js"></script>
@@ -41,8 +41,57 @@
     <!-- jQuery-3.6.0.min -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 
+    <!-- axios -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
 </head>
 <body>
+<script type="text/javascript">
+    document.addEventListener("DOMContentLoaded", function() {
+        var STORAGE_KEY = "openSidebarMenu";
+        var clearStoredMenuState = function () {
+            localStorage.removeItem(STORAGE_KEY);
+        };
+
+        document.querySelectorAll(".nav-link.menu-link:not([data-bs-toggle='collapse'])")
+            .forEach(function(link) {
+                link.addEventListener("click", clearStoredMenuState);
+            });
+
+        document.querySelectorAll(".navbar-brand-box a.logo")
+            .forEach(function(link) {
+                link.addEventListener("click", clearStoredMenuState);
+            });
+
+        var logoutLink = document.querySelector("a[href='/logout']");
+        if (logoutLink) {
+            logoutLink.addEventListener("click", clearStoredMenuState);
+        }
+
+        document.querySelectorAll(".nav-link.menu-link[data-bs-toggle='collapse']")
+            .forEach(function(link) {
+                link.addEventListener("click", function() {
+                    var target = link.getAttribute("href");
+                    if(target && target.startsWith("#")) {
+                        localStorage.setItem(STORAGE_KEY, target);
+                    }
+                });
+            });
+
+        var openId = localStorage.getItem(STORAGE_KEY);
+        if(openId) {
+            var collapse = document.querySelector(openId + ".collapse.menu-dropdown");
+            var trigger = document.querySelector(".nav-link.menu-link[href='" + openId + "']");
+
+            if(collapse) {
+                collapse.classList.add("show");
+            }
+            if(trigger) {
+                trigger.setAttribute("aria-expanded", "true");
+            }
+        }
+    });
+</script>
 <!-- Begin page -->
 <div id="layout-wrapper">
 
@@ -64,333 +113,135 @@
                 <div class="d-flex align-items-center">
 
                     <div class="dropdown ms-1 topbar-head-dropdown header-item">
-                        <button type="button" class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <button type="button" class="btn btn-icon btn-topbar btn-ghost-primary rounded-circle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <img id="header-lang-img" src="/assets/images/flags/kr.svg" alt="Header Language" height="20" class="rounded">
                         </button>
                         <div class="dropdown-menu dropdown-menu-end">
 
-                            <!-- item-->
                             <a href="javascript:void(0);" class="dropdown-item notify-item language py-2" data-lang="kr" title="Korean">
                                 <img src="/assets/images/flags/kr.svg" alt="user-image" class="me-2 rounded" height="18">
                                 <span class="align-middle">한국어</span>
                             </a>
 
-                            <!-- item-->
                             <a href="javascript:void(0);" class="dropdown-item notify-item language py-2" data-lang="en" title="English">
                                 <img src="/assets/images/flags/us.svg" alt="user-image" class="me-2 rounded" height="18">
                                 <span class="align-middle">English</span>
                             </a>
 
-                            <!-- item-->
                             <a href="javascript:void(0);" class="dropdown-item notify-item language" data-lang="sp" title="Spanish">
                                 <img src="/assets/images/flags/spain.svg" alt="user-image" class="me-2 rounded" height="18">
                                 <span class="align-middle">Española</span>
                             </a>
 
-                            <!-- item-->
                             <a href="javascript:void(0);" class="dropdown-item notify-item language" data-lang="gr" title="German">
                                 <img src="/assets/images/flags/germany.svg" alt="user-image" class="me-2 rounded" height="18"> <span class="align-middle">Deutsche</span>
                             </a>
 
-                            <!-- item-->
+							<a href="javascript:void(0);" class="dropdown-item notify-item language" data-lang="jp" title="Japen">
+                                <img src="/assets/images/flags/jp.svg" alt="user-image" class="me-2 rounded" height="18"> <span class="align-middle">日本語</span>
+                            </a>
+
+							<a href="javascript:void(0);" class="dropdown-item notify-item language" data-lang="vi" title="Vitenam">
+                                <img src="/assets/images/flags/vi.svg" alt="user-image" class="me-2 rounded" height="18"> <span class="align-middle">Tiếng Việt</span>
+                            </a>
+
+							<a href="javascript:void(0);" class="dropdown-item notify-item language" data-lang="mn" title="Mongol">
+                                <img src="/assets/images/flags/mn.svg" alt="user-image" class="me-2 rounded" height="18"> <span class="align-middle">Монгол хэл</span>
+                            </a>
+
+							<a href="javascript:void(0);" class="dropdown-item notify-item language" data-lang="ne" title="Nepal">
+                                <img src="/assets/images/flags/ne.svg" alt="user-image" class="me-2 rounded" height="18"> <span class="align-middle">नेपाली</span>
+                            </a>
+
                             <a href="javascript:void(0);" class="dropdown-item notify-item language" data-lang="it" title="Italian">
                                 <img src="/assets/images/flags/italy.svg" alt="user-image" class="me-2 rounded" height="18">
                                 <span class="align-middle">Italiana</span>
                             </a>
 
-                            <!-- item-->
                             <a href="javascript:void(0);" class="dropdown-item notify-item language" data-lang="ru" title="Russian">
                                 <img src="/assets/images/flags/russia.svg" alt="user-image" class="me-2 rounded" height="18">
                                 <span class="align-middle">русский</span>
                             </a>
 
-                            <!-- item-->
                             <a href="javascript:void(0);" class="dropdown-item notify-item language" data-lang="ch" title="Chinese">
                                 <img src="/assets/images/flags/china.svg" alt="user-image" class="me-2 rounded" height="18">
                                 <span class="align-middle">中国人</span>
                             </a>
 
-                            <!-- item-->
                             <a href="javascript:void(0);" class="dropdown-item notify-item language" data-lang="fr" title="French">
                                 <img src="/assets/images/flags/french.svg" alt="user-image" class="me-2 rounded" height="18">
                                 <span class="align-middle">français</span>
                             </a>
 
-                            <!-- item-->
                             <a href="javascript:void(0);" class="dropdown-item notify-item language" data-lang="ar" title="Arabic">
                                 <img src="/assets/images/flags/ae.svg" alt="user-image" class="me-2 rounded" height="18">
                                 <span class="align-middle">Arabic</span>
                             </a>
+
+                           <a href="javascript:void(0);" class="dropdown-item notify-item language" data-lang="km" title="Khmer">
+							    <img src="/assets/images/flags/km.svg" alt="Cambodia flag" class="me-2 rounded" height="18">
+							    <span class="align-middle">ភាសាខ្មែរ</span>
+							</a>
+
+							<a href="javascript:void(0);" class="dropdown-item notify-item language" data-lang="la" title="Lao">
+							    <img src="/assets/images/flags/la.svg" alt="Laos flag" class="me-2 rounded" height="18">
+							    <span class="align-middle">ລາວ</span>
+							</a>
+
+							<a href="javascript:void(0);" class="dropdown-item notify-item language" data-lang="th" title="Thai">
+							    <img src="/assets/images/flags/th.svg" alt="Thailand flag" class="me-2 rounded" height="18">
+							    <span class="align-middle">ไทย</span>
+							</a>
                         </div>
                     </div>
 
                     <div class="ms-1 header-item d-none d-sm-flex">
-                        <button type="button" class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle light-dark-mode">
+                        <button type="button" class="btn btn-icon btn-topbar btn-ghost-primary rounded-circle light-dark-mode">
                             <i class='bx bx-moon fs-22'></i>
                         </button>
                     </div>
 
                     <div class="dropdown topbar-head-dropdown ms-1 header-item" id="notificationDropdown">
                         <button type="button" class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle" id="page-header-notifications-dropdown" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-haspopup="true" aria-expanded="false">
-                            <i class='bx bx-bell fs-22'></i>
-                            <span class="position-absolute topbar-badge fs-10 translate-middle badge rounded-pill bg-danger">3<span class="visually-hidden">unread messages</span></span>
+                            <i class='bx bx-bell fs-22' id="notification-icon"></i>
+                            <span id="notification-badge" class="position-absolute topbar-badge fs-10 translate-middle badge rounded-pill bg-danger">0<span class="visually-hidden">unread messages</span></span>
                         </button>
                         <div class="dropdown-menu dropdown-menu-lg dropdown-menu-end p-0" aria-labelledby="page-header-notifications-dropdown">
 
                             <div class="dropdown-head bg-primary bg-pattern rounded-top">
-                                <div class="p-3">
-                                    <div class="row align-items-center">
-                                        <div class="col">
-                                            <h6 class="m-0 fs-16 fw-semibold text-white"> Notifications </h6>
-                                        </div>
-                                        <div class="col-auto dropdown-tabs">
-                                            <span class="badge bg-light-subtle text-body fs-13"> 4 New</span>
-                                        </div>
-                                    </div>
-                                </div>
+						        <div class="p-3">
+						            <div class="row align-items-center">
+						                <div class="col">
+						                    <h6 class="m-0 fs-16 fw-semibold text-white"> 알림함 </h6>
+						                </div>
+						                <div class="col-auto dropdown-tabs">
+						                    <span class="badge bg-light-subtle text-body fs-13">New</span>
+						                </div>
+						            </div>
+						        </div>
+						    </div>
 
-                                <div class="px-2 pt-2">
-                                    <ul class="nav nav-tabs dropdown-tabs nav-tabs-custom" data-dropdown-tabs="true" id="notificationItemsTab" role="tablist">
-                                        <li class="nav-item waves-effect waves-light">
-                                            <a class="nav-link active" data-bs-toggle="tab" href="#all-noti-tab" role="tab" aria-selected="true">
-                                                All (4)
-                                            </a>
-                                        </li>
-                                        <li class="nav-item waves-effect waves-light">
-                                            <a class="nav-link" data-bs-toggle="tab" href="#messages-tab" role="tab" aria-selected="false">
-                                                Messages
-                                            </a>
-                                        </li>
-                                        <li class="nav-item waves-effect waves-light">
-                                            <a class="nav-link" data-bs-toggle="tab" href="#alerts-tab" role="tab" aria-selected="false">
-                                                Alerts
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </div>
 
-                            </div>
+                             <div class="tab-content position-relative" id="notificationItemsTabContent">
+						        <div class="tab-pane fade show active py-2 ps-2" id="all-noti-tab" role="tabpanel">
 
-                            <div class="tab-content position-relative" id="notificationItemsTabContent">
-                                <div class="tab-pane fade show active py-2 ps-2" id="all-noti-tab" role="tabpanel">
-                                    <div data-simplebar style="max-height: 300px;" class="pe-2">
-                                        <div class="text-reset notification-item d-block dropdown-item position-relative">
-                                            <div class="d-flex">
-                                                <div class="avatar-xs me-3 flex-shrink-0">
-                                                <span class="avatar-title bg-info-subtle text-info rounded-circle fs-16">
-                                                    <i class="bx bx-badge-check"></i>
-                                                </span>
-                                                </div>
-                                                <div class="flex-grow-1">
-                                                    <a href="#!" class="stretched-link">
-                                                        <h6 class="mt-0 mb-2 lh-base">Your <b>Elite</b> author Graphic
-                                                            Optimization <span class="text-secondary">reward</span> is
-                                                            ready!
-                                                        </h6>
-                                                    </a>
-                                                    <p class="mb-0 fs-11 fw-medium text-uppercase text-muted">
-                                                        <span><i class="mdi mdi-clock-outline"></i> Just 30 sec ago</span>
-                                                    </p>
-                                                </div>
-                                                <div class="px-2 fs-15">
-                                                    <div class="form-check notification-check">
-                                                        <input class="form-check-input" type="checkbox" value="" id="all-notification-check01">
-                                                        <label class="form-check-label" for="all-notification-check01"></label>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
+						            <div data-simplebar style="max-height: 300px;" class="pe-2" id="my-notification-list">
 
-                                        <div class="text-reset notification-item d-block dropdown-item position-relative">
-                                            <div class="d-flex">
-                                                <img src="/assets/images/users/avatar-2.jpg" class="me-3 rounded-circle avatar-xs flex-shrink-0" alt="user-pic">
-                                                <div class="flex-grow-1">
-                                                    <a href="#!" class="stretched-link">
-                                                        <h6 class="mt-0 mb-1 fs-13 fw-semibold">Angela Bernier</h6>
-                                                    </a>
-                                                    <div class="fs-13 text-muted">
-                                                        <p class="mb-1">Answered to your comment on the cash flow forecast's
-                                                            graph 🔔.</p>
-                                                    </div>
-                                                    <p class="mb-0 fs-11 fw-medium text-uppercase text-muted">
-                                                        <span><i class="mdi mdi-clock-outline"></i> 48 min ago</span>
-                                                    </p>
-                                                </div>
-                                                <div class="px-2 fs-15">
-                                                    <div class="form-check notification-check">
-                                                        <input class="form-check-input" type="checkbox" value="" id="all-notification-check02">
-                                                        <label class="form-check-label" for="all-notification-check02"></label>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
+						                <div class="text-center empty-notification-elem mt-3">
+						                    <div class="avatar-md w-auto">
+						                         <span class="avatar-title bg-light-subtle text-body rounded-circle fs-24">
+						                             <i class="bi bi-bell-slash"></i>
+						                         </span>
+						                    </div>
+						                    <p class="text-muted mt-2">새로운 알림이 없습니다.</p>
+						                </div>
 
-                                        <div class="text-reset notification-item d-block dropdown-item position-relative">
-                                            <div class="d-flex">
-                                                <div class="avatar-xs me-3 flex-shrink-0">
-                                                <span class="avatar-title bg-danger-subtle text-danger rounded-circle fs-16">
-                                                    <i class='bx bx-message-square-dots'></i>
-                                                </span>
-                                                </div>
-                                                <div class="flex-grow-1">
-                                                    <a href="#!" class="stretched-link">
-                                                        <h6 class="mt-0 mb-2 fs-13 lh-base">You have received <b class="text-success">20</b> new messages in the conversation
-                                                        </h6>
-                                                    </a>
-                                                    <p class="mb-0 fs-11 fw-medium text-uppercase text-muted">
-                                                        <span><i class="mdi mdi-clock-outline"></i> 2 hrs ago</span>
-                                                    </p>
-                                                </div>
-                                                <div class="px-2 fs-15">
-                                                    <div class="form-check notification-check">
-                                                        <input class="form-check-input" type="checkbox" value="" id="all-notification-check03">
-                                                        <label class="form-check-label" for="all-notification-check03"></label>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
+						                </div>
+						        </div>
+						    </div>
 
-                                        <div class="text-reset notification-item d-block dropdown-item position-relative">
-                                            <div class="d-flex">
-                                                <img src="/assets/images/users/avatar-8.jpg" class="me-3 rounded-circle avatar-xs flex-shrink-0" alt="user-pic">
-                                                <div class="flex-grow-1">
-                                                    <a href="#!" class="stretched-link">
-                                                        <h6 class="mt-0 mb-1 fs-13 fw-semibold">Maureen Gibson</h6>
-                                                    </a>
-                                                    <div class="fs-13 text-muted">
-                                                        <p class="mb-1">We talked about a project on linkedin.</p>
-                                                    </div>
-                                                    <p class="mb-0 fs-11 fw-medium text-uppercase text-muted">
-                                                        <span><i class="mdi mdi-clock-outline"></i> 4 hrs ago</span>
-                                                    </p>
-                                                </div>
-                                                <div class="px-2 fs-15">
-                                                    <div class="form-check notification-check">
-                                                        <input class="form-check-input" type="checkbox" value="" id="all-notification-check04">
-                                                        <label class="form-check-label" for="all-notification-check04"></label>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
 
-                                        <div class="my-3 text-center view-all">
-                                            <button type="button" class="btn btn-soft-success waves-effect waves-light">View
-                                                All Notifications <i class="ri-arrow-right-line align-middle"></i></button>
-                                        </div>
-                                    </div>
 
-                                </div>
-
-                                <div class="tab-pane fade py-2 ps-2" id="messages-tab" role="tabpanel" aria-labelledby="messages-tab">
-                                    <div data-simplebar style="max-height: 300px;" class="pe-2">
-                                        <div class="text-reset notification-item d-block dropdown-item">
-                                            <div class="d-flex">
-                                                <img src="/assets/images/users/avatar-3.jpg" class="me-3 rounded-circle avatar-xs" alt="user-pic">
-                                                <div class="flex-grow-1">
-                                                    <a href="#!" class="stretched-link">
-                                                        <h6 class="mt-0 mb-1 fs-13 fw-semibold">James Lemire</h6>
-                                                    </a>
-                                                    <div class="fs-13 text-muted">
-                                                        <p class="mb-1">We talked about a project on linkedin.</p>
-                                                    </div>
-                                                    <p class="mb-0 fs-11 fw-medium text-uppercase text-muted">
-                                                        <span><i class="mdi mdi-clock-outline"></i> 30 min ago</span>
-                                                    </p>
-                                                </div>
-                                                <div class="px-2 fs-15">
-                                                    <div class="form-check notification-check">
-                                                        <input class="form-check-input" type="checkbox" value="" id="messages-notification-check01">
-                                                        <label class="form-check-label" for="messages-notification-check01"></label>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="text-reset notification-item d-block dropdown-item">
-                                            <div class="d-flex">
-                                                <img src="/assets/images/users/avatar-2.jpg" class="me-3 rounded-circle avatar-xs" alt="user-pic">
-                                                <div class="flex-grow-1">
-                                                    <a href="#!" class="stretched-link">
-                                                        <h6 class="mt-0 mb-1 fs-13 fw-semibold">Angela Bernier</h6>
-                                                    </a>
-                                                    <div class="fs-13 text-muted">
-                                                        <p class="mb-1">Answered to your comment on the cash flow forecast's
-                                                            graph 🔔.</p>
-                                                    </div>
-                                                    <p class="mb-0 fs-11 fw-medium text-uppercase text-muted">
-                                                        <span><i class="mdi mdi-clock-outline"></i> 2 hrs ago</span>
-                                                    </p>
-                                                </div>
-                                                <div class="px-2 fs-15">
-                                                    <div class="form-check notification-check">
-                                                        <input class="form-check-input" type="checkbox" value="" id="messages-notification-check02">
-                                                        <label class="form-check-label" for="messages-notification-check02"></label>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="text-reset notification-item d-block dropdown-item">
-                                            <div class="d-flex">
-                                                <img src="/assets/images/users/avatar-6.jpg" class="me-3 rounded-circle avatar-xs" alt="user-pic">
-                                                <div class="flex-grow-1">
-                                                    <a href="#!" class="stretched-link">
-                                                        <h6 class="mt-0 mb-1 fs-13 fw-semibold">Kenneth Brown</h6>
-                                                    </a>
-                                                    <div class="fs-13 text-muted">
-                                                        <p class="mb-1">Mentionned you in his comment on 📃 invoice #12501.
-                                                        </p>
-                                                    </div>
-                                                    <p class="mb-0 fs-11 fw-medium text-uppercase text-muted">
-                                                        <span><i class="mdi mdi-clock-outline"></i> 10 hrs ago</span>
-                                                    </p>
-                                                </div>
-                                                <div class="px-2 fs-15">
-                                                    <div class="form-check notification-check">
-                                                        <input class="form-check-input" type="checkbox" value="" id="messages-notification-check03">
-                                                        <label class="form-check-label" for="messages-notification-check03"></label>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="text-reset notification-item d-block dropdown-item">
-                                            <div class="d-flex">
-                                                <img src="/assets/images/users/avatar-8.jpg" class="me-3 rounded-circle avatar-xs" alt="user-pic">
-                                                <div class="flex-grow-1">
-                                                    <a href="#!" class="stretched-link">
-                                                        <h6 class="mt-0 mb-1 fs-13 fw-semibold">Maureen Gibson</h6>
-                                                    </a>
-                                                    <div class="fs-13 text-muted">
-                                                        <p class="mb-1">We talked about a project on linkedin.</p>
-                                                    </div>
-                                                    <p class="mb-0 fs-11 fw-medium text-uppercase text-muted">
-                                                        <span><i class="mdi mdi-clock-outline"></i> 3 days ago</span>
-                                                    </p>
-                                                </div>
-                                                <div class="px-2 fs-15">
-                                                    <div class="form-check notification-check">
-                                                        <input class="form-check-input" type="checkbox" value="" id="messages-notification-check04">
-                                                        <label class="form-check-label" for="messages-notification-check04"></label>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="my-3 text-center view-all">
-                                            <button type="button" class="btn btn-soft-success waves-effect waves-light">View
-                                                All Messages <i class="ri-arrow-right-line align-middle"></i></button>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="tab-pane fade p-4" id="alerts-tab" role="tabpanel" aria-labelledby="alerts-tab"></div>
-
-                                <div class="notification-actions" id="notification-actions">
-                                    <div class="d-flex text-muted justify-content-center">
-                                        Select <div id="select-content" class="text-body fw-semibold px-1">0</div> Result <button type="button" class="btn btn-link link-danger p-0 ms-3" data-bs-toggle="modal" data-bs-target="#removeNotificationModal">Remove</button>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
                     </div>
 
@@ -404,17 +255,16 @@
                         </span>
                         </button>
                         <div class="dropdown-menu dropdown-menu-end" style="width: 300px">
-                            <!-- item-->
                             <h6 class="dropdown-header">${user.affiliation}</h6>
-                            <h6 class="dropdown-header">${userc.username}</h6>
+                            <h6 class="dropdown-header">${user.username}</h6>
                             <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="pages-profile.html"><i class="mdi mdi-account-circle text-muted fs-16 align-middle me-1"></i> <span class="align-middle">개인 정보 수정</span></a>
-                            <a class="dropdown-item" href="apps-chat.html"><i class="mdi mdi-message-text-outline text-muted fs-16 align-middle me-1"></i> <span class="align-middle">메세지</span></a>
-                            <a class="dropdown-item" href="apps-tasks-kanban.html"><i class="mdi mdi-calendar-check-outline text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Taskboard</span></a>
-                            <a class="dropdown-item" href="pages-faqs.html"><i class="mdi mdi-lifebuoy text-muted fs-16 align-middle me-1"></i> <span class="align-middle">도움말</span></a>
+                            <a class="dropdown-item" href="/stdnt/main/info"><i class="mdi mdi-account-circle text-muted fs-16 align-middle me-1"></i> <span class="align-middle" data-key="t-profile-edit">개인 정보 수정</span></a>
+                            <a class="dropdown-item" href="apps-chat.html"><i class="mdi mdi-message-text-outline text-muted fs-16 align-middle me-1"></i> <span class="align-middle" data-key="t-messages">메세지</span></a>
+                            <a class="dropdown-item" href="apps-tasks-kanban.html"><i class="mdi mdi-calendar-check-outline text-muted fs-16 align-middle me-1"></i> <span class="align-middle" data-key="t-taskboard">Taskboard</span></a>
+                            <a class="dropdown-item" href="pages-faqs.html"><i class="mdi mdi-lifebuoy text-muted fs-16 align-middle me-1"></i> <span class="align-middle" data-key="t-help">도움말</span></a>
                             <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="pages-profile-settings.html"><span class="badge bg-success-subtle text-success mt-1 float-end">New</span><i class="mdi mdi-cog-outline text-muted fs-16 align-middle me-1"></i> <span class="align-middle">설정</span></a>
-                            <a class="dropdown-item" href="auth-lockscreen-basic.html"><i class="mdi mdi-lock text-muted fs-16 align-middle me-1"></i> <span class="align-middle">화면 잠그기</span></a>
+                            <a class="dropdown-item" href="/"><i class="mdi mdi-home text-muted fs-16 align-middle me-1"></i> <span class="align-middle" data-key="t-home">홈페이지</span></a>
+                            <a class="dropdown-item" href="auth-lockscreen-basic.html"><i class="mdi mdi-lock text-muted fs-16 align-middle me-1"></i> <span class="align-middle" data-key="t-lock-screen">화면 잠그기</span></a>
                             <a class="dropdown-item" href="/logout"><i class="mdi mdi-logout text-muted fs-16 align-middle me-1"></i> <span class="align-middle" data-key="t-logout">로그아웃</span></a>
                         </div>
                     </div>
@@ -445,13 +295,7 @@
                     </div>
                 </div>
 
-            </div><!-- /.modal-content -->
-        </div><!-- /.modal-dialog -->
-    </div><!-- /.modal -->
-
-    <!-- ========== App Menu ========== -->
-    <div class="app-menu navbar-menu">
-        <!-- LOGO -->
+            </div></div></div><div class="app-menu navbar-menu">
         <div class="navbar-brand-box">
             <!-- Dark Logo-->
             <a href="/student/welcome" class="logo logo-dark">
@@ -482,40 +326,41 @@
                 <div id="two-column-menu">
                 </div>
                 <ul class="navbar-nav" id="navbar-nav">
-                    <li class="menu-title"><span data-key="">학사 행정</span></li>
+                    <li class="menu-title"><span data-key="t-academic-info">학사 정보</span></li>
+
                     <li class="nav-item">
                         <a class="nav-link menu-link" href="#sidebarRegist" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarDashboards">
-                            <i class="las la-compass"></i> <span data-key="">등록</span>
+                            <i class="las la-compass"></i> <span data-key="t-registration">등록</span>
                         </a>
                         <div class="collapse menu-dropdown" id="sidebarRegist">
                             <ul class="nav nav-sm flex-column">
                                 <li class="nav-item">
-                                    <a href="dashboard-analytics.html" class="nav-link" data-key=""> 납부 </a>
+                                    <a href="/payinfo/studentView/${user.username}" class="nav-link" data-key="t-payment"> 납부 </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="dashboard-crm.html" class="nav-link" data-key=""> 납부 내역 조회 </a>
+                                    <a href="/payinfo/stdnt/list" class="nav-link" data-key="t-payment-history"> 납부 내역 조회 </a>
                                 </li>
                             </ul>
                         </div>
                     </li> <!-- end Dashboard Menu -->
                     <li class="nav-item">
                         <a class="nav-link menu-link" href="#sidebarLecture" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarApps">
-                            <i class="las la-book"></i> <span data-key="">수강</span>
+                            <i class="las la-book"></i> <span data-key="t-course">수강</span>
                         </a>
                         <div class="collapse menu-dropdown" id="sidebarLecture">
                             <ul class="nav nav-sm flex-column">
                                 <li class="nav-item">
-                                    <a href="/atnlc/submit" class="nav-link" data-key="">
+                                    <a href="/atnlc/submit" class="nav-link" data-key="t-course-registration">
                                         수강 신청
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="/atnlc/cart" class="nav-link" data-key="">
+                                    <a href="/atnlc/cart" class="nav-link" data-key="t-cart">
                                         장바구니
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="/atnlc/stdntLctreList" class="nav-link" data-key="">
+                                    <a href="/atnlc/stdntLctreList" class="nav-link" data-key="t-registration-history">
                                         신청 내역 조회
                                     </a>
                                 </li>
@@ -525,15 +370,15 @@
 
                     <li class="nav-item">
                         <a class="nav-link menu-link" href="#sidebarGrade" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
-                            <i class="las la-scroll"></i> <span data-key="">성적</span>
+                            <i class="las la-scroll"></i> <span data-key="t-grade">성적</span>
                         </a>
                         <div class="collapse menu-dropdown" id="sidebarGrade">
                             <ul class="nav nav-sm flex-column">
                                 <li class="nav-item">
-                                    <a href="/stdnt/grade/main/All" class="nav-link" data-key="">학기별 성적</a>
+                                    <a href="/stdnt/grade/main/All" class="nav-link" data-key="t-semester-grade">학기별 성적</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="/stdnt/lecture/main/All" class="nav-link" data-key="">강의 평가</a>
+                                    <a href="/stdnt/lecture/main/All" class="nav-link" data-key="t-lecture-evaluation">강의 평가</a>
                                 </li>
                             </ul>
                         </div>
@@ -541,17 +386,17 @@
 
                     <li class="nav-item">
                         <a class="nav-link menu-link" href="#sidebarEnrollment" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarAuth">
-                            <i class="las la-id-card"></i> <span data-key="">학적</span>
+                            <i class="las la-id-card"></i> <span data-key="t-enrollment">학적</span>
                         </a>
                         <div class="collapse menu-dropdown" id="sidebarEnrollment">
                             <ul class="nav nav-sm flex-column">
                                 <li class="nav-item">
-                                    <a href="/enrollment/status" class="nav-link" data-key="">
-                                        학적 관리
+                                    <a href="/enrollment/status" class="nav-link" data-key="t-enrollment-info">
+                                        학적정보
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="/enrollment/change" class="nav-link" data-key="">
+                                    <a href="/enrollment/change" class="nav-link" data-key="t-leave-return-app">
                                         휴학/복학 신청
                                     </a>
                                 </li>
@@ -561,12 +406,18 @@
 
                     <li class="nav-item">
                         <a class="nav-link menu-link" href="#sidebargraduation" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarPages">
-                            <i class="las la-graduation-cap"></i> <span data-key="">졸업</span>
+                            <i class="las la-graduation-cap"></i> <span data-key="t-graduation">졸업</span>
                         </a>
                         <div class="collapse menu-dropdown" id="sidebargraduation">
                             <ul class="nav nav-sm flex-column">
                                 <li class="nav-item">
-                                    <a href="pages-starter.html" class="nav-link" data-key=""> 졸업 현황 </a>
+                                    <a href="/stdnt/gradu/main/All" class="nav-link" data-key="t-graduation-status"> 졸업 현황 </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="/compe/main" class="nav-link" data-key=""> 자기소개서 도우미 </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="/compe/detail" class="nav-link" data-key=""> 자기소개서 목록 </a>
                                 </li>
                             </ul>
                         </div>
@@ -574,31 +425,52 @@
 
                     <li class="nav-item">
                         <a class="nav-link menu-link" href="#sidebarcertificate" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLanding">
-                            <i class="las la-certificate"></i> <span data-key="">제증명 발급</span>
+                            <i class="las la-certificate"></i> <span data-key="t-certificates">제증명 발급</span>
                         </a>
                         <div class="collapse menu-dropdown" id="sidebarcertificate">
                             <ul class="nav nav-sm flex-column">
                                 <li class="nav-item">
-                                    <a href="landing.html" class="nav-link" data-key="">발급</a>
+                                    <a href="/certificates/DocxForm" class="nav-link" data-key="t-issuance">발급</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="nft-landing.html" class="nav-link" data-key="">문서함</a>
+                                    <a href="/certificates/DocxHistory" class="nav-link" data-key="t-document-box">문서함</a>
                                 </li>
                             </ul>
                         </div>
                     </li>
 
-                    <li class="menu-title"><span data-key="">학습</span></li>
+
+                    <li class="menu-title"><span data-key="t-learning">학습</span></li>
 
                     <li class="nav-item">
-                        <a class="nav-link menu-link" href="ui-alerts.html" data-key="">
-                            <i class="las la-university"></i> <span data-key="">학습 관리</span>
+                        <a class="nav-link menu-link" href="/dashboard/student">
+                            <i class="las la-university"></i> <span data-key="t-learning-management">학습 관리</span>
                         </a>
                     </li>
 
                     <li class="nav-item">
                         <a class="nav-link menu-link" href="/counsel/std">
-                            <i class="las la-comments"></i> <span data-key="">상담</span>
+                            <i class="las la-comments"></i> <span data-key="t-counseling">상담</span>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link menu-link" href="/schedule/timetable">
+                            <i class="las la-table"></i> <span data-key="t-timetable">시간표</span>
+                        </a>
+                    </li>
+
+                    <li class="menu-title"><span data-key="t-school-intro">학교 소개</span></li>
+
+                    <li class="nav-item">
+                        <a class="nav-link menu-link" href="/schedule/calendar">
+                            <i class="las la-calendar"></i> <span data-key="t-academic-calendar">학사일정</span>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link menu-link" href="/info/campus/map">
+                            <i class="las la-map-marked"></i> <span data-key="t-campus-map">캠퍼스맵</span>
                         </a>
                     </li>
                 </ul>
@@ -613,37 +485,64 @@
                 <div id="two-column-menu">
                 </div>
                 <ul class="navbar-nav" id="navbar-nav">
-                    <li class="menu-title"><span data-key="">학사 행정</span></li>
+                    <li class="menu-title"><span data-key="t-academic-info">학사 정보</span></li>
                     <li class="nav-item">
                         <a class="nav-link menu-link" href="#sidebarLecture" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarDashboards">
-                            <i class="las la-compass"></i> <span data-key="">강의</span>
+                            <i class="las la-compass"></i> <span data-key="t-lecture">강의</span>
                         </a>
                         <div class="collapse menu-dropdown" id="sidebarLecture">
                             <ul class="nav nav-sm flex-column">
                                 <li class="nav-item">
-                                    <a href="/prof/lecture/list" class="nav-link" data-key=""> 나의 강의 </a>
+                                    <a href="/prof/lecture/list" class="nav-link" data-key="t-my-lecture"> 나의 강의 </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="/prof/lecture/mng/list" class="nav-link" data-key="">개설 강의 관리</a>
+                                    <a href="/prof/lecture/mng/list" class="nav-link" data-key="t-syllabus-submission">개설 강의 관리</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="/prof/lecture/main/All" class="nav-link" data-key="t-lecture-evaluation">강의 평가</a>
                                 </li>
                             </ul>
                         </div>
-                    </li> <!-- end Dashboard Menu -->
+                    </li> <li class="nav-item">
+                        <a class="nav-link menu-link" href="#sidebarGrade" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarDashboards">
+                            <i class="las la-scroll"></i> <span data-key="t-grade">성적</span>
+                        </a>
+                        <div class="collapse menu-dropdown" id="sidebarGrade">
+                            <ul class="nav nav-sm flex-column">
+                                <li class="nav-item">
+                                    <a href="/prof/grade/main/All" class="nav-link" data-key="t-grade-management">성적 관리</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+
                     <li class="nav-item">
                         <a class="nav-link menu-link" href="#sidebarCounsel" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarDashboards">
-                            <i class="las la-comments"></i> <span data-key="">상담</span>
+                            <i class="las la-comments"></i> <span data-key="t-counseling">상담</span>
                         </a>
                         <div class="collapse menu-dropdown" id="sidebarCounsel">
                             <ul class="nav nav-sm flex-column">
                                 <li class="nav-item">
-                                    <a href="dashboard-analytics.html" class="nav-link" data-key="">상담 요청</a>
+                                    <a href="/counselprof/prof" class="nav-link" data-key="t-counseling-request">상담 요청</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="dashboard-crm.html" class="nav-link" data-key="">상담 관리</a>
+                                    <a href="dashboard-crm.html" class="nav-link" data-key="t-counseling-management">상담 관리</a>
                                 </li>
                             </ul>
                         </div>
                     </li> <!-- end Dashboard Menu -->
+
+                    <li class="nav-item">
+                        <a class="nav-link menu-link" href="/schedule/calendar">
+                            <i class="las la-calendar"></i> <span data-key="t-academic-calendar">학사일정</span>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link menu-link" href="/info/campus/map" data-key="">
+                            <i class=" las la-map-marked"></i> <span data-key="t-campus-map">캠퍼스맵</span>
+                        </a>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -662,92 +561,6 @@
 
         <div class="page-content">
             <div id="main-container" class="container-fluid">
-
-                <%--<div id="wrapper">--%>
-                <%--    <header class="header">--%>
-                <%--        <div class="container-fluid d-flex justify-content-between align-items-center gap-3">--%>
-                <%--            <div class="brand"><i class="bi bi-mortarboard-fill"></i> 스마트 LMS</div>--%>
-                <%--            <div class="user-actions">--%>
-                <%--                <i class="bi bi-bell p-2"></i>--%>
-                <%--                <i class="bi bi-gear p-2"></i>--%>
-                <%--                <i class="bi bi-person-circle p-2"></i>--%>
-                <%--            </div>--%>
-                <%--            <sec:authorize access="isAuthenticated()">--%>
-                <%--                <a href="/logout"><button class="btn btn-outline-danger">로그아웃</button></a>--%>
-                <%--            </sec:authorize>--%>
-                <%--        </div>--%>
-
-                <%--        <!-- ✅ CHANGED: 토스트 -->--%>
-                <%--        <div id="toastContainer"></div>--%>
-                <%--    </header>--%>
-
-                <%--    <main class="d-flex">--%>
-                <%--        <div id="sidebar" class="d-flex flex-column flex-shrink-0 p-3 bg-primary bg-gradient">--%>
-                <%--            <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">--%>
-                <%--                <svg class="bi pe-none me-2" width="40" height="32" aria-hidden="true"><use xlink:href="#bootstrap"></use></svg>--%>
-                <%--                <span class="fs-4">Sidebar</span>--%>
-                <%--            </a>--%>
-                <%--            <hr>--%>
-                <%--            <ul class="nav nav-pills flex-column mb-auto">--%>
-                <%--                <li class="nav-item">--%>
-                <%--                    <a href="#" class="nav-link active" aria-current="page">--%>
-                <%--                        <svg class="bi pe-none me-2" width="16" height="16" aria-hidden="true"><use xlink:href="#home"></use></svg>--%>
-                <%--                        Home--%>
-                <%--                    </a>--%>
-                <%--                </li>--%>
-                <%--                <li>--%>
-                <%--                    <a href="#" class="nav-link link-body-emphasis">--%>
-                <%--                        <svg class="bi pe-none me-2" width="16" height="16" aria-hidden="true"><use xlink:href="#speedometer2"></use></svg>--%>
-                <%--                        Dashboard--%>
-                <%--                    </a>--%>
-                <%--                </li>--%>
-                <%--                <li>--%>
-                <%--                    <a href="#" class="nav-link link-body-emphasis">--%>
-                <%--                        <svg class="bi pe-none me-2" width="16" height="16" aria-hidden="true"><use xlink:href="#table"></use></svg>--%>
-                <%--                        Orders--%>
-                <%--                    </a>--%>
-                <%--                </li>--%>
-                <%--                <li>--%>
-                <%--                    <a href="#" class="nav-link link-body-emphasis">--%>
-                <%--                        <svg class="bi pe-none me-2" width="16" height="16" aria-hidden="true"><use xlink:href="#grid"></use></svg>--%>
-                <%--                        Products--%>
-                <%--                    </a>--%>
-                <%--                </li>--%>
-                <%--                <li>--%>
-                <%--                    <a href="#" class="nav-link link-body-emphasis">--%>
-                <%--                        <svg class="bi pe-none me-2" width="16" height="16" aria-hidden="true"><use xlink:href="#people-circle"></use></svg>--%>
-                <%--                        Customers--%>
-                <%--                    </a>--%>
-                <%--                </li>--%>
-                <%--            </ul>--%>
-                <%--            <sec:authorize access="isAuthenticated()">--%>
-                <%--                <hr>--%>
-                <%--                <div class="dropdown">--%>
-                <%--                    <a href="#" class="d-flex align-items-center link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">--%>
-                <%--                        <img src="https://github.com/mdo.png" alt="" width="32" height="32" class="rounded-circle me-2">--%>
-                <%--                        <strong><sec:authentication property="principal.username"/></strong>--%>
-                <%--                    </a>--%>
-                <%--                    <ul class="dropdown-menu text-small shadow">--%>
-                <%--                        <li>--%>
-                <%--                            <a class="dropdown-item" href="#">New project...</a>--%>
-                <%--                        </li>--%>
-                <%--                        <li>--%>
-                <%--                            <a class="dropdown-item" href="#">Settings</a>--%>
-                <%--                        </li>--%>
-                <%--                        <li>--%>
-                <%--                            <a class="dropdown-item" href="#">Profile</a>--%>
-                <%--                        </li>--%>
-                <%--                        <li>--%>
-                <%--                            <hr class="dropdown-divider">--%>
-                <%--                        </li>--%>
-                <%--                        <li>--%>
-                <%--                            <a class="dropdown-item" href="#">Sign out</a>--%>
-                <%--                        </li>--%>
-                <%--                    </ul>--%>
-                <%--                </div>--%>
-                <%--            </sec:authorize>--%>
-                <%--        </div>--%>
-                <%--        <div id="main-container" class="container-fluid">--%>
 
 
 

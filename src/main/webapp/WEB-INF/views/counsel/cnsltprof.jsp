@@ -1,11 +1,22 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.0/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.0/dist/sweetalert2.all.min.js"></script>
 <%@ include file="../header.jsp" %>
 
-    <div id="main-container" class="container-fluid">
-        <div class="flex-grow-1 p-5 overflow-auto">
-			
-			<h2 class="section-title">나의 상담 관리</h2>
+<div class="row pt-3 px-5">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/dashboard/prof"><i class="las la-home"></i></a></li>
+            <li class="breadcrumb-item active" aria-current="page">나의 상담 관리</li>
+        </ol>
+    </nav>
+    <div class="col-12 page-title mt-2">
+        <h2 class="fw-semibold">나의 상담 관리</h2>
+        <div class="my-4 p-0 bg-primary" style="width: 100px; height:5px;"></div>
+    </div>
+</div>
+<div class="row pt-3 px-5">
+    <div class="col-xxl-12 col-12">
 
         <div class="row g-4">
                 <div class="col-md-4">
@@ -25,28 +36,28 @@
             <hr class="my-4">
 
             <h2 class="section-title">상담 요청 리스트</h2>
-           
+
             <table class="table table-bordered table-hover bg-white">
                 <thead class="table-light">
-                    <tr>
+                    <tr class="text-center">
                         <th>상담번호</th>
                         <th>상담요청일</th>
                         <th>상담요청 교시</th>
-                        <th>진행상태</th>
+                        <th>신청상태</th>
                         <th>상담신청일</th>
                     </tr>
                 </thead>
                 <tbody id="cnsltbody">
-                
+
                 </tbody>
             </table>
         </div>
-        <div class="card-footer clearfix" id="pagingArea">
+        <div class="card-footer clearfix border-0" id="pagingArea">
 			<!--  justify-content-center : style="justify-content:center;" -->
-			
+
 
 		</div>
-        
+
       <div class="text-end">
      <div id="example1_filter" class="dataTables_filter" style="float:right;">
           <div class="dropup-center dropup">
@@ -54,12 +65,13 @@
               진행 상태별 모아보기
             </button>
             <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="#" value="1">예약 대기중</a></li>
-              <li><a class="dropdown-item" href="#" value="2">상담예약 완료</a></li>
-              <li><a class="dropdown-item" href="#" value="3">상담 취소</a></li>
-              <li><a class="dropdown-item" href="#" value="4">상담 완료</a></li>
+              <li><a class="dropdown-item status-filter" href="#" value="">전체 보기</a></li>
+              <li><a class="dropdown-item status-filter" href="#" value="1">예약 대기중</a></li>
+              <li><a class="dropdown-item status-filter" href="#" value="2">상담예약 완료</a></li>
+              <li><a class="dropdown-item status-filter" href="#" value="3">상담 취소</a></li>
+              <li><a class="dropdown-item status-filter" href="#" value="4">상담 완료</a></li>
             </ul>
-          </div> 
+          </div>
           </div>
       </div>
         </div>
@@ -83,14 +95,14 @@ function getCnsltList(currentPage = 1, keyword ='') {
     }).then(resp => {
         return resp.json();
     }).then(result => {
-        console.log("result : ",result); 
-        console.log("cnsltVOList : ",result.cnsltVOList); 
+        console.log("result : ",result);
+        console.log("cnsltVOList : ",result.cnsltVOList);
         console.log("currentPage : ",result.currentPage);
         console.log("keyword : ",result.keyword);
         console.log("startPage : ",result.startPage);
         console.log("endPage : ",result.endPage);
         console.log("totalPages : ",result.totalPage);
-        
+
         //나의 상담관리 카운트수
         const cs = result.cnsltVOCountList;
         let sumTotal = 0;
@@ -123,13 +135,13 @@ function getCnsltList(currentPage = 1, keyword ='') {
         let regDay ="";
         let bg = "";
         let text = "";
-       
+
         const startPage = result.startPage;
         const endPage = result.endPage;
         const totalPages = result.totalPage;
         const currentKeyword = result.keyword;
         const currentPage = result.currentPage;
-		
+
         cnslts.forEach(cnslt => {
             if (cnslt.sttus =="1") {
             	cnslt.sttus = "상담예약 대기중";
@@ -152,40 +164,40 @@ function getCnsltList(currentPage = 1, keyword ='') {
             time = cnslt.cnsltRequstHour + " 교시"; //상담요청교시
             day = cnslt.cnsltRequstDe.substring(0,10); //요청일
 
-            str += `       
-                <tr onClick="seletCnsltDetail(\${cnslt.cnsltInnb})" style="cursor:pointer;">
+            str += `
+                <tr onClick="seletCnsltDetail(\${cnslt.cnsltInnb})" style="cursor:pointer;"class="text-center">
                     <td>\${cnslt.stdntNo}-\${cnslt.cnsltInnb}</td>
                     <td>\${day}</td>
                     <td>\${time}</td>
-                    <td><span class="badge \${bg} \${text}">\${cnslt.sttus}</span></td>
+                    <td><span style="width:100px; display: inline-block; text-align: center;" class="badge \${bg} \${text}">\${cnslt.sttus}</span></td>
                     <td>\${regDay}</td>
                 </tr>
                 `;
         });
-        
+
         cnsltbody.innerHTML = str;
-        
+
         let pagingArea = "";
         pagingArea += "<ul class='pagination pagination-sm m-0 justify-content-center'>";
-		
+
         if(startPage > 5) {
-        	pagingArea += `<li class='page-item'><a class='page-link' 
+        	pagingArea += `<li class='page-item'><a class='page-link'
                             href='javascript:getCnsltList(\${startPage-5}),"\${currentKeyword}")'>«</a></li>`;
         }//end if
-        
+
         for(let pNo=startPage;pNo<=endPage;pNo++) {
 
             const activeClass = (pNo ===currentPage) ? 'active' : '';
 
-        	pagingArea += `<li class='page-item \{activeClass}'><a class='page-link' 
+        	pagingArea += `<li class='page-item \{activeClass}'><a class='page-link'
                             href='javascript:getCnsltList(\${pNo},"\${currentKeyword}")'>\${pNo}</a></li>`;
         }//end for
-        
+
         if(endPage < totalPages) {
-        	pagingArea += `<li class='page-item'><a class='page-link' 
+        	pagingArea += `<li class='page-item'><a class='page-link'
                             href='javascript:getCnsltList(\${startPage+5}),"\${currentKeyword}")'>»</a></li>`;
         }//end if
-      
+
         pagingArea += "</ul>";
         pagingArea += `<input type='hidden' value='\${currentPage}' id='currentPageForModal'>`;
 
@@ -204,27 +216,57 @@ function getCnsltList(currentPage = 1, keyword ='') {
 
 
 /**
- *  여기가 전체 시~ 작 
+ *  여기가 전체 시~ 작
  */
 document.addEventListener("DOMContentLoaded",function()  {
     getCnsltList();
-    
+
+    // ================================
+   	// 상태별로 모아보기 : ex)상담완료 선택시 상담완료 리스트만 보기
+
+   	const statusFilters = document.querySelectorAll(".status-filter");
+   	const dropdownBtn = document.querySelector(".dropdown-toggle");
+
+   	statusFilters.forEach(filter => {
+		filter.addEventListener("click", function(e) {
+			e.preventDefault();
+
+			let statusValue = this.getAttribute("value");
+			let statusText = this.textContent;
+
+			dropdownBtn.textContent = statusText;
+
+			getCnsltList(1,statusValue);
+
+		})
+   	})
+
+
+
+	//==================================
+
       const btnAccept = document.querySelector("#btnAccept");   //상담수락
       const btnCancle = document.querySelector("#btnCancle");   //상담취소
       const btnComplete = document.querySelector("#btnComplete");//상담완료
       const cnsltMthd = document.querySelector("#modal-cnsltMthd"); //상담방법
       const canclReason = document.querySelector("#modal-canclReason"); //취소이유
       const cnsltResult = document.querySelector("#modal-cnsltResult"); //상담완료
-      
+
       const cnsltInnb = document.querySelector("#modal-cnsltInnb"); //상담번호
       const modalClose = document.querySelector("#modalClose"); //모달창
-  
+
 
     //상담 수락 버튼 클릭시 상태
       btnAccept.addEventListener("click",function() {
         if (cnsltMthd.value=="null") {
           console.log("상담방법null  일때:",cnsltMthd.value)
-          alert("상담방법을 선택하세요!");
+          Swal.fire({
+				title: '요청',
+				text: '상담방법을 선택하세요!',
+				icon: 'info',
+				confirmButtonText: '확인'
+			});
+
           cnsltMthd.focus();
           return;
         }
@@ -255,17 +297,23 @@ document.addEventListener("DOMContentLoaded",function()  {
         }).catch(error => {
           console.error("에러",error);
         })
-          
+
 
 
       })
-      
+
       //취소버튼 클릭시
       btnCancle.addEventListener("click",function() {
         if (canclReason.value =="" ) {
           canclReason.parentElement.style.display = "block";
           canclReason.focus();
-          alert("취소이유를 작성하세요!");
+          Swal.fire({
+				title: '요청',
+				text: '취소 이유를 작성하세요!',
+				icon: 'info',
+				confirmButtonText: '확인'
+			});
+
           return;
         }
 
@@ -293,13 +341,19 @@ document.addEventListener("DOMContentLoaded",function()  {
           console.error("에러",error);
         })
 
-      }) 
+      })
 
       btnComplete.addEventListener("click",function() {
         if (cnsltResult.value =="" ) {
           cnsltResult.parentElement.style.display = "block";
           cnsltResult.focus();
-          alert("상담결과를 작성하세요");
+          Swal.fire({
+				title: '요청',
+				text: '상담결과를 작성해주세요. 상담결과는 학생과 공유합니다.',
+				icon: 'info',
+				confirmButtonText: '확인'
+			});
+
           return;
         }
 
@@ -329,7 +383,7 @@ document.addEventListener("DOMContentLoaded",function()  {
           console.error("에러",error);
         })
 
-      }) 
+      })
 
 
 })
@@ -360,20 +414,20 @@ document.addEventListener("DOMContentLoaded",function()  {
             document.querySelector("#modal-cnsltRequstHour").value = cnsltVO.cnsltRequstHour + " 교시";
             document.querySelector("#modal-cnsltRequstCn").value = cnsltVO.cnsltRequstCn;
             document.querySelector("#modal-reqstDe").value = cnsltVO.reqstDe.substring(0,10);
-            
 
-            
+
+
             const btnAccept = document.querySelector("#btnAccept");   //상담수락
             const btnCancle = document.querySelector("#btnCancle");   //상담취소
             const btnComplete = document.querySelector("#btnComplete");//상담완료
             const cnsltMthd = document.querySelector("#modal-cnsltMthd"); //상담방법
             const canclReason = document.querySelector("#modal-canclReason"); //취소이유
             const cnsltResult = document.querySelector("#modal-cnsltResult"); //상담완료
-            
+
             cnsltMthd.value = cnsltVO.cnsltMthd;
             canclReason.value = cnsltVO.canclReason;
             cnsltResult.value = cnsltVO.cnsltResult;
-            /* 
+            /*
                const modalcnsltMthd = document.querySelector("#modal-cnsltMthd");
             if (cnsltVO.cnsltMthd ==null) {
                 modalcnsltMthd.parentElement.style.display="none";
@@ -389,14 +443,14 @@ document.addEventListener("DOMContentLoaded",function()  {
                 modalcanclReason.value = cnsltVO.cnsltMthd;
                 modalcanclReason.parentElement.style.display="block";
             }
-            
+
             */
 
             btnAccept.style.display="none";
             btnCancle.style.display="none";
             btnComplete.style.display="none";
-            
-            
+
+
             canclReason.parentElement.style.display = "none";
             cnsltResult.parentElement.style.display = "none";
 
@@ -407,7 +461,7 @@ document.addEventListener("DOMContentLoaded",function()  {
             canclReason.classList.remove('bg-light');
             cnsltResult.removeAttribute('readonly','');
             cnsltResult.classList.remove('bg-light');
-            
+
             if (cnsltVO.sttus =="1") {
             	cnsltVO.sttus = "상담예약 진행중";
                 btnAccept.style.display="block";
@@ -424,6 +478,7 @@ document.addEventListener("DOMContentLoaded",function()  {
               //상담방식  :속성 readonly 클래스 bg-light
               cnsltMthd.setAttribute('disabled','');
               cnsltMthd.classList.add('bg-light');
+              cnsltMthd.parentElement.style.display = "none";
               //상담 취소  :속성 readonly 클래스 bg-light
               canclReason.parentElement.style.display = "block";
               canclReason.setAttribute('readonly','');
@@ -441,13 +496,12 @@ document.addEventListener("DOMContentLoaded",function()  {
             }//진행상태
 
             document.querySelector("#modal-sttus").value = cnsltVO.sttus;
-            document.querySelector("#modal-sklstfNm").value = cnsltVO.sklstfNm;
-            
-            
+            document.querySelector("#modal-stdntNm").value = cnsltVO.stdntNm;
 
 
 
-            
+
+
 
             cnsltDetailModal.show();
 
@@ -460,13 +514,13 @@ document.addEventListener("DOMContentLoaded",function()  {
 </script>
 
 
-<!-- 
+<!--
 cnsltInnb 상담번호 : stdntNo-cnsltInnb학생번호-상담고유번호
 상담요청일 :
-cnsltRequstDe: "2025-10-30T00:00:00.000+00:00" 
-상담요청 교시 : 
+cnsltRequstDe: "2025-10-30T00:00:00.000+00:00"
+상담요청 교시 :
 cnsltRequstHour: "6" + 교시
-상담요청내용 : 
+상담요청내용 :
 cnsltRequstCn : "ㄱㄱ"
 신청일
 reqstDe: "2025-10-28T06:53:50.000+00:00"
@@ -478,9 +532,9 @@ sklstfNm : "김교수"
 상담방식 :              //상담예약완료 (상태 2,4 일 경우 보임)
 cnsltMthd: null
 취소이유 :              //상담취소 (상태)
-canclReason 
+canclReason
 
-상담결과 : 
+상담결과 :
 cnsltResult: null
 
 
@@ -492,70 +546,84 @@ cnsltResult: null
 
 <!-- 상담 상세 modal -->
 <div class="modal fade" id="cnsltDetailModal" tabindex="-1" aria-labelledby="cnsltDetailModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
+  <div class="modal-dialog modal-xl">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="cnsltDetailModalLabel">상담 상세</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <div class="modal-body">
+      <div class="modal-body container-fluid">
         <form>
-          <div calss="row">
-            <div class="row">
-          <div class="col-8 col-sm-6">
-            <div class="mb-3">
-              <label for="modal-cnsltInnb" class="col-form-label">상담번호</label>
-              <input type="text" class="form-control bg-light" id="modal-cnsltInnb" readonly>
-            </div>
-            <div class="mb-3">
-              <label for="modal-cnsltRequstDe" class="col-form-label">상담요청일</label>
-              <input type="text" class="form-control bg-light" id="modal-cnsltRequstDe" readonly>
-            </div>
-            <div class="mb-3">
-              <label for="modal-cnsltRequstHour" class="col-form-label">상담요청 교시</label>
-              <input type="text" class="form-control bg-light" id="modal-cnsltRequstHour" readonly>
-            </div>
+
+          <div class="row">
+	          <div class="col-md-4">
+	            <div class="mb-3">
+	              <label for="modal-cnsltInnb" class="col-form-label">상담번호</label>
+	              <input type="text" class="form-control bg-light" id="modal-cnsltInnb" readonly>
+	            </div>
+	          </div>
+	           <div class="col-md-4">
+	            <div class="mb-3">
+	              <label for="modal-cnsltRequstDe" class="col-form-label">상담요청일</label>
+	              <input type="text" class="form-control bg-light" id="modal-cnsltRequstDe" readonly>
+	            </div>
+	           </div>
+	           <div class="col-md-4">
+	            <div class="mb-3">
+	              <label for="modal-cnsltRequstHour" class="col-form-label">상담요청 교시</label>
+	              <input type="text" class="form-control bg-light" id="modal-cnsltRequstHour" readonly>
+	            </div>
+	           </div>
+          </div>
+
+          <div class="row">
+	          <div class="col-md-4">
+	            <div class="mb-3">
+	              <label for="modal-sttus" class="col-form-label">신청상태</label>
+	              <input type="text" class="form-control bg-light" id="modal-sttus" readonly>
+	            </div>
+	          </div>
+			  <div class="col-md-4">
+	            <div class="mb-3">
+	              <label for="modal-reqstDe" class="col-form-label">신청일</label>
+	              <input type="text" class="form-control bg-light" id="modal-reqstDe" readonly>
+	            </div>
+	          </div>
+	          <div class="col-md-4">
+	            <div class="mb-3">
+	              <label for="modal-stdntNm" class="col-form-label">상담 학생</label>
+	              <input type="text" class="form-control bg-light" id="modal-stdntNm" readonly>
+	            </div>
+	          </div>
+          </div>
+
             <div class="mb-3">
               <label for="modal-cnsltRequstCn" class="col-form-label">상담요청 내용</label>
               <input type="text" class="form-control bg-light" id="modal-cnsltRequstCn" readonly>
             </div>
-            <div class="mb-3">
-              <label for="modal-reqstDe" class="col-form-label">신청일</label>
-              <input type="text" class="form-control bg-light" id="modal-reqstDe" readonly>
-            </div>
-            <div class="mb-3">
-              <label for="modal-sttus" class="col-form-label">신청상태</label>
-              <input type="text" class="form-control bg-light" id="modal-sttus" readonly>
-            </div>
-            <div class="mb-3">
-              <label for="modal-sklstfNm" class="col-form-label">담당 교수님</label>
-              <input type="text" class="form-control bg-light" id="modal-sklstfNm" readonly>
-            </div>
-          </div>
-          <div class="col-4 col-sm-6">
-            <div class="mb-3">
+
+          <div class="mb-3">
               <label for="modal-cnsltMthd" class="col-form-label">상담방식</label>
               <select class="form-select form-select-lg" id="modal-cnsltMthd" required="">
                 <option selected disabled value=null >상담방식 선택</option>
                 <option value="OFFLINE">OFFLINE</option>
                 <option value="VIDEO">VIDEO</option>
-              </select>
-            </div>
-            <div class="mb-3" style="display:none">
-              <label for="modal-canclReason" class="col-form-label">취소 사유</label>
-              <textarea class="form-control" id="modal-canclReason"></textarea>
-            </div> 
-            <div class="mb-3" style="display:none">
-              <label for="modal-cnsltResult" class="col-form-label">상담 결과</label>
-              <textarea class="form-control" id="modal-cnsltResult"></textarea>
-            </div>                   
+          	  </select>
           </div>
+          <div class="mb-3" style="display:none">
+            <label for="modal-canclReason" class="col-form-label">취소 사유</label>
+            <textarea class="form-control" id="modal-canclReason"></textarea>
           </div>
-        </div>
+          <div class="mb-3" style="display:none">
+            <label for="modal-cnsltResult" class="col-form-label">상담 결과</label>
+            <textarea class="form-control" id="modal-cnsltResult"></textarea>
+          </div>
+
+
         </form>
       </div>
       <div class="modal-footer">
-        
+
         <button type="button" class="btn btn-primary" style="display:none" id="btnAccept">상담수락</button> <!--예약 대기중 상태만 보임 예약하거나 취소하면 안보임-->
         <button type="button" class="btn btn-danger" style="display:none" id="btnCancle">상담취소</button> <!-- 취소사유썻는지 확인하고 취소처리 취소 후 안보임-->
         <button type="button" class="btn btn-success" style="display:none" id="btnComplete"">상담완료</button> <!-- 취소사유썻는지 확인하고 취소처리 취소 후 안보임

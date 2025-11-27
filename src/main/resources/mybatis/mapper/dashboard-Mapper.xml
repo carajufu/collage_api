@@ -16,8 +16,9 @@
                             ON est.profsr_no = prof.profsr_no
                  INNER JOIN sklstf skl
                             ON prof.sklstf_id = skl.sklstf_id
-        WHERE stdnt_no = #{stdntNo}
-          AND reqst_year = #{year}
-          AND reqst_semstr = #{period}
+        WHERE at.stdnt_no = #{stdntNo}
+          AND at.reqst_year = #{year}
+          AND at.reqst_semstr = #{period}
+          AND at.reqst_sttus LIKE '신청완료'
     </select>
 </mapper>
