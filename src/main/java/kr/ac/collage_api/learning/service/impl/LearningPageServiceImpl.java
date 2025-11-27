@@ -170,5 +170,4 @@ public class LearningPageServiceImpl {
 
         return payload;
     }
-
 }

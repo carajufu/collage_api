@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.ac.collage_api.learning.mapper.LearningPageProfMapper">
+    <resultMap id="attendDetailMap" type="atendAbsncVO">
+        <id property="atendAbsncNo" column="ATEND_ABSNC_NO"/>
+        <result property="weekAcctoLrnNo" column="WEEK_ACCTO_LRN_NO"/>
+        <result property="stdntNo" column="STDNT_NO"/>
+        <result property="atendSttusCode" column="ATEND_STTUS_CODE"/>
+        <result property="lctreDe" column="LCTRE_DE"/>
+        <association property="weekAcctoLrnVO" javaType="kr.ac.collage_api.vo.WeekAcctoLrnVO">
+            <id property="weekAcctoLrnNo" column="WEEK_ACCTO_LRN_NO"/>
+            <result property="estbllctreCode" column="ESTBLLCTRE_CODE"/>
+            <result property="fileGroupNo" column="FILE_GROUP_NO"/>
+            <result property="week" column="WEEK"/>
+            <result property="taskAt" column="TASK_AT"/>
+            <result property="lrnThema" column="LRN_THEMA"/>
+            <result property="lrnCn" column="LRN_CN"/>
+            <result property="quizAt" column="QUIZ_AT"/>
+        </association>
+        <association property="stdntVO" javaType="kr.ac.collage_api.vo.StdntVO">
+            <id property="stdntNo" column="STDNT_NO"/>
+            <result property="stdntNm" column="STDNT_NM"/>
+            <result property="subjctCode" column="SUBJCT_CODE"/>
+        </association>
+    </resultMap>
+
+    <select id="getAttend" parameterType="hashMap" resultMap="attendDetailMap">
+        SELECT
+            aa.atend_absnc_no
+             , aa.week_accto_lrn_no
+             , aa.stdnt_no
+             , aa.atend_sttus_code
+             , NVL(TO_CHAR(aa.lctre_de, 'YYYYMMDD'), TO_CHAR(SYSDATE, 'YYYYMMDD')) AS lctre_de
+             , wal.estbllctre_code
+             , wal.file_group_no
+             , wal.week
+             , wal.task_at
+             , wal.lrn_thema   AS lrn_thema
+             , wal.lrn_cn      AS lrn_cn
+             , wal.quiz_at
+             , std.stdnt_nm
+             , std.subjct_code
+        FROM atend_absnc aa
+                 INNER JOIN week_accto_lrn wal
+                            ON aa.week_accto_lrn_no = wal.week_accto_lrn_no
+                 INNER JOIN stdnt std
+                            ON aa.stdnt_no = std.stdnt_no
+        WHERE wal.estbllctre_code = #{estbllctreCode}
+          AND aa.stdnt_no = #{stdntNo}
+        ORDER BY wal.week, std.stdnt_no
+    </select>
+
+    <select id="getAttendByLecture" parameterType="string" resultMap="attendDetailMap">
+        SELECT
+            aa.atend_absnc_no
+             , aa.week_accto_lrn_no
+             , aa.stdnt_no
+             , aa.atend_sttus_code
+             , NVL(TO_CHAR(aa.lctre_de, 'YYYYMMDD'), TO_CHAR(SYSDATE, 'YYYYMMDD')) AS lctre_de
+             , wal.estbllctre_code
+             , wal.file_group_no
+             , wal.week
+             , wal.task_at
+             , wal.lrn_thema   AS lrn_thema
+             , wal.lrn_cn      AS lrn_cn
+             , wal.quiz_at
+             , std.stdnt_nm
+             , std.subjct_code
+        FROM atend_absnc aa
+                 INNER JOIN week_accto_lrn wal
+                            ON aa.week_accto_lrn_no = wal.week_accto_lrn_no
+                 INNER JOIN stdnt std
+                            ON aa.stdnt_no = std.stdnt_no
+        WHERE wal.estbllctre_code = #{estbllctreCode}
+        ORDER BY wal.week, std.stdnt_no
+    </select>
+</mapper>
