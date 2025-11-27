@@ -414,10 +414,10 @@
                                     <a href="/stdnt/gradu/main/All" class="nav-link" data-key="t-graduation-status"> 졸업 현황 </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="/compe/main" class="nav-link" data-key="t-selfInfo-helper"> 자기소개서 도우미 </a>
+                                    <a href="/compe/main" class="nav-link" data-key=""> 자기소개서 도우미 </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="/compe/detail" class="nav-link" data-key="t-selfInfo-list"> 자기소개서 목록 </a>
+                                    <a href="/compe/detail" class="nav-link" data-key=""> 자기소개서 목록 </a>
                                 </li>
                             </ul>
                         </div>

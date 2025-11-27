@@ -239,29 +239,6 @@
         WHERE  bc.bbsctt_no = #{no}
     </select>
 
-    <resultMap id="attendDetailMap" type="atendAbsncVO">
-        <id property="atendAbsncNo" column="ATEND_ABSNC_NO"/>
-        <result property="weekAcctoLrnNo" column="WEEK_ACCTO_LRN_NO"/>
-        <result property="stdntNo" column="STDNT_NO"/>
-        <result property="atendSttusCode" column="ATEND_STTUS_CODE"/>
-        <result property="lctreDe" column="LCTRE_DE"/>
-        <association property="weekAcctoLrnVO" javaType="kr.ac.collage_api.vo.WeekAcctoLrnVO">
-            <id property="weekAcctoLrnNo" column="WEEK_ACCTO_LRN_NO"/>
-            <result property="estbllctreCode" column="ESTBLLCTRE_CODE"/>
-            <result property="fileGroupNo" column="FILE_GROUP_NO"/>
-            <result property="week" column="WEEK"/>
-            <result property="taskAt" column="TASK_AT"/>
-            <result property="lrnThema" column="LRN_THEMA"/>
-            <result property="lrnCn" column="LRN_CN"/>
-            <result property="quizAt" column="QUIZ_AT"/>
-        </association>
-        <association property="stdntVO" javaType="kr.ac.collage_api.vo.StdntVO">
-            <id property="stdntNo" column="STDNT_NO"/>
-            <result property="stdntNm" column="STDNT_NM"/>
-            <result property="subjctCode" column="SUBJCT_CODE"/>
-        </association>
-    </resultMap>
-
     <select id="getAttend" parameterType="hashMap" resultType="atendAbsncVO">
         SELECT
             aa.atend_absnc_no
