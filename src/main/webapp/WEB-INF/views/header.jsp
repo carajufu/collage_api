@@ -107,10 +107,10 @@
 			<div class="layout-width">
 				<div class="navbar-header">
 					<div class="d-flex">
-						<button type="button"
-							class="btn btn-sm px-3 fs-16 header-item vertical-menu-btn topnav-hamburger"
-							id="topnav-hamburger-icon">
-							<span class="hamburger-icon"> <span></span> <span></span>
+						<button type="button" class="btn btn-sm px-3 fs-16 header-item vertical-menu-btn topnav-hamburger" id="topnav-hamburger-icon">
+							<span class="hamburger-icon">
+								<span></span> 
+								<span></span>
 								<span></span>
 							</span>
 						</button>
@@ -506,6 +506,12 @@
 									<ul class="nav nav-sm flex-column">
 										<li class="nav-item"><a href="/stdnt/gradu/main/All"
 											class="nav-link" data-key="t-graduation-status"> 졸업 현황 </a></li>
+<												li class="nav-item">
+		                                    <a href="/compe/main" class="nav-link" data-key=""> 자기소개서 도우미 </a>
+		                                </li>
+		                                <li class="nav-item">
+		                                    <a href="/compe/detail" class="nav-link" data-key=""> 자기소개서 목록 </a>
+		                                </li>
 									</ul>
 								</div></li>
 
@@ -528,7 +534,7 @@
 							<li class="menu-title"><span data-key="t-learning">학습</span></li>
 
 							<li class="nav-item"><a class="nav-link menu-link"
-								href="/dashboard/student" data-key="t-learning-management"> <i
+								href="/dashboard/student"> <i
 									class="las la-university"></i> <span data-key="t-learning-management">학습 관리</span>
 							</a></li>
 
@@ -545,12 +551,12 @@
 							<li class="menu-title"><span data-key="t-campus-intro">학교 소개</span></li>
 
 							<li class="nav-item"><a class="nav-link menu-link"
-								href="/schedule/calendar" data-key="t-academic-schedule"> <i
+								href="/schedule/calendar"> <i
 									class="las la-calendar"></i> <span data-key="t-academic-schedule">학사일정</span>
 							</a></li>
 
 							<li class="nav-item"><a class="nav-link menu-link"
-								href="/info/campus/map" data-key="t-campus-map"> <i
+								href="/info/campus/map"> <i
 									class=" las la-map-marked"></i> <span data-key="t-campus-map">캠퍼스맵</span>
 							</a></li>
 						</ul>
@@ -575,7 +581,7 @@
 										<li class="nav-item"><a href="dashboard-analytics.html"
 											class="nav-link" data-key="t-prof-my-lecture"> 나의 강의 </a></li>
 										<li class="nav-item"><a href="dashboard-crm.html"
-											class="nav-link" data-key="t-prof-syllabus">강의 계획서 제출</a></li>
+											class="nav-link" data-key="t-prof-syllabus">개설 강의 관리</a></li>
 										<li class="nav-item"><a href="/prof/lecture/main/All"
 											class="nav-link" data-key="t-prof-lecture-evaluation">강의 평가</a></li>
 									</ul>
@@ -594,28 +600,29 @@
 									</ul>
 								</div></li>
 
-							<li class="nav-item"><a class="nav-link menu-link"
-								href="#sidebarCounsel" data-bs-toggle="collapse" role="button"
-								aria-expanded="false" aria.controls="sidebarDashboards"> <i
-									class="las la.comments"></i> <span data-key="t-prof-counsel">상담</span>
-							</a>
-								<div class="collapse menu-dropdown" id="sidebarCounsel">
-									<ul class="nav nav-sm flex-column">
-										<li class="nav-item"><a href="/counselprof/prof"
-											class="nav-link" data-key="t-prof-counsel-request">상담 요청</a></li>
-										<li class="nav-item"><a href="dashboard-crm.html"
-											class="nav-link" data-key="t-prof-counsel-manage">상담 관리</a></li>
-									</ul>
-								</div></li>
-							<!-- end Dashboard Menu -->
+							<li class="nav-item">
+                        <a class="nav-link menu-link" href="#sidebarCounsel" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarDashboards">
+                            <i class="las la-comments"></i> <span data-key="t-counseling">상담</span>
+                        </a>
+                        <div class="collapse menu-dropdown" id="sidebarCounsel">
+                            <ul class="nav nav-sm flex-column">
+                                <li class="nav-item">
+                                    <a href="/counselprof/prof" class="nav-link" data-key="t-counseling-request">상담 요청</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="dashboard-crm.html" class="nav-link" data-key="t-counseling-management">상담 관리</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li> <!-- end Dashboard Menu -->
 
 							<li class="nav-item"><a class="nav-link menu-link"
-								href="/schedule/calendar" data-key="t-academic-schedule"> <i
+								href="/schedule/calendar"> <i
 									class="las la-calendar"></i> <span data-key="t-academic-schedule">학사일정</span>
 							</a></li>
 
 							<li class="nav-item"><a class="nav-link menu-link"
-								href="/info/campus/map" data-key="t-campus-map"> <i
+								href="/info/campus/map"> <i
 									class=" las la-map-marked"></i> <span data-key="t-campus-map">캠퍼스맵</span>
 							</a></li>
 						</ul>
