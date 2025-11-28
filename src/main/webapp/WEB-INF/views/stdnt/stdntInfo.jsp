@@ -178,14 +178,15 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     }
 
-      Swal.fire({
-          icon: 'success',
-          title: '저장되었습니다',
-          text: '입력하신 내용이 성공적으로 저장되었습니다.',
-          confirmButtonColor: '#222E83',
-          confirmButtonText: '확인'
-      })
-          .then(() => location.href = "/stdnt/main/info");
+        Swal.fire({
+            icon: 'success',
+            title: '저장되었습니다',
+            text: '입력하신 내용이 성공적으로 저장되었습니다.',
+            confirmButtonColor: '#556ee6',
+            confirmButtonText: '확인'
+        }); then(()=>{
+        	location.href = "/stdnt/main/info";        	
+        });
   }
 });
 </script>

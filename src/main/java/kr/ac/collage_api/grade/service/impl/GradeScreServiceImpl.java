@@ -68,15 +68,14 @@ public class GradeScreServiceImpl implements GradeScreService {
         return gradeMapper.searchStudent(keyword, estbllctreCode);
     }
 
-	@Override
-	public List<GradeScreVO> getStudentSemstrList(String stdntNo) {
-		 return gradeMapper.getStudentSemstrList(stdntNo);
-	}
+    @Override
+    public List<GradeScreVO> getStudentSemstrList(String stdntNo) {
+        return gradeMapper.getStudentSemstrList(stdntNo);
+    }
 
-	@Override
-	public List<GradeScreVO> getStudentSemstrDetail(String semstrScreInnb) {
-		 return gradeMapper.getStudentSemstrDetail(semstrScreInnb);
-	}
-
+    @Override
+    public List<GradeScreVO> getSbjectScreListBySemstr(String semstrScreInnb) {
+        return gradeMapper.getSbjectScreListBySemstr(semstrScreInnb);
+    }
 
 }

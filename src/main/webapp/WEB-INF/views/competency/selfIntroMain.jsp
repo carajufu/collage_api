@@ -7,29 +7,26 @@
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item active"><a href="/dashboard/student"><i class="las la-home"></i></a></li>
-                <li class="breadcrumb-item active"><a href="#">졸업</a></li>
-                <li class="breadcrumb-item active" aria-current="page">자기소개서 도우미</li>
+                <li class="breadcrumb-item active" aria-current="page"></li>
             </ol>
         </nav>
     </div>
     <div class="col-12 page-title mt-2">
-        <h2 class="fw-semibold">자기소개서 도우미</h2>
-        <div class="my-4 p-0 bg-primary" style="width: 100px; height:5px;"></div>
+        <h2 class="fw-semibold">자기소개서 생성 도우미</h2>
     </div>
     <div class="col-xxl-12 col-12">
-        <div class="d-flex justify-content-end mb-2">
-            <a href="${pageContext.request.contextPath}/compe/manage"
-               class="btn btn-primary btn-md ms-auto">내 이력 관리</a>
-        </div>
-            <div class="d-flex justify-content-end mb-2">
-                <button type="button" class="btn btn-outline-primary btn-sm" id="fillSampleBtn">
-                    샘플 데이터 입력
-                </button>
-            </div>
-
-            <form id="generateForm"
-                  action="${pageContext.request.contextPath}/compe/generate"
-                  method="post">
+            <div class="card-body-text-end">
+				<div class="d-flex justify-content-end mb-2">
+                <a href="${pageContext.request.contextPath}/compe/manage"
+                   class="btn btn-primary me-2">내 이력 관리</a>
+				    <button type="button" class="btn btn-outline-primary btn-sm" id="fillSampleBtn">
+				        샘플 데이터 입력
+				    </button>
+				</div>
+				
+                <form id="generateForm"
+                      action="${pageContext.request.contextPath}/compe/generate"
+                      method="post">
 
                 <table class="table table-bordered table-sm align-middle mb-3">
                     <tbody>
