@@ -212,7 +212,7 @@
 						        <div class="p-3">
 						            <div class="row align-items-center">
 						                <div class="col">
-						                    <h6 class="m-0 fs-16 fw-semibold text-white"> 알림함 </h6>
+						                    <h6 class="m-0 fs-16 fw-semibold text-white" data-key="t-notification"> 알림함 </h6>
 						                </div>
 						                <div class="col-auto dropdown-tabs">
 						                    <span class="badge bg-light-subtle text-body fs-13">New</span>
@@ -233,7 +233,7 @@
 						                             <i class="bi bi-bell-slash"></i>
 						                         </span>
 						                    </div>
-						                    <p class="text-muted mt-2">새로운 알림이 없습니다.</p>
+						                    <p class="text-muted mt-2" data-key="t-no-notification">새로운 알림이 없습니다.</p>
 						                </div>
 
 						                </div>
@@ -258,13 +258,13 @@
                             <h6 class="dropdown-header">${user.affiliation}</h6>
                             <h6 class="dropdown-header">${user.username}</h6>
                             <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="/stdnt/main/info"><i class="mdi mdi-account-circle text-muted fs-16 align-middle me-1"></i> <span class="align-middle" data-key="t-profile-edit">개인 정보 수정</span></a>
-                            <a class="dropdown-item" href="apps-chat.html"><i class="mdi mdi-message-text-outline text-muted fs-16 align-middle me-1"></i> <span class="align-middle" data-key="t-messages">메세지</span></a>
+                            <a class="dropdown-item" href="/stdnt/main/info"><i class="mdi mdi-account-circle text-muted fs-16 align-middle me-1"></i> <span class="align-middle" data-key="t-profile-info-edit">개인 정보 수정</span></a>
+                            <a class="dropdown-item" href="apps-chat.html"><i class="mdi mdi-message-text-outline text-muted fs-16 align-middle me-1"></i> <span class="align-middle" data-key="t-message">메세지</span></a>
                             <a class="dropdown-item" href="apps-tasks-kanban.html"><i class="mdi mdi-calendar-check-outline text-muted fs-16 align-middle me-1"></i> <span class="align-middle" data-key="t-taskboard">Taskboard</span></a>
                             <a class="dropdown-item" href="pages-faqs.html"><i class="mdi mdi-lifebuoy text-muted fs-16 align-middle me-1"></i> <span class="align-middle" data-key="t-help">도움말</span></a>
                             <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="/"><i class="mdi mdi-home text-muted fs-16 align-middle me-1"></i> <span class="align-middle" data-key="t-home">홈페이지</span></a>
-                            <a class="dropdown-item" href="auth-lockscreen-basic.html"><i class="mdi mdi-lock text-muted fs-16 align-middle me-1"></i> <span class="align-middle" data-key="t-lock-screen">화면 잠그기</span></a>
+                            <a class="dropdown-item" href="/"><i class="mdi mdi-home text-muted fs-16 align-middle me-1"></i> <span class="align-middle" data-key="t-homepage">홈페이지</span></a>
+                            <a class="dropdown-item" href="auth-lockscreen-basic.html"><i class="mdi mdi-lock text-muted fs-16 align-middle me-1"></i> <span class="align-middle" data-key="t-lock-screen-lock">화면 잠그기</span></a>
                             <a class="dropdown-item" href="/logout"><i class="mdi mdi-logout text-muted fs-16 align-middle me-1"></i> <span class="align-middle" data-key="t-logout">로그아웃</span></a>
                         </div>
                     </div>
@@ -335,32 +335,32 @@
                         <div class="collapse menu-dropdown" id="sidebarRegist">
                             <ul class="nav nav-sm flex-column">
                                 <li class="nav-item">
-                                    <a href="/payinfo/studentView/${user.username}" class="nav-link" data-key="t-payment"> 납부 </a>
+                                    <a href="/payinfo/studentView/${user.username}" class="nav-link" data-key="t-payment-view"> 납부 </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="/payinfo/stdnt/list" class="nav-link" data-key="t-payment-history"> 납부 내역 조회 </a>
+                                    <a href="/payinfo/stdnt/list" class="nav-link" data-key="t-payment-payment-log"> 납부 내역 조회 </a>
                                 </li>
                             </ul>
                         </div>
                     </li> <!-- end Dashboard Menu -->
                     <li class="nav-item">
                         <a class="nav-link menu-link" href="#sidebarLecture" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarApps">
-                            <i class="las la-book"></i> <span data-key="t-course">수강</span>
+                            <i class="las la-book"></i> <span data-key="t-lecture-tab">수강</span>
                         </a>
                         <div class="collapse menu-dropdown" id="sidebarLecture">
                             <ul class="nav nav-sm flex-column">
                                 <li class="nav-item">
-                                    <a href="/atnlc/submit" class="nav-link" data-key="t-course-registration">
+                                    <a href="/atnlc/submit" class="nav-link" data-key="t-apply-course">
                                         수강 신청
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="/atnlc/cart" class="nav-link" data-key="t-cart">
+                                    <a href="/atnlc/cart" class="nav-link" data-key="t-cart-list">
                                         장바구니
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="/atnlc/stdntLctreList" class="nav-link" data-key="t-registration-history">
+                                    <a href="/atnlc/stdntLctreList" class="nav-link" data-key="t-applied-list">
                                         신청 내역 조회
                                     </a>
                                 </li>
@@ -386,7 +386,7 @@
 
                     <li class="nav-item">
                         <a class="nav-link menu-link" href="#sidebarEnrollment" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarAuth">
-                            <i class="las la-id-card"></i> <span data-key="t-enrollment">학적</span>
+                            <i class="las la-id-card"></i> <span data-key="t-enrollment-main">학적</span>
                         </a>
                         <div class="collapse menu-dropdown" id="sidebarEnrollment">
                             <ul class="nav nav-sm flex-column">
@@ -396,7 +396,7 @@
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="/enrollment/change" class="nav-link" data-key="t-leave-return-app">
+                                    <a href="/enrollment/change" class="nav-link" data-key="t-enrollment-change">
                                         휴학/복학 신청
                                     </a>
                                 </li>
@@ -417,7 +417,7 @@
                                     <a href="/compe/main" class="nav-link" data-key="t-selfInfo-helper"> 자기소개서 도우미 </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="/compe/detail" class="nav-link" data-key="t-selfInfo-list"> 자기소개서 목록 </a>
+                                    <a href="/compe/detail" class="nav-link" data-key="t-selfInfo-list> 자기소개서 목록 </a>
                                 </li>
                             </ul>
                         </div>
@@ -460,11 +460,11 @@
                         </a>
                     </li>
 
-                    <li class="menu-title"><span data-key="t-school-intro">학교 소개</span></li>
+                    <li class="menu-title"><span data-key="t-campus-intro">학교 소개</span></li>
 
                     <li class="nav-item">
                         <a class="nav-link menu-link" href="/schedule/calendar">
-                            <i class="las la-calendar"></i> <span data-key="t-academic-calendar">학사일정</span>
+                            <i class="las la-calendar"></i> <span data-key="t-academic-schedule">학사일정</span>
                         </a>
                     </li>
 
@@ -488,29 +488,29 @@
                     <li class="menu-title"><span data-key="t-academic-info">학사 정보</span></li>
                     <li class="nav-item">
                         <a class="nav-link menu-link" href="#sidebarLecture" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarDashboards">
-                            <i class="las la-compass"></i> <span data-key="t-lecture">강의</span>
+                            <i class="las la-compass"></i> <span data-key="t-prof-lecture">강의</span>
                         </a>
                         <div class="collapse menu-dropdown" id="sidebarLecture">
                             <ul class="nav nav-sm flex-column">
                                 <li class="nav-item">
-                                    <a href="/prof/lecture/list" class="nav-link" data-key="t-my-lecture"> 나의 강의 </a>
+                                    <a href="/prof/lecture/list" class="nav-link" data-key="t-prof-my-lecture"> 나의 강의 </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="/prof/lecture/mng/list" class="nav-link" data-key="t-syllabus-submission">개설 강의 관리</a>
+                                    <a href="/prof/lecture/mng/list" class="nav-link" data-key="t-prof-syllabus">개설 강의 관리</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="/prof/lecture/main/All" class="nav-link" data-key="t-lecture-evaluation">강의 평가</a>
+                                    <a href="/prof/lecture/main/All" class="nav-link" data-key="t-prof-lecture-evaluation">강의 평가</a>
                                 </li>
                             </ul>
                         </div>
                     </li> <li class="nav-item">
                         <a class="nav-link menu-link" href="#sidebarGrade" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarDashboards">
-                            <i class="las la-scroll"></i> <span data-key="t-grade">성적</span>
+                            <i class="las la-scroll"></i> <span data-key="t-prof-grade">성적</span>
                         </a>
                         <div class="collapse menu-dropdown" id="sidebarGrade">
                             <ul class="nav nav-sm flex-column">
                                 <li class="nav-item">
-                                    <a href="/prof/grade/main/All" class="nav-link" data-key="t-grade-management">성적 관리</a>
+                                    <a href="/prof/grade/main/All" class="nav-link" data-key="t-prof-grade-manage">성적 관리</a>
                                 </li>
                             </ul>
                         </div>

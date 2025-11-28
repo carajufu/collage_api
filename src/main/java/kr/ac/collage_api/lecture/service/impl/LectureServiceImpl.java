@@ -218,6 +218,18 @@ public class LectureServiceImpl implements LectureService {
 	public int updateRequestSttus(EstblCourseVO estbllctreCode) {
 		return this.lectureMapper.updateRequestSttus(estbllctreCode);
 	}
+
+	// 전체 교과목 목록 조회
+	@Override
+	public List<AllCourseVO> allCourseList(AllCourseVO allCourseVO) {
+		return this.lectureMapper.allCourseList(allCourseVO);
+	}
+	
+	// 전체 교과목 세부 정보 조회
+	@Override
+	public List<EstblCourseVO> allCourseDetail(String lctreCode) {
+		return this.lectureMapper.allCourseDetail(lctreCode);
+	}
 	
 	
 	// -------- <교수> --------
@@ -319,6 +331,14 @@ public class LectureServiceImpl implements LectureService {
 	public List<EstblCourseVO> timetableLoad() {
 		return this.lectureMapper.timetableLoad();
 	}
+
+	// 교과목 운영상태 변경
+	@Override
+	public int allCourseEdit(AllCourseVO allCourseVO) {
+		return this.lectureMapper.allCourseEdit(allCourseVO);
+	}
+
+	
 
 	
 

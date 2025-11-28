@@ -43,6 +43,7 @@
 		<result property="subjctCode" column="SUBJCT_CODE"/>
 		<result property="lctreNm" column="LCTRE_NM"/>
 		<result property="operAt" column="OPER_AT"/>
+		<result property="subjctNm" column="SUBJCT_NM"/>
 	</resultMap>
 	
 	<resultMap type="sklstfVO" id="sklstfMap">
@@ -327,7 +328,7 @@
 	<select id="allList" parameterType="estblCourseVO" resultMap="lectureMap">
 		select E.ESTBLLCTRE_CODE, E.ACQS_PNT, E.COMPL_SE, A.LCTRE_NM, E.ATNLC_NMPR, E.LCTRE_USE_LANG,
 		       E.EVL_MTHD, E.ESTBL_SEMSTR, E.LCTRE_CODE, E.PROFSR_NO, E.LCTRUM,
-		       A.LCTRE_CODE, A.OPER_AT,
+		       A.LCTRE_CODE, A.OPER_AT, E.ESTBL_STTUS,
 		       L.TIMETABLE_NO, L.ESTBLLCTRE_CODE, L.LCTRE_DFK, L.BEGIN_TM, L.END_TM
 		       ,S.SKLSTF_NM,
 		       ( case substr(e.lctre_code,1,1)
@@ -431,6 +432,32 @@
 		where  estbllctre_code = #{estbllctreCode}
 	</update>
 	
+	<!-- 전체 교과목 목록 조회 -->
+	<select id="allCourseList" resultType="allCourseVO">
+		select a.lctre_code, s.subjct_nm, a.pre_lecture, a.lctre_nm, a.oper_at, a.recent_updt_dt
+		from   all_course a
+		inner join subjct s on (a.subjct_code = s.subjct_code)
+		order by a.lctre_code, s.subjct_nm
+	</select>
+	
+	<!-- 전체 교과목 세부 정보 조회 -->
+	<select id="allCourseDetail" parameterType="String" resultMap="lectureMap">
+		select e.estbllctre_code, e.acqs_pnt, e.compl_se, e.estbl_year, e.estbl_semstr, e.estbl_sttus,
+			   a.lctre_code, a.pre_lecture, a.oper_at, s.sklstf_nm
+		from   estbl_course e
+		inner join all_course a on (e.lctre_code = a.lctre_code)
+		inner join profsr p on (e.profsr_no = p.profsr_no)
+		inner join sklstf s on (p.sklstf_id = s.sklstf_id)
+		where e.lctre_code = #{lctreCode}
+		order by e.estbllctre_code 
+	</select>
+	
+	<!-- 교과목 운영상태 변경 -->
+	<update id="allCourseEdit" parameterType="allCourseVO">
+		update all_course
+		set    oper_at = #{operAt}
+		where  lctre_code = #{lctreCode}
+	</update>
 	
 	
 <!-- ////////// <교수> ////////// -->

@@ -37,5 +37,6 @@ public interface GradeScreMapper {
     /**
      * (학생) 특정 학기의 과목별 상세 성적 조회 (SBJECT_SCRE)
      */
-    List<GradeScreVO> getStudentSemstrDetail(String semstrScreInnb);
+//    List<GradeScreVO> getStudentSemstrDetail(String semstrScreInnb);
+	List<GradeScreVO> getSbjectScreListBySemstr(String semstrScreInnb);
 }

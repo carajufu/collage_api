@@ -109,6 +109,7 @@ public class AtnlcServiceImpl implements AtnlcService {
 
 		String code = atnlcReqstVO.getEstbllctreCode();
 		log.info("submitCourse()->code : {}", code);
+		// 1. 중복 강의 검사
 		EstblCourseVO alreadyLec = atnlcMapper.checkLec(atnlcReqstVO);
 		// 2. 중복 시간표 검사
 		EstblCourseVO perLec = atnlcMapper.checkTime(atnlcReqstVO);
@@ -116,10 +117,11 @@ public class AtnlcServiceImpl implements AtnlcService {
 		EstblCourseVO estblCourseVO = atnlcMapper.getSubmitInfo(atnlcReqstVO);
 		int totalSubmit = estblCourseVO.getTotalSubmit();
 		int atnlcNmpr = estblCourseVO.getAtnlcNmpr();
+		boolean checkNmpr = totalSubmit <= atnlcNmpr;
 
-		if(alreadyLec != null || perLec != null || totalSubmit > atnlcNmpr) {
+		if(alreadyLec != null || perLec != null || !checkNmpr) {
 			Map<String, Object> map = new HashMap<>();
-			map.put("insertCnt", 0);
+			map.put("checkNmpr", checkNmpr);
 			map.put("alreadyLec", alreadyLec);
 			map.put("perLec", perLec);
 			map.put("success", false);

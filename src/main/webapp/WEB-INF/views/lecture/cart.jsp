@@ -23,24 +23,26 @@
 	        	<div class="overflow-visible" style="margin-bottom:10px">
 		       		<div class="w-100 p-0" id="searchBox" style="border-radius: 8px;"> 
 				      <form class="w-100 align-items-center py-2 d-flex p-3" role="search">
-					      <div class="fw-bold me-3 flex-shrink-0" style="padding-right:500px">강의 검색</div>
-					      <div class="me-4 d-flex align-items-center flex-shrink-0">
-						    <span class="me-2">이수구분</span>
-					        <select class="form-select" style="width:100px;" name="complSe" value="${param.complSe}">
-							  <option value="" selected>---</option>
-							  <option value="전필">전필</option>
-							  <option value="전선">전선</option>
-							  <option value="교필">교필</option>
-							  <option value="교선">교선</option>
-							  <option value="일선">일선</option>
-							</select>
-						  </div>
-						  <div class="d-flex align-items-center flex-grow-1 me-3">
-						  	<span class="me-2 flex-shrink-0">강의명</span>
-					        <input type="search" placeholder="Search" class="form-control flex-grow-1" aria-label="Search" name="keyword" value="${param.keyword}"/>
-					      </div>
-					      <div class="flex-shrink-0">
-					        <button class="btn btn-outline-primary" type="submit">검색</button>
+					      <div class="fw-bold me-3 flex-shrink-0">강의 검색</div>
+					      <div class="d-flex align-items-end ms-auto">
+						      <div class="me-4 d-flex align-items-center flex-shrink-0">
+							    <span class="me-2">이수구분</span>
+						        <select class="form-select" style="width:100px;" name="complSe" value="${param.complSe}">
+								  <option value="" selected>---</option>
+								  <option value="전필">전필</option>
+								  <option value="전선">전선</option>
+								  <option value="교필">교필</option>
+								  <option value="교선">교선</option>
+								  <option value="일선">일선</option>
+								</select>
+							  </div>
+							  <div class="d-flex align-items-center flex-grow-1 me-3">
+							  	<span class="me-2 flex-shrink-0">강의명</span>
+						        <input type="search" placeholder="Search" class="form-control flex-grow-1" aria-label="Search" name="keyword" value="${param.keyword}"/>
+						      </div>
+						      <div class="flex-shrink-0">
+						        <button class="btn btn-outline-primary" type="submit">검색</button>
+						      </div>
 					      </div>
 				      </form>
 	       			</div>
