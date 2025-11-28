@@ -1,82 +1,102 @@
-﻿<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
 <%@ include file="../../header.jsp" %>
 
+<!-- girdJs -->
 <link href="/assets/libs/gridjs/theme/mermaid.min.css" rel="stylesheet" type="text/css" />
-<script src="/assets/libs/gridjs/gridjs.umd.js"></script>
-<script src="/js/wtGrid.js"></script>
-<script src="/js/profMain.js" defer></script>
+<script type="text/javascript" src="/assets/libs/gridjs/gridjs.umd.js"></script>
 
-<div id="prof-main" class="row pt-3 px-3 px-lg-5" data-lec-no="${lecNo}">
-    <div class="col-12 page-title mb-3">
-        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
-            <div>
-                <p class="text-muted mb-1">교수 강의실</p>
-                <div class="display-6 fw-semibold mb-0">학습 관리</div>
-            </div>
-            <c:if test="${empty lecNo}">
-                <span class="badge bg-warning text-dark">lecNo 파라미터가 없어 데이터 요청이 제한됩니다.</span>
-            </c:if>
-        </div>
-        <div class="my-4 p-0 bg-primary" style="width: 120px; height:5px;"></div>
+<link href="/assets/css/custom.css" rel="stylesheet" type="text/css" />
+
+<div class="row pt-3 px-5">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/dashboard/profas"><i class="las la-home"></i></a></li>
+            <li class="breadcrumb-item"><a href="#">강의</a></li>
+            <li class="breadcrumb-item"><a href="/prof/lecture/list">내 강의</a></li>
+            <li class="breadcrumb-item active" aria-current="page">${body.lctreNm}</li>
+        </ol>
+    </nav>
+    <div class="col-12 page-title mt-2">
+        <h2 class="fw-semibold">${body.lctreNm}</h2>
+        <div class="my-4 p-0 bg-primary" style="width: 100px; height:5px;"></div>
     </div>
-
-    <div class="col-12">
-        <ul class="nav nav-tabs" id="learningTabs" role="tablist">
-            <li class="nav-item" role="presentation">
-                <button class="nav-link active" data-tab-target="task" type="button" role="tab">과제</button>
+    <div class="col-xxl-12 col-12">
+        <ul class="nav nav-tabs" role="tablist" id="profTabs">
+            <li class="nav-item waves-effect waves-light" role="presentation">
+                <a href="#tasks" class="nav-link active" role="tab" data-bs-toggle="tab" aria-selected="true"><h6>과제</h6></a>
             </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" data-tab-target="quiz" type="button" role="tab">퀴즈</button>
+            <li class="nav-item waves-effect waves-light" role="presentation">
+                <a href="#quiz" class="nav-link" role="tab" data-bs-toggle="tab" aria-selected="false"><h6>퀴즈</h6></a>
             </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" data-tab-target="attendance" type="button" role="tab">출결</button>
+            <li class="nav-item waves-effect waves-light" role="presentation">
+                <a href="#attend" class="nav-link" role="tab" data-bs-toggle="tab" aria-selected="false"><h6>출결</h6></a>
             </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" data-tab-target="board" type="button" role="tab">게시판</button>
+            <li class="nav-item waves-effect waves-light" role="presentation">
+                <a href="#board" class="nav-link" role="tab" data-bs-toggle="tab" aria-selected="false"><h6>게시판</h6></a>
             </li>
         </ul>
-
-        <div class="card mt-3">
-            <div class="card-body">
-                <div class="tab-content">
-                    <div class="tab-pane fade show active learning-tab-pane" data-tab="task" role="tabpanel">
-                        <div class="alert alert-info mb-0">과제 탭은 데이터 비동기 로딩과 함께 곧 연결됩니다.</div>
-                    </div>
-                    <div class="tab-pane fade learning-tab-pane" data-tab="quiz" role="tabpanel">
-                        <div class="alert alert-info mb-0">퀴즈 탭은 비동기 요청으로 채워질 예정입니다.</div>
-                    </div>
-                    <div class="tab-pane fade learning-tab-pane" data-tab="attendance" role="tabpanel">
-                        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-                            <div class="d-flex align-items-center gap-2">
-                                <span class="badge bg-light text-dark border">출결 현황</span>
-                                <small class="text-muted">탭 전환 시 비동기로 데이터를 가져옵니다.</small>
+        <div class="tab-content">
+            <div class="tab-pane active show" id="tasks" role="tabpanel">
+                <div class="card h-100">
+                    <div data-simplebar style="max-height: 550px;">
+                        <div class="card-body">
+                            <div id="taskSection">
+                                <div id="taskGrid"></div>
+                                <div class="d-flex justify-content-end gap-2 mt-3">
+                                    <button type="button" class="btn btn-primary">등록</button>
+                                </div>
                             </div>
-                            <div id="attendance-status" class="text-muted small"></div>
-                        </div>
-                        <div id="attendance-loader" class="text-center py-5 d-none">
-                            <div class="spinner-border text-primary" role="status">
-                                <span class="visually-hidden">Loading...</span>
+                            <div id="subTaskGrid" class="d-none">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h6 class="mb-0"></h6>
+                                </div>
+                                <div id="submissionGrid"></div>
+                            </div>
+                            <div class="d-flex justify-content-end mt-3 d-none" id="submissionBackRow">
+                                <button type="button" class="btn btn-outline-primary" id="submission-back-btn">목록</button>
                             </div>
                         </div>
-                        <div  id="attendance-date-nav" class="col-xxl-12 col-12 d-flex justify-content-center align-items-center gap-3 mb-3">
-                            <button type="button" class="btn btn-outline-primary btn-sm" id="attendance-prev">
-                                &laquo;
-                            </button>
-                            <div id="attendance-date" class="fw-semibold lh-lg"></div>
-                            <input type="date" id="attendance-date-picker" class="visually-hidden" />
-                            <button id="attendance-calendar-btn" class="btn btn-ghost-primary btn-icon" type="button">
-                                <i class="las la-calendar-alt"></i>
-                            </button>
-                            <button type="button" class="btn btn-outline-primary btn-sm" id="attendance-next">
-                                &raquo;
-                            </button>
-                        </div>
-                        <div id="attendance-grid" class="table-responsive"></div>
-                        <div id="attendance-empty" class="alert alert-warning d-none">출결 데이터가 없습니다.</div>
                     </div>
-                    <div class="tab-pane fade learning-tab-pane" data-tab="board" role="tabpanel">
-                        <div class="alert alert-info mb-0">게시판 탭은 비동기 데이터 연동 후 노출됩니다.</div>
+                </div>
+            </div>
+            <div class="tab-pane" id="quiz" role="tabpanel">
+                <div class="card h-100">
+                    <div data-simplebar style="max-height: 550px;">
+                        <div class="card-body">
+                            <div id="quizTable" class="text-muted">퀴즈 데이터를 불러오는 중...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane" id="attend" role="tabpanel">
+                <div class="card h-100">
+                    <div data-simplebar style="max-height: 550px;">
+                        <div class="card-body">
+                            <div id="attendance-date-nav" class="col-xxl-12 col-12 d-flex justify-content-center align-items-center gap-3 mb-3">
+                                <button type="button" class="btn btn-outline-primary btn-sm" id="attendance-prev">&lt;</button>
+                                <div class="d-flex align-items-center gap-2">
+                                    <div id="attendance-date" class="fw-semibold lh-lg"></div>
+                                    <input type="date" id="attendance-date-picker" class="visually-hidden" />
+                                    <button id="attendance-calendar-btn" class="btn btn-ghost-primary btn-icon" type="button">
+                                        <i class="las la-calendar-alt"></i>
+                                    </button>
+                                </div>
+                                <button type="button" class="btn btn-outline-primary btn-sm" id="attendance-next">&gt;</button>
+                            </div>
+                            <div class="text-muted">출결 데이터를 불러오는 중...</div>
+                            <div id="attendGrid"></div>
+                            <div id="attendance-empty" class="alert alert-warning d-none">출결 데이터가 없습니다.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane" id="board" role="tabpanel">
+                <div class="card h-100">
+                    <div data-simplebar style="max-height: 550px;">
+                        <div class="card-body">
+                            <div id="boardTable" class="text-muted">게시판 데이터를 불러오는 중...</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -84,4 +104,56 @@
     </div>
 </div>
 
+<script type="text/javascript">
+    window.__INIT_TASKS = [
+        <c:forEach var="t" items="${body.tasks}" varStatus="st">
+        {
+            taskNo: '${t.taskNo}',
+            taskSj: '${t.taskSj}',
+            weekAcctoLrnNo: '${t.weekAcctoLrnNo}',
+            taskBeginDe: '${t.taskBeginDe}',
+            taskClosDe: '${t.taskClosDe}',
+            week: '${t.week}'
+        }${st.last ? '' : ','}
+        </c:forEach>
+    ];
+    window.__INIT_TASK_PRESENTN = [
+        <c:forEach var="p" items="${body.taskPresentn}" varStatus="sp">
+        {
+            taskNo: '${p.taskNo}',
+            presentnAt: '${p.presentnAt}'
+        }${sp.last ? '' : ','}
+        </c:forEach>
+    ];
+    window.__ESTBLLCTRE_CODE = '${estbllctreCode}';
+</script>
+<script type="text/javascript" src="/js/wtGrid.js"></script>
+<script type="text/javascript" src="/js/prof-main.js"></script>
+
+<style rel="stylesheet">
+    .gridjs-table td,
+    .gridjs-table th {
+        padding: 10px 20px;
+        line-height: 1.2;   /* 텍스트 줄높이 축소 */
+    }
+
+    #attendance-date-nav .btn-nav,
+    #attendance-date-nav .btn-icon-square {
+        width: 32px;
+        height: 32px;
+        padding: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    #attendance-date-nav .btn-icon-square {
+        border-radius: 0.25rem;
+    }
+
+    #attendance-date {
+        min-width: 120px;
+        text-align: center;
+    }
+</style>
 <%@ include file="../../footer.jsp" %>

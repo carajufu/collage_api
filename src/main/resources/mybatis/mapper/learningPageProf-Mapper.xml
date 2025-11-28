@@ -1,13 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.ac.collage_api.learning.mapper.LearningPageProfMapper">
+    <resultMap id="TaskMap" type="taskVO">
+        <id column="TASK_NO" property="taskNo"/>
+        <result column="WEEK_ACCTO_LRN_NO" property="weekAcctoLrnNo"/>
+        <result column="TASK_SJ" property="taskSj"/>
+        <result column="TASK_CN" property="taskCn"/>
+        <result column="TASK_BEGIN_DE" property="taskBeginDe"/>
+        <result column="TASK_CLOS_DE" property="taskClosDe"/>
+        <result column="REGIST_DT" property="registDt"/>
+        <result column="UPDT_DT" property="updtDt"/>
+        <result column="WEEK" property="week"/>
+    </resultMap>
+
+    <resultMap id="TaskPresentnMap" type="taskPresentnVO">
+        <id column="TASK_PRESENTN_NO" property="taskPresentnNo"/>
+        <result column="STDNT_NO" property="stdntNo"/>
+        <result column="STDNT_NM" property="stdntNm"/>
+        <result column="TASK_NO" property="taskNo"/>
+        <result column="FILE_GROUP_NO" property="fileGroupNo"/>
+        <result column="TASK_PRESENTN_DE" property="taskPresentnDe"/>
+        <result column="PRESENTN_AT" property="presentnAt"/>
+    </resultMap>
+
+    <resultMap id="AttendMap" type="atendAbsncVO">
+        <id column="ATEND_ABSNC_NO" property="atendAbsncNo"/>
+        <result column="WEEK_ACCTO_LRN_NO" property="weekAcctoLrnNo"/>
+        <result column="STDNT_NO" property="stdntNo"/>
+        <result column="ATEND_STTUS_CODE" property="atendSttusCode"/>
+    </resultMap>
+
     <resultMap id="attendDetailMap" type="atendAbsncVO">
         <id property="atendAbsncNo" column="ATEND_ABSNC_NO"/>
         <result property="weekAcctoLrnNo" column="WEEK_ACCTO_LRN_NO"/>
         <result property="stdntNo" column="STDNT_NO"/>
         <result property="atendSttusCode" column="ATEND_STTUS_CODE"/>
         <result property="lctreDe" column="LCTRE_DE"/>
-        <association property="weekAcctoLrnVO" javaType="kr.ac.collage_api.vo.WeekAcctoLrnVO">
+        <association property="weekAcctoLrnVO" javaType="weekAcctoLrnVO">
             <id property="weekAcctoLrnNo" column="WEEK_ACCTO_LRN_NO"/>
             <result property="estbllctreCode" column="ESTBLLCTRE_CODE"/>
             <result property="fileGroupNo" column="FILE_GROUP_NO"/>
@@ -17,7 +46,7 @@
             <result property="lrnCn" column="LRN_CN"/>
             <result property="quizAt" column="QUIZ_AT"/>
         </association>
-        <association property="stdntVO" javaType="kr.ac.collage_api.vo.StdntVO">
+        <association property="stdntVO" javaType="stdntVO">
             <id property="stdntNo" column="STDNT_NO"/>
             <result property="stdntNm" column="STDNT_NM"/>
             <result property="subjctCode" column="SUBJCT_CODE"/>
@@ -26,6 +55,74 @@
             </association>
         </association>
     </resultMap>
+
+    <select id="getLctreNm" parameterType="string">
+        SELECT
+            ac.lctre_nm
+        FROM all_course ac
+            INNER JOIN estbl_course e
+                ON ac.lctre_code = e. lctre_code
+        WHERE e.estbllctre_code = #{estbllctreCode}
+    </select>
+
+    <select id="selectTasks" parameterType="string" resultMap="TaskMap">
+        SELECT
+            t.task_no
+            , t.week_accto_lrn_no
+            , t.task_sj
+            , t.task_cn
+            , t.task_begin_de
+            , t.task_clos_de
+            , t.regist_dt
+            , t.updt_dt
+            , w.week
+        FROM task t
+            JOIN week_accto_lrn w
+              ON t.week_accto_lrn_no = w.week_accto_lrn_no
+        WHERE W.estbllctre_code = #{estbllctreCode}
+        ORDER BY TO_NUMBER(t.task_no)
+    </select>
+
+    <select id="selectTaskPresentn" parameterType="string" resultMap="TaskPresentnMap">
+        SELECT
+            p.task_presentn_no
+            , p.stdnt_no
+            , p.task_no
+            , p.file_group_no
+            , p.task_presentn_de
+            , p.presentn_at
+            , std.stdnt_nm
+        FROM task_presentn p
+             INNER JOIN task t
+                  ON p.task_no = t.task_no
+             INNER JOIN week_accto_lrn w
+                  ON t.week_accto_lrn_no = w.week_accto_lrn_no
+            INNER JOIN stdnt std
+                ON p.stdnt_no = std.stdnt_no
+        WHERE w.estbllctre_code = #{estbllctreCode}
+        ORDER BY TO_NUMBER(p.task_presentn_no)
+    </select>
+
+    <select id="selectTaskPresentnByTask" parameterType="map" resultMap="TaskPresentnMap">
+        SELECT
+            p.task_presentn_no
+            , p.stdnt_no
+            , p.task_no
+            , p.file_group_no
+            , p.task_presentn_de
+            , p.presentn_at
+            , std.stdnt_nm
+        FROM task_presentn p
+             INNER JOIN task t
+                 ON p.task_no = t.task_no
+             INNER JOIN week_accto_lrn w
+                 ON t.week_accto_lrn_no = w.week_accto_lrn_no
+             INNER JOIN stdnt std
+                        ON p.stdnt_no = std.stdnt_no
+        WHERE w.estbllctre_code = #{estbllctreCode}
+          AND p.task_no = #{taskNo}
+        ORDER BY TO_NUMBER(p.task_presentn_no)
+    </select>
 
     <select id="getAttend" parameterType="hashMap" resultMap="attendDetailMap">
         SELECT
@@ -53,7 +150,7 @@
         ORDER BY wal.week, std.stdnt_no
     </select>
 
-    <select id="getAttendByLecture" parameterType="string" resultMap="attendDetailMap">
+    <select id="getAttendList" parameterType="string" resultMap="attendDetailMap">
         SELECT
             aa.atend_absnc_no
              , aa.week_accto_lrn_no
@@ -71,12 +168,12 @@
              , std.subjct_code
              , sbj.subjct_nm AS subjct_nm
         FROM atend_absnc aa
-             INNER JOIN week_accto_lrn wal
-                ON aa.week_accto_lrn_no = wal.week_accto_lrn_no
-             INNER JOIN stdnt std
-                ON aa.stdnt_no = std.stdnt_no
-             INNER JOIN subjct sbj
-                ON std.subjct_code = sbj.subjct_code
+                 INNER JOIN week_accto_lrn wal
+                            ON aa.week_accto_lrn_no = wal.week_accto_lrn_no
+                 INNER JOIN stdnt std
+                            ON aa.stdnt_no = std.stdnt_no
+                 INNER JOIN subjct sbj
+                            ON std.subjct_code = sbj.subjct_code
         WHERE wal.estbllctre_code = #{estbllctreCode}
         ORDER BY wal.week, std.stdnt_no
     </select>

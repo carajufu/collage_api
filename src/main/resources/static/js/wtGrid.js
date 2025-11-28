@@ -1,5 +1,6 @@
 const DEFAULT_GRID_OPTIONS= {
     sort: true,
+    search: true,
     pagination: {
         limit: 10,
         summary: false,
@@ -9,9 +10,6 @@ const DEFAULT_GRID_OPTIONS= {
     style: {
         tr: {
             borderBottom: "1px solid #e9ebec"
-        },
-        td: {
-            border: "none"
         }
     }
 }
