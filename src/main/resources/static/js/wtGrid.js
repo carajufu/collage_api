@@ -1,28 +1,31 @@
-function gridInit({ columns, data }, node) {
+const DEFAULT_GRID_OPTIONS= {
+    sort: true,
+    pagination: {
+        limit: 10,
+        summary: false,
+        nextButton: true,
+        prevButton: true
+    },
+    style: {
+        tr: {
+            borderBottom: "1px solid #e9ebec"
+        },
+        td: {
+            border: "none"
+        }
+    }
+}
+
+function gridInit(config, node) {
     if(!node) return;
 
-    new gridjs.Grid({
+    const { columns, data, ...options} = config;
+    const gridOptions = {
         columns,
         data,
-        sort: true,
-        pagination: {
-            limit: 4,
-            summary: false,
-            nextButton: true,
-            prevButton: true
-        },
-        style: {
-            tr: {
-                borderBottom: "1px solid #e9ebec",
-                hover: {
-                    backgroundColor: "rgba(39, 42, 58, 0.04)",
-                    cursor: "pointer"
-                }
-            },
-            td: {
-                border: "none"
-            }
-        }
-    })
-        .render(node);
+        ...DEFAULT_GRID_OPTIONS,
+        ...options
+    }
+
+    new gridjs.Grid(gridOptions).render(node);
 }
