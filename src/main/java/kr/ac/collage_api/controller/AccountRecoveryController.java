@@ -428,6 +428,11 @@ public class AccountRecoveryController {
 		return "account/find-id-ok";
 	}
 
+    @GetMapping("/account/reset-pw")
+    public String resetPwModal() {
+        return "account/reset-pw";
+    }
+
 	/* ======================================================================
 	 * 2. 비밀번호 재설정용 인증 이메일 발송
 	 * ==================================================================== */

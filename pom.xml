@@ -26,7 +26,13 @@
     <!-- ============================================================= -->
     <properties>
         <java.version>21</java.version>
+<<<<<<< Updated upstream
         <jjwt.version>0.12.5</jjwt.version>
+=======
+
+        <!-- 라이브러리 버전 -->
+        <jjwt.version>0.13.0</jjwt.version>
+>>>>>>> Stashed changes
         <mybatis-spring-boot.version>3.0.5</mybatis-spring-boot.version>
         <openpdf.version>3.0.0</openpdf.version>
         <openhtmltopdf.version>1.0.10</openhtmltopdf.version>
@@ -93,12 +99,53 @@
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-taglibs</artifactId>
         </dependency>
+<<<<<<< Updated upstream
         <!-- jjwt-api: JWT 빌더/파서 공개 API -->
+=======
+        
+        
+        <!--
+         미사용 
+         jjwt-api: JWT 빌더/파서 공개 API 
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-api</artifactId>
             <version>${jjwt.version}</version>
         </dependency>
+         jjwt-impl: 실제 서명/검증 구현 (runtime) 
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-impl</artifactId>
+            <version>${jjwt.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+         jjwt-jackson: JWT ↔ JSON 직렬화 어댑터 (runtime) 
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-jackson</artifactId>
+            <version>${jjwt.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+         미사용 -->
+        
+        
+        <!-- Apache HttpClient 5, 비밀번호/메일 인증 등 외부 HTTP 호출 -->
+        <dependency>
+            <groupId>org.apache.httpcomponents.client5</groupId>
+            <artifactId>httpclient5</artifactId>
+        </dependency>
+
+        <!-- ========================================================= -->
+        <!-- JSP / JSTL (Jakarta)                                      -->
+        <!-- ========================================================= -->
+        <!-- JSP 컴파일러 (Tomcat Jasper) -->
+>>>>>>> Stashed changes
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-api</artifactId>
+            <version>${jjwt.version}</version>
+        </dependency>
+<<<<<<< Updated upstream
         <!-- jjwt-impl: 실제 서명/검증 구현 (runtime) -->
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
@@ -122,21 +169,27 @@
         <!-- ========================================================= -->
         <!-- JSP / JSTL (Jakarta)                                      -->
         <!-- ========================================================= -->
+=======
+>>>>>>> Stashed changes
         <!-- JSTL API -->
         <dependency>
             <groupId>jakarta.servlet.jsp.jstl</groupId>
             <artifactId>jakarta.servlet.jsp.jstl-api</artifactId>
+            <version>3.0.0</version>
         </dependency>
         <!-- JSTL 구현체 -->
         <dependency>
             <groupId>org.glassfish.web</groupId>
             <artifactId>jakarta.servlet.jsp.jstl</artifactId>
         </dependency>
+<<<<<<< Updated upstream
         <!-- JSP 컴파일러 (Tomcat Jasper) -->
         <dependency>
             <groupId>org.apache.tomcat.embed</groupId>
             <artifactId>tomcat-embed-jasper</artifactId>
         </dependency>
+=======
+>>>>>>> Stashed changes
         <!-- Servlet API (내장 톰캣 사용, provided) -->
         <dependency>
             <groupId>jakarta.servlet</groupId>
@@ -147,11 +200,15 @@
         <!-- ========================================================= -->
         <!-- 파일 업로드 / IO / 이미지 처리                             -->
         <!-- ========================================================= -->
+<<<<<<< Updated upstream
         <!-- Multipart 업로드 파서 -->
+=======
+        <!-- Multipart 업로드 파서 (보안 패치 포함 버전) -->
+>>>>>>> Stashed changes
         <dependency>
             <groupId>commons-fileupload</groupId>
             <artifactId>commons-fileupload</artifactId>
-            <version>1.4</version>
+            <version>1.6.0</version>
         </dependency>
         <!-- 파일 IO 유틸 -->
         <dependency>
@@ -173,6 +230,24 @@
         </dependency>
 
         <!-- ========================================================= -->
+<<<<<<< Updated upstream
+=======
+        <!-- WebSocket / 외부 연동                                      -->
+        <!-- ========================================================= -->
+        <!-- STOMP WebSocket -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-websocket</artifactId>
+        </dependency>
+        <!-- Gemini 등 JSON 핸들링 -->
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20240303</version>
+        </dependency>
+
+        <!-- ========================================================= -->
+>>>>>>> Stashed changes
         <!-- PDF / HTML 렌더링                                         -->
         <!-- ========================================================= -->
         <!-- OpenPDF 코어: PDF 생성 -->

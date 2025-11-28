@@ -1,5 +1,6 @@
 package kr.ac.collage_api.controller;
 
+<<<<<<< Updated upstream:src/main/java/kr/ac/collage_api/controller/CertDocxController.java
 import kr.ac.collage_api.mapper.CertDocxMapper;
 import kr.ac.collage_api.mapper.DitAccountMapper;
 import kr.ac.collage_api.mapper.StudentDocxMapper;
@@ -9,6 +10,17 @@ import kr.ac.collage_api.vo.CertRenderVO;
 import kr.ac.collage_api.vo.CrtfIssuRequestVO;
 import kr.ac.collage_api.vo.CrtfKndVO;
 import kr.ac.collage_api.vo.StudentDocxVO;
+=======
+import kr.ac.collage_api.certificates.mapper.CertDocxMapper;
+import kr.ac.collage_api.certificates.mapper.StudentDocxMapper;
+import kr.ac.collage_api.certificates.service.CertDocxService;
+import kr.ac.collage_api.certificates.service.impl.StudentDocxServiceImpl;
+import kr.ac.collage_api.certificates.vo.CertRenderVO;
+import kr.ac.collage_api.certificates.vo.CrtfIssuRequestVO;
+import kr.ac.collage_api.certificates.vo.StudentDocxVO;
+import kr.ac.collage_api.security.mapper.SecurityMapper;
+import kr.ac.collage_api.certificates.vo.CrtfKndVO;
+>>>>>>> Stashed changes:src/main/java/kr/ac/collage_api/certificates/controller/CertDocxController.java
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;

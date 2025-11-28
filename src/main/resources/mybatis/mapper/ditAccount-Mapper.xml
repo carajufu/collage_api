@@ -3,13 +3,21 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
+<<<<<<< Updated upstream
 <mapper namespace="kr.ac.collage_api.mapper.DitAccountMapper">
+=======
+<mapper namespace="kr.ac.collage_api.security.mapper.DitAccountMapper">
+>>>>>>> Stashed changes
   	<!--
       블록: acntMap (계정 + 권한 + 헤더 표시 정보 바인딩)
 
       1) 코드 의도
          - ACNT(계정 정보) 한 건과 AUTHOR(권한 목록) 다건을
+<<<<<<< Updated upstream
            AcntVO.authorList(List<AuthorVO>) 형태로 한 번에 적재
+=======
+           AcntVO.authorVOList(List<AuthorVO>) 형태로 한 번에 적재
+>>>>>>> Stashed changes
          - 동시에 상단 헤더/메인 포털에서 쓸 표시 정보까지 미리 계산해서 올림
            · USER_NM          : 사용자 이름(학생/교수/관리자)
            · USER_STTUS_NM    : 학적/재직 상태 표시 문자열
@@ -45,20 +53,35 @@
              - USER_NO
                · ROLE_STUDENT → S.STDNT_NO (학번)
                · ROLE_PROF    → T.SKLSTF_ID (교번)
+<<<<<<< Updated upstream
            · B.* 컬럼 → AuthorVO 로 변환 후 AcntVO.authorList 에 push
 
          - 출력 : AcntVO 1개
                   (authorList + USER_* 파생 필드 포함)
+=======
+           · B.* 컬럼 → AuthorVO 로 변환 후 AcntVO.authorVOList 에 push
+
+         - 출력 : AcntVO 1개
+                  (authorVOList + USER_* 파생 필드 포함)
+>>>>>>> Stashed changes
 
       3) 계약
          - AcntVO 필드명
            acntId, fileGroupNo, password, acntTy,
            user_nm, userSttusNm, userSubjctNm, userNo,
+<<<<<<< Updated upstream
            authorList
            이 정확히 존재해야 함
          - AuthorVO 필드명
            authorId, alwncDe, authorNm, authorDc, acntId
          - authorList 타입은 List<AuthorVO> 여야 함
+=======
+           authorVOList
+           이 정확히 존재해야 함
+         - AuthorVO 필드명
+           authorId, alwncDe, authorNm, authorDc, acntId
+         - authorVOList 타입은 List<AuthorVO> 여야 함
+>>>>>>> Stashed changes
          - PK 역할 컬럼 ACNT_ID 는 <id> 로 명시되어 있음
            → MyBatis 는 이 키를 기준으로 동일 계정 row 를 병합하고
              AUTHOR 들을 리스트로 축적해야 함
@@ -73,7 +96,11 @@
 
       5) 유지보수자 가이드
          - B.ACNT_ID AS AUTHOR_ACNT_ID alias 는 AuthorVO.acntId 매핑에 필수
+<<<<<<< Updated upstream
            → alias 제거/변경 시 authorList 매핑 깨짐
+=======
+           → alias 제거/변경 시 authorVOList 매핑 깨짐
+>>>>>>> Stashed changes
          - USER_NM / USER_STTUS_NM / USER_SUBJCT_NM / USER_NO alias 는
            각각 AcntVO.user_nm / userSttusNm / userSubjctNm / userNo 에 매핑됨
            → SELECT 의 alias 와 resultMap 의 column 이름이 반드시 일치해야 함
@@ -94,7 +121,11 @@
 	    <result property="userNo"        column="USER_NO"/>
 	
 	    <!-- AUTHOR 다건 컬렉션 -->
+<<<<<<< Updated upstream
 	    <collection property="authorList" resultMap="authorMap"/>
+=======
+	    <collection property="authorVOList" resultMap="authorMap"/>
+>>>>>>> Stashed changes
 	  </resultMap>
 	
 	  <!--
@@ -169,14 +200,22 @@
                - PROF    → T.SKLSTF_ID
          - 출력
            - resultMap="acntMap"
+<<<<<<< Updated upstream
            - AcntVO 1개 (authorList + USER_* 파생 필드 포함)
+=======
+           - AcntVO 1개 (authorVOList + USER_* 파생 필드 포함)
+>>>>>>> Stashed changes
 
       3) 계약
          - #{acntId} NOT NULL, ACNT.ACNT_ID 와 1:1로 매칭된다는 전제
          - A.PASSWORD 는 해시 문자열이어야 함
          - AUTHOR 가 여러 줄이면
            · 동일 ACNT_ID 기준으로 AcntVO 에 병합되고
+<<<<<<< Updated upstream
              authorList 에 누적되어야 함 (resultMap/collection 설정 필수)
+=======
+             authorVOList 에 누적되어야 함 (resultMap/collection 설정 필수)
+>>>>>>> Stashed changes
          - USER_* 컬럼은 화면 전용 파생값
            · 원본 테이블 구조 변경 시 함께 검토 필요
 

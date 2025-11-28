@@ -51,7 +51,11 @@
         - PROFSR, SKLSTF    : 교수 인적 정보
         - SUBJCT            : 학과 정보
     -->
+<<<<<<< Updated upstream
     <resultMap id="TimetableEventMap" type="kr.ac.collage_api.vo.TimetableEventVO">
+=======
+    <resultMap id="TimetableEventMap" type="kr.ac.collage_api.schedule.vo.TimetableEventVO">
+>>>>>>> Stashed changes
         <!-- 기본 식별자 -->
         <id     property="id"             column="id"/>
 

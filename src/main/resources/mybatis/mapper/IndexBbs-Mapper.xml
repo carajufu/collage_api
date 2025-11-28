@@ -10,7 +10,11 @@
       										 → 서비스/컨트롤러.
       - 계약: 유효한 bbsCode(1=공지, 2=행사, 3=학술/논문 등)를 넣으면 최신 5건 반환.
     -->
+<<<<<<< Updated upstream
     <resultMap id="IndexBbsMap" type="kr.ac.collage_api.vo.IndexBbsVO">
+=======
+    <resultMap id="IndexBbsMap" type="kr.ac.collage_api.index.vo.IndexBbsVO">
+>>>>>>> Stashed changes
         <id     property="bbscttNo"       column="BBSCTT_NO"/>
         <result property="bbsCode"        column="BBS_CODE"/>
         <result property="bbsNm"          column="BBS_NM"/>
@@ -42,7 +46,6 @@
           ON c.BBS_CODE = b.BBS_CODE
         WHERE c.BBS_CODE = #{bbsCode}
         ORDER BY c.BBSCTT_WRITNG_DE DESC
-        FETCH FIRST 20 ROWS ONLY
     </select>
 
 </mapper>

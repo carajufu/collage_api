@@ -110,6 +110,7 @@ public class AcntVO {
      * - 헤더 드롭다운에서 “학번 : 202034-243539 (클릭 시 복사)” 등으로 사용.
      */
     private String userNo;
+<<<<<<< Updated upstream
 
     /**
      * 계정이 가진 권한 목록 (AUTHOR 테이블 다건 매핑)
@@ -118,6 +119,9 @@ public class AcntVO {
      */
     private List<AuthorVO> authorList;
 
+=======
+    
+>>>>>>> Stashed changes
 }
 
 /*

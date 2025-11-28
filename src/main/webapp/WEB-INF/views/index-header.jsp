@@ -345,8 +345,13 @@
 								
 								    <%-- 1. ROLE_PROF 여부 플래그 한 번만 계산 --%>
 								    <c:set var="isProf" value="false" />
+<<<<<<< Updated upstream
 								    <c:if test="${not empty acntVO.authorList}">
 								        <c:forEach var="auth" items="${acntVO.authorList}">
+=======
+								    <c:if test="${not empty acntVO.authorVOList}">
+								        <c:forEach var="auth" items="${acntVO.authorVOList}">
+>>>>>>> Stashed changes
 								            <c:if test="${auth.authorNm == 'ROLE_PROF'}">
 								                <c:set var="isProf" value="true" />
 								            </c:if>

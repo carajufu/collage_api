@@ -2,10 +2,16 @@ package kr.ac.collage_api.service;
 
 import java.util.List;
 
+<<<<<<< Updated upstream:src/main/java/kr/ac/collage_api/service/CertDocxService.java
 import kr.ac.collage_api.vo.CrtfIssuRequestVO;
 import kr.ac.collage_api.vo.CertRenderVO;
 import kr.ac.collage_api.vo.CrtfIssuRequestVO;
 import kr.ac.collage_api.vo.CrtfKndVO;
+=======
+import kr.ac.collage_api.certificates.vo.CertRenderVO;
+import kr.ac.collage_api.certificates.vo.CrtfIssuRequestVO;
+import kr.ac.collage_api.certificates.vo.CrtfKndVO;
+>>>>>>> Stashed changes:src/main/java/kr/ac/collage_api/certificates/service/CertDocxService.java
 
 /**
  * CertDocxService

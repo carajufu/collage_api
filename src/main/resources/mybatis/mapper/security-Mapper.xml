@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.ac.collage_api.security.mapper.SecurityMapper">
+    <resultMap type="acntVO" id="acntMap">
+        <result property="acntId" column="ACNT_ID"/>
+        <result property="fileGroupNo" column="FILE_GROUP_NO"/>
+        <result property="password" column="PASSWORD"/>
+        <result property="acntTy" column="ACNT_TY"/>
+        <association property="authorVOList" resultMap="authorMap" />
+    </resultMap>
+
+    <resultMap type="authorVO" id="authorMap">
+        <result property="authorId" column="AUTHOR_ID"/>
+        <result property="authorNm" column="AUTHOR_NM"/>
+        <result property="authorDc" column="AUTHOR_DC"/>
+        <result property="acntId" column="ACNT_ID"/>
+        <result property="alwncDe" column="ALWNC_DE"/>
+    </resultMap>
+
+    <select id="findAcnt" parameterType="String" resultMap="acntMap">
+        SELECT                                  /* kr.ac.collage_api.security.mapper.SecurityMapper.findAcnt */
+            ac.acnt_id,                         /* 계정 id */
+            ac.password,                        /* 비밀번호 */
+            ac.acnt_ty,                         /* 계정 유형 */
+            auth.author_nm,                     /* 권한 명 */
+            auth.ALWNC_DE                       /* 부여일자 */
+        FROM acnt ac
+        INNER JOIN author auth
+            ON ac.acnt_id = auth.acnt_id
+        WHERE ac.acnt_id = #{username}
+    </select>
+
+    <select id="findStudentName" resultType="String">
+        SELECT                      /* kr.ac.collage_api.security.mapper.SecurityMapper.findStudentName */
+            stdnt_nm                /* 학생 명 */
+        FROM stdnt
+        WHERE stdnt_no = #{id}
+    </select>
+
+    <select id="findStaffName" resultType="String">
+        SELECT                      /* kr.ac.collage_api.security.mapper.SecurityMapper.findStudentName */
+            sklstf_nm               /* 교직원 명 */
+        FROM sklstf
+        WHERE sklstf_id = #{id}
+    </select>
+
+    <select id="findStudentSubjct" resultType="String">
+        SELECT                      /* kr.ac.collage_api.security.mapper.SecurityMapper.findStudentSubjct */
+            subjct_nm               /* 학과 명 */
+        FROM subjct
+        WHERE subjct_code = (
+            SELECT
+                subjct_code
+            FROM stdnt
+            WHERE STDNT_NO = #{id}
+            )
+    </select>
+
+    <select id="findProfSubjct" resultType="String">
+        SELECT                  /* kr.ac.collage_api.security.mapper.SecurityMapper.findProfSubjct */
+            subjct_nm           /* 학과 명 */
+        FROM subjct
+        WHERE subjct_code = (
+            SELECT
+                subjct_code
+            FROM profsr
+            WHERE profsr_no = #{id}
+            )
+    </select>
+
+
+    <!--    종우 -->
+    <resultMap id="jAcntMap" type="acntVO">
+        <!-- ACNT 본체 필드 -->
+        <id     property="acntId"        column="ACNT_ID"/>
+        <result property="fileGroupNo"   column="FILE_GROUP_NO"/>
+        <result property="password"      column="PASSWORD"/>
+        <result property="acntTy"        column="ACNT_TY"/>
+
+        <!-- 파생 표시용 필드 -->
+        <result property="user_nm"       column="USER_NM"/>
+        <result property="userSttusNm"   column="USER_STTUS_NM"/>
+        <result property="userSubjctNm"  column="USER_SUBJCT_NM"/>
+        <result property="userNo"        column="USER_NO"/>
+
+        <!-- AUTHOR 다건 컬렉션 -->
+        <collection property="authorVOList" resultMap="jAuthorMap"/>
+    </resultMap>
+
+    <resultMap id="jAuthorMap" type="authorVO">
+        <id     property="authorId" column="AUTHOR_ID"/>
+        <result property="alwncDe"  column="ALWNC_DE"/>
+        <result property="authorNm" column="AUTHOR_NM"/>
+        <result property="authorDc" column="AUTHOR_DC"/>
+        <result property="acntId"   column="AUTHOR_ACNT_ID"/>
+    </resultMap>
+
+    <select id="findById" parameterType="string" resultMap="jAcntMap">
+        SELECT
+            A.ACNT_ID,
+            A.FILE_GROUP_NO,
+            A.PASSWORD,
+            A.ACNT_TY,
+
+            B.ALWNC_DE,
+            B.AUTHOR_ID,
+            B.AUTHOR_NM,
+            B.AUTHOR_DC,
+            B.ACNT_ID AS AUTHOR_ACNT_ID,
+
+            /* 상단 인사에 쓸 표시용 이름 */
+            CASE
+                WHEN B.AUTHOR_NM = 'ROLE_STUDENT' THEN S.STDNT_NM
+                WHEN B.AUTHOR_NM = 'ROLE_PROF'    THEN T.SKLSTF_NM
+                WHEN B.AUTHOR_NM = 'ROLE_ADMIN'   THEN '관리자'
+                ELSE NULL
+                END AS USER_NM,
+
+            /* 학적/재직 상태 표시용 */
+            CASE
+                WHEN B.AUTHOR_NM = 'ROLE_STUDENT' THEN
+                    CASE
+                        WHEN S.SKNRGS_STTUS = '재학' THEN '등록생'
+                        ELSE S.SKNRGS_STTUS
+                        END
+                WHEN B.AUTHOR_NM = 'ROLE_PROF' THEN '재직'
+                ELSE NULL
+                END AS USER_STTUS_NM,
+
+            /* 소속 학과명 (학생/교수 공통) */
+            CASE
+                WHEN B.AUTHOR_NM = 'ROLE_STUDENT' THEN SJ_S.SUBJCT_NM
+                WHEN B.AUTHOR_NM = 'ROLE_PROF'    THEN SJ_P.SUBJCT_NM
+                ELSE NULL
+                END AS USER_SUBJCT_NM,
+
+            /* 학번 / 교번 (헤더에서 복사 버튼에 쓸 값) */
+            CASE
+                WHEN B.AUTHOR_NM = 'ROLE_STUDENT' THEN S.STDNT_NO
+                WHEN B.AUTHOR_NM = 'ROLE_PROF'    THEN T.SKLSTF_ID
+                ELSE NULL
+                END AS USER_NO
+
+        FROM ACNT A
+                 LEFT JOIN AUTHOR B
+                           ON B.ACNT_ID = A.ACNT_ID
+
+            /* 학생 계정 전용 조인 */
+                 LEFT JOIN STDNT S
+                           ON S.ACNT_ID = A.ACNT_ID
+                               AND B.AUTHOR_NM = 'ROLE_STUDENT'
+                 LEFT JOIN SUBJCT SJ_S
+                           ON SJ_S.SUBJCT_CODE = S.SUBJCT_CODE
+
+            /* 교수(교직원) 계정 전용 조인: ACNT → SKLSTF → PROFSR → SUBJCT */
+                 LEFT JOIN SKLSTF T
+                           ON T.ACNT_ID = A.ACNT_ID
+                               AND B.AUTHOR_NM = 'ROLE_PROF'
+                 LEFT JOIN PROFSR PR
+                           ON PR.SKLSTF_ID = T.SKLSTF_ID
+                 LEFT JOIN SUBJCT SJ_P
+                           ON SJ_P.SUBJCT_CODE = PR.SUBJCT_CODE
+
+        WHERE A.ACNT_ID = #{acntId}
+    </select>
+
+    <select id="findByNameAndBirth"
+            parameterType="map"
+            resultType="string">
+        SELECT t.ACNT_ID
+        FROM (
+                 -- 교직원 쪽
+                 SELECT s."ACNT_ID"   AS ACNT_ID,
+                        s."SKLSTF_NM" AS NAME,
+                        s."BRTHDY"    AS BRTHDY
+                 FROM   "SKLSTF" s
+
+                 UNION ALL
+
+                 -- 학생 쪽
+                 SELECT st."ACNT_ID"  AS ACNT_ID,
+                        st."STDNT_NM" AS NAME,
+                        st."BRTHDY"   AS BRTHDY
+                 FROM   "STDNT" st
+             ) t
+        WHERE t.NAME   = #{name}
+          AND t.BRTHDY = #{birth}
+    </select>
+
+    <select id="existsByAcntIdAndEmail"
+            parameterType="map"
+            resultType="int">
+        SELECT COUNT(1)
+        FROM (
+                 -- 학생: ACNT 테이블 이메일
+                 SELECT
+                     a.ACNT_ID AS ACNT_ID,
+                     a.EMAIL   AS EMAIL
+                 FROM   ACNT a
+
+                 UNION ALL
+
+                 -- 교수: SKLSTF.ACNT_ID + PROFSR.EMAIL_ADRES
+                 SELECT
+                     s.ACNT_ID     AS ACNT_ID,
+                     p.EMAIL_ADRES AS EMAIL
+                 FROM   PROFSR p
+                            JOIN   SKLSTF s
+                                   ON   p.SKLSTF_ID = s.ACNT_ID
+                 -- PROFSR.SKLSTF_ID == SKLSTF.ACNT_ID 전재
+             ) x
+        WHERE x.ACNT_ID = #{acntId}
+          AND x.EMAIL   = #{email}
+    </select>
+
+    <update id="updatePasswordByAcntIdAndEmail"
+            parameterType="map">
+        UPDATE ACNT
+        SET    "PASSWORD" = #{encoded}
+        WHERE  "ACNT_ID"  = #{acntId}
+          AND    "EMAIL"    = #{email}
+    </update>
+
+    <insert id="userSaveAuth" parameterType="kr.ac.collage_api.vo.AcntVO">
+        /* 목적: AUTHOR PK는 상수가 아니라 시퀀스로 자동 발급 */
+        INSERT INTO AUTHOR (
+            AUTHOR_ID,     -- PK, 시퀀스 사용
+            ACNT_ID,       -- 계정 ID
+            AUTHOR_NM,     -- 권한명(예: ROLE_STUDENT / ROLE_ADMIN)
+            ALWNC_DE       -- 부여일자
+        ) VALUES (
+                     AUTHOR_SEQ.NEXTVAL,  -- 수정: '20' 상수 → 시퀀스 호출
+                     #{acntId},           -- 바인딩 변수
+                     #{authorNm},         -- 바인딩 변수
+                     SYSDATE              -- 발급 시각
+                 )
+    </insert>
+
+    <select id="findAuthoritiesByAcntId"
+            parameterType="string"
+            resultType="string">
+        SELECT
+            AUTHOR_NM
+        FROM
+            AUTHOR
+        WHERE
+            ACNT_ID = #{acntId}
+        ORDER BY
+            AUTHOR_NM
+    </select>
+
+    <select id="findStdntNoByAcntId"
+            parameterType="string"
+            resultType="string">
+        SELECT
+            STDNT_NO
+        FROM
+            STDNT
+        WHERE
+            ACNT_ID = #{acntId}
+    </select>
+    
+     <!-- ACNT_ID로 교수번호 조회 -->
+	<select id="findProfsrNoByAcntId" parameterType="string" resultType="string">
+	    SELECT p.PROFSR_NO
+	    FROM PROFSR p
+	         JOIN SKLSTF s ON s.SKLSTF_ID = p.SKLSTF_ID
+	    WHERE s.ACNT_ID = #{acntId}
+	</select>
+</mapper>

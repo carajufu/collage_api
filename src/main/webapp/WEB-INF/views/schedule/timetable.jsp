@@ -24,7 +24,15 @@
 <!-- 공용 툴팁: 인스턴스 1개 재사용 -->
 <div id="event-tooltip" class="event-tooltip"></div>
 
+<style>
+/* FullCalendar 일자 숫자 줄바꿈 금지 */
+.fc .fc-daygrid-day-number {
+    white-space: nowrap !important;  /* 한 줄 유지 */
+    word-break: keep-all !important; /* 숫자+한글 사이에서 강제 줄바꿈 금지 */
+    display: inline-block;           /* 폭 계산 안정화  */
+}
 
+</style>
 <%-- <%@ include file="../footer.jsp" %> --%>
 <script>
 document.addEventListener("DOMContentLoaded", function () {

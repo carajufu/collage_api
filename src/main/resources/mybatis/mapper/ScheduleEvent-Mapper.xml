@@ -45,7 +45,11 @@
 <mapper namespace="kr.ac.collage_api.mapper.ScheduleEventMapper">
 
     <!-- 공통 매핑 -->
+<<<<<<< Updated upstream
     <resultMap id="ScheduleEventMap" type="kr.ac.collage_api.vo.ScheduleEventVO">
+=======
+    <resultMap id="ScheduleEventMap" type="kr.ac.collage_api.schedule.vo.ScheduleEventVO">
+>>>>>>> Stashed changes
         <id     property="id"        column="EVENT_ID"/>
         <result property="title"     column="TITLE"/>
         <result property="type"      column="TYPE"/>
