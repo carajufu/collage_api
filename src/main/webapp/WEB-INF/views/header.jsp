@@ -517,7 +517,7 @@
                         <div class="collapse menu-dropdown" id="sidebarCounsel">
                             <ul class="nav nav-sm flex-column">
                                 <li class="nav-item">
-                                    <a href="/counselprof/prof" class="nav-link" data-key="">상담 관리</a>
+                                    <a href="/counselprof/prof" class="nav-link" data-key="t-prof-grade-manage">상담 관리</a>
                                 </li>
 
                             </ul>
