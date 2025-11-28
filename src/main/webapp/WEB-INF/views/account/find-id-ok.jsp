@@ -1,28 +1,18 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-         pageEncoding="UTF-8"%>
-<%@ taglib prefix="c"  uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
-
-<c:set var="cPath" value="${pageContext.request.contextPath}"/>
-
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="utf-8" />
-    <title>아이디 찾기 결과</title>
-  	<meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8">
+  <title>아이디 찾기 결과</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <!-- velzon layout config -->
-    <script src="${cPath}/assets/js/layout.js"></script>
+  <!-- 폰트 / Bootstrap -->
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/pretendard/dist/web/static/pretendard.css" />
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
 
-    <!-- velzon CSS stack -->
-    <link href="${cPath}/assets/css/bootstrap.min.css" rel="stylesheet" />
-    <link href="${cPath}/assets/css/icons.min.css" rel="stylesheet" />
-    <link href="${cPath}/assets/css/app.min.css" rel="stylesheet" />
-    <link href="${cPath}/assets/css/custom.min.css" rel="stylesheet" />
-    <link href="${cPath}/assets/css/app.css" rel="stylesheet" />
-    
   <style>
     body {
       margin: 0;
@@ -40,7 +30,7 @@
 
     .popup-card {
       width: 100%;
-      max-width: 440px;
+      max-width: 420px;
       background-color: #ffffff;
       border-radius: 16px;
       border: 1px solid #e5e7eb;
@@ -69,7 +59,7 @@
       text-decoration: underline;
       cursor: pointer;
     }
-/* 
+
     .btn-primary {
       border-radius: 999px;
       font-weight: 600;
@@ -82,7 +72,7 @@
       background-color: #1d4ed8;
       border-color: #1d4ed8;
     }
- */
+
     .popup-subtext {
       margin-top: 12px;
       font-size: 12px;

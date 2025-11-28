@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.ac.collage_api.admin.mapper.UnivMapper">
+	
+	<!-- 단과대 -->
+	<select id="findAllUniv" resultType="kr.ac.collage_api.vo.UnivVO">
+		SELECT
+            U.UNIV_CODE
+	        , U.PROFSR_NO
+	        , U.UNIV_NM
+	        , U.BULD_LC
+	        , U.UNIV_TELNO
+	        , U.FOND_YEAR
+	        , U.OPER_STTUS
+	        , U.RECENT_UPDT_DT
+            , S.SKLSTF_NM AS prexNm
+	        , C.CODE_NM AS buldNm
+        FROM
+            UNIV U
+	        LEFT JOIN PROFSR P ON U.PROFSR_NO = P.PROFSR_NO
+	        LEFT JOIN SKLSTF S ON P.SKLSTF_ID = S.SKLSTF_ID
+	        LEFT JOIN CMMN_CODE C ON U.BULD_LC = C.CODE_NO
+        ORDER BY U.BULD_LC DESC
+	</select>
+	
+	<!-- 학과 -->
+	<select id="findAllSubjct" resultType="kr.ac.collage_api.vo.SubjctVO">
+		SELECT
+			SB.SUBJCT_CODE
+			,SB.UNIV_CODE
+			,SB.SUBJCT_NM
+			,SB.SUBJCT_TELNO
+			,SB.SUBJCT_LC
+			,SB.FONDYEAR
+			,SB.OPER_STTUS
+			,SB.RECENT_UPDT_DT
+			,SB.SUBJCT_CHPT
+			,S.SKLSTF_NM AS deanNm
+			,C.CODE_NM AS buldNm
+		FROM
+			SUBJCT SB
+			LEFT JOIN PROFSR P ON SB.SUBJCT_CHPT = P.PROFSR_NO
+			LEFT JOIN SKLSTF S ON P.SKLSTF_ID = S.SKLSTF_ID
+			LEFT JOIN CMMN_CODE C ON SB.SUBJCT_LC = C.CODE_NO
+	</select>
+	
+	<!-- 학장후보 -->
+	<select id="findProfsrByUniv" resultType="kr.ac.collage_api.vo.ProfsrVO">
+	  SELECT 
+		P.PROFSR_NO
+		,P.SKLSTF_ID
+		,P.SUBJCT_CODE
+		,P.CLSF
+		,SB.SUBJCT_NM
+		,S.SKLSTF_NM 
+	  FROM 
+	    PROFSR P
+	    LEFT JOIN SKLSTF S ON P.SKLSTF_ID = S.SKLSTF_ID
+	    LEFT JOIN SUBJCT SB ON P.SUBJCT_CODE = SB.SUBJCT_CODE
+	    LEFT JOIN UNIV U ON SB.UNIV_CODE = U.UNIV_CODE
+	  WHERE 
+	    U.UNIV_CODE = #{univCode}
+	  AND P.CLSF = '정교수'
+	</select>
+
+		
+	<!-- 학과장후보 -->
+	<select id="findProfsrBySubjct" resultType="kr.ac.collage_api.vo.ProfsrVO">
+	  SELECT 
+		P.PROFSR_NO
+	  	,P.SKLSTF_ID
+	  	,P.SUBJCT_CODE
+	  	,P.CLSF
+	  	,SB.SUBJCT_NM
+	  	,S.SKLSTF_NM 
+	  FROM 
+	  	PROFSR P
+		LEFT JOIN SKLSTF S ON P.SKLSTF_ID = S.SKLSTF_ID
+		LEFT JOIN SUBJCT SB ON P.SUBJCT_CODE = SB.SUBJCT_CODE
+	  WHERE 
+	  	P.SUBJCT_CODE = #{subjctCode}
+	  AND P.CLSF = '부교수'
+	</select>
+
+	<!-- 단과대 정보 업데이트 -->
+	<update id="updateUniv" parameterType="kr.ac.collage_api.admin.dto.UnivUpdateRequestDto">
+        UPDATE UNIV SET
+            UNIV_NM         = #{univNm}
+            ,BULD_LC         = #{buldLc}
+            ,PROFSR_NO       = #{profsrNo}
+            ,UNIV_TELNO      = #{univTelno}
+            ,OPER_STTUS      = #{operSttus}
+            ,RECENT_UPDT_DT  = SYSDATE
+        WHERE
+            UNIV_CODE = #{univCode}
+    </update>
+
+	<!-- 학과 정보 업데이트 -->
+	<update id="updateSubjct" parameterType="kr.ac.collage_api.admin.dto.SubjctUpdateRequestDto">
+        UPDATE SUBJCT SET
+            SUBJCT_NM       = #{subjctNm}
+            ,SUBJCT_LC       = #{subjctLc}
+            ,SUBJCT_CHPT     = #{subjctChpt}
+            ,SUBJCT_TELNO    = #{subjctTelno}
+            ,OPER_STTUS      = #{operSttus}
+            ,RECENT_UPDT_DT  = SYSDATE
+        WHERE
+            SUBJCT_CODE = #{subjctCode}
+    </update>
+
+    <!-- 학과 추가 -->
+	<insert id="insertSubjct" parameterType="kr.ac.collage_api.admin.dto.SubjctUpdateRequestDto">
+	     INSERT INTO SUBJCT(
+	         SUBJCT_CODE
+	         ,SUBJCT_NM
+	         ,SUBJCT_LC
+	         ,SUBJCT_TELNO
+	         ,UNIV_CODE
+	         ,OPER_STTUS
+	         ,RECENT_UPDT_DT
+	         ,FONDYEAR)
+	     VALUES (
+	         #{subjctCode}
+	         ,#{subjctNm}
+	         ,#{subjctLc}
+	         ,#{subjctTelno}
+	         ,#{univCode}
+	         ,'1'
+			 ,SYSDATE
+	         ,TO_CHAR(SYSDATE, 'YYYY') )
+	 </insert>
+
+    <!-- 추가된 학과 조회 -->
+    <select id="findSubjectByCode" resultType="kr.ac.collage_api.vo.SubjctVO" parameterType="string">
+        SELECT
+			SB.SUBJCT_CODE
+			,SB.UNIV_CODE
+			,SB.SUBJCT_NM
+			,SB.SUBJCT_TELNO
+			,SB.SUBJCT_LC
+			,SB.FONDYEAR
+			,SB.OPER_STTUS
+			,SB.RECENT_UPDT_DT
+			,SB.SUBJCT_CHPT
+			,S.SKLSTF_NM AS deanNm
+			,C.CODE_NM AS buldNm
+		FROM
+			SUBJCT SB
+			LEFT JOIN PROFSR P ON SB.SUBJCT_CHPT = P.PROFSR_NO
+			LEFT JOIN SKLSTF S ON P.SKLSTF_ID = S.SKLSTF_ID
+			LEFT JOIN CMMN_CODE C ON SB.SUBJCT_LC = C.CODE_NO
+		WHERE
+			SB.SUBJCT_CODE = #{subjctCode}
+    </select>
+
+    <!-- 단과대에 포함된 학과 수 -->
+    <select id="countSubjcts" parameterType="string" resultType="int">
+    	SELECT COUNT(*)
+    	FROM SUBJCT
+    	WHERE UNIV_CODE = #{univCode}
+    </select>
+
+    <!-- 학과에 포함된 교수 수 -->
+    <select id="countProfsrs" parameterType="String" resultType="int">
+    	SELECT COUNT(*)
+    	FROM PROFSR
+    	WHERE SUBJCT_CODE =#{subjctCode}
+    </select>
+
+    <!-- 단과대 삭제 -->
+    <delete id="deleteUniv" parameterType="string">
+        DELETE FROM UNIV
+        WHERE UNIV_CODE = #{univCode}
+    </delete>
+
+    <!-- 학과 삭제 -->
+    <delete id="deleteSubjct" parameterType="string">
+        DELETE FROM SUBJCT
+        WHERE SUBJCT_CODE = #{subjctCode}
+    </delete>
+
+</mapper>

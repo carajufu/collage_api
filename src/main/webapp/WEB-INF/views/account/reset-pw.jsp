@@ -1,28 +1,21 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-         pageEncoding="UTF-8"%>
-<%@ taglib prefix="c"  uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
-
-<c:set var="cPath" value="${pageContext.request.contextPath}"/>
-
+<!-- /WEB-INF/views/account/reset-pw.jsp -->
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="utf-8" />
-    <title>비밀번호 재설정</title>
-  	<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="UTF-8">
+<title>비밀번호 재설정</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <!-- velzon layout config -->
-    <script src="${cPath}/assets/js/layout.js"></script>
+<!-- 팝업 전용 기본 폰트 / Bootstrap / Icons -->
+<link rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/pretendard/dist/web/static/pretendard.css" />
+<link rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+<link rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
 
-    <!-- velzon CSS stack -->
-    <link href="${cPath}/assets/css/bootstrap.min.css" rel="stylesheet" />
-    <link href="${cPath}/assets/css/icons.min.css" rel="stylesheet" />
-    <link href="${cPath}/assets/css/app.min.css" rel="stylesheet" />
-    <link href="${cPath}/assets/css/custom.min.css" rel="stylesheet" />
-    <link href="${cPath}/assets/css/app.css" rel="stylesheet" />
-    
 <%--
     [뷰 레벨 요약]
 
@@ -188,7 +181,7 @@ body {
   font-size: 13px;
   border-radius: 10px;
 }
-/* 
+
 .btn-primary {
   height: 44px;
   border-radius: 999px;
@@ -202,7 +195,7 @@ body {
   background-color: #1d4ed8;
   border-color: #1d4ed8;
 }
- */
+
 .popup-footer-text {
   margin-top: 10px;
   font-size: 12px;
@@ -314,7 +307,7 @@ body {
              
         <!-- 버튼 영역 -->
         <div class="d-grid gap-2 mt-3">
-          <button type="submit" class="btn btn-primary w-100">비밀번호 변경</button>
+          <button type="submit" class="btn btn-primary">비밀번호 변경</button>
           <button type="button" class="btn btn-outline-secondary"
                   onclick="window.close()">닫기</button>
         </div>

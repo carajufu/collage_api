@@ -1,118 +1,111 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-         pageEncoding="UTF-8"%>
-<%@ taglib prefix="c"  uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
-
-<c:set var="cPath" value="${pageContext.request.contextPath}"/>
-
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="utf-8" />
-    <title>증명서 발급 요청</title>
-  	<meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <!-- velzon layout config -->
-    <script src="${cPath}/assets/js/layout.js"></script>
-
-    <!-- velzon CSS stack -->
-    <link href="${cPath}/assets/css/bootstrap.min.css" rel="stylesheet" />
-    <link href="${cPath}/assets/css/icons.min.css" rel="stylesheet" />
-    <link href="${cPath}/assets/css/app.min.css" rel="stylesheet" />
-    <link href="${cPath}/assets/css/custom.min.css" rel="stylesheet" />
-    <link href="${cPath}/assets/css/app.css" rel="stylesheet" />
-	<link rel="stylesheet" href="<c:url value='${cPath}/css/docx.css'/>">
-    
+<%@ page language="java" contentType="text/html; charset=UTF-8" %>
 <%@ include file="../header.jsp" %>
 <!-- 전역 docx css -->
-<div class="docx-form-page">
-    <h2>증명서 발급 요청</h2>
+<link rel="stylesheet" href="<c:url value='${pageContext.request.contextPath}/css/docx.css'/>">
 
-    <div class="box">
-        <h3>신청자 정보</h3>
-        <div class="row-2col">
-            <div>
-                <label>학번</label>
-                <input type="text" value="<c:out value='${studentDocxVO.studentNo}'/>" readonly />
-            </div>
-            <div>
-                <label>이름</label>
-                <input type="text" value="<c:out value='${studentDocxVO.studentNameKor}'/>" readonly />
-            </div>
-        </div>
-
-        <div class="row-2col">
-            <div>
-                <label>전공</label>
-                <input type="text" value="<c:out value='${studentDocxVO.majorName}'/>" readonly />
-            </div>
-            <div>
-                <label>학위명</label>
-                <input type="text" value="<c:out value='${studentDocxVO.degreeName}'/>" readonly />
-            </div>
-        </div>
-
-        <div class="row-1col">
-            <label>학적 상태</label>
-            <input type="text" value="<c:out value='${studentDocxVO.status}'/>" readonly />
-            <div class="hint">&#160;&#160;정보가 사실과 다르면 학사행정실에 문의하여 정정 요청할 것</div>
-        </div>
+<div class="row pt-3 px-5">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="#"><i class="las la-home"></i></a></li>
+            <li class="breadcrumb-item active" aria-current="page">증명서 발급 요청</li>
+        </ol>
+    </nav>
+    <div class="col-12 page-title mt-2">
+        <h2 class="fw-semibold">증명서 발급 요청</h2>
+        <div class="my-4 p-0 bg-primary" style="width: 100px; height:5px;"></div>
     </div>
+</div>
 
-    <div class="box">
-        <h3>발급 요청</h3>
+<div class="row">
+    <div class="col-xxl-12 col-12">
+        <div class="docx-form-page">
 
-        <form id="certForm" onsubmit="return false;">
-            <label for="crtfKndNo">증명서 종류</label>
-            <select id="crtfKndNo" name="crtfKndNo">
-                <c:forEach var="crtf" items="${crtfList}">
-                    <option value="${crtf.crtfKndNo}"
-                            data-name="${crtf.crtfNm}"
-                            data-desc="${crtf.crtfDc}">
-                        ${crtf.crtfNm}
-                        <c:if test="${crtf.issuFee != null}">
-                            (수수료 ${crtf.issuFee}원)
-                        </c:if>
-                    </option>
-                </c:forEach>
-            </select>
-
-            <div class="hint">
-                &#160;&#160;선택한 증명서 설명:
-                <span id="crtfDescArea">
-                    <c:out value="${crtfList[0].crtfDc}" />
-                </span>
-            </div>
-
-            <label for="reasonSelect">발급 사유</label>
-            <select id="reasonSelect" name="reasonSelect"></select>
-            <input type="text" id="reasonCustom" name="reasonCustom"
-                   placeholder="직접 입력"
-                   style="display:none; margin-top:8px;" />
-
-            <div id="leaveRangeRow" class="row-2col" style="display:none;">
-                <div>
-                    <label for="leaveStart">휴학 시작일</label>
-                    <input type="date" id="leaveStart" name="leaveStart">
+            <div class="box">
+                <h3>신청자 정보</h3>
+                <div class="row-2col">
+                    <div>
+                        <label>학번</label>
+                        <input type="text" value="<c:out value='${studentDocxVO.studentNo}'/>" readonly />
+                    </div>
+                    <div>
+                        <label>이름</label>
+                        <input type="text" value="<c:out value='${studentDocxVO.studentNameKor}'/>" readonly />
+                    </div>
                 </div>
-                <div>
-                    <label for="leaveEnd">휴학 종료일</label>
-                    <input type="date" id="leaveEnd" name="leaveEnd">
-                    <div class="hint">&#160;&#160;기간 미지정 시 서버 기본 정책 적용</div>
+
+                <div class="row-2col">
+                    <div>
+                        <label>전공</label>
+                        <input type="text" value="<c:out value='${studentDocxVO.majorName}'/>" readonly />
+                    </div>
+                    <div>
+                        <label>학위명</label>
+                        <input type="text" value="<c:out value='${studentDocxVO.degreeName}'/>" readonly />
+                    </div>
+                </div>
+
+                <div class="row-1col">
+                    <label>학적 상태</label>
+                    <input type="text" value="<c:out value='${studentDocxVO.status}'/>" readonly />
+                    <div class="hint">&#160;&#160;정보가 사실과 다르면 학사행정실에 문의하여 정정 요청할 것</div>
                 </div>
             </div>
 
-            <button type="button" class="btn-issue" onclick="issueCert()">
-                <i class="bi bi-file-earmark-pdf-fill"></i>
-                PDF 발급 및 다운로드
-            </button>
+            <div class="box">
+                <h3>발급 요청</h3>
 
-            <button type="button" class="btn-history" onclick="goToHistory()">
-                <i class="bi bi-clock-history"></i>
-                증명서 발급 이력
-            </button>
-        </form>
+                <form id="certForm" onsubmit="return false;">
+                    <label for="crtfKndNo">증명서 종류</label>
+                    <select id="crtfKndNo" name="crtfKndNo">
+                        <c:forEach var="crtf" items="${crtfList}">
+                            <option value="${crtf.crtfKndNo}"
+                                    data-name="${crtf.crtfNm}"
+                                    data-desc="${crtf.crtfDc}">
+                                ${crtf.crtfNm}
+                                <c:if test="${crtf.issuFee != null}">
+                                    (수수료 ${crtf.issuFee}원)
+                                </c:if>
+                            </option>
+                        </c:forEach>
+                    </select>
+
+                    <div class="hint">
+                        &#160;&#160;선택한 증명서 설명:
+                        <span id="crtfDescArea">
+                            <c:out value="${crtfList[0].crtfDc}" />
+                        </span>
+                    </div>
+
+                    <label for="reasonSelect">발급 사유</label>
+                    <select id="reasonSelect" name="reasonSelect"></select>
+                    <input type="text" id="reasonCustom" name="reasonCustom"
+                           placeholder="직접 입력"
+                           style="display:none; margin-top:8px;" />
+
+                    <div id="leaveRangeRow" class="row-2col" style="display:none;">
+                        <div>
+                            <label for="leaveStart">휴학 시작일</label>
+                            <input type="date" id="leaveStart" name="leaveStart">
+                        </div>
+                        <div>
+                            <label for="leaveEnd">휴학 종료일</label>
+                            <input type="date" id="leaveEnd" name="leaveEnd">
+                            <div class="hint">&#160;&#160;기간 미지정 시 서버 기본 정책 적용</div>
+                        </div>
+                    </div>
+
+                    <button type="button" class="btn-issue" onclick="issueCert()">
+                        <i class="bi bi-file-earmark-pdf-fill"></i>
+                        PDF 발급 및 다운로드
+                    </button>
+
+                    <button type="button" class="btn-history" onclick="goToHistory()">
+                        <i class="bi bi-clock-history"></i>
+                        증명서 발급 이력
+                    </button>
+                </form>
+            </div>
+        </div>
     </div>
 </div>
 

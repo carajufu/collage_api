@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.ac.collage_api.dashboard.mapper.DashboardMapper">
+    <select id="selectStudent" resultType="DashLectureVO">
+        SELECT                          /* kr.ac.collage_api.dashboard.mapper.DashboardMapper.selectStudent */
+            cour.lctre_nm               /* 강의명 */
+             , est.lctrum               /* 강의실 */
+             , est.estbllctre_code      /* 개설강의코드 */
+             , skl.sklstf_nm            /* 교직원명 */
+        FROM atnlc_reqst at
+                 INNER JOIN estbl_course est
+                            ON  at.estbllctre_code = est.estbllctre_code
+                 INNER JOIN all_course cour
+                            ON est.lctre_code = cour.lctre_code
+                 INNER JOIN profsr prof
+                            ON est.profsr_no = prof.profsr_no
+                 INNER JOIN sklstf skl
+                            ON prof.sklstf_id = skl.sklstf_id
+        WHERE stdnt_no = #{stdntNo}
+          AND reqst_year = #{year}
+          AND reqst_semstr = #{period}
+    </select>
+</mapper>

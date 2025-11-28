@@ -480,12 +480,4 @@ window.openResetPwPopup = function() {
         crossorigin="anonymous"></script>
 
 </body>
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
 </html>
-=======
-</html>
->>>>>>> Stashed changes
-=======
-</html>
->>>>>>> Stashed changes

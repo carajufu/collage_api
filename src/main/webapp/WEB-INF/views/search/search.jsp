@@ -506,7 +506,7 @@
   <div class="container-fluid">
     <!-- 로고 -->
     <a class="navbar-brand me-3" href="${cPath}/">
-      <img src="${cPath}/images/logo/univ-logo-kor-vite-dark.svg"
+      <img src="${cPath}/img/logo/univ-logo-kor-vite-dark.svg"
            alt="대덕대학교" height="55"
            class="card-logo card-logo-dark" />
     </a>

@@ -1,12 +1,14 @@
 package kr.ac.collage_api.vo;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
-public class AuthorVO { // 권한 테이블
-    private String alwncDe;   // 허용일자 등 도메인 의미. 문자열(yyyymmdd 등)
-    private String authorId;  // 권한/역할 ID 또는 식별자
-    private String authorNm;  // 권한/역할 이름
-    private String authorDc;  // 권한/역할 설명
-    private String acntId;    // 소유 계정 ID (ACNT.ACNT_ID)
+@NoArgsConstructor
+public class AuthorVO {
+    private String acntId;
+    private String authorId; //권한ID(PK)	AUTHOR_ID(PK)
+    private String alwncDe; //부여일자	ALWNC_DE
+    private String authorNm; //권한_명	AUTHOR_NM
+    private String authorDc; //권한_설명	AUTHOR_DC
 }

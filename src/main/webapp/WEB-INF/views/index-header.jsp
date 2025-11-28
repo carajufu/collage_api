@@ -300,8 +300,8 @@
                                     </span>
                                     <span class="text-white-50 small ms-1">
                                         <c:choose>
-                                            <c:when test="${not empty acntVO.authorList}">
-                                                <c:forEach var="auth" items="${acntVO.authorList}">
+                                            <c:when test="${not empty acntVO.authorVOList}">
+                                                <c:forEach var="auth" items="${acntVO.authorVOList}">
                                                     <c:choose>
                                                         <c:when test="${auth.authorNm == 'ROLE_STUDENT'}">
                                                             학우님 반갑습니다.
@@ -345,18 +345,8 @@
 								
 								    <%-- 1. ROLE_PROF 여부 플래그 한 번만 계산 --%>
 								    <c:set var="isProf" value="false" />
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-								    <c:if test="${not empty acntVO.authorList}">
-								        <c:forEach var="auth" items="${acntVO.authorList}">
-=======
 								    <c:if test="${not empty acntVO.authorVOList}">
 								        <c:forEach var="auth" items="${acntVO.authorVOList}">
->>>>>>> Stashed changes
-=======
-								    <c:if test="${not empty acntVO.authorVOList}">
-								        <c:forEach var="auth" items="${acntVO.authorVOList}">
->>>>>>> Stashed changes
 								            <c:if test="${auth.authorNm == 'ROLE_PROF'}">
 								                <c:set var="isProf" value="true" />
 								            </c:if>
@@ -436,10 +426,24 @@
                             </button>
                         </form>
 
-                        <a href="/portal"
+                        <sec:authorize access="hasRole('ROLE_STUDENT')">
+                        <a href="/dashboard/student"
                            class="btn btn-sm navbar-util-btn btn-warning ms-1">
                             학사포털
                         </a>
+                        </sec:authorize>
+                        <sec:authorize access="hasRole('ROLE_PROF')">
+                        <a href="/dashboard/prof"
+                           class="btn btn-sm navbar-util-btn btn-warning ms-1">
+                            학사포털
+                        </a>
+                        </sec:authorize>
+                        <sec:authorize access="hasRole('ROLE_ADMIN')">
+                        <a href="http://localhost:5173"
+                           class="btn btn-sm navbar-util-btn btn-warning ms-1">
+                            학사포털
+                        </a>
+                        </sec:authorize>
                     </sec:authorize>
 
                     <!-- 비로그인 상태 -->
@@ -447,15 +451,6 @@
                         <a href="/login"
                            class="btn btn-sm navbar-util-btn btn-outline-light">
                             로그인
-                        </a>
-                        <a href="/signup"
-                           class="btn btn-sm navbar-util-btn btn-soft-light d-none d-lg-inline-flex">
-                            회원가입
-                        </a>
-                        <!-- 학사(관리) 포털 연동시 실 경로 입력 -->
-                        <a href="/portal" 
-                           class="btn btn-sm navbar-util-btn btn-warning ms-lg-1">
-                            학사포털
                         </a>
                     </sec:authorize>
                 </div>

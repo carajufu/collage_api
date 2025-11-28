@@ -42,18 +42,10 @@
 - 민감정보 추가 노출은 서비스/권한 검증 후 별도 API로 처리.
 -->
 
-<mapper namespace="kr.ac.collage_api.mapper.ScheduleEventMapper">
+<mapper namespace="kr.ac.collage_api.schedule.mapper.ScheduleEventMapper">
 
     <!-- 공통 매핑 -->
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-    <resultMap id="ScheduleEventMap" type="kr.ac.collage_api.vo.ScheduleEventVO">
-=======
     <resultMap id="ScheduleEventMap" type="kr.ac.collage_api.schedule.vo.ScheduleEventVO">
->>>>>>> Stashed changes
-=======
-    <resultMap id="ScheduleEventMap" type="kr.ac.collage_api.schedule.vo.ScheduleEventVO">
->>>>>>> Stashed changes
         <id     property="id"        column="EVENT_ID"/>
         <result property="title"     column="TITLE"/>
         <result property="type"      column="TYPE"/>

@@ -40,17 +40,9 @@
     - 행정 이벤트 전체 + 강의/등록금 납부 기간 전체.
 -->
 
-<mapper namespace="kr.ac.collage_api.mapper.IndexScheduleEventMapper">
+<mapper namespace="kr.ac.collage_api.index.mapper.IndexScheduleEventMapper">
 
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-    <resultMap id="IndexScheduleEventMap" type="kr.ac.collage_api.vo.ScheduleEventVO">
-=======
     <resultMap id="IndexScheduleEventMap" type="kr.ac.collage_api.schedule.vo.ScheduleEventVO">
->>>>>>> Stashed changes
-=======
-    <resultMap id="IndexScheduleEventMap" type="kr.ac.collage_api.schedule.vo.ScheduleEventVO">
->>>>>>> Stashed changes
         <id     property="id"        column="EVENT_ID"/>
         <result property="title"     column="TITLE"/>
         <result property="type"      column="TYPE"/>

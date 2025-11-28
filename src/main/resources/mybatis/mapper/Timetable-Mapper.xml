@@ -3,7 +3,7 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="kr.ac.collage_api.mapper.TimetableMapper">
+<mapper namespace="kr.ac.collage_api.schedule.mapper.TimetableMapper">
 
     <!--
       [TimetableEventVO 매핑 규칙]
@@ -51,15 +51,7 @@
         - PROFSR, SKLSTF    : 교수 인적 정보
         - SUBJCT            : 학과 정보
     -->
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-    <resultMap id="TimetableEventMap" type="kr.ac.collage_api.vo.TimetableEventVO">
-=======
     <resultMap id="TimetableEventMap" type="kr.ac.collage_api.schedule.vo.TimetableEventVO">
->>>>>>> Stashed changes
-=======
-    <resultMap id="TimetableEventMap" type="kr.ac.collage_api.schedule.vo.TimetableEventVO">
->>>>>>> Stashed changes
         <!-- 기본 식별자 -->
         <id     property="id"             column="id"/>
 
