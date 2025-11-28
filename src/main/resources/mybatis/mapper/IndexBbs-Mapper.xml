@@ -11,7 +11,11 @@
       - 계약: 유효한 bbsCode(1=공지, 2=행사, 3=학술/논문 등)를 넣으면 최신 5건 반환.
     -->
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     <resultMap id="IndexBbsMap" type="kr.ac.collage_api.vo.IndexBbsVO">
+=======
+    <resultMap id="IndexBbsMap" type="kr.ac.collage_api.index.vo.IndexBbsVO">
+>>>>>>> Stashed changes
 =======
     <resultMap id="IndexBbsMap" type="kr.ac.collage_api.index.vo.IndexBbsVO">
 >>>>>>> Stashed changes

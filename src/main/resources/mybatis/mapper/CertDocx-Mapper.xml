@@ -38,7 +38,11 @@
 
   <!-- 증명서 종류 -->
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
   <resultMap id="CrtfKndMap" type="kr.ac.collage_api.vo.CrtfKndVO">
+=======
+  <resultMap id="CrtfKndMap" type="kr.ac.collage_api.certificates.vo.CrtfKndVO">
+>>>>>>> Stashed changes
 =======
   <resultMap id="CrtfKndMap" type="kr.ac.collage_api.certificates.vo.CrtfKndVO">
 >>>>>>> Stashed changes
@@ -51,7 +55,11 @@
 
   <!-- 학생 정보 출력용 -->
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
   <resultMap id="StudentDocxMap" type="kr.ac.collage_api.vo.StudentDocxVO">
+=======
+  <resultMap id="StudentDocxMap" type="kr.ac.collage_api.certificates.vo.StudentDocxVO">
+>>>>>>> Stashed changes
 =======
   <resultMap id="StudentDocxMap" type="kr.ac.collage_api.certificates.vo.StudentDocxVO">
 >>>>>>> Stashed changes
@@ -72,7 +80,11 @@
 
   <!-- 발급 이력 -->
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
   <resultMap id="CrtfIssuRequestMap" type="kr.ac.collage_api.vo.CrtfIssuRequestVO">
+=======
+  <resultMap id="CrtfIssuRequestMap" type="kr.ac.collage_api.certificates.vo.CrtfIssuRequestVO">
+>>>>>>> Stashed changes
 =======
   <resultMap id="CrtfIssuRequestMap" type="kr.ac.collage_api.certificates.vo.CrtfIssuRequestVO">
 >>>>>>> Stashed changes
@@ -84,11 +96,19 @@
     <result property="issuDt"       column="ISSU_DT"/>
     <result property="issuSttus"    column="ISSU_STTUS"/>
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     <association property="crtfKnd" javaType="kr.ac.collage_api.vo.CrtfKndVO" resultMap="CrtfKndMap"/>
   </resultMap>
 
 	<!-- 성적표 행 -->
 	<resultMap id="transcriptRowMap" type="kr.ac.collage_api.vo.TranscriptRowVO">
+=======
+    <association property="crtfKnd" javaType="kr.ac.collage_api.certificates.vo.CrtfKndVO" resultMap="CrtfKndMap"/>
+  </resultMap>
+
+	<!-- 성적표 행 -->
+	<resultMap id="transcriptRowMap" type="kr.ac.collage_api.certificates.vo.TranscriptRowVO">
+>>>>>>> Stashed changes
 =======
     <association property="crtfKnd" javaType="kr.ac.collage_api.certificates.vo.CrtfKndVO" resultMap="CrtfKndMap"/>
   </resultMap>
@@ -108,7 +128,11 @@
 
   <!-- 성적 합계 -->
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
   <resultMap id="TranscriptSummaryMap" type="kr.ac.collage_api.vo.TranscriptSummaryVO">
+=======
+  <resultMap id="TranscriptSummaryMap" type="kr.ac.collage_api.certificates.vo.TranscriptSummaryVO">
+>>>>>>> Stashed changes
 =======
   <resultMap id="TranscriptSummaryMap" type="kr.ac.collage_api.certificates.vo.TranscriptSummaryVO">
 >>>>>>> Stashed changes
@@ -156,7 +180,11 @@
 
   <!-- 발급요청 INSERT -->
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
   <insert id="insertCrtfIssuRequest" parameterType="kr.ac.collage_api.vo.CrtfIssuRequestVO">
+=======
+  <insert id="insertCrtfIssuRequest" parameterType="kr.ac.collage_api.certificates.vo.CrtfIssuRequestVO">
+>>>>>>> Stashed changes
 =======
   <insert id="insertCrtfIssuRequest" parameterType="kr.ac.collage_api.certificates.vo.CrtfIssuRequestVO">
 >>>>>>> Stashed changes
@@ -169,7 +197,11 @@
 
   <!-- 발급완료 UPDATE -->
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
   <update id="updateCrtfIssuStatus" parameterType="kr.ac.collage_api.vo.CrtfIssuRequestVO">
+=======
+  <update id="updateCrtfIssuStatus" parameterType="kr.ac.collage_api.certificates.vo.CrtfIssuRequestVO">
+>>>>>>> Stashed changes
 =======
   <update id="updateCrtfIssuStatus" parameterType="kr.ac.collage_api.certificates.vo.CrtfIssuRequestVO">
 >>>>>>> Stashed changes
@@ -192,7 +224,11 @@
 
   <!-- 학번별 발급 이력 -->
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
   <select id="stdntNoSelectALL" parameterType="string" resultType="kr.ac.collage_api.vo.CrtfIssuRequestVO">
+=======
+  <select id="stdntNoSelectALL" parameterType="string" resultType="kr.ac.collage_api.certificates.vo.CrtfIssuRequestVO">
+>>>>>>> Stashed changes
 =======
   <select id="stdntNoSelectALL" parameterType="string" resultType="kr.ac.collage_api.certificates.vo.CrtfIssuRequestVO">
 >>>>>>> Stashed changes

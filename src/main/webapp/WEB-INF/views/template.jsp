@@ -3,11 +3,14 @@
 <%@ include file="header.jsp" %>
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     <div id="main-container" class="container-fluid">
         <div class="flex-grow-1 overflow-hidden mx-5">
 
         </div>
 =======
+=======
+>>>>>>> Stashed changes
 <div class="row pt-3 px-5">
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
@@ -26,6 +29,12 @@
 <<<<<<< Updated upstream
 <%@ include file="footer.jsp" %>
 =======
+<div class="row pt-3 px-5">
+    <div class="col-xxl-12 col-12">
+
+    </div>
+</div>
+
 <div class="row pt-3 px-5">
     <div class="col-xxl-12 col-12">
 

@@ -111,6 +111,7 @@ public class AcntVO {
      */
     private String userNo;
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 
     /**
      * 계정이 가진 권한 목록 (AUTHOR 테이블 다건 매핑)
@@ -119,6 +120,9 @@ public class AcntVO {
      */
     private List<AuthorVO> authorList;
 
+=======
+    
+>>>>>>> Stashed changes
 =======
     
 >>>>>>> Stashed changes

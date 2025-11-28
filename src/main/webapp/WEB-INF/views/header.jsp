@@ -9,6 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     <title>스마트 LMS</title>
 
     <!-- 기본 폰트 / Bootstrap / Icons -->
@@ -32,6 +33,8 @@
             background-color: #f5f5f5;
         }
 =======
+=======
+>>>>>>> Stashed changes
     <!-- App favicon -->
     <link rel="shortcut icon" href="/favicon.ico">
 
@@ -62,6 +65,7 @@
         }
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
         /* 상단 헤더 */
         .top-header {
             background-color: #ffffff;
@@ -75,6 +79,8 @@
             min-height: 0;
         }
 =======
+=======
+>>>>>>> Stashed changes
     <!-- jQuery-3.6.0.min -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 
@@ -378,6 +384,7 @@
     </header>
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     <!-- 메인 레이아웃: 사이드바 + 컨텐츠 -->
     <div class="layout">
 
@@ -410,6 +417,8 @@
                              alt="" width="24" height="24" class="rounded-circle">
                         <strong><sec:authentication property="principal.username"/></strong>
 =======
+=======
+>>>>>>> Stashed changes
     <!-- removeNotificationModal -->
     <div id="removeNotificationModal" class="modal fade zoomIn" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
@@ -435,9 +444,12 @@
         </nav>
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
         <!-- 여기부터 각 JSP 화면 내용 -->
         <main id="content">
 =======
+=======
+>>>>>>> Stashed changes
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
@@ -691,4 +703,7 @@
 
 
 
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes

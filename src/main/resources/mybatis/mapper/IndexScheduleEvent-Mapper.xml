@@ -43,7 +43,11 @@
 <mapper namespace="kr.ac.collage_api.mapper.IndexScheduleEventMapper">
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     <resultMap id="IndexScheduleEventMap" type="kr.ac.collage_api.vo.ScheduleEventVO">
+=======
+    <resultMap id="IndexScheduleEventMap" type="kr.ac.collage_api.schedule.vo.ScheduleEventVO">
+>>>>>>> Stashed changes
 =======
     <resultMap id="IndexScheduleEventMap" type="kr.ac.collage_api.schedule.vo.ScheduleEventVO">
 >>>>>>> Stashed changes

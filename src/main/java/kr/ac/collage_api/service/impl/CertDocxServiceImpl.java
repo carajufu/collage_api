@@ -20,6 +20,9 @@ import kr.ac.collage_api.certificates.vo.StudentDocxVO;
 import kr.ac.collage_api.certificates.vo.TranscriptRowVO;
 import kr.ac.collage_api.common.util.KorNameTranUtil;
 import kr.ac.collage_api.certificates.vo.CrtfKndVO;
+<<<<<<< Updated upstream:src/main/java/kr/ac/collage_api/service/impl/CertDocxServiceImpl.java
+>>>>>>> Stashed changes:src/main/java/kr/ac/collage_api/certificates/service/impl/CertDocxServiceImpl.java
+=======
 >>>>>>> Stashed changes:src/main/java/kr/ac/collage_api/certificates/service/impl/CertDocxServiceImpl.java
 import lombok.extern.slf4j.Slf4j;
 

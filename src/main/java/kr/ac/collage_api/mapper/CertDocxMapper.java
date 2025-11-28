@@ -9,6 +9,9 @@ import kr.ac.collage_api.certificates.vo.StudentDocxVO;
 import kr.ac.collage_api.certificates.vo.TranscriptRowVO;
 import kr.ac.collage_api.certificates.vo.TranscriptSummaryVO;
 import kr.ac.collage_api.certificates.vo.CrtfKndVO;
+<<<<<<< Updated upstream:src/main/java/kr/ac/collage_api/mapper/CertDocxMapper.java
+>>>>>>> Stashed changes:src/main/java/kr/ac/collage_api/certificates/mapper/CertDocxMapper.java
+=======
 >>>>>>> Stashed changes:src/main/java/kr/ac/collage_api/certificates/mapper/CertDocxMapper.java
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;

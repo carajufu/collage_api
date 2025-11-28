@@ -46,7 +46,11 @@
 
     <!-- 공통 매핑 -->
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     <resultMap id="ScheduleEventMap" type="kr.ac.collage_api.vo.ScheduleEventVO">
+=======
+    <resultMap id="ScheduleEventMap" type="kr.ac.collage_api.schedule.vo.ScheduleEventVO">
+>>>>>>> Stashed changes
 =======
     <resultMap id="ScheduleEventMap" type="kr.ac.collage_api.schedule.vo.ScheduleEventVO">
 >>>>>>> Stashed changes

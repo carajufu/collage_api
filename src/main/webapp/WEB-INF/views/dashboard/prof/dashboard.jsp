@@ -4,6 +4,7 @@
 <%@ include file="../../header.jsp"%>
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     <div id="main-container" class="container-fluid">
         <div class="flex-grow-1 p-1 overflow-auto">
             <sec:authentication property="principal.username"/>
@@ -39,6 +40,35 @@
             </c:forEach>
         </div>
     </div>
+=======
+<!-- 전역 스케줄러 CSS -->
+<link rel="stylesheet"
+      href="${pageContext.request.contextPath}/css/schedule.css" />
+
+<!-- FullCalendar 정적 리소스 -->
+<link rel="stylesheet"
+      href="${pageContext.request.contextPath}/js/fullcalendar/main.min.css" />
+<script src="${pageContext.request.contextPath}/js/fullcalendar/index.global.min.js"></script>
+
+<!-- ================================================================== -->
+<!--  수강 강의 카드 영역, 작업하다 어느 순간ㅂ포스터 형태로 변형되서 주석 처리 -->
+<!-- ================================================================== -->
+<%-- <div class="row p-5">
+    <div class="col-12">
+        <div class="row row-cols-xxl-4 row-cols-lg-2 row-cols-1">
+           <c:forEach items="${lectureList}" var="lecture">
+                <div class="col">
+                    <div class="card card-body rounded-3 shadow-sm"
+                         data-lec-no="${lecture.estbllctreCode}">
+                        <h4 class="card-title">${lecture.lctreNm}</h4>
+                        <p class="card-subtitle">${lecture.lctrum}</p>
+                        <p class="card-subtitle">${lecture.sklstfNm}</p>
+                    </div>
+                </div>
+            </c:forEach>
+        </div>
+    </div>
+>>>>>>> Stashed changes
 </div> --%>
 
 <!-- ================================================================== -->
@@ -1712,5 +1742,8 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 </script>
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 

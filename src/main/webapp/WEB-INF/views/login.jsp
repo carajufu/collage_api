@@ -481,7 +481,11 @@ window.openResetPwPopup = function() {
 
 </body>
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 </html>
+=======
+</html>
+>>>>>>> Stashed changes
 =======
 </html>
 >>>>>>> Stashed changes

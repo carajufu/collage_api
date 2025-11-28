@@ -11,6 +11,9 @@ import kr.ac.collage_api.vo.CrtfKndVO;
 import kr.ac.collage_api.certificates.vo.CertRenderVO;
 import kr.ac.collage_api.certificates.vo.CrtfIssuRequestVO;
 import kr.ac.collage_api.certificates.vo.CrtfKndVO;
+<<<<<<< Updated upstream:src/main/java/kr/ac/collage_api/service/CertDocxService.java
+>>>>>>> Stashed changes:src/main/java/kr/ac/collage_api/certificates/service/CertDocxService.java
+=======
 >>>>>>> Stashed changes:src/main/java/kr/ac/collage_api/certificates/service/CertDocxService.java
 
 /**

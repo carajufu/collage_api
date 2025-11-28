@@ -38,7 +38,11 @@
 	    - birthDeKor / entranceDeKor 는 여기서 가공된 alias 로 내려야 VO에 매핑 가능
 	-->
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 	<resultMap id="StudentDocxMap" type="kr.ac.collage_api.vo.StudentDocxVO">
+=======
+	<resultMap id="StudentDocxMap" type="kr.ac.collage_api.certificates.vo.StudentDocxVO">
+>>>>>>> Stashed changes
 =======
 	<resultMap id="StudentDocxMap" type="kr.ac.collage_api.certificates.vo.StudentDocxVO">
 >>>>>>> Stashed changes
@@ -225,7 +229,11 @@
 	  (term, subjectName, subjectCode, credit, grade)
 	-->
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 	<resultMap id="ScoreRowMap" type="kr.ac.collage_api.vo.ScoreRowVO">
+=======
+	<resultMap id="ScoreRowMap" type="kr.ac.collage_api.certificates.vo.ScoreRowVO">
+>>>>>>> Stashed changes
 =======
 	<resultMap id="ScoreRowMap" type="kr.ac.collage_api.certificates.vo.ScoreRowVO">
 >>>>>>> Stashed changes

@@ -52,7 +52,11 @@
         - SUBJCT            : 학과 정보
     -->
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     <resultMap id="TimetableEventMap" type="kr.ac.collage_api.vo.TimetableEventVO">
+=======
+    <resultMap id="TimetableEventMap" type="kr.ac.collage_api.schedule.vo.TimetableEventVO">
+>>>>>>> Stashed changes
 =======
     <resultMap id="TimetableEventMap" type="kr.ac.collage_api.schedule.vo.TimetableEventVO">
 >>>>>>> Stashed changes

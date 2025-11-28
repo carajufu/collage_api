@@ -27,7 +27,13 @@
     <properties>
         <java.version>21</java.version>
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
         <jjwt.version>0.12.5</jjwt.version>
+=======
+
+        <!-- 라이브러리 버전 -->
+        <jjwt.version>0.13.0</jjwt.version>
+>>>>>>> Stashed changes
 =======
 
         <!-- 라이브러리 버전 -->
@@ -100,8 +106,11 @@
             <artifactId>spring-security-taglibs</artifactId>
         </dependency>
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
         <!-- jjwt-api: JWT 빌더/파서 공개 API -->
 =======
+=======
+>>>>>>> Stashed changes
         
         
         <!--
@@ -139,6 +148,7 @@
         <!-- JSP / JSTL (Jakarta)                                      -->
         <!-- ========================================================= -->
         <!-- JSP 컴파일러 (Tomcat Jasper) -->
+<<<<<<< Updated upstream
 >>>>>>> Stashed changes
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
@@ -184,11 +194,27 @@
         </dependency>
 <<<<<<< Updated upstream
         <!-- JSP 컴파일러 (Tomcat Jasper) -->
+=======
+>>>>>>> Stashed changes
         <dependency>
             <groupId>org.apache.tomcat.embed</groupId>
             <artifactId>tomcat-embed-jasper</artifactId>
         </dependency>
+<<<<<<< Updated upstream
 =======
+>>>>>>> Stashed changes
+=======
+        <!-- JSTL API -->
+        <dependency>
+            <groupId>jakarta.servlet.jsp.jstl</groupId>
+            <artifactId>jakarta.servlet.jsp.jstl-api</artifactId>
+            <version>3.0.0</version>
+        </dependency>
+        <!-- JSTL 구현체 -->
+        <dependency>
+            <groupId>org.glassfish.web</groupId>
+            <artifactId>jakarta.servlet.jsp.jstl</artifactId>
+        </dependency>
 >>>>>>> Stashed changes
         <!-- Servlet API (내장 톰캣 사용, provided) -->
         <dependency>
@@ -201,7 +227,11 @@
         <!-- 파일 업로드 / IO / 이미지 처리                             -->
         <!-- ========================================================= -->
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
         <!-- Multipart 업로드 파서 -->
+=======
+        <!-- Multipart 업로드 파서 (보안 패치 포함 버전) -->
+>>>>>>> Stashed changes
 =======
         <!-- Multipart 업로드 파서 (보안 패치 포함 버전) -->
 >>>>>>> Stashed changes
@@ -231,7 +261,10 @@
 
         <!-- ========================================================= -->
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 =======
+=======
+>>>>>>> Stashed changes
         <!-- WebSocket / 외부 연동                                      -->
         <!-- ========================================================= -->
         <!-- STOMP WebSocket -->
@@ -247,6 +280,9 @@
         </dependency>
 
         <!-- ========================================================= -->
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
         <!-- PDF / HTML 렌더링                                         -->
         <!-- ========================================================= -->
