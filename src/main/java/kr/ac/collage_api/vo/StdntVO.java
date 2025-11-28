@@ -30,5 +30,7 @@ public class StdntVO {
 	private SubjctVO subjctNm;	 //이름
 
 	private String univCode; //대학코드
+
+	private String email;	//acnt테이블에 입력해야 함
 }
 
