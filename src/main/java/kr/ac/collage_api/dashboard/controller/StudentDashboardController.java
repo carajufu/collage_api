@@ -74,7 +74,7 @@ public class StudentDashboardController {
                                    Principal principal,
                                    HttpServletRequest request) {
 
-        // 인증 안 된 경우 즉시 로그인으로 리다이렉트
+        // 0. 인증 체크
         if (principal == null) {
             log.warn("[StudentDashboardController] principal is null (unauthenticated access)");
             return "redirect:/login";
@@ -83,16 +83,7 @@ public class StudentDashboardController {
         final String acntId = principal.getName();
         log.info("[StudentDashboardController] request acntId={}", acntId);
 
-        // 1. 현재 학기 기준 수강 강의 리스트
-        List<DashLectureVO> lectureList =
-                studentDashboardService.selectStudent(
-                        acntId,
-                        currentSemester.getYear(),
-                        currentSemester.getCurrentPeriod()
-                );
-        model.addAttribute("lectureList", lectureList);
-
-        // 2. 캘린더용 년/월 계산 (IndexController 패턴과 동일)
+        // 1. 캘린더용 년/월 계산
         LocalDate today = LocalDate.now();
         int currentYear  = (year  != null) ? year  : today.getYear();
         int currentMonth = (month != null) ? month : today.getMonthValue();
@@ -108,19 +99,28 @@ public class StudentDashboardController {
         YearMonth prev = yearMonth.minusMonths(1);
         YearMonth next = yearMonth.plusMonths(1);
 
-        // ACNT_ID → STDNT_NO 매핑 (학번/내부 학생키)
+        // 2. 학생번호 매핑
         String stdntNo = ditAccountMapper.findStdntNoByAcntId(acntId);
         if (stdntNo == null || stdntNo.isBlank()) {
-            // 계정-학생번호 매핑 깨진 경우: 데이터 정합성 문제
             log.warn("[StudentDashboardController] ROLE_STUDENT but no STDNT_NO, acntId={}", acntId);
             return "redirect:/login";
         }
 
-        // 3. 학생 시간표 (월 범위)
-        List<TimetableEventVO> timetable = timetableService.getStudentTimetable(stdntNo, startDate, endDate);
+        // 3. 현재 학기 기준 수강 강의 리스트
+        List<DashLectureVO> lectureList =
+                studentDashboardService.selectStudent(
+                        stdntNo,
+                        currentSemester.getYear(),
+                        currentSemester.getCurrentPeriod()
+                );
+        model.addAttribute("lectureList", lectureList);
+
+        // 4. 학생 시간표 (월 범위)
+        List<TimetableEventVO> timetable =
+                timetableService.getStudentTimetable(stdntNo, startDate, endDate);
         log.info("[StudentDashboardController] timetable size={}", timetable == null ? 0 : timetable.size());
 
-        // 4. 메인 게시판 목록
+        // 5. 메인 게시판 목록
         List<IndexBbsVO> notices_bbs = indexBbsService.selectMainBbsList(1); // 공지사항
         List<IndexBbsVO> events_bbs  = indexBbsService.selectMainBbsList(2); // 행사
         List<IndexBbsVO> papers_bbs  = indexBbsService.selectMainBbsList(3); // 학술/논문
@@ -131,7 +131,7 @@ public class StudentDashboardController {
         model.addAttribute("papers_bbs",  papers_bbs);
         model.addAttribute("news_bbs",    news_bbs);
 
-        // 5. 현재 날짜 라벨 (예: 2025년 11월 26일 수요일)
+        // 6. 현재 날짜 라벨
         DateTimeFormatter formatter =
                 DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 EEEE", Locale.KOREAN);
 
@@ -144,24 +144,25 @@ public class StudentDashboardController {
         model.addAttribute("nextYear", next.getYear());
         model.addAttribute("nextMonth", next.getMonthValue());
 
-        // 6. 공휴일 목록 (월 범위)
+        // 7. 공휴일 목록 (월 범위)
         List<CalendarEventVO> holidays = spcdeHolidayService.getSpecialDays(start, end);
         model.addAttribute("holidays", holidays);
 
-        // 7. 로그인 계정 정보 및 role / stdntNo / profsrNo 추출
-        String role = null;
-        String profsrNo = null; // 교수 번호는 현재 학생 대시보드에서는 사용 안 함
-
+        // 8. 로그인 계정 정보
         AcntVO acntVO = ditAccountService.findById(acntId);
         model.addAttribute("acntVO", acntVO);
-        
-        // 8. 학사 일정 조회 (IndexScheduleEventService 재사용)
+
+        // 이 컨트롤러는 "학생 대시보드" 전용이므로 role 고정
+        final String role = "ROLE_STUDENT";
+        final String profsrNo = null; // 학생 대시보드에서는 미사용
+
+        // 9. 학사 일정 조회 (IndexScheduleEventService)
         Map<String, Object> param = new HashMap<>();
-        param.put("role", role);
-        param.put("stdntNo", stdntNo);   // 여기서 stdntNo는 mapper 기준 학생번호 유지
+        param.put("role", role);         // 핵심 : ROLE_STUDENT 명시
+        param.put("stdntNo", stdntNo);
         param.put("profsrNo", profsrNo);
-        param.put("startDate", startDate); // YYYYMMDD
-        param.put("endDate", endDate);     // YYYYMMDD
+        param.put("startDate", startDate);
+        param.put("endDate", endDate);
 
         List<ScheduleEventVO> academicSchedules =
                 indexScheduleEventService.selectIndexScheduleEvents(param);
@@ -176,7 +177,6 @@ public class StudentDashboardController {
                 holidays == null ? 0 : holidays.size()
         );
 
-        // /WEB-INF/views/dashboard/student/dashboard.jsp
         return "dashboard/student/dashboard";
     }
 }

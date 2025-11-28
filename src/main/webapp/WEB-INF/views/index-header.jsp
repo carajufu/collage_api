@@ -151,12 +151,7 @@
 		.navbar-util-btn.btn-soft-light:focus {
 		    color: #000 !important;
 		}
-		/* 회원가입: 옅은 배경 버튼 */
-		.btn-outline-signup {
-		    border: 1.1px solid transparent;
-		    background-color: rgba(248, 250, 252, 0.12);
-		    color: #f9fafb;
-		}
+
     </style>
 </head>
 
@@ -192,7 +187,7 @@
                     <li class="nav-item">
                         <a href="/" class="nav-link active">홈</a>
                     </li>
-    				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <!-- 간격 조율 -->
+    				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <!-- 홈 버튼과의 간격 조율 -->
                     <!-- 대학소개 -->
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle"

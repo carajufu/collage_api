@@ -735,6 +735,7 @@
 	.main-bbs-row-divider > .col-md-6:first-child {
 	    padding-right: 2.5rem; /* 기존보다 오른쪽 패딩 늘림 */
 	}
+	
 </style>
 
 

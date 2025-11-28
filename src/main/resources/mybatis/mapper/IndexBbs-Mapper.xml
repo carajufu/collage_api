@@ -19,6 +19,8 @@
         <result property="bbscttCn"       column="BBSCTT_CN"/>
         <result property="bbscttWritngDe" column="BBSCTT_WRITNG_DE"/>
         <result property="bbscttRdcnt"    column="BBSCTT_RDCNT"/>
+        <result property="writer"    column="ACNT_ID"/>
+        
     </resultMap>
 
     <!--
@@ -36,7 +38,8 @@
             c.BBSCTT_SJ,
             c.BBSCTT_CN,
             c.BBSCTT_WRITNG_DE,
-            c.BBSCTT_RDCNT
+            c.BBSCTT_RDCNT,
+            c.ACNT_ID
         FROM BBS_CTT c
         JOIN BBS b
           ON c.BBS_CODE = b.BBS_CODE

@@ -58,5 +58,8 @@ public class IndexBbsVO {
 
     // 조회수 (BBS_CTT.BBSCTT_RDCNT, 인기글/정렬 기준 등에 활용 가능)
     private Integer bbscttRdcnt;
+
+    // 게시글 작성자 (이름 또는 아이디, BBS_CTT 작성자 컬럼 매핑)
+    private String writer;
     
 }
