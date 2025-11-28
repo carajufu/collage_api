@@ -202,7 +202,7 @@
 				bodyHtml = `<tr><td colspan="\${currentHeader.length}">개설된 강의가 없습니다.</td></tr>`;
 			} else {
 				filteredList.forEach(item => {
-					bodyHtml += `<tr>`;
+					bodyHtml += `<tr data-estbllctre-code="\${item.estbllctreCode}">`;
 					
 					currentHeader.forEach(h => {
 						let cellValue = getValue(item, h.key);
@@ -264,6 +264,16 @@
 			const filterValue = event.target.getAttribute('data-filter');
 			renderTable(filterValue);
 		});
+	});
+		
+	body.addEventListener('click', function(event) {
+		const targetRow = event.target.closest('tr[data-estbllctre-code]');
+		if (!targetRow) { return; }
+		
+		const estbllctreCode = targetRow.dataset.estbllctreCode;
+		if (!estbllctreCode) { return; }
+		
+		window.location.href = `/learning/prof?estbllctreCode=\${encodeURIComponent(estbllctreCode)}`;
 	});
 		
 	});

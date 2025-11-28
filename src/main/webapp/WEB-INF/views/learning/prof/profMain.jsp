@@ -6,6 +6,13 @@
 <link href="/assets/libs/gridjs/theme/mermaid.min.css" rel="stylesheet" type="text/css" />
 <script type="text/javascript" src="/assets/libs/gridjs/gridjs.umd.js"></script>
 
+<!-- ckEditor -->
+<script src="/assets/libs/@ckeditor/ckeditor5-build-classic/build/ckeditor.js"></script>
+
+<!-- sweetalert2 -->
+<link href="/assets/libs/sweetalert2/sweetalert2.min.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="/assets/libs/sweetalert2/sweetalert2.min.js"></script>
+
 <link href="/assets/css/custom.css" rel="stylesheet" type="text/css" />
 
 <div class="row pt-3 px-5">
@@ -104,6 +111,46 @@
     </div>
 </div>
 
+<!-- 과제 수정 모달 -->
+<div class="modal fade" id="editTaskModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="editTaskModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editTaskModalLabel">과제 수정</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editTaskForm">
+                    <input type="hidden" id="edit-task-no" name="taskNo" />
+                    <div class="row">
+                        <div class="col-12 mb-3">
+                            <label for="edit-task-title" class="form-label">과제 제목</label>
+                            <input type="text" class="form-control" id="edit-task-title" name="taskSj" placeholder="과제 제목을 입력하세요" />
+                        </div>
+                        <div class="col-12 mb-3">
+                            <label for="edit-task-content" class="form-label">과제 내용</label>
+                            <textarea class="form-control" id="edit-task-content" name="taskCn" rows="4" placeholder="과제 내용을 입력하세요"></textarea>
+                            <div class ="ckeditor-classic"></div>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <label for="edit-task-start" class="form-label">시작일자</label>
+                            <input type="date" class="form-control" id="edit-task-start" name="taskBeginDe" />
+                        </div>
+                        <div class="col-6 mb-3">
+                            <label for="edit-task-due" class="form-label">마감일자</label>
+                            <input type="date" class="form-control" id="edit-task-due" name="taskClosDe" />
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">닫기</button>
+                <button type="button" class="btn btn-primary" form="editTaskForm" onclick="updateTask">저장</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script type="text/javascript">
     window.__INIT_TASKS = [
         <c:forEach var="t" items="${body.tasks}" varStatus="st">
@@ -156,4 +203,5 @@
         text-align: center;
     }
 </style>
+
 <%@ include file="../../footer.jsp" %>

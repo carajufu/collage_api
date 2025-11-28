@@ -10,6 +10,14 @@
     let submissionGrid = document.querySelector("#submissionGrid");
     let submissionTitleEl = null;
     let taskSection = document.getElementById('taskSection');
+    const editModalEl = document.getElementById('editTaskModal');
+    const editTaskForm = document.getElementById('editTaskForm');
+    const editTaskTitleInput = document.getElementById('edit-task-title');
+    const editTaskContentInput = document.getElementById('edit-task-content');
+    const editTaskStartInput = document.getElementById('edit-task-start');
+    const editTaskDueInput = document.getElementById('edit-task-due');
+    const editTaskNoInput = document.getElementById('edit-task-no');
+    let editTaskEditor = null;
     const toArray = val => Array.isArray(val) ? val : (Array.isArray(val?.data) ? val.data : []);
 
     const tabEl = document.querySelector(`#profTabs a[href="#${initialTab}"]`);
@@ -155,6 +163,20 @@
     };
 
     targetGrid && targetGrid.addEventListener('click', (e) => {
+        const editLink = e.target.closest('[data-action="edit-task"]');
+        if (editLink) {
+            e.preventDefault();
+            const task = {
+                taskNo: editLink.getAttribute('data-task-no'),
+                title: editLink.getAttribute('data-task-title') || editLink.closest('tr')?.querySelector('td:nth-child(2)')?.textContent?.trim() || '',
+                content: editLink.getAttribute('data-task-cn') || '',
+                startDate: editLink.getAttribute('data-task-start') || editLink.closest('tr')?.querySelector('td:nth-child(3)')?.textContent?.trim() || '',
+                dueDate: editLink.getAttribute('data-task-due') || editLink.closest('tr')?.querySelector('td:nth-child(4)')?.textContent?.trim() || ''
+            };
+            openEditModal(task);
+            return;
+        }
+
         const link = e.target.closest('[data-action="view-submissions"]');
         if (!link) return;
         e.preventDefault();
@@ -175,11 +197,15 @@
 
         const rows = (tasks || []).map(t => {
             const stat = byTask[t.taskNo] || { total: 0, submitted: 0 };
+            const taskTitle = t.taskSj || '';
+            const taskDue = t.taskClosDe || '';
+            const taskContent = t.taskCn || '';
             return [
                 t.taskNo,
                 t.taskSj,
                 t.week,
-                `${t.taskBeginDe} ~ ${t.taskClosDe}`,
+                `${t.taskBeginDe}`,
+                `${t.taskClosDe}`,
                 `${stat.submitted}/${stat.total}`,
                 gridjs.html(`
                     <div class="dropend">
@@ -194,7 +220,7 @@
                           </svg>
                         </button>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#">과제 수정</a></li>
+                            <li><a class="dropdown-item" href="#" data-action="edit-task" data-task-no="${t.taskNo}" data-task-title="${escapeAttr(taskTitle)}" data-task-start="${escapeAttr(t.taskBeginDe || '')}" data-task-due="${escapeAttr(taskDue)}" data-task-cn="${escapeAttr(taskContent)}">과제 수정</a></li>
                             <li><a class="dropdown-item" href="#" data-action="view-submissions" data-task-no="${t.taskNo}">제출 확인</a></li>
                             <li><div class="dropdown-divider"></div></li>
                             <li><a class="dropdown-item text-danger" href="#">삭제</a></li>
@@ -225,8 +251,13 @@
                     search: false
                 },
                 {
-                    id: 'period',
-                    name: '기간',
+                    id: 'opnDe',
+                    name: '시작일자',
+                    search: false
+                },
+                {
+                    id: 'closDe',
+                    name: '마감일자',
                     search: false
                 },
                 {
@@ -295,6 +326,36 @@
         if (!norm) return "";
         const [y, m, d] = norm.split("-");
         return `${y}. ${m}. ${d}`;
+    };
+
+    const escapeAttr = v => String(v ?? '').replace(/"/g, '&quot;');
+
+    const ensureEditEditor = () => {
+        if (editTaskEditor) return Promise.resolve(editTaskEditor);
+        if (!window.ClassicEditor || !editTaskContentInput) return Promise.reject(new Error('CKEditor 로더를 찾을 수 없습니다.'));
+        return ClassicEditor
+            .create(editTaskContentInput)
+            .then(editor => {
+                editTaskEditor = editor;
+                return editor;
+            });
+    };
+
+    const openEditModal = (task) => {
+        if (!editModalEl || !editTaskForm) return;
+        const modal = bootstrap.Modal.getOrCreateInstance(editModalEl);
+        editTaskForm.reset();
+        if (editTaskNoInput) editTaskNoInput.value = task.taskNo || '';
+        if (editTaskTitleInput) editTaskTitleInput.value = task.title || '';
+        if (editTaskContentInput) editTaskContentInput.value = task.content || '';
+        if (editTaskStartInput) editTaskStartInput.value = toISODate(task.startDate || todayStr());
+        if (editTaskDueInput) editTaskDueInput.value = toISODate(task.dueDate || todayStr());
+
+        ensureEditEditor()
+            .then(editor => editor.setData(task.content || ''))
+            .catch(err => console.warn('CKEditor 초기화 실패:', err));
+
+        modal.show();
     };
 
     const statusLabel = { "1": "출석", "2": "지각", "3": "조퇴" };
@@ -537,4 +598,36 @@
             if (id === 'attend') attendanceModule.load();
         });
     });
+
+    const updateTask = e => {
+        const editFrom = document.querySelector("editTaskForm");
+
+        fetch("/learning/prof/updTask", {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json; charset=utf-8"
+            },
+            data: JSON.stringify(editForm)
+        })
+            .then(resp => {
+                if(resp.ok) {
+                    Swal.fire({
+                        icon: "success",
+                        title: "과제 내용을 수정 했어요.",
+                        timer:1000,
+                        timerProgressBar: !0,
+                        showConfirmButton: 0
+                    });
+                }
+            })
+            .catch(err => {
+                Swal.fire({
+                    icon: "error",
+                    title: "과제 내용 수정이 실패 했어요",
+                    timer: 1000,
+                    timerProgressBar: !0,
+                    showConfirmButton: 0
+                });
+            })
+    }
 })();
