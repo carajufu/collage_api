@@ -15,7 +15,7 @@
 	public int getTotal(Map<String, Object> map); -->
 	<select id="getTotal" parameterType="HashMap" resultType="int">
 	 	SELECT COUNT(*)
-	 	FROM BBS
+	 	FROM BBS_CTT
 	 	WHERE 1=1
 	 		AND BBS_CODE = 1 <!-- 1:공지사항 게시판  -->
 	 		<include refid="where"></include>  	<!-- keyword 있으면 제목, 내용에서 키워드를 품고 있는 글만 셈 -->
@@ -23,12 +23,13 @@
 
 	<!-- //현재 페이지 목록만 가져오기
 	public List<BbsVO> list(Map<String, Object> map); -->
-	<select id="list" parameterType="HashMap" resultType="bbsVO">
+	<select id="list" parameterType="HashMap" resultType="bbsCttVO">
 		WITH T AS (
 			SELECT ROWNUM RNUM
-				   , BBSCTT_NO, BBSCTT_SJ, BBSCTT_CN, BBSCTT_WRITNG_DE, BBSCTT_RDCNT
-				   , BBS_CODE, PARNTS_BBSCTT_NO, FILE_GROUP_NO, ACNT_ID
-			FROM BBS
+				   , B.BBSCTT_NO, B.BBSCTT_SJ, B.BBSCTT_CN, B.BBSCTT_WRITNG_DE, B.BBSCTT_RDCNT
+				   , B.BBS_CODE, B.PARNTS_BBSCTT_NO, B.FILE_GROUP_NO, B.ACNT_ID, S.SKLSTF_NM
+			FROM BBS_CTT B
+			 JOIN SKLSTF S ON S.ACNT_ID = B.ACNT_ID
 			WHERE 1=1
 			<include refid="where"></include>
 		)
@@ -41,19 +42,37 @@
 	<!-- 	//글 번호 하나로 게시글 상세페이지 가져오기
 	public BbsVO detail(int bbscttNo); -->
 
-	<select id="detail" parameterType="int" resultType="bbsVO">
-	SELECT BBSCTT_NO, BBSCTT_SJ, BBSCTT_CN, BBSCTT_WRITNG_DE, BBSCTT_RDCNT
-		   , BBS_CODE, PARNTS_BBSCTT_NO, FILE_GROUP_NO, ACNT_ID
-	FROM BBS
+	<select id="detail" parameterType="int" resultType="bbsCttVO">
+	SELECT B.BBSCTT_NO, B.BBSCTT_SJ, B.BBSCTT_CN, B.BBSCTT_WRITNG_DE, B.BBSCTT_RDCNT
+		   , B.BBS_CODE, B.PARNTS_BBSCTT_NO, B.FILE_GROUP_NO, B.ACNT_ID, S.SKLSTF_NM
+	FROM BBS_CTT B
+		JOIN SKLSTF S ON S.ACNT_ID = B.ACNT_ID
 	WHERE BBSCTT_NO = #{bbscttNo}
 	</select>
 
 	<!-- //게시글 삭제
 	public int delete(int bbscttNo); -->
 	<delete id="delete" parameterType="int">
-	DELETE FROM BBS WHERE BBSCTT_NO = #{bbscttNo}
+	DELETE FROM BBS_CTT WHERE BBSCTT_NO = #{bbscttNo}
 
 	</delete>
+
+	<!-- //학생, 교수 게시판에서 클릭시 조회수 올라가기
+	public void updateCount(int bbscttNo); -->
+
+	<update id="updateCount" parameterType="int">
+	UPDATE BBS_CTT
+	SET BBSCTT_RDCNT = BBSCTT_RDCNT+1
+	WHERE BBSCTT_NO = #{bbscttNo}
+	</update>
+
+
+
+
+
+
+
+
 
 	<!--
 	****************************
@@ -155,6 +174,8 @@
 	SET BBSCTT_SJ = #{bbscttSj}, BBSCTT_CN = #{bbscttCn},FILE_GROUP_NO=#{fileGroupNo}
 	WHERE BBSCTT_NO = #{bbscttNo}
 	</update>
+
+
 
 
 

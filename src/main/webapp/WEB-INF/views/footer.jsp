@@ -378,8 +378,37 @@ const connect = () => {
         stompClient.subscribe('/user/queue/notifications', (notification) => {
             showNotification(JSON.parse(notification.body));
         });
+
+        stompClient.subscribe('/user/queue/signal',(signalMsg) => {
+			let signal = JSON.parse(signalMsg.body);
+			handleWebRTCSignal(signal);
+		})
     });
 };
+
+function startVideoConsult() {
+    if(stompClient && stompClient.connected) {
+        const cnsltInnb = document.getElementById("modal-cnsltInnb").value;
+        const data = {
+            "cnsltInnb" : cnsltInnb
+        }
+        fetch (("/counselprof/cnsltnotificate"),{
+            method:"POST",
+            headers: {
+                "Content-type" : "application/json;charset:UTF-8"
+            },
+            body: JSON.stringify(data)
+
+        }).then(resp => {
+            console.log(resp);
+            const url = '/counsel/room/'+cnsltInnb;
+            window.open(url,'videoconsult','width=1200,height=800');
+        }).catch(error => {
+            console.error("error",error);}
+        )
+
+    }
+}
 
 
 const readAndMove = (ntcnNo,targetURL) => {

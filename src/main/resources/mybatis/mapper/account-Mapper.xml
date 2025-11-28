@@ -50,8 +50,8 @@
   public void insertAcnt(AcntVO acntVO); -->
 
   <insert id="insertAcnt" parameterType="acntVO">
-    INSERT INTO ACNT (ACNT_ID, PASSWORD, ACNT_TY)
-    VALUES(#{acntId},#{password},#{acntTy})
+    INSERT INTO ACNT (ACNT_ID, PASSWORD, ACNT_TY,EMAIL)
+    VALUES(#{acntId},#{password},#{acntTy},#{email})
   </insert>
 
   <!-- //학생계정생성
@@ -282,8 +282,9 @@
   <!-- //교수 계정 리스트 불러오기
   public List<SklstfVO> selectProfsrList(); -->
   <select id="selectProfsrList" resultType="sklstfVO">
-    SELECT SKLSTF_ID, SKLSTF_NM, CTTPC
-    FROM SKLSTF
+    SELECT P.SKLSTF_ID, S.SKLSTF_NM, S.CTTPC
+    FROM SKLSTF S
+    	JOIN PROFSR P ON S.SKLSTF_ID = P.SKLSTF_ID
   </select>
 
   <!-- //교직원 테이블 업데이트
