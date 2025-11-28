@@ -8,7 +8,7 @@
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="/dashboard/student"><i class="las la-home"></i></a></li>
             <li class="breadcrumb-item"><a href="#">학사 정보</a></li>
-            <li class="breadcrumb-item"><a href="/stdnt/grade/main/All">학기별 성적 조회</a></li>
+            <li class="breadcrumb-item"><a href="/stdnt/grade/main/All">성적</a></li>
             <li class="breadcrumb-item active" aria-current="page">과목별 성적 상세</li>
         </ol>
     </nav>

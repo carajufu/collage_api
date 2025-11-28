@@ -7,12 +7,13 @@
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="/dashboard/student"><i class="las la-home"></i></a></li>
             <li class="breadcrumb-item"><a href="#">학사 정보</a></li>
-            <li class="breadcrumb-item active" aria-current="page">학기별 성적 조회</li>
+            <li class="breadcrumb-item"><a href="#">성적</a></li>
+            <li class="breadcrumb-item active" aria-current="page">학기별 성적</li>
         </ol>
     </nav>
 
     <div class="col-12 page-title mt-2">
-        <h2 class="fw-semibold">학기별 성적 조회</h2>
+        <h2 class="fw-semibold">학기별 성적</h2>
         <div class="my-4 p-0 bg-primary" style="width: 100px; height:5px;"></div>
     </div>
 </div>

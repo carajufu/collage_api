@@ -1,11 +1,25 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <%@ include file="../header.jsp" %>
 
-	    <div id="main-container" class="container-fluid">
-			<h5 class="card-title py-4">개설 강의 관리</h5>
-				
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<div class="row pt-3 px-5">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/dashboard/prof"><i class="las la-home"></i></a></li>
+            <li class="breadcrumb-item"><a href="#">강의</a></li>
+            <li class="breadcrumb-item active" aria-current="page">개설 강의 관리</li>
+        </ol>
+    </nav>
+    <div class="col-12 page-title mt-2">
+        <h2 class="fw-semibold">개설 강의 관리</h2>
+        <div class="my-4 p-0 bg-primary" style="width: 100px; height:5px;"></div>
+    </div>
+</div>
+
+<div class="row pt-3 px-5">
+    <div class="col-xxl-12 col-12">
 			<!-- 상태 카드 시작 -->
 			<div class="row">
 				<div class="col-xl-3 col-md-6">
@@ -169,7 +183,6 @@
             
 	    </div>
     </div>
-</main>
 
 <div class="modal" tabindex="-1" id="modalDetail">
   <div class="modal-dialog modal-lg">

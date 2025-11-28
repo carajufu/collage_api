@@ -137,23 +137,51 @@
 		UNION ALL SELECT '3' FROM dual
 		UNION ALL SELECT '4' FROM dual
 		) G
-		WHERE NOT EXISTS (
-		SELECT 1
-		FROM
-		REGIST_CT R
-		WHERE R.SUBJCT_CODE = S.SUBJCT_CODE
-		AND R.RQEST_GRADE =
-		G.grade
-		)
+        WHERE 1 = 1
 
+        <!-- 단과대 필터 -->
 		<if test="rqestUniv != null and rqestUniv != ''">
 			AND U.UNIV_CODE = #{rqestUniv}
 		</if>
 
+        <!-- 학과 필터 -->
+        <if test="subjctCode != null and subjctCode != ''">
+            AND S.SUBJCT_CODE = #{subjctCode}
+        </if>
+
+        <!-- 학년 필터 -->
 		<if test="rqestGrade != null and rqestGrade != ''">
 			AND G.grade = #{rqestGrade}
 		</if>
+        AND NOT EXISTS (
+        SELECT 1
+        FROM REGIST_CT R
+        WHERE R.SUBJCT_CODE =
+        S.SUBJCT_CODE
+        AND R.RQEST_GRADE = G.grade
 
+        <if test="rqestYear != null and rqestYear != ''">
+            AND R.RQEST_YEAR = #{rqestYear}
+        </if>
+
+        <if test="rqestSemstr != null and rqestSemstr != ''">
+            AND R.RQEST_SEMSTR = #{rqestSemstr}
+        </if>
+        )
+
+
+        <!-- 연도/학기만 선택한 경우 -->
+        <if test="rqestYear != null and rqestYear != ''">
+            AND (
+            SELECT COUNT(1)
+            FROM REGIST_CT R2
+            WHERE R2.SUBJCT_CODE
+            = S.SUBJCT_CODE
+            AND R2.RQEST_YEAR = #{rqestYear}
+            AND R2.RQEST_SEMSTR =
+            #{rqestSemstr}
+            ) = 0
+        </if>
 		ORDER BY U.UNIV_CODE, S.SUBJCT_NM, G.grade
 	</select>
 

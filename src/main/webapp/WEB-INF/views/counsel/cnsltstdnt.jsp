@@ -11,6 +11,7 @@
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="/dashboard/student"><i class="las la-home"></i></a></li>
             <li class="breadcrumb-item"><a href="#">학습</a></li>
+            <li class="breadcrumb-item"><a href="#">상담</a></li>
             <li class="breadcrumb-item active" aria-current="page">나의 상담 관리</li>
         </ol>
     </nav>

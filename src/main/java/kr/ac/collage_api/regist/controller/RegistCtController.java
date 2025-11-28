@@ -89,11 +89,15 @@ public class RegistCtController {
 	// 등록금 미고지 단과대/학과 조회
 	@GetMapping("/unissued")
 	public List<Map<String, Object>> selectUnissued(@RequestParam(required = false) String rqestUniv,
-			@RequestParam(required = false) String subjctCode, @RequestParam(required = false) String rqestGrade) {
+			@RequestParam(required = false) String subjctCode, @RequestParam(required = false) String rqestGrade,
+                                                    @RequestParam(required = false) String rqestYear,
+                                                    @RequestParam(required = false) String rqestSemstr) {
 		Map<String, Object> params = new HashMap<>();
 		params.put("rqestUniv", rqestUniv);
 		params.put("subjctCode", subjctCode);
 		params.put("rqestGrade", rqestGrade);
+        params.put("rqestYear", rqestYear);
+        params.put("rqestSemstr", rqestSemstr);
 		return registCtService.selectUnissuedSubjects(params);
 	}
 

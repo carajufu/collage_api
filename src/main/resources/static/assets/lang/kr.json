@@ -104,7 +104,7 @@
 	"t-graduation-status": "졸업 현황",
 	"t-certificates": "제증명 발급",
 	"t-issuance": "발급",
-	"t-document-box": "문서함",
+	"t-document-box": "발급 이력",
 	"t-learning": "학습",
 	"t-learning-management": "학습 관리",
 	"t-counseling": "상담",
@@ -167,7 +167,7 @@
 	"t-professor": "교수",
 	"t-prof-lecture": "강의",
 	"t-prof-my-lecture": "나의 강의",
-	"t-prof-syllabus": "강의 계획서 제출",
+	"t-prof-syllabus": "개설 강의 관리",
 	"t-prof-lecture-evaluation": "강의 평가",
 	"t-prof-grade": "성적",
 	"t-prof-grade-manage": "성적 관리",
@@ -176,16 +176,16 @@
 	"t-prof-counsel-manage": "상담 관리",
 
 	"t-payment-view": "납부",
-	"t-payment-log": "납부 내역 조회",
+	"t-payment-log": "납부내역",
 
 	"t-enrollment-main": "학적",
 	"t-enrollment-change": "휴학/복학 신청",
 
 	"t-student-info": "학생 정보",
 	"t-lecture-tab": "수강",
-	"t-apply-course": "수강 신청",
-	"t-cart-list": "장바구니",
-	"t-applied-list": "신청 내역 조회",
+	"t-apply-course": "수강신청",
+	"t-cart-list": "장바구니 강의",
+	"t-applied-list": "수강신청 내역",
 
 	"t-learning-tab": "학습",
 	"t-counsel-tab": "상담",

@@ -8,7 +8,8 @@
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="/dashboard/student"><i class="las la-home"></i></a></li>
-                <li class="breadcrumb-item"><a href="#">강의</a></li>
+                <li class="breadcrumb-item"><a href="#">학사 정보</a></li>
+                <li class="breadcrumb-item"><a href="#">수강</a></li>
                 <li class="breadcrumb-item active" aria-current="page">수강신청 내역</li>
             </ol>
         </nav>
