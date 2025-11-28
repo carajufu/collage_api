@@ -1,9 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="../header.jsp" %>
 
-<div class="page-content">
-<div class="container-fluid">
-
     <div class="row pt-3 px-5">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
@@ -69,9 +66,6 @@
 
         </div>
     </div>
-
-</div>
-</div>
 
 <script>
 document.addEventListener("DOMContentLoaded", function () {

@@ -80,6 +80,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 <a href="/dashboard/prof"><i class="las la-home"></i></a>
             </li>
             <li class="breadcrumb-item"><a href="#">학사 정보</a></li>
+            <li class="breadcrumb-item"><a href="#">강의</a></li>
             <li class="breadcrumb-item">
                 <a href="/prof/lecture/main/All">강의 평가</a>
             </li>

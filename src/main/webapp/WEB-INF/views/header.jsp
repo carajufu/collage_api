@@ -335,10 +335,10 @@
                         <div class="collapse menu-dropdown" id="sidebarRegist">
                             <ul class="nav nav-sm flex-column">
                                 <li class="nav-item">
-                                    <a href="/payinfo/studentView/${user.username}" class="nav-link" data-key="t-payment-view"> 납부 </a>
+                                    <a href="/payinfo/studentView/${user.username}" class="nav-link" data-key="t-payment-view">납부</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="/payinfo/stdnt/list" class="nav-link" data-key="t-payment-payment-log"> 납부 내역 조회 </a>
+                                    <a href="/payinfo/stdnt/list" class="nav-link" data-key="t-payment-payment-log">납부내역</a>
                                 </li>
                             </ul>
                         </div>
@@ -350,19 +350,13 @@
                         <div class="collapse menu-dropdown" id="sidebarLecture">
                             <ul class="nav nav-sm flex-column">
                                 <li class="nav-item">
-                                    <a href="/atnlc/submit" class="nav-link" data-key="t-apply-course">
-                                        수강 신청
-                                    </a>
+                                    <a href="/atnlc/submit" class="nav-link" data-key="t-apply-course">수강신청</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="/atnlc/cart" class="nav-link" data-key="t-cart-list">
-                                        장바구니
-                                    </a>
+                                    <a href="/atnlc/cart" class="nav-link" data-key="t-cart-list">장바구니 강의</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="/atnlc/stdntLctreList" class="nav-link" data-key="t-applied-list">
-                                        신청 내역 조회
-                                    </a>
+                                    <a href="/atnlc/stdntLctreList" class="nav-link" data-key="t-applied-list">수강신청 내역</a>
                                 </li>
                             </ul>
                         </div>
@@ -417,7 +411,7 @@
                                     <a href="/compe/main" class="nav-link" data-key="t-selfInfo-helper"> 자기소개서 도우미 </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="/compe/detail" class="nav-link" data-key="t-selfInfo-list> 자기소개서 목록 </a>
+                                    <a href="/compe/detail" class="nav-link" data-key="t-selfInfo-list"> 자기소개서 목록 </a>
                                 </li>
                             </ul>
                         </div>
@@ -433,7 +427,7 @@
                                     <a href="/certificates/DocxForm" class="nav-link" data-key="t-issuance">발급</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="/certificates/DocxHistory" class="nav-link" data-key="t-document-box">문서함</a>
+                                    <a href="/certificates/DocxHistory" class="nav-link" data-key="t-document-box">발급 이력</a>
                                 </li>
                             </ul>
                         </div>
