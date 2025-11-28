@@ -8,7 +8,7 @@
             <sec:authorize access="hasRole('ROLE_STUDENT')">
             <li class="breadcrumb-item"><a href="/dashboard/student"><i class="las la-home"></i></a></li>
             </sec:authorize>
-            <sec:authorize access="hasRole('ROLE_prof')">
+            <sec:authorize access="hasRole('ROLE_PROF')">
             <li class="breadcrumb-item"><a href="/dashboard/prof"><i class="las la-home"></i></a></li>
             </sec:authorize>
             <li class="breadcrumb-item"><a href="#">학교 소개</a></li>

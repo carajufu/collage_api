@@ -14,4 +14,6 @@ public class TaskVO {
     private String taskClosDe;
     private String registDt;
     private String updtDt;
+
+    private String week;
 }

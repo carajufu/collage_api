@@ -1,238 +1,107 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="../header.jsp" %>
 
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-<script type="text/javascript">
-document.addEventListener("DOMContentLoaded", function () {
-
-  let myBarChart = null;
-
-  function recalcRowTotal(row) {
-    const chul = parseFloat(row.querySelector("input[name*='.atendScore']").value) || 0;
-    const guwa = parseFloat(row.querySelector("input[name*='.taskScore']").value) || 0;
-    const mid  = parseFloat(row.querySelector("input[name*='.middleScore']").value) || 0;
-    const fin  = parseFloat(row.querySelector("input[name*='.trmendScore']").value) || 0;
-
-    const total = (chul * 0.2) + (guwa * 0.2) + (mid * 0.3) + (fin * 0.3);
-    row.querySelector("input[name*='.sbjectTotpoint']").value = total.toFixed(1);
-
-    applyGrade(row, total);
-  }
-
-  function applyGrade(row, total) {
-    let grade = "";
-    let score = 0;
-
-    if (total >= 95) { grade = "A+"; score = 4.5; }
-    else if (total >= 90) { grade = "A0"; score = 4.0; }
-    else if (total >= 85) { grade = "B+"; score = 3.5; }
-    else if (total >= 80) { grade = "B0"; score = 3.0; }
-    else if (total >= 75) { grade = "C+"; score = 2.5; }
-    else if (total >= 70) { grade = "C0"; score = 2.0; }
-    else if (total >= 60) { grade = "D0"; score = 1.0; }
-    else { grade = "F"; score = 0.0; }
-
-    row.querySelector("input[name*='.pntGrad']").value = grade;
-    row.querySelector("input[name*='.pntAvrg']").value = score.toFixed(1);
-  }
-
-  function recalcAllTotals() {
-    document.querySelectorAll("table tbody tr").forEach(recalcRowTotal);
-  }
-
-  function updateAverageChart() {
-    const rows = document.querySelectorAll("table tbody tr");
-    const count = rows.length;
-    if (count === 0) return;
-
-    let sumAtend = 0, sumTask = 0, sumMiddle = 0, sumTrmend = 0;
-
-    rows.forEach(row => {
-      sumAtend  += parseFloat(row.querySelector("input[name*='.atendScore']").value)  || 0;
-      sumTask   += parseFloat(row.querySelector("input[name*='.taskScore']").value)   || 0;
-      sumMiddle += parseFloat(row.querySelector("input[name*='.middleScore']").value) || 0;
-      sumTrmend += parseFloat(row.querySelector("input[name*='.trmendScore']").value) || 0;
-    });
-
-    const avgData = [
-      (sumAtend / count).toFixed(1),
-      (sumTask / count).toFixed(1),
-      (sumMiddle / count).toFixed(1),
-      (sumTrmend / count).toFixed(1)
-    ];
-
-    const ctx = document.getElementById('barChartModalCanvas').getContext('2d');
-
-    if (!myBarChart) {
-      myBarChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels: ['출석(20)', '과제(20)', '중간(30)', '기말(30)'],
-          datasets: [{
-            label: '평균 점수',
-            data: avgData,
-            backgroundColor: [
-              'rgba(255, 99, 132, 0.5)',
-              'rgba(54, 162, 235, 0.5)',
-              'rgba(255, 206, 86, 0.5)',
-              'rgba(75, 192, 192, 0.5)'
-            ]
-          }]
-        },
-        options: { maintainAspectRatio:false, scales:{y:{beginAtZero:true,max:100}}, plugins:{legend:{display:false}} }
-      });
-    } else {
-      myBarChart.data.datasets[0].data = avgData;
-      myBarChart.update();
-    }
-  }
-
-  function bindScoreInputEvents() {
-    document.querySelectorAll(".score-input").forEach(input => {
-
-      const cloned = input.cloneNode(true);
-      input.parentNode.replaceChild(cloned, input);
-
-      cloned.addEventListener("input", function () {
-
-        if (this.value > 100) this.value = 100;
-        if (this.value < 0) this.value = 0;
-
-        const row = this.closest("tr");
-        recalcRowTotal(row);
-        updateAverageChart();
-      });
-    });
-  }
-
-  recalcAllTotals();
-  bindScoreInputEvents();
-
-  const chartModal = document.getElementById('averageChartModal');
-  chartModal.addEventListener('shown.bs.modal', function () {
-    updateAverageChart();
-  });
-
-});
-</script>
-
 <div class="row pt-3 px-5">
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="/dashboard/prof"><i class="las la-home"></i></a></li>
             <li class="breadcrumb-item"><a href="#">학사 정보</a></li>
-            <li class="breadcrumb-item"><a href="/prof/grade/main/All">성적 관리</a></li>
-            <li class="breadcrumb-item active" aria-current="page">${selSbject.lctreNm}</li>
+            <li class="breadcrumb-item"><a href="#">졸업</a></li>
+            <li class="breadcrumb-item"><a href="/compe/main">자기소개서 생성 도우미</a></li>
+            <li class="breadcrumb-item active" aria-current="page">내 이력 관리</li>
         </ol>
     </nav>
     <div class="col-12 page-title mt-2">
-        <h2 class="fw-semibold">${selSbject.lctreNm}</h2>
+        <h2 class="fw-semibold">내 이력 관리</h2>
         <div class="my-4 p-0 bg-primary" style="width: 100px; height:5px;"></div>
     </div>
 </div>
 
 <div class="row pt-3 px-5">
-<div class="col-xxl-12 col-12">
+    <div class="col-xxl-12 col-12">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white border-bottom">
+                <h3 class="fw-bold fs-4 mb-0">
+                    자기소개서 데이터 관리
+                </h3>
+                <small class="text-muted">
+                    AI 자기소개서 생성 시 자동으로 반영되는 개인 정보를 설정합니다.
+                </small>
+            </div>
 
-<div class="alert alert-info mb-4">
-  <div class="row g-2">
-    <div class="col-sm-6"><strong>강의명:</strong> ${selSbject.lctreNm}</div>
-    <div class="col-sm-6"><strong>강의코드:</strong> ${selSbject.lctreCode}</strong></div>
-    <div class="col-sm-6"><strong>이수구분:</strong> ${selSbject.complSe}</div>
-    <div class="col-sm-6"><strong>년도/학기:</strong> ${selSbject.estblYear}년 / ${selSbject.estblSemstr}</div>
-  </div>
-</div>
+            <!-- 바디 시작 -->
+            <div class="card-body" style="padding: 15px 20px;">
 
-<div class="d-flex justify-content-end mb-3">
-  <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#averageChartModal">전체 평균 그래프 보기</button>
-</div>
+                <form action="${pageContext.request.contextPath}/compe/manage/save" method="post">
 
-<form id="gradeForm" method="post" action="/prof/grade/main/save">
-  <input type="hidden" name="estbllctreCode" value="${selSbject.estbllctreCode}">
+                    <!-- 자격증 -->
+                    <div class="mb-4">
+                        <label class="fw-bold mb-1">자격증</label>
+                        <textarea name="crqfc" rows="4" class="form-control form-control-sm"
+                                  placeholder="예: 컴퓨터활용능력 2급 취득 / 운전면허 2종 보통 취득"
+                        >${empty form.crqfc ? '' : fn:escapeXml(form.crqfc)}</textarea>
+                        <div class="form-text">보유한 자격증이나 공인시험 합격 여부를 입력하세요.</div>
+                    </div>
 
-  <c:if test="${empty sbjectScr}">
-    <div class="alert alert-warning text-center mt-3">수강 중인 학생이 없습니다.</div>
-  </c:if>
+                    <!-- 교육/부트캠프 -->
+                    <div class="mb-4">
+                        <label class="fw-bold mb-1">교육 / 활동 경험</label>
+                        <textarea name="edcHistory" rows="4" class="form-control form-control-sm"
+                                  placeholder="예: 현장실습 참여 / 방학 중 직무 관련 교육 이수 / 온라인 강의 수강"
+                        >${empty form.edcHistory ? '' : fn:escapeXml(form.edcHistory)}</textarea>
+                        <div class="form-text">학교·기관 등에서 참여한 교육, 실습, 활동 등을 입력하세요.</div>
+                    </div>
 
-  <c:if test="${not empty sbjectScr}">
-    <table class="table table-bordered table-hover align-middle text-center mt-3">
-      <thead class="table-light">
-        <tr>
-          <th>학번</th>
-          <th>학생명</th>
-          <th>출석 (20)</th>
-          <th>과제 (20)</th>
-          <th>중간 (30)</th>
-          <th>기말 (30)</th>
-          <th>총점 (100)</th>
-          <th>평점 (4.5)</th>
-          <th>등급</th>
-        </tr>
-      </thead>
+                    <!-- 주요 프로젝트 -->
+                    <div class="mb-4">
+                        <label class="fw-bold mb-1">주요 프로젝트</label>
+                        <textarea name="mainProject" rows="5" class="form-control form-control-sm"
+                                  placeholder="예: 졸업작품 제작 / 팀 프로젝트 참여 경험 / 동아리 프로젝트 수행"
+                        >${empty form.mainProject ? '' : fn:escapeXml(form.mainProject)}</textarea>
+                        <div class="form-text">수업·동아리·대회 등에서 진행한 프로젝트 경험을 입력하세요.</div>
+                    </div>
 
-      <tbody>
-        <c:forEach var="stdnt" items="${sbjectScr}" varStatus="status">
-          <tr>
-            <td>${stdnt.stdntNo}</td>
-            <td>${stdnt.stdntNm}</td>
+                    <!-- 성격/강점 -->
+                    <div class="mb-4">
+                        <label class="fw-bold mb-1">성격 / 강점</label>
+                        <textarea name="character" rows="4" class="form-control form-control-sm"
+                                  placeholder="예: 맡은 일을 책임감 있게 수행함 / 사람들과 협력하는 데 강점이 있음"
+                        >${empty form.character ? '' : fn:escapeXml(form.character)}</textarea>
+                        <div class="form-text">나의 성격 중 직무에 도움이 될 것 같은 장점을 중심으로 작성하세요.</div>
+                    </div>
 
-            <input type="hidden" name="grades[${status.index}].atnlcReqstNo" value="${stdnt.atnlcReqstNo}" />
+                    <!-- 버튼 -->
+                    <div class="d-flex justify-content-end gap-2 mt-4">
+                        <a href="${pageContext.request.contextPath}/compe/main"
+                           class="btn btn-outline-primary btn-sm px-3">
+                            AI자기소개서 생성기
+                        </a>
 
-            <td><input type="number" min="0" max="100" name="grades[${status.index}].atendScore" value="${stdnt.atendScore}" class="form-control form-control-sm score-input"></td>
-            <td><input type="number" min="0" max="100" name="grades[${status.index}].taskScore" value="${stdnt.taskScore}" class="form-control form-control-sm score-input"></td>
-            <td><input type="number" min="0" max="100" name="grades[${status.index}].middleScore" value="${stdnt.middleScore}" class="form-control form-control-sm score-input"></td>
-            <td><input type="number" min="0" max="100" name="grades[${status.index}].trmendScore" value="${stdnt.trmendScore}" class="form-control form-control-sm score-input"></td>
+                        <button type="submit" class="btn btn-primary btn-sm px-4">
+                            저장하기
+                        </button>
+                    </div>
+                </form>
 
-            <td><input type="number" name="grades[${status.index}].sbjectTotpoint" value="${stdnt.sbjectTotpoint}" class="form-control form-control-sm bg-light text-center fw-semibold" readonly></td>
-            <td><input type="number" name="grades[${status.index}].pntAvrg" value="${stdnt.pntAvrg}" class="form-control form-control-sm bg-light text-center" readonly></td>
-            <td><input type="text" name="grades[${status.index}].pntGrad" value="${stdnt.pntGrad}" class="form-control form-control-sm bg-light text-center" readonly></td>
-          </tr>
-        </c:forEach>
-      </tbody>
-    </table>
-  </c:if>
+            </div>
+        </div>
 
-  <div class="mt-4 d-flex justify-content-end">
-    <a href="/prof/grade/main/All" class="btn btn-outline-primary me-2">목록으로</a>
+        <!-- SweetAlert2 -->
 
-    <c:if test="${not empty sbjectScr}">
-      <button type="submit" id="saveBtn" class="btn btn-primary">저장</button>
-    </c:if>
-  </div>
-
-</form>
-</div>
-</div>
-
-
-<div class="modal fade" id="averageChartModal" tabindex="-1">
-  <div class="modal-dialog modal-dialog-centered modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">전체 학생 평균 점수 그래프</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body">
-        <div style="height:350px;"><canvas id="barChartModalCanvas"></canvas></div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<c:if test="${param.saved eq 'Y'}">
-<script>
-Swal.fire({
-    icon: 'success',
-    title: '저장되었습니다',
-    text: '입력하신 내용이 성공적으로 저장되었습니다.',
-    confirmButtonColor: '#556ee6',
-    confirmButtonText: '확인'
-});
-</script>
-</c:if>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const params = new URLSearchParams(window.location.search);
+                if (params.get("save") === "ok") {
+                    Swal.fire({
+                        icon: 'success',
+                        title: '저장되었습니다',
+                        text: '입력하신 내용이 성공적으로 저장되었습니다.',
+                        confirmButtonColor: '#556ee6',
+                        confirmButtonText: '확인'
+                    });
+                }
+            });
+        </script>
 
 <%@ include file="../footer.jsp" %>

@@ -122,13 +122,14 @@
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item active"><a href="/dashboard/student"><i class="las la-home"></i></a></li>
+                <li class="breadcrumb-item active"><a href="#">학사 정보</a></li>
                 <li class="breadcrumb-item active"><a href="#">등록</a></li>
-                <li class="breadcrumb-item active" aria-current="page">등록금 납부</li>
+                <li class="breadcrumb-item active" aria-current="page">납부</li>
             </ol>
         </nav>
     </div>
     <div class="col-12 page-title mt-2">
-        <h2 class="fw-semibold">등록금 납부</h2>
+        <h2 class="fw-semibold">납부</h2>
         <div class="my-4 p-0 bg-primary" style="width: 100px; height:5px;"></div>
     </div>
     <div class="col-xxl-4 col-4">

@@ -9,6 +9,7 @@
                 <a href="/dashboard/student"><i class="las la-home"></i></a>
             </li>
             <li class="breadcrumb-item"><a href="#">학사 정보</a></li>
+            <li class="breadcrumb-item active"><a href="#">성적</a></li>
             <li class="breadcrumb-item active">강의 평가</li>
         </ol>
     </nav>

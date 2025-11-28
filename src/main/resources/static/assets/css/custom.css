@@ -83,6 +83,41 @@ File: Custom Css File
 	transform-origin: top center;
 }
 
+/* gridjs */
+.gridjs-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.gridjs-search {
+    margin-left: auto;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.gridjs-search .gridjs-input {
+    padding-left: 32px;
+    background-position: 8px 50%;
+    background-repeat: no-repeat;
+}
+
+.gridjs-total {
+    font-weight: 600;
+    color: #333;
+    margin-right: 12px;
+}
+
+.gridjs-pagination .gridjs-pages button {
+    border: 1px solid var(--vz-primary);
+    color: var(--vz-primary);
+}
+
+.gridjs-pagination .gridjs-pages button.gridjs-currentPage {
+    background: var(--vz-primary);
+    color: #fff;
+}
+
 
 /****************************/
 /* 	화상상담	 관련 	 css */

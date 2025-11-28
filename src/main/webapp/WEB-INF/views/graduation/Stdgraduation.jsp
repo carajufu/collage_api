@@ -117,6 +117,7 @@ document.addEventListener("DOMContentLoaded", function() {
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="/dashboard/student"><i class="las la-home"></i></a></li>
             <li class="breadcrumb-item"><a href="#">학사 정보</a></li>
+            <li class="breadcrumb-item"><a href="#">졸업</a></li>
             <li class="breadcrumb-item active" aria-current="page">졸업 현황</li>
         </ol>
     </nav>

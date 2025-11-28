@@ -6,6 +6,7 @@
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item active"><a href="/dashboard/student"><i class="las la-home"></i></a></li>
+                    <li class="breadcrumb-item active"><a href="#">학사 정보</a></li>
                     <li class="breadcrumb-item active"><a href="#">졸업</a></li>
                     <li class="breadcrumb-item active" aria-current="page">자기소개서 목록</li>
                 </ol>
