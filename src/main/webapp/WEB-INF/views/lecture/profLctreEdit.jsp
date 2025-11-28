@@ -1197,7 +1197,7 @@
 	const isTimetableSelected = (lctrum) => {
 		
 		const hasExistingTimetable =
-			typeof endTm != "undefined" && endTm;
+			typeof courseInfo[0].endTm != "undefined" && courseInfo[0].endTm;
 		
 		const hasSelectedTime =
 			typeof selectedTime != "undefined" && selectedTime && selectedTime.endTm;
@@ -1312,13 +1312,17 @@
   color: #6c757d !important;
 }
 
+.gridjs-td {
+	height: 75px;
+}
+
 .gridjs-td:hover {
 	background-color: #e8ebff;
 	cursor: pointer;
 }
 
 .gridjs-td.selected  {
-	background-color: #e8ebff;
+	background-color: #c7dbff;
 }
 
 .disabled-cell {

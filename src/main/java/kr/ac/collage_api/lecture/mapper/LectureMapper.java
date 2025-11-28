@@ -73,7 +73,12 @@ public interface LectureMapper {
 	// 강의 개설 요청 처리
 	public int updateRequestSttus(EstblCourseVO estbllctreCode);
 
-	
+	// 전체 교과목 목록 조회
+	public List<AllCourseVO> allCourseList(AllCourseVO allCourseVO);
+
+	// 전체 교과목 세부 정보 조회
+	public List<EstblCourseVO> allCourseDetail(String lctreCode);
+
 	
 	// -------- <교수> --------
 	
@@ -104,6 +109,10 @@ public interface LectureMapper {
 
 	// 강의 시간표 조회
 	public List<EstblCourseVO> timetableLoad();
+
+	// 교과목 운영상태 변경
+	public int allCourseEdit(AllCourseVO allCourseVO);
+
 
 
 

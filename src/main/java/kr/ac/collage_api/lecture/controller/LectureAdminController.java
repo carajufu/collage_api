@@ -116,5 +116,33 @@ public class LectureAdminController {
 		return  ResponseEntity.ok(result);
 	}
 	
+	// 전체 교과목 목록 조회
+	@GetMapping("/allCourseList")
+	public ResponseEntity<List<AllCourseVO>> allCourseList(AllCourseVO allCourseVO) {
+		
+		List<AllCourseVO> list = lectureService.allCourseList(allCourseVO);
+		log.info("allCourseList()->allCourseVO : {}", allCourseVO);
+		
+		return ResponseEntity.ok(list);
+	}
+	
+	// 전체 교과목 세부 정보 조회
+	@GetMapping("/allCourse/{lctreCode}")
+	public ResponseEntity<List<EstblCourseVO>> allCourseDetail(@PathVariable("lctreCode") String lctreCode) {
+		
+		List<EstblCourseVO> detail = lectureService.allCourseDetail(lctreCode);
+		log.info("requestDetail()->detail : {}", detail);
+		
+		return ResponseEntity.ok(detail);
+	}
+	
+	// 교과목 운영상태 변경
+	@PutMapping("/allCourse/edit")
+	public ResponseEntity<Integer> allCourseEdit(@RequestBody AllCourseVO allCourseVO) {
+		
+		int result = lectureService.allCourseEdit(allCourseVO);
+		
+		return ResponseEntity.ok(result);
+	}
 }
 

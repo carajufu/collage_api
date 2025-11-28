@@ -27,7 +27,7 @@
 							<table class="table">
 							  <thead class="table-light">
 							  	<tr>
-							  		<th>교과목ID</th><th>이수구분</th><th>강의명</th><th>교수명</th><th>취득학점</th><th>강의실</th><th>강의시간</th><th>신청인원</th><th>취소</th>
+							  		<th>교과목ID</th><th>이수구분</th><th>강의명</th><th>교수명</th><th>취득학점</th><th>강의실</th><th>강의시간</th><th>수강인원</th><th>취소</th>
 							  	</tr>
 							  </thead>   
 							  <c:if test="${empty atnlcReqstVOList}">
@@ -48,7 +48,7 @@
 								  			
 											
 								  			<td>${l.sklstf.sklstfNm}</td><td>${l.estblCourse.acqsPnt}</td>
-								  			<td>${l.estblCourse.lctrum}</td><td>${l.timetable.lctreDfk} ${l.timetable.beginTm},${l.timetable.endTm}</td><td>${l.estblCourse.atnlcNmpr}</td>
+								  			<td>${l.estblCourse.cmmn}&nbsp;${l.estblCourse.lctrum.substring(1,4)}호</td><td>${l.timetable.lctreDfk} ${l.timetable.beginTm},${l.timetable.endTm}</td><td>${l.estblCourse.atnlcNmpr}</td>
 								  			<td><button type="button" class="btn btn-danger editBtn" data-code="${l.estbllctreCode}">취소</button>
 											</td>
 								  		</tr>
@@ -288,7 +288,7 @@
 				
 				// 주차별 학습 목표 탭 렌더링
 				
-				if(vo.weekAcctoLrnVO.length = 0) {
+				if(vo.weekAcctoLrnVO.length == 0) {
 						modalHtml += `
 							<div class="tab-pane" id="profile-1" role="tabpanel">
 			                    <div class="d-flex">
