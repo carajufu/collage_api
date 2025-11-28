@@ -12,4 +12,7 @@ public class QuizPresentnVO {
     private String quizExCode;
     private String quizPresentnDe;
     private String presentnAt;
+
+    private String stdntNm;
+    private String week;
 }

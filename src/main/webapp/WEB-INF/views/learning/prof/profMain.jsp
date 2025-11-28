@@ -51,7 +51,8 @@
                             <div id="taskSection">
                                 <div id="taskGrid"></div>
                                 <div class="d-flex justify-content-end gap-2 mt-3">
-                                    <button type="button" class="btn btn-primary">등록</button>
+                                    <button type="button" class="btn btn-primary" id="task-create-btn"
+                                            data-bs-toggle="modal" data-bs-target="#createTaskModal">등록</button>
                                 </div>
                             </div>
                             <div id="subTaskGrid" class="d-none">
@@ -71,7 +72,18 @@
                 <div class="card h-100">
                     <div data-simplebar style="max-height: 550px;">
                         <div class="card-body">
-                            <div id="quizTable" class="text-muted">퀴즈 데이터를 불러오는 중...</div>
+                            <div id="quizSection">
+                                <div id="quizGrid"></div>
+                            </div>
+                            <div id="quizSubGrid" class="d-none">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h6 class="mb-0" id="quiz-submission-title"></h6>
+                                </div>
+                                <div id="quizSubmissionGrid"></div>
+                            </div>
+                            <div class="d-flex justify-content-end mt-3 d-none" id="quizSubmissionBackRow">
+                                <button type="button" class="btn btn-outline-primary" id="quiz-submission-back-btn">목록</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -151,12 +163,76 @@
     </div>
 </div>
 
+<div class="modal fade" id="createTaskModal" data-bs-backdrop="static" data-bs-keyboard="false"
+     tabindex="-1" aria-labelledby="createTaskModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createTaskModalLabel">과제 등록</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="createTaskForm">
+                    <div class="row">
+                        <div class="col-8 mb-3">
+                            <label for="create-task-title" class="form-label">과제 제목</label>
+                            <input type="text" class="form-control" id="create-task-title"
+                                   name="taskSj" placeholder="과제 제목을 입력하세요" required />
+                        </div>
+                        <div class="col-4 mb-3">
+                            <label for="create-task-week" class="form-label">주차</label>
+                            <select class="form-select" id="create-task-week" name="week" required>
+                                <option value="" disabled selected>주차 선택</option>
+                                <%-- 1~15 고정 옵션 --%>
+                                <option value="1">1주차</option>
+                                <option value="2">2주차</option>
+                                <option value="3">3주차</option>
+                                <option value="4">4주차</option>
+                                <option value="5">5주차</option>
+                                <option value="6">6주차</option>
+                                <option value="7">7주차</option>
+                                <option value="8">8주차</option>
+                                <option value="9">9주차</option>
+                                <option value="10">10주차</option>
+                                <option value="11">11주차</option>
+                                <option value="12">12주차</option>
+                                <option value="13">13주차</option>
+                                <option value="14">14주차</option>
+                                <option value="15">15주차</option>
+                            </select>
+                        </div>
+                        <div class="col-12 mb-3">
+                            <label for="create-task-content" class="form-label">과제 내용</label>
+                            <textarea class="form-control" id="create-task-content" name="taskCn"
+                                      rows="4" placeholder="과제 내용을 입력하세요"></textarea>
+                            <div class="ckeditor-classic"></div>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <label for="create-task-start" class="form-label">시작일자</label>
+                            <input type="date" class="form-control" id="create-task-start" name="taskBeginDe" required />
+                        </div>
+                        <div class="col-6 mb-3">
+                            <label for="create-task-due" class="form-label">마감일자</label>
+                            <input type="date" class="form-control" id="create-task-due" name="taskClosDe" required />
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">닫기</button>
+                <button type="button" class="btn btn-primary" id="create-task-submit-btn">등록</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script type="text/javascript">
     window.__INIT_TASKS = [
         <c:forEach var="t" items="${body.tasks}" varStatus="st">
         {
             taskNo: '${t.taskNo}',
             taskSj: '${t.taskSj}',
+            taskCn: '${fn:escapeXml(t.taskCn)}',
             weekAcctoLrnNo: '${t.weekAcctoLrnNo}',
             taskBeginDe: '${t.taskBeginDe}',
             taskClosDe: '${t.taskClosDe}',
@@ -172,6 +248,34 @@
         }${sp.last ? '' : ','}
         </c:forEach>
     ];
+
+    window.__INIT_QUIZZES = [
+        <c:forEach var="q" items="${body.quizzes}" varStatus="sq">
+        {
+            quizCode: '${q.quizCode}',
+            quesCn: '${fn:escapeXml(q.quesCn)}',
+            weekAcctoLrnNo: '${q.weekAcctoLrnNo}',
+            quizBeginDe: '${q.quizBeginDe}',
+            quizClosDe: '${q.quizClosDe}',
+            week: '${q.week}'
+        }${sq.last ? '' : ','}
+        </c:forEach>
+    ];
+    window.__INIT_QUIZ_PRESENTN = [
+        <c:forEach var="qp" items="${body.quizPresentn}" varStatus="sp">
+        {
+            quizPresentnNo: '${qp.quizPresentnNo}',
+            stdntNo: '${qp.stdntNo}',
+            stdntNm: '${fn:escapeXml(qp.stdntNm)}',
+            quizCode: '${qp.quizCode}',
+            quizExCode: '${qp.quizExCode}',
+            quizPresentnDe: '${qp.quizPresentnDe}',
+            presentnAt: '${qp.presentnAt}',
+            week: '${qp.week}'
+        }${sp.last ? '' : ','}
+        </c:forEach>
+    ];
+
     window.__ESTBLLCTRE_CODE = '${estbllctreCode}';
 </script>
 <script type="text/javascript" src="/js/wtGrid.js"></script>

@@ -72,15 +72,11 @@ public class AccountServiceImpl implements AccountService{
 		//2. 계정 생성
 		String brthdy = stdntVO.getBrthdy().replaceAll("-", "");
 		String password = this.bCryptPasswordEncoder.encode(brthdy);
-		String email = stdntVO.getEmail();
-
-		log.info("insertStdAccount() -> email : {}", email);
 
 		AcntVO acntVO = new AcntVO();
 		acntVO.setAcntId(stdntNo);
 		acntVO.setPassword(password);
 		acntVO.setAcntTy("1");			//학생은 1
-		acntVO.setEmail(email);
 
 		int insertAcntResult = this.accountMapper.insertAcnt(acntVO);
 
@@ -150,7 +146,6 @@ public class AccountServiceImpl implements AccountService{
 					stdntVO.setBrthdy(getValueByHeader(data, headerMap, "brthdy"));
 					stdntVO.setCttpc(getValueByHeader(data, headerMap, "cttpc"));
 					stdntVO.setEmgncCttpc(getValueByHeader(data, headerMap, "emgncCttpc"));
-					stdntVO.setEmail(getValueByHeader(data,headerMap,"email"));
 					stdntVO.setBassAdres(getValueByHeader(data, headerMap, "bassAdres"));
 					stdntVO.setDetailAdres(getValueByHeader(data, headerMap, "detailAdres"));
 					stdntVO.setZip(getValueByHeader(data, headerMap, "zip"));

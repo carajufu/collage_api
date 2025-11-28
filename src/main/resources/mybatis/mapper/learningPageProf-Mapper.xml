@@ -56,6 +56,26 @@
         </association>
     </resultMap>
 
+    <resultMap id="QuizMap" type="quizVO">
+        <id column="QUIZ_CODE" property="quizCode"/>
+        <result column="WEEK_ACCTO_LRN_NO" property="weekAcctoLrnNo"/>
+        <result column="QUES_CN" property="quesCn"/>
+        <result column="QUIZ_BEGIN_DE" property="quizBeginDe"/>
+        <result column="QUIZ_CLOS_DE" property="quizClosDe"/>
+        <result column="WEEK" property="week"/>
+    </resultMap>
+
+    <resultMap id="QuizPresentnMap" type="quizPresentnVO">
+        <id column="QUIZ_PRESENTN_NO" property="quizPresentnNo"/>
+        <result column="STDNT_NO" property="stdntNo"/>
+        <result column="STDNT_NM" property="stdntNm"/>
+        <result column="QUIZ_CODE" property="quizCode"/>
+        <result column="QUIZ_EX_CODE" property="quizExCode"/>
+        <result column="QUIZ_PRESENTN_DE" property="quizPresentnDe"/>
+        <result column="PRESENTN_AT" property="presentnAt"/>
+        <result column="WEEK" property="week"/>
+    </resultMap>
+
     <select id="getLctreNm" parameterType="string">
         SELECT
             ac.lctre_nm
@@ -124,6 +144,70 @@
         ORDER BY TO_NUMBER(p.task_presentn_no)
     </select>
 
+    <select id="findWeekAcctoLrnNo" parameterType="map" resultType="string">
+        SELECT week_accto_lrn_no
+        FROM week_accto_lrn
+        WHERE estbllctre_code = #{estbllctreCode}
+          AND week = #{week}
+    </select>
+
+    <select id="nextTaskNo" resultType="string">
+        SELECT TO_CHAR(NVL(MAX(TO_NUMBER(task_no)), 0) + 1) FROM task
+    </select>
+
+    <select id="getTaskByNo" parameterType="string" resultMap="TaskMap">
+        SELECT
+            t.task_no,
+            t.week_accto_lrn_no,
+            t.task_sj,
+            t.task_cn,
+            t.task_begin_de,
+            t.task_clos_de,
+            t.regist_dt,
+            t.updt_dt,
+            w.week
+        FROM task t
+                 JOIN week_accto_lrn w ON t.week_accto_lrn_no = w.week_accto_lrn_no
+        WHERE t.task_no = #{taskNo}
+    </select>
+
+    <insert id="insertTask" parameterType="taskVO">
+        INSERT INTO task (
+            task_no,
+            week_accto_lrn_no,
+            task_sj,
+            task_cn,
+            task_begin_de,
+            task_clos_de,
+            regist_dt,
+            updt_dt
+        ) VALUES (
+                     #{taskNo},
+                     #{weekAcctoLrnNo},
+                     #{taskSj},
+                     #{taskCn},
+                     #{taskBeginDe},
+                     #{taskClosDe},
+                     SYSDATE,
+                     SYSDATE
+                 )
+    </insert>
+
+    <delete id="deleteTaskPresentnByTask" parameterType="string">
+        DELETE FROM task_presentn
+        WHERE task_no = #{taskNo}
+    </delete>
+
+    <delete id="deleteTask" parameterType="map">
+        DELETE FROM task
+        WHERE task_no = #{taskNo}
+          AND week_accto_lrn_no IN (
+            SELECT week_accto_lrn_no
+            FROM week_accto_lrn
+            WHERE estbllctre_code = #{estbllctreCode}
+        )
+    </delete>
+
     <select id="getAttend" parameterType="hashMap" resultMap="attendDetailMap">
         SELECT
             aa.atend_absnc_no
@@ -176,5 +260,53 @@
                             ON std.subjct_code = sbj.subjct_code
         WHERE wal.estbllctre_code = #{estbllctreCode}
         ORDER BY wal.week, std.stdnt_no
+    </select>
+
+    <select id="selectQuiz" parameterType="string" resultMap="QuizMap">
+        SELECT q.quiz_code,
+               q.week_accto_lrn_no,
+               q.ques_cn,
+               q.quiz_begin_de,
+               q.quiz_clos_de,
+               w.week
+        FROM quiz q
+                 JOIN week_accto_lrn w ON q.week_accto_lrn_no = w.week_accto_lrn_no
+        WHERE w.estbllctre_code = #{estbllctreCode}
+        ORDER BY TO_NUMBER(w.week), TO_NUMBER(q.quiz_code)
+    </select>
+
+    <select id="selectQuizPresentn" parameterType="string" resultMap="QuizPresentnMap">
+        SELECT qp.quiz_presentn_no,
+               qp.stdnt_no,
+               qp.quiz_code,
+               qp.quiz_ex_code,
+               qp.quiz_presentn_de,
+               qp.presentn_at,
+               std.stdnt_nm,
+               w.week
+        FROM quiz_presentn qp
+                 JOIN quiz q ON qp.quiz_code = q.quiz_code
+                 JOIN week_accto_lrn w ON q.week_accto_lrn_no = w.week_accto_lrn_no
+                 JOIN stdnt std ON qp.stdnt_no = std.stdnt_no
+        WHERE w.estbllctre_code = #{estbllctreCode}
+        ORDER BY TO_NUMBER(qp.quiz_presentn_no)
+    </select>
+
+    <select id="selectQuizPresentnByQuiz" parameterType="map" resultMap="QuizPresentnMap">
+        SELECT qp.quiz_presentn_no,
+               qp.stdnt_no,
+               qp.quiz_code,
+               qp.quiz_ex_code,
+               qp.quiz_presentn_de,
+               qp.presentn_at,
+               std.stdnt_nm,
+               w.week
+        FROM quiz_presentn qp
+                 JOIN quiz q ON qp.quiz_code = q.quiz_code
+                 JOIN week_accto_lrn w ON q.week_accto_lrn_no = w.week_accto_lrn_no
+                 JOIN stdnt std ON qp.stdnt_no = std.stdnt_no
+        WHERE w.estbllctre_code = #{estbllctreCode}
+          AND qp.quiz_code = #{quizCode}
+        ORDER BY TO_NUMBER(qp.quiz_presentn_no)
     </select>
 </mapper>

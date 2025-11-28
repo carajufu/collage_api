@@ -259,4 +259,12 @@
         WHERE
             ACNT_ID = #{acntId}
     </select>
+
+     <!-- ACNT_ID로 교수번호 조회 -->
+	<select id="findProfsrNoByAcntId" parameterType="string" resultType="string">
+	    SELECT p.PROFSR_NO
+	    FROM PROFSR p
+	         JOIN SKLSTF s ON s.SKLSTF_ID = p.SKLSTF_ID
+	    WHERE s.ACNT_ID = #{acntId}
+	</select>
 </mapper>

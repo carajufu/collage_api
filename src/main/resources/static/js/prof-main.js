@@ -17,7 +17,21 @@
     const editTaskStartInput = document.getElementById('edit-task-start');
     const editTaskDueInput = document.getElementById('edit-task-due');
     const editTaskNoInput = document.getElementById('edit-task-no');
+    const quizGrid = document.getElementById('quizGrid');
+    const quizSection = document.getElementById('quizSection');
+    const quizSubGrid = document.getElementById('quizSubGrid');
+    const quizSubmissionGrid = document.getElementById('quizSubmissionGrid');
+    const quizSubmissionTitleEl = document.getElementById('quiz-submission-title');
+    const quizSubmissionBackRow = document.getElementById('quizSubmissionBackRow');
+    const quizSubmissionBackBtn = document.getElementById('quiz-submission-back-btn');
     let editTaskEditor = null;
+    const createModalEl = document.getElementById('createTaskModal');
+    const createTaskForm = document.getElementById('createTaskForm');
+    const createTaskTitle = document.getElementById('create-task-title');
+    const createTaskContent = document.getElementById('create-task-content');
+    const createTaskStart = document.getElementById('create-task-start');
+    const createTaskDue = document.getElementById('create-task-due');
+    let createTaskEditor = null;
     const toArray = val => Array.isArray(val) ? val : (Array.isArray(val?.data) ? val.data : []);
 
     const tabEl = document.querySelector(`#profTabs a[href="#${initialTab}"]`);
@@ -177,6 +191,14 @@
             return;
         }
 
+        const deleteLink = e.target.closest('[data-action="delete-task"]');
+        if (deleteLink) {
+            e.preventDefault();
+            const taskNo = deleteLink.getAttribute('data-task-no');
+            if (taskNo) handleDeleteTask(taskNo);
+            return;
+        }
+
         const link = e.target.closest('[data-action="view-submissions"]');
         if (!link) return;
         e.preventDefault();
@@ -185,23 +207,54 @@
         if (taskNo) loadSubmissions(taskNo, taskTitle);
     });
 
+    const handleDeleteTask = async (taskNo) => {
+        const confirm = await Swal.fire({
+            icon: 'warning',
+            title: '과제를 삭제하시겠습니까?',
+            text: '제출 데이터가 함께 삭제될 수 있습니다.',
+            showCancelButton: true,
+            confirmButtonText: '삭제',
+            cancelButtonText: '취소'
+        });
+        if (!confirm.isConfirmed) return;
+
+        try {
+            const res = await fetch(`/learning/prof/task?estbllctreCode=${encodeURIComponent(estbllctreCode)}&taskNo=${encodeURIComponent(taskNo)}`, {
+                method: 'DELETE'
+            });
+            if (!res.ok) throw new Error(`삭제 실패 (${res.status})`);
+
+            window.__INIT_TASKS = toArray(window.__INIT_TASKS).filter(t => String(t.taskNo) !== String(taskNo));
+            renderTasksWithGrid(window.__INIT_TASKS, window.__INIT_TASK_PRESENTN);
+            Swal.fire({ icon: 'success', title: '삭제되었습니다.', timer: 1200, showConfirmButton: false });
+        } catch (err) {
+            console.error(err);
+            Swal.fire({ icon: 'error', title: '삭제 실패', text: err.message || '잠시 후 다시 시도하세요.' });
+        }
+    };
+
     submissionBackBtn && submissionBackBtn.addEventListener('click', showTasks);
 
     const renderTasksWithGrid = (tasks, submissions) => {
-        const byTask = submissions.reduce((acc, s) => {
+        // 기본값: 초기 주입 데이터 사용, 배열 안전 변환
+        const taskList = toArray(tasks ?? window.__INIT_TASKS ?? []);
+        const submissionList = toArray(submissions ?? window.__INIT_TASK_PRESENTN ?? []);
+
+        const byTask = submissionList.reduce((acc, s) => {
             acc[s.taskNo] = acc[s.taskNo] || { total: 0, submitted: 0 };
             acc[s.taskNo].total += 1;
             if (s.presentnAt === '1') acc[s.taskNo].submitted += 1;
             return acc;
         }, {});
 
-        const rows = (tasks || []).map(t => {
+        const rows = taskList.map(t => {
             const stat = byTask[t.taskNo] || { total: 0, submitted: 0 };
             const taskTitle = t.taskSj || '';
             const taskDue = t.taskClosDe || '';
             const taskContent = t.taskCn || '';
+            const taskNoNum = parseInt(t.taskNo) || 0; // 숫자로 변환해 정렬 가능하도록
             return [
-                t.taskNo,
+                taskNoNum,
                 t.taskSj,
                 t.week,
                 `${t.taskBeginDe}`,
@@ -223,7 +276,7 @@
                             <li><a class="dropdown-item" href="#" data-action="edit-task" data-task-no="${t.taskNo}" data-task-title="${escapeAttr(taskTitle)}" data-task-start="${escapeAttr(t.taskBeginDe || '')}" data-task-due="${escapeAttr(taskDue)}" data-task-cn="${escapeAttr(taskContent)}">과제 수정</a></li>
                             <li><a class="dropdown-item" href="#" data-action="view-submissions" data-task-no="${t.taskNo}">제출 확인</a></li>
                             <li><div class="dropdown-divider"></div></li>
-                            <li><a class="dropdown-item text-danger" href="#">삭제</a></li>
+                            <li><a class="dropdown-item text-danger" href="#" data-action="delete-task" data-task-no="${t.taskNo}">삭제</a></li>
                         </ul>
                       </div>
         `)
@@ -284,14 +337,6 @@
 
         gridInit(options, target);
         requestAnimationFrame(() => injectTotal(target, rows.length));
-    };
-
-    const loadQuiz = () => {
-        const target = document.getElementById('quizTable');
-        fetch(`/learning/prof/quiz?estbllctreCode=${encodeURIComponent(estbllctreCode)}`)
-            .then(res => res.ok ? res.json() : Promise.reject(new Error('퀴즈 로드 실패')))
-            .then(data => target.innerHTML = JSON.stringify(data))
-            .catch(err => target.innerHTML = `<div class="text-danger">${err.message}</div>`);
     };
 
     // 날짜 관련 유틸
@@ -357,6 +402,63 @@
 
         modal.show();
     };
+
+    const ensureCreateEditor = () => {
+        if (createTaskEditor) return Promise.resolve(createTaskEditor);
+        if (!window.ClassicEditor || !createTaskContent) return Promise.reject(new Error('CKEditor 로더가 없습니다.'));
+        return ClassicEditor.create(createTaskContent).then(editor => {
+            createTaskEditor = editor;
+            return editor;
+        });
+    };
+
+    const openCreateModal = () => {
+        if (!createModalEl || !createTaskForm) return;
+        createTaskForm.reset();
+        ensureCreateEditor().then(ed => ed.setData('')).catch(console.warn);
+        if (createTaskStart) createTaskStart.value = todayStr();
+        if (createTaskDue) createTaskDue.value = todayStr();
+        bootstrap.Modal.getOrCreateInstance(createModalEl).show();
+    };
+
+    document.getElementById('task-create-btn')?.addEventListener('click', openCreateModal);
+
+    const weekSelect = document.getElementById('create-task-week');
+    const toDbDate = v => (v || "").replace(/[-.\s]/g, "").slice(0, 8);
+    document.getElementById('create-task-submit-btn')?.addEventListener('click', async () => {
+        if (!createTaskForm.checkValidity()) {
+            createTaskForm.reportValidity();
+            return;
+        }
+        const payload = {
+            taskSj: createTaskTitle.value.trim(),
+            taskCn: createTaskEditor ? createTaskEditor.getData() : (createTaskContent.value || ''),
+            taskBeginDe: toDbDate(createTaskStart.value),
+            taskClosDe: toDbDate(createTaskDue.value),
+            estbllctreCode: estbllctreCode,
+            week: weekSelect?.value,
+        };
+
+        try {
+            const res = await fetch('/learning/prof/task', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json;charset=utf-8' },
+                body: JSON.stringify(payload)
+            });
+            if (!res.ok) throw new Error(`등록 실패 (${res.status})`);
+            const json = await res.json().catch(() => ({}));
+            const created = json?.data || {};
+
+            const nextTasks = toArray(window.__INIT_TASKS).concat(created);
+            window.__INIT_TASKS = nextTasks;
+            renderTasksWithGrid(nextTasks, window.__INIT_TASK_PRESENTN);
+            Swal.fire({ icon: 'success', title: '과제가 등록되었습니다.', timer: 1200, showConfirmButton: false });
+            bootstrap.Modal.getOrCreateInstance(createModalEl).hide();
+        } catch (err) {
+            console.error(err);
+            Swal.fire({ icon: 'error', title: '과제 등록 실패', text: err.message || '잠시 후 다시 시도하세요.' });
+        }
+    });
 
     const statusLabel = { "1": "출석", "2": "지각", "3": "조퇴" };
     const mapStatus = code => statusLabel[code] || "결석";
@@ -584,6 +686,146 @@
             .then(res => res.ok ? res.json() : Promise.reject(new Error('게시판 로드 실패')))
             .then(data => target.innerHTML = JSON.stringify(data))
             .catch(err => target.innerHTML = `<div class="text-danger">${err.message}</div>`);
+    };
+
+    const showQuizList = () => {
+        quizSection?.classList.remove('d-none');
+        quizSubGrid?.classList.add('d-none');
+        quizSubmissionBackRow?.classList.add('d-none');
+    };
+    const showQuizSubmissions = () => {
+        quizSection?.classList.add('d-none');
+        quizSubGrid?.classList.remove('d-none');
+        quizSubmissionBackRow?.classList.remove('d-none');
+    };
+    quizSubmissionBackBtn?.addEventListener('click', showQuizList);
+
+    const renderQuizSubmissions = (list, title) => {
+        if (!quizSubmissionGrid) return;
+        quizSubmissionGrid.innerHTML = '';
+
+        if (quizSubmissionTitleEl) {
+            quizSubmissionTitleEl.textContent = title ? `${title} 제출 목록` : '제출 목록';
+        }
+
+        const rows = toArray(list).map(item => [
+            item.stdntNo,
+            item.stdntNm || '',
+            item.presentnAt === '1' ? '제출' : '미제출',
+            item.quizPresentnDe || '-',
+            item.quizExCode || '-'
+        ]);
+
+        const options = {
+            columns: [
+                { id: 'stdntNo', name: '학번', search: true, sort: true },
+                { id: 'stdntNm', name: '이름', search: true, sort: true },
+                { id: 'status', name: '제출상태', search: false, sort: true },
+                { id: 'submitDe', name: '제출일', search: false, sort: true },
+                { id: 'answer', name: '선택한 보기', search: false, sort: false }
+            ],
+            data: rows,
+            pagination: { ...DEFAULT_GRID_OPTIONS.pagination, limit: 20 },
+            language: { noRecordsFound: '제출 데이터가 없습니다.', search: '학번 및 이름으로 검색' }
+        };
+        gridInit(options, quizSubmissionGrid);
+        requestAnimationFrame(() => injectTotal(quizSubmissionGrid, rows.length));
+        showQuizSubmissions();
+    };
+
+    const loadQuizSubmissions = (quizCode, quizTitle) => {
+        if (!quizSubmissionGrid) return;
+        quizSubmissionGrid.innerHTML = '<div class="text-muted">제출 목록을 불러오는 중...</div>';
+        showQuizSubmissions();
+
+        fetch(`/learning/prof/quiz-presentn?estbllctreCode=${encodeURIComponent(estbllctreCode)}&quizCode=${encodeURIComponent(quizCode)}`)
+            .then(res => res.ok ? res.json() : Promise.reject(new Error('제출 목록 불러오기 실패')))
+            .then(data => renderQuizSubmissions(toArray(data), quizTitle))
+            .catch(err => quizSubmissionGrid.innerHTML = `<div class="text-danger">${err.message}</div>`);
+    };
+
+    const renderQuizGrid = (quizList, submissions) => {
+        if (!quizGrid) return;
+
+        const byQuiz = toArray(submissions).reduce((acc, s) => {
+            const key = s.quizCode;
+            acc[key] = acc[key] || { total: 0, submitted: 0 };
+            acc[key].total += 1;
+            if (s.presentnAt === '1') acc[key].submitted += 1;
+            return acc;
+        }, {});
+
+        const rows = toArray(quizList).map(q => {
+            const stat = byQuiz[q.quizCode] || { total: 0, submitted: 0 };
+            const title = q.quesCn || '';
+            return [
+                q.quizCode,
+                title.length > 50 ? `${title.slice(0, 50)}...` : title,
+                q.week || '',
+                q.quizBeginDe || '',
+                q.quizClosDe || '',
+                `${stat.submitted}/${stat.total}`,
+                gridjs.html(`
+                      <div class="dropend">
+                          <button class="btn btn-ghost-primary btn-icon btn-sm" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                 stroke-linejoin="round" class="feather feather-more-vertical icon-sm">
+                              <circle cx="12" cy="12" r="1"></circle>
+                              <circle cx="12" cy="5" r="1"></circle>
+                              <circle cx="12" cy="19" r="1"></circle>
+                            </svg>
+                          </button>
+                          <ul class="dropdown-menu">
+                              <li><a class="dropdown-item" href="#" data-action="view-quiz-submissions" data-quiz-code="${q.quizCode}">제출 확인</a></li>
+                          </ul>
+                      </div>
+                  `)
+            ];
+        });
+
+        quizGrid.innerHTML = '';
+        const options = {
+            columns: [
+                { id: 'code', name: '퀴즈코드', search: true, sort: true },
+                { id: 'title', name: '문항 요약', search: true, sort: false },
+                { id: 'week', name: '주차', search: false, sort: true },
+                { id: 'begin', name: '시작일자', search: false, sort: true },
+                { id: 'close', name: '마감일자', search: false, sort: true },
+                { id: 'submit', name: '제출', search: false, sort: false },
+                { id: 'actions', name: '', search: false, sort: false }
+            ],
+            data: rows,
+            pagination: { ...DEFAULT_GRID_OPTIONS.pagination, limit: 20 },
+            language: { noRecordsFound: '퀴즈가 없습니다.', search: '문항 내용으로 검색' }
+        };
+        gridInit(options, quizGrid);
+        requestAnimationFrame(() => injectTotal(quizGrid, rows.length));
+        showQuizList();
+    };
+
+    quizGrid?.addEventListener('click', (e) => {
+        const link = e.target.closest('[data-action="view-quiz-submissions"]');
+        if (!link) return;
+        e.preventDefault();
+        const quizCode = link.getAttribute('data-quiz-code');
+        const quizTitle = link.closest('tr')?.querySelector('td:nth-child(2)')?.textContent?.trim();
+        if (quizCode) loadQuizSubmissions(quizCode, quizTitle);
+    });
+
+    const loadQuiz = () => {
+        if (!quizGrid) return;
+        quizGrid.innerHTML = '<div class="text-muted">퀴즈 데이터를 불러오는 중...</div>';
+
+        fetch(`/learning/prof/quiz?estbllctreCode=${encodeURIComponent(estbllctreCode)}`)
+            .then(res => res.ok ? res.json() : Promise.reject(new Error('퀴즈 로드 실패')))
+            .then(data => renderQuizGrid(toArray(data?.quizzes), toArray(data?.submissions)))
+            .catch(err => {
+                quizGrid.innerHTML = '';
+                // 서버 호출 실패 시 초기 서버 렌더 데이터로 대체
+                renderQuizGrid(window.__INIT_QUIZZES || [], window.__INIT_QUIZ_PRESENTN || []);
+                console.error(err);
+            });
     };
 
     // 초기 과제는 모델 데이터로 즉시 렌더
