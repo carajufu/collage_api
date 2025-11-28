@@ -12,17 +12,21 @@ document.addEventListener("DOMContentLoaded", function() {
   // 졸업 유형 선택(모달 밖)
   const gradTypeSelect = document.querySelector("#gradTypeSelect");
   const gradTypeOtherInput = document.querySelector("#gradTypeOtherInput");
-  const gradTypeSummary = document.querySelector("#gradTypeSummary"); // 모달 내 요약 표시에 사용
+  const gradTypeSummary = document.querySelector("#gradTypeSummary");
 
-  if (gradTypeSelect && gradTypeOtherInput) {
+  if (gradTypeSelect && gradTypeOtherInput && gradTypeSummary) {
     const syncSummary = () => {
       const type = gradTypeSelect.value || "미선택";
-      const other = gradTypeOtherInput.value?.trim();
-      gradTypeSummary.textContent = (type === "기타" && other) ? `${type} (${other})` : type;
+      const other = gradTypeOtherInput.value ? gradTypeOtherInput.value.trim() : "";
+      gradTypeSummary.textContent = (type === "기타" && other) ? (type + " (" + other + ")") : type;
     };
     gradTypeSelect.addEventListener("change", () => {
-      gradTypeOtherInput.style.display = (gradTypeSelect.value === '기타') ? 'block' : 'none';
-      if (gradTypeSelect.value !== '기타') gradTypeOtherInput.value = "";
+      if (gradTypeSelect.value === "기타") {
+        gradTypeOtherInput.style.display = "block";
+      } else {
+        gradTypeOtherInput.style.display = "none";
+        gradTypeOtherInput.value = "";
+      }
       syncSummary();
     });
     gradTypeOtherInput.addEventListener("input", syncSummary);
@@ -34,8 +38,18 @@ document.addEventListener("DOMContentLoaded", function() {
       // 신청 전 유효성: 유형 선택 필수
       const type = gradTypeSelect ? gradTypeSelect.value : "";
       const other = gradTypeOtherInput ? gradTypeOtherInput.value.trim() : "";
-      if (!type) { alert("졸업 유형을 선택하세요."); gradTypeSelect.focus(); return; }
-      if (type === "기타" && !other) { alert("기타 사유를 입력하세요."); gradTypeOtherInput.focus(); return; }
+
+      if (!type) {
+        alert("졸업 유형을 선택하세요.");
+        if (gradTypeSelect) gradTypeSelect.focus();
+        return;
+      }
+      if (type === "기타" && !other) {
+        alert("기타 사유를 입력하세요.");
+        if (gradTypeOtherInput) gradTypeOtherInput.focus();
+        return;
+      }
+
       new bootstrap.Modal(modalEl).show();
     });
   }
@@ -48,42 +62,51 @@ document.addEventListener("DOMContentLoaded", function() {
 
   if (btnSubmitGrad) {
     btnSubmitGrad.addEventListener("click", function() {
-      // 모달 내 사유
       const reasonInput = document.querySelector("#reqstResnInput");
       const reason = reasonInput ? reasonInput.value.trim() : "";
-      if (!reason) { alert("신청 사유를 입력하세요."); reasonInput.focus(); return; }
+      if (!reason) {
+        alert("신청 사유를 입력하세요.");
+        if (reasonInput) reasonInput.focus();
+        return;
+      }
 
       // 모달 밖의 졸업 유형
       const gradType = gradTypeSelect ? gradTypeSelect.value : "";
       const gradTypeOther = gradTypeOtherInput ? gradTypeOtherInput.value.trim() : "";
 
       let fullReason = reason;
-      if (gradType === '기타' && gradTypeOther) fullReason += ` (${gradTypeOther})`;
-      else if (gradType) fullReason += ` (${gradType})`;
+      if (gradType === "기타" && gradTypeOther) {
+        fullReason += " (" + gradTypeOther + ")";
+      } else if (gradType) {
+        fullReason += " (" + gradType + ")";
+      }
 
       const formData = new FormData();
-      formData.append('reqstResn', fullReason);
+      formData.append("reqstResn", fullReason);
 
       btnSubmitGrad.disabled = true;
       btnSubmitGrad.innerText = "처리 중...";
 
-      fetch('/stdnt/gradu/main/request', { method: 'POST', body: formData })
-        .then(resp => resp.text())
-        .then(data => {
-          if (data === 'success') {
-            alert('졸업 신청이 완료되었습니다.');
-            location.reload();
-          } else {
-            alert('졸업 신청 실패: ' + data);
-            btnSubmitGrad.disabled = false;
-            btnSubmitGrad.innerText = "졸업 신청";
-          }
-        })
-        .catch(error => {
-          alert("신청 중 오류: " + error.message);
+      fetch("/stdnt/gradu/main/request", {
+        method: "POST",
+        body: formData
+      })
+      .then(resp => resp.text())
+      .then(data => {
+        if (data === "success") {
+          alert("졸업 신청이 완료되었습니다.");
+          location.reload();
+        } else {
+          alert("졸업 신청 실패: " + data);
           btnSubmitGrad.disabled = false;
           btnSubmitGrad.innerText = "졸업 신청";
-        });
+        }
+      })
+      .catch(error => {
+        alert("신청 중 오류: " + error.message);
+        btnSubmitGrad.disabled = false;
+        btnSubmitGrad.innerText = "졸업 신청";
+      });
     });
   }
 });
@@ -102,9 +125,11 @@ document.addEventListener("DOMContentLoaded", function() {
         <div class="my-4 p-0 bg-primary" style="width: 100px; height:5px;"></div>
     </div>
 </div>
-<div class="row pt-3 px-5">
-    <div class="col-xxl-12 col-12">
 
+<div class="row pt-3 px-5">
+  <div class="col-xxl-12 col-12">
+
+    <!-- 기본 학생 정보 -->
     <table class="table table-bordered align-middle mb-4">
       <tbody>
         <tr><th class="table-light" style="width:20%;">학번</th><td>${stdntNo}</td></tr>
@@ -114,6 +139,7 @@ document.addEventListener("DOMContentLoaded", function() {
       </tbody>
     </table>
 
+    <!-- 졸업 유형 선택 -->
     <div class="border rounded p-3 mb-4">
       <label class="form-label fw-bold mb-2">졸업 유형 선택</label>
       <div class="d-flex gap-3">
@@ -128,25 +154,29 @@ document.addEventListener("DOMContentLoaded", function() {
       </div>
       <div class="small text-muted mt-2">모달에서 선택 결과를 확인한 뒤 신청을 완료합니다.</div>
     </div>
-    
-    
-    
+
     <c:choose>
-      <c:when test="${empty graduinfo}"> 
-      		
-        <c:choose>
-          <c:when test="${not ( (requirements.totalPnt >= requirements.MIN_TOTAL_PNT)
-                              and (requirements.majorPnt >= requirements.MIN_MAJOR_PNT)
-                              and (requirements.liberalPnt >= requirements.MIN_LIBERAL_PNT)
-                              and (requirements.foreignLangCount >= requirements.MIN_FOREIGN_LANG) )}">
-	          <div class="alert alert-success mb-3">모든 요건 충족 → 졸업 신청 가능</div>
-	          <button id="btnReqGradu" class="btn btn-primary">졸업 신청하기</button>
-          </c:when>
-          <c:otherwise>
-             <div class="alert alert-danger mb-3">졸업 요건 미충족 → 신청 불가</div>
-             <button id="btnReqGradu" class="btn btn-warning" disabled>졸업 신청하기 (불가)</button>
-          </c:otherwise>
-        </c:choose>
+      <c:when test="${empty graduinfo}">
+        <c:set var="canApply"
+               value="${requirements.totalPnt       >= requirements.MIN_TOTAL_PNT
+                    and requirements.majorPnt       >= requirements.MIN_MAJOR_PNT
+                    and requirements.liberalPnt     >= requirements.MIN_LIBERAL_PNT
+                    and requirements.foreignLangCount >= requirements.MIN_FOREIGN_LANG
+                    and requirements.totalGpa       >= requirements.MIN_TOTAL_GPA}" />
+
+        <c:if test="${not canApply}">
+          <div class="alert alert-danger mb-3">
+            졸업 요건 미충족 → 신청 불가
+          </div>
+          <button id="btnReqGradu" class="btn btn-primary" disabled>졸업 신청하기</button>
+        </c:if>
+
+        <c:if test="${canApply}">
+          <div class="alert alert-success mb-3">
+            모든 졸업 요건 충족 → 졸업 신청 가능
+          </div>
+          <button id="btnReqGradu" class="btn btn-primary">졸업 신청하기</button>
+        </c:if>
       </c:when>
 
       <c:when test="${graduinfo.reqstSttus == '신청'}">
@@ -163,10 +193,15 @@ document.addEventListener("DOMContentLoaded", function() {
       <c:when test="${graduinfo.reqstSttus == '반려'}">
         <div class="alert alert-danger mb-3">반려됨 (재신청 가능)</div>
         <p><strong>반려사유:</strong> ${graduinfo.returnResn}</p>
-        <c:if test="${ (requirements.totalPnt >= requirements.MIN_TOTAL_PNT)
-                   and (requirements.majorPnt >= requirements.MIN_MAJOR_PNT)
-                   and (requirements.liberalPnt >= requirements.MIN_LIBERAL_PNT)
-                   and (requirements.foreignLangCount >= requirements.MIN_FOREIGN_LANG) }">
+
+        <c:set var="canApplyAgain"
+               value="${requirements.totalPnt       >= requirements.MIN_TOTAL_PNT
+                    and requirements.majorPnt       >= requirements.MIN_MAJOR_PNT
+                    and requirements.liberalPnt     >= requirements.MIN_LIBERAL_PNT
+                    and requirements.foreignLangCount >= requirements.MIN_FOREIGN_LANG
+                    and requirements.totalGpa       >= requirements.MIN_TOTAL_GPA}" />
+
+        <c:if test="${canApplyAgain}">
           <button id="btnReqGradu" class="btn btn-primary mt-2">졸업 다시 신청하기</button>
         </c:if>
       </c:when>
@@ -177,73 +212,152 @@ document.addEventListener("DOMContentLoaded", function() {
     <h5 class="fw-bold mb-3">졸업 요건 충족 현황</h5>
     <table class="table table-bordered align-middle text-center">
       <thead class="table-light">
-        <tr><th>항목</th><th>진행률</th><th>상태</th></tr>
+        <tr>
+          <th>항목</th>
+          <th>진행률</th>
+          <th>상태</th>
+        </tr>
       </thead>
       <tbody>
-      
+		
         <tr>
           <td>총 이수학점</td>
           <td>
             <div class="progress" style="height:22px;">
-              <c:set var="pntPct" value="${(requirements.totalPnt >= requirements.MIN_TOTAL_PNT) ? 100 : (requirements.totalPnt * 100.0 / requirements.MIN_TOTAL_PNT)}"/>
+              <c:set var="pntPct"
+                     value="${(requirements.totalPnt >= requirements.MIN_TOTAL_PNT)
+                               ? 100
+                               : (requirements.totalPnt * 100.0 / requirements.MIN_TOTAL_PNT)}" />
               <div class="progress-bar ${(requirements.totalPnt >= requirements.MIN_TOTAL_PNT) ? 'bg-primary' : 'bg-danger'}"
                    style="width:${pntPct}%; min-width:24%;">
                 ${requirements.totalPnt}/${requirements.MIN_TOTAL_PNT} 학점
               </div>
             </div>
           </td>
-          <td>${(requirements.totalPnt >= requirements.MIN_TOTAL_PNT) ? '<span class="text-primary fw-semibold">충족</span>' : '<span class="text-danger fw-semibold">미충족</span>'}</td>
+          <td>
+            <c:choose>
+              <c:when test="${requirements.totalPnt >= requirements.MIN_TOTAL_PNT}">
+                <span class="text-primary fw-semibold">충족</span>
+              </c:when>
+              <c:otherwise>
+                <span class="text-danger fw-semibold">미충족</span>
+              </c:otherwise>
+            </c:choose>
+          </td>
         </tr>
 
         <tr>
           <td>전공필수 이수학점</td>
           <td>
             <div class="progress" style="height:22px;">
-              <c:set var="majorPct" value="${(requirements.majorPnt >= requirements.MIN_MAJOR_PNT) ? 100 : (requirements.majorPnt * 100.0 / requirements.MIN_MAJOR_PNT)}"/>
+              <c:set var="majorPct"
+                     value="${(requirements.majorPnt >= requirements.MIN_MAJOR_PNT)
+                               ? 100
+                               : (requirements.majorPnt * 100.0 / requirements.MIN_MAJOR_PNT)}" />
               <div class="progress-bar ${(requirements.majorPnt >= requirements.MIN_MAJOR_PNT) ? 'bg-primary' : 'bg-danger'}"
                    style="width:${majorPct}%; min-width:24%;">
                 ${requirements.majorPnt}/${requirements.MIN_MAJOR_PNT} 학점
               </div>
             </div>
           </td>
-          <td>${(requirements.majorPnt >= requirements.MIN_MAJOR_PNT) ? '<span class="text-primary fw-semibold">충족</span>' : '<span class="text-danger fw-semibold">미충족</span>'}</td>
+          <td>
+            <c:choose>
+              <c:when test="${requirements.majorPnt >= requirements.MIN_MAJOR_PNT}">
+                <span class="text-primary fw-semibold">충족</span>
+              </c:when>
+              <c:otherwise>
+                <span class="text-danger fw-semibold">미충족</span>
+              </c:otherwise>
+            </c:choose>
+          </td>
         </tr>
 
         <tr>
           <td>교양필수 이수학점</td>
           <td>
             <div class="progress" style="height:22px;">
-              <c:set var="libPct" value="${(requirements.liberalPnt >= requirements.MIN_LIBERAL_PNT) ? 100 : (requirements.liberalPnt * 100.0 / requirements.MIN_LIBERAL_PNT)}"/>
+              <c:set var="libPct"
+                     value="${(requirements.liberalPnt >= requirements.MIN_LIBERAL_PNT)
+                               ? 100
+                               : (requirements.liberalPnt * 100.0 / requirements.MIN_LIBERAL_PNT)}" />
               <div class="progress-bar ${(requirements.liberalPnt >= requirements.MIN_LIBERAL_PNT) ? 'bg-primary' : 'bg-danger'}"
                    style="width:${libPct}%; min-width:24%;">
                 ${requirements.liberalPnt}/${requirements.MIN_LIBERAL_PNT} 학점
               </div>
             </div>
           </td>
-          <td>${(requirements.liberalPnt >= requirements.MIN_LIBERAL_PNT) ? '<span class="text-primary fw-semibold">충족</span>' : '<span class="text-danger fw-semibold">미충족</span>'}</td>
+          <td>
+            <c:choose>
+              <c:when test="${requirements.liberalPnt >= requirements.MIN_LIBERAL_PNT}">
+                <span class="text-primary fw-semibold">충족</span>
+              </c:when>
+              <c:otherwise>
+                <span class="text-danger fw-semibold">미충족</span>
+              </c:otherwise>
+            </c:choose>
+          </td>
         </tr>
 
         <tr>
           <td>외국어 이수</td>
           <td>
             <div class="progress" style="height:22px;">
-              <c:set var="flPct" value="${(requirements.foreignLangCount >= requirements.MIN_FOREIGN_LANG) ? 100 : (requirements.foreignLangCount * 100.0 / requirements.MIN_FOREIGN_LANG)}"/>
+              <c:set var="flPct"
+                     value="${(requirements.foreignLangCount >= requirements.MIN_FOREIGN_LANG)
+                               ? 100
+                               : (requirements.foreignLangCount * 100.0 / requirements.MIN_FOREIGN_LANG)}" />
               <div class="progress-bar ${(requirements.foreignLangCount >= requirements.MIN_FOREIGN_LANG) ? 'bg-primary' : 'bg-danger'}"
                    style="width:${flPct}%; min-width:24%;">
                 ${requirements.foreignLangCount}/${requirements.MIN_FOREIGN_LANG} 과목
               </div>
             </div>
           </td>
-          <td>${(requirements.foreignLangCount >= requirements.MIN_FOREIGN_LANG) ? '<span class="text-primary fw-semibold">충족</span>' : '<span class="text-danger fw-semibold">미충족</span>'}</td>
+          <td>
+            <c:choose>
+              <c:when test="${requirements.foreignLangCount >= requirements.MIN_FOREIGN_LANG}">
+                <span class="text-primary fw-semibold">충족</span>
+              </c:when>
+              <c:otherwise>
+                <span class="text-danger fw-semibold">미충족</span>
+              </c:otherwise>
+            </c:choose>
+          </td>
+        </tr>
+
+        <tr>
+          <td>총 평점(GPA)</td>
+          <td>
+            <div class="progress" style="height:22px;">
+              <c:set var="gpaPct"
+                     value="${(requirements.totalGpa >= requirements.MIN_TOTAL_GPA)
+                               ? 100
+                               : (requirements.totalGpa * 100.0 / requirements.MIN_TOTAL_GPA)}" />
+              <div class="progress-bar ${(requirements.totalGpa >= requirements.MIN_TOTAL_GPA) ? 'bg-primary' : 'bg-danger'}"
+                   style="width:${gpaPct}%; min-width:24%;">
+                ${requirements.totalGpa}/${requirements.MIN_TOTAL_GPA}
+              </div>
+            </div>
+          </td>
+          <td>
+            <c:choose>
+              <c:when test="${requirements.totalGpa >= requirements.MIN_TOTAL_GPA}">
+                <span class="text-primary fw-semibold">충족</span>
+              </c:when>
+              <c:otherwise>
+                <span class="text-danger fw-semibold">미충족</span>
+              </c:otherwise>
+            </c:choose>
+          </td>
         </tr>
       </tbody>
     </table>
 
     <div class="text-end mt-4">
-      <button class="btn btn-secondary" onclick="history.back()">뒤로가기</button>
+      <button class="btn btn-outline-primary"><a  href="/compe/main">자기소개서 생성</a></button>
+      <button class="btn btn-outline-primary" onclick="history.back()">뒤로가기</button>
     </div>
 
-    </div>
+  </div>
 </div>
 
 <div class="modal fade" id="selectStudentModal" tabindex="-1">
@@ -268,12 +382,17 @@ document.addEventListener("DOMContentLoaded", function() {
 
         <table class="table table-bordered text-center mb-4">
           <thead class="table-light">
-            <tr><th>신청일</th><th>신청 사유</th></tr>
+            <tr>
+              <th>신청일</th>
+              <th>신청 사유</th>
+            </tr>
           </thead>
           <tbody>
             <tr>
               <td><fmt:formatDate value="<%= new java.util.Date() %>" pattern="yyyy-MM-dd"/></td>
-              <td><input type="text" id="reqstResnInput" class="form-control" value="졸업 요건 충족"></td>
+              <td>
+                <input type="text" id="reqstResnInput" class="form-control" value="졸업 요건 충족">
+              </td>
             </tr>
           </tbody>
         </table>
@@ -284,7 +403,9 @@ document.addEventListener("DOMContentLoaded", function() {
             <div>
               <c:choose>
                 <c:when test="${not empty stdConsult}">
-                  <span class="text-primary">[${stdConsult[0].profsrNm}] ${stdConsult[0].REQST_DE} 상담완료</span>
+                  <span class="text-primary">
+                    [${stdConsult[0].profsrNm}] ${stdConsult[0].REQST_DE} 상담완료
+                  </span>
                 </c:when>
                 <c:otherwise>
                   <span class="text-danger">지도교수 상담 이력이 없습니다.</span>
@@ -316,4 +437,5 @@ document.addEventListener("DOMContentLoaded", function() {
     </div>
   </div>
 </div>
+
 <%@ include file="../footer.jsp" %>

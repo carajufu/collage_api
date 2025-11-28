@@ -8,6 +8,8 @@
         SELECT NVL(MAX(FORM_ID), 0) + 1 FROM COMPETENCY
     </select>
 
+
+    <!-- 학생 기본 정보 가져오기 -->
     <select id="getFormData" resultType="kr.ac.collage_api.competency.vo.CompetencyVO">
         SELECT
              A.FORM_ID
@@ -22,12 +24,13 @@
             ,B.STDNT_NM
             ,B.BRTHDY
         FROM COMPETENCY A
-        JOIN STDNT B
-          ON A.STDNT_NO = B.STDNT_NO
+        JOIN STDNT B ON A.STDNT_NO = B.STDNT_NO
         WHERE A.STDNT_NO = #{stdntNo}
+        AND A.MANAGE_CN IS NULL
     </select>
 
 
+    <!-- 기본 정보 INSERT -->
     <insert id="insertFormData">
         INSERT INTO COMPETENCY (
              FORM_ID
@@ -40,7 +43,7 @@
             ,MAIN_PROJECT
             ,CHARACTER
         ) VALUES (
-            #{formId}
+             #{formId}
             ,#{stdntNo}
             ,#{lastAcdmcr}
             ,#{miltrAt}
@@ -52,17 +55,76 @@
         )
     </insert>
 
+
+    <!-- 기본 정보 UPDATE -->
     <update id="updateFormData">
         UPDATE COMPETENCY
-        SET
-             LAST_ACDMCR = #{lastAcdmcr}
-            ,MILTR_AT = #{miltrAt}
-            ,DESIRE_JOB = #{desireJob}
-            ,CRQFC = #{crqfc}
-            ,EDC_HISTORY = #{edcHistory}
-            ,MAIN_PROJECT = #{mainProject}
-            ,CHARACTER = #{character}
+        SET LAST_ACDMCR = #{lastAcdmcr}
+          , MILTR_AT = #{miltrAt}
+          , DESIRE_JOB = #{desireJob}
+          , CRQFC = #{crqfc}
+          , EDC_HISTORY = #{edcHistory}
+          , MAIN_PROJECT = #{mainProject}
+          , CHARACTER = #{character}
         WHERE STDNT_NO = #{stdntNo}
+        AND MANAGE_CN IS NULL
     </update>
 
+
+    <!-- 새 AI 자소서 저장 -->
+    <insert id="insertManageCn">
+        INSERT INTO COMPETENCY (
+             FORM_ID
+            ,STDNT_NO
+            ,LAST_ACDMCR
+            ,MILTR_AT
+            ,DESIRE_JOB
+            ,CRQFC
+            ,EDC_HISTORY
+            ,MAIN_PROJECT
+            ,CHARACTER
+            ,MANAGE_CN
+        ) VALUES (
+             #{formId}
+            ,#{stdntNo}
+            ,#{lastAcdmcr}
+            ,#{miltrAt}
+            ,#{desireJob}
+            ,#{crqfc}
+            ,#{edcHistory}
+            ,#{mainProject}
+            ,#{character}
+            ,#{manageCn}
+        )
+    </insert>
+
+
+    <!-- 자소서 수정 -->
+    <update id="updateManageCnOnly">
+        UPDATE COMPETENCY
+        SET MANAGE_CN = #{manageCn}
+        WHERE FORM_ID = #{formId}
+          AND STDNT_NO = #{stdntNo}
+    </update>
+
+
+    <!-- 전체 자소서 버전 목록 조회 -->
+    <select id="getManageCnList" resultType="kr.ac.collage_api.competency.vo.CompetencyVO">
+        SELECT
+             FORM_ID
+           , STDNT_NO
+           , MANAGE_CN
+        FROM COMPETENCY
+        WHERE STDNT_NO = #{stdntNo}
+          AND MANAGE_CN IS NOT NULL
+    </select>
+
+
+    <!-- 전체 자소서 삭제 -->
+    <delete id="deleteManageCnOne">
+        DELETE FROM COMPETENCY
+	    WHERE STDNT_NO = #{stdntNo}
+	      AND FORM_ID  = #{formId}
+	      AND MANAGE_CN IS NOT NULL
+    </delete>
 </mapper>

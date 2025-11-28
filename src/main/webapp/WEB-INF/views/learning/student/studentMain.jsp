@@ -1130,11 +1130,7 @@
                                 <div class="card h-100" id="attend-root">
                                     <div data-simplebar style="max-height: 330px;">
                                         <div class="card-body">
-                                            <div class="card shadow-sm">
-                                                <div class="card-body p-0">
-                                                    <div id="attend-list" class="list-group list-group-flush"></div>
-                                                </div>
-                                            </div>
+                                            <div id="attend-list" class="list-group list-group-flush"></div>
                                         </div>
                                     </div>
                                 </div>

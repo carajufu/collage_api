@@ -1,4 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+
 <%@ include file="../header.jsp" %>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -8,69 +9,62 @@
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="/dashboard/student"><i class="las la-home"></i></a></li>
                 <li class="breadcrumb-item"><a href="#">강의</a></li>
-                <li class="breadcrumb-item active" aria-current="page">장바구니 강의</li>
+                <li class="breadcrumb-item active" aria-current="page">수강신청 내역</li>
             </ol>
         </nav>
         <div class="col-12 page-title mt-2">
-            <h2 class="fw-semibold">장바구니 강의</h2>
+            <h2 class="fw-semibold">수강신청 내역</h2>
             <div class="my-4 p-0 bg-primary" style="width: 100px; height:5px;"></div>
         </div>
     </div>
 
     <div class="row pt-3 px-5">
         <div class="col-xxl-12 col-12">
-		    <div class="card card-custom p-4">
-	        	<div class="overflow-visible" style="margin-bottom:10px">
-		       		<div class="w-100 p-0" id="searchBox" style="border-radius: 8px;"> 
-				      <form class="w-100 align-items-center py-2 d-flex p-3" role="search">
-					      <div class="fw-bold me-3 flex-shrink-0">강의 검색</div>
-					      <div class="d-flex align-items-end ms-auto">
-						      <div class="me-4 d-flex align-items-center flex-shrink-0">
-							    <span class="me-2">이수구분</span>
-						        <select class="form-select" style="width:100px;" name="complSe" value="${param.complSe}">
-								  <option value="" selected>---</option>
-								  <option value="전필">전필</option>
-								  <option value="전선">전선</option>
-								  <option value="교필">교필</option>
-								  <option value="교선">교선</option>
-								  <option value="일선">일선</option>
-								</select>
-							  </div>
-							  <div class="d-flex align-items-center flex-grow-1 me-3">
-							  	<span class="me-2 flex-shrink-0">강의명</span>
-						        <input type="search" placeholder="Search" class="form-control flex-grow-1" aria-label="Search" name="keyword" value="${param.keyword}"/>
-						      </div>
-						      <div class="flex-shrink-0">
-						        <button class="btn btn-outline-primary" type="submit">검색</button>
-						      </div>
-					      </div>
-				      </form>
-	       			</div>
-		       	</div>
 	       		<div id="form">
-	       			<form>
+	       			<form id="form">
 	       				<input type="hidden" name="stdntNo" value="${stdntNo}">
-	       				<div id="courseTable" style="border-radius: 8px;">
+	       				<div id="courseTable">
 							<table class="table">
-								<thead class="table-light">
-								  	<tr>
-								  		<th>교과목ID</th><th>이수구분</th><th>강의명</th><th>교수명</th><th>취득학점</th><th>강의실</th><th>강의시간</th><th>담은 인원</th><th>담기</th>
-								  	</tr>
-						  		</thead>   
-						  		<tbody id="courseTbody" class="align-middle">
-						  			<tr><td colspan="11">강의 목록을 불러오는 중...</td></tr>
-					  			</tbody>
+							  <thead class="table-light">
+							  	<tr>
+							  		<th>교과목ID</th><th>이수구분</th><th>강의명</th><th>교수명</th><th>취득학점</th><th>강의실</th><th>강의시간</th><th>수강인원</th><th>취소</th>
+							  	</tr>
+							  </thead>   
+							  <c:if test="${empty atnlcReqstVOList}">
+							  	<tbody>
+							  		<tr><td colspan="11">신청한 강의가 없습니다.</td></tr>
+							  	</tbody>
+							  </c:if>
+							  <c:if test="${!empty atnlcReqstVOList}">
+								  <tbody class="align-middle">
+								  	<c:forEach var="l" items="${atnlcReqstVOList}" varStatus="stat">
+								  		<tr>
+								  			<td>${l.estbllctreCode}</td><td>${l.estblCourse.complSe}</td>
+								  			<td>
+								  				<a type="button"
+							  					data-bs-toggle="modal" data-bs-target="#modalDetail" data-item-id="${l.estbllctreCode}">${l.allCourse.lctreNm}&nbsp;
+							  					<i class="ri-search-line"></i></a>
+								  			</td>
+								  			
+											
+								  			<td>${l.sklstf.sklstfNm}</td><td>${l.estblCourse.acqsPnt}</td>
+								  			<td>${l.estblCourse.cmmn}&nbsp;${l.estblCourse.lctrum.substring(1,4)}호</td><td>${l.timetable.lctreDfk} ${l.timetable.beginTm},${l.timetable.endTm}</td><td>${l.estblCourse.atnlcNmpr}</td>
+								  			<td><button type="button" class="btn btn-danger editBtn" data-code="${l.estbllctreCode}">취소</button>
+											</td>
+								  		</tr>
+								  	</c:forEach>
+								  </tbody>
+								</c:if>
 							</table>
 						</div>
 					</form>
 				</div>
-			</div>
-	    <!-- 장바구니 리스트 파일 -->
-	    <%@ include file="./mycartlist.jsp" %>
+	        </div>
+	    </div>
+    </div>
+</main>
 
-
-
-<div class="modal" tabindex="-1" id="modalPlan">
+<div class="modal" tabindex="-1" id="modalDetail">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
@@ -78,207 +72,93 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-      	
+      
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">닫기</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
       </div>
     </div>
   </div>
 </div>
 
 <script type="text/javascript">
-	const courseTbody = document.getElementById("courseTbody");
-	
-	function loadCourseList(keyword="", complSe="") {
-		
-		const url = `/atnlc/cart/load?keyword=\${keyword}&complSe=\${complSe}`;
-// 		console.log("url : ", url);
-		
-		fetch(url, {
-			method: "get",
-			headers: {"Content-Type":"application/json;charset=UTF-8"}
-		})
-		.then(response => {
-			if(!response.ok) {
-				throw new Error("서버 오류 발생...");
-			}
-			return response.json();
-		})
-		.then(data => {
-// 			console.log(data);
-			loadCourseData(data.estblCourseVOList);
-		})
-		.catch(error => {
-			console.error("강의 목록을 불러오지 못했습니다...", error);
-			courseTbody.innerHTML = "<tr><td colspan='9'>강의 목록을 불러오지 못했습니다...</td></tr>";
-		});
-		
-		
-		// 강의 목록 로드 함수
-		function loadCourseData(list) { 
-			courseTbody.innerHTML = "";
-			
-			if(list.length == 0) {
-				courseTbody.innerHTML = "<tr><td colspan='9'>개설된 강의가 없습니다.</td></tr>";
-				return;
-			}
-			
-			let html = "";
-			
-			list.forEach(l=>{
-				
-				const timeInfo = `\${l.timetable.lctreDfk} \${l.timetable.beginTm},\${l.timetable.endTm}`;
-				html += `
-						<tr>
-				  			<td>\${l.estbllctreCode}</td>
-				  			<td>\${l.complSe}</td>
-				  			<td>
-				  				<a type="button"
-			  					data-bs-toggle="modal" data-bs-target="#modalPlan" data-item-id="\${l.estbllctreCode}">\${l.allCourse.lctreNm}&nbsp;
-			  					<i class="ri-search-line"></i></a>
-				  			</td>
-				  			<td>\${l.sklstf.sklstfNm}</td>
-				  			<td>\${l.acqsPnt}</td>
-				  			<td>\${l.cmmn}&nbsp;\${l.lctrum.substring(1,4)}호</td>
-				  			<td>\${timeInfo}</td>
-				  			<td>\${l.totalReqst}/\${l.atnlcNmpr}</td>
-				  			<td><button type="button" class="btn btn-primary single-submit-btn" id="submitBtn" data-code="\${l.estbllctreCode}">담기</button></td>
-				  		</tr>
-				`; 
-			});
-			
-			courseTbody.innerHTML = html;
-		}
 
-	}
-	
-	
-	document.querySelector("form[role='search']").addEventListener("submit", function(event) {
+	$("#form").on("click",".editBtn",(event)=>{
 		event.preventDefault();
+		console.log("취소 버튼 click");
 		
-		const form = event.target;
-		const keyword = form.querySelector("input[name='keyword']").value;
-		const complSe = form.querySelector("select[name='complSe']").value;
-		
-		console.log("keyword : ", keyword);
-		console.log("complSe : ", complSe);
-		loadCourseList(keyword, complSe);
-	});
-	
-
-	// 장바구니 담기
-	$("#form").on("click","#submitBtn",(event)=>{
-		event.preventDefault();
-		console.log("담기 버튼 click");
-		
-		const stdntNo = document.getElementsByName("stdntNo")[0].value;
 		const estbllctreCode = $(event.currentTarget).data("code");
+		const stdntNo = document.getElementsByName("stdntNo")[0].value;
 		
 		console.log("선택 강의 코드 : " + estbllctreCode + " / 학생ID : " + stdntNo);
 		
 		const data = {
-			stdntNo : stdntNo,
-			estbllctreCode : estbllctreCode
+				stdntNo : stdntNo,
+				estbllctreCode : estbllctreCode
 		};
 		
 		Swal.fire({
 			icon: "question",
-			html: "선택한 강의를 장바구니에 담으시겠습니까?",
+			html: "수강신청을 취소하시겠습니까?",
 			showCancelButton: true,
 			confirmButtonText: "예",
 			cancelButtonText: "아니오"
 		})
 		.then((result) => {
 			if (result.isConfirmed) {
-				
-				fetch("/atnlc/cart/mycart/add", {
-				method: "post",
-				headers: {"Content-Type":"application/json;charset=UTF-8"},
-				body: JSON.stringify(data)
-			})
-			.then(response => {
-				if(!response.ok) {
-					throw new Error("서버 오류 발생");
-				}
-				return response.json();
-			})
-			.then(data => {
-				
-				const result = data.result;
-				
-				if(!result.success) {
-					let failMsg = "";
-					let hasConflict = false;
-					
-					// 중복 시간표 검사
-					const perLecCode = result.perLecCode;
-					if(perLecCode && perLecCode.length > 0) {
-						failMsg = "시간표가 겹치는 강의입니다.";
-						hasConflict = true;
+				fetch("/atnlc/stdntLctreList/edit", {
+					method: "post",
+					headers: {"Content-Type":"application/json;charset=UTF-8"},
+					body: JSON.stringify(data)
+				})
+				.then(response => {
+					if(!response.ok) {
+						throw new Error("서버 오류 발생");
 					}
+					return response.json();
+				})
+				.then(data => {
 					
-					// 중복 강의 검사
-					const alreadyLecCode = result.alreadyLecCode; 
-					if(alreadyLecCode && alreadyLecCode.length > 0) {
-						failMsg = "이미 장바구니에 담은 강의입니다.";
-						hasConflict = true;
-					}
+					const result = data.result;
 					
-					// 실패 메세지 출력
-					if(hasConflict) {
+					if(result < 0) {
 						Swal.fire({
 							icon: "error",
-							title: "장바구니 담기 실패",
-							text: failMsg
+							title: "취소 실패",
+							text: "알 수 없는 오류로 취소에 실패했습니다."
 						});
 					} else {
 						Swal.fire({
-							icon: "error",
-							title: "장바구니 담기 실패",
-							text: "알 수 없는 오류로 강의 담기에 실패했습니다."
-						});
+							icon: "success",
+							title: "취소 성공",
+							text: "선택하신 강의의 수강신청을 성공적으로 취소했습니다."
+						})
+						.then(() => {
+							location.reload();
+						})
 					}
 					
-				} else {
 					
-					// 장바구니 담기 성공
-					Swal.fire({
-								icon: "success",
-								title: "장바구니 담기 성공",
-								text: "선택하신 강의를 장바구니에 담았습니다."
-							})
-				}
-				
-				loadMyCart();
-				loadCourseList();
-				
-			})
-			.catch(error => {
-				console.error("강의 담기 실패 : ", error);
-				Swal.fire({
-					icon: "error",
-					text: "알 수 없는 오류로 강의 담기에 실패했습니다."
+				})
+				.catch(error => {
+					console.error("fetch 요청 오류 발생 : ", error);
 				});
-			});
 			}
-		});
-		
+		})
 		
 	});
 	
 	
-	loadCourseList();
-	
-
 	// 강의 세부 정보 모달
-	const modalPlan = document.getElementById("modalPlan");
+	const modalDetail = document.getElementById("modalDetail");
 
-	modalPlan.addEventListener("show.bs.modal",(event)=>{
+	modalDetail.addEventListener("show.bs.modal",(event)=>{
+		console.log("모달 버튼 click");
 		const modalPlanBtn = event.relatedTarget;
 		const estbllctreCode = modalPlanBtn.getAttribute("data-item-id");
+		console.log("estbllctreCode : ", estbllctreCode);
 		
-		const modalBody = modalPlan.querySelector(".modal-body");
+		const modalBody = modalDetail.querySelector(".modal-body");
 		modalBody.innerHTML = `<p>강의 정보를 불러오는 중...</p>`;
 		
 		infoHtml = `
@@ -487,9 +367,11 @@
 	
 </script>
 <style>
-#searchBox {
-  background-color: #F3F6F9;
+#form {
+	max-height: 600px;
+	overflow-y: auto;
 }
+
 
 .table-fixed-layout {
 	width: 100%;
@@ -510,8 +392,3 @@
 </style>
 
 <%@ include file="../footer.jsp" %>
-
-
-
-
-

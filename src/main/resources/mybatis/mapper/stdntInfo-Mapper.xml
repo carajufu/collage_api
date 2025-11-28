@@ -24,15 +24,15 @@
 
   <update id="updateInfo">
     UPDATE STDNT
-    SET BRTHDY = #{brthdy},
-        BASS_ADRES = #{bassAdres},
-        DETAIL_ADRES = #{detailAdres},
-        ZIP = #{zip},
-        CTTPC = #{cttpc},
-        EMGNC_CTTPC = #{emgncCttpc},
-        BANK_NM = #{bankNm},
-        ACNUTNO = #{acnutno},
-        LAST_UPDATED_TIME = SYSDATE
+    SET BRTHDY = #{brthdy}
+        ,BASS_ADRES = #{bassAdres}
+        ,DETAIL_ADRES = #{detailAdres}
+        ,ZIP = #{zip}
+        ,CTTPC = #{cttpc}
+        ,EMGNC_CTTPC = #{emgncCttpc}
+        ,BANK_NM = #{bankNm}
+        ,ACNUTNO = #{acnutno}
+        ,LAST_UPDATED_TIME = SYSDATE
     WHERE STDNT_NO = #{stdntNo}
   </update>
 
@@ -55,9 +55,24 @@
   </select>
 
   <select id="getProfileImage" resultType="string">
-    SELECT FILE_GROUP_NO
-    FROM ACNT
-    WHERE ACNT_ID = #{acntId}
+     SELECT FILE_STREPLACE || '/' || FILE_STRE_NM AS FILE_PATH
+     FROM FILE_DETAIL
+     WHERE FILE_GROUP_NO = (
+         SELECT FILE_GROUP_NO
+         FROM ACNT
+         WHERE ACNT_ID = #{acntId}
+     )
+     FETCH FIRST 1 ROWS ONLY
   </select>
 
+  <select id="getProfileImageDetail" resultType="kr.ac.collage_api.vo.FileDetailVO">
+	 SELECT 
+	    FILE_STREPLACE AS fileStrePlace,
+	    FILE_STRE_NM   AS fileStreNm
+	 FROM FILE_DETAIL
+	 WHERE FILE_GROUP_NO = (
+	     SELECT FILE_GROUP_NO FROM ACNT WHERE ACNT_ID = #{acntId}
+	 )
+	 FETCH FIRST 1 ROWS ONLY
+  </select>
 </mapper>

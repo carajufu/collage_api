@@ -22,7 +22,7 @@ public interface ChatBotMapper {
     /* ------------------------ 학생 ------------------------ */
 
     // 학생 성적 요약
-    ChatBotVO getStudentSbjScore(String stdntNo);
+    List<ChatBotVO> getStudentSbjScore(String stdntNo);
 
     // 학생 수강신청 + 개설강의 + 강의명
     List<ChatBotVO> getStudentAtnlc(String stdntNo);

@@ -45,11 +45,19 @@ public interface LectureEvlService {
     List<LectureEvlVO> getAllLecturesByStdntNo(String stdntNo);
 
     void insertLectureEval(String estbllctreCode, String stdntId,
-                           List<Integer> evlScore, List<String> evlCn);
+                           List<Integer> evlScore, List<Integer> evlScore2, List<String> evlCn);
     
     // ------------------------------------------------------------
     //  (시스템) 평가 '질문지' 자동 생성용
     // ------------------------------------------------------------
     
     Integer createDefaultEvaluation(String estbllctreCode);
+
+	int countEvlItems(Integer evlNo);
+
+	boolean isLectureEvaluatedByStdnt(String estbllctreCode, String stdntNo);
+
+	List<LectureEvlVO> getEvalItemsByEstbllctreCode(String estbllctreCode);
+
+	List<LectureEvlVO> getLectureEvalNarratives(String estbllctreCode);
 }

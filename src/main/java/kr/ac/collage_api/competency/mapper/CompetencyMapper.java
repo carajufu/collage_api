@@ -15,5 +15,17 @@ public interface CompetencyMapper {
 	int insertFormData(CompetencyVO vo);
 
 	int updateFormData(CompetencyVO vo);
+	
+	void deleteManageCn(String stdntNo);
+
+	List<CompetencyVO> selectManageCnList(String stdntNo);
+
+	List<CompetencyVO> getManageCnList(String stdntNo);
+
+	void deleteManageCnAll(String stdntNo);
+
+	void insertManageCn(CompetencyVO vo);
+
+	void deleteManageCnOne(String stdntNo, int formId);
 
 }

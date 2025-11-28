@@ -11,11 +11,19 @@
 		<result property="evlMthd" column="EVL_MTHD"/>
 		<result property="estblYear" column="ESTBL_YEAR"/>
 		<result property="estblSemstr" column="ESTBL_SEMSTR"/>
+		<result property="estblSttus" column="ESTBL_STTUS"/>
 		<result property="lctreCode" column="LCTRE_CODE"/>
 		<result property="profsrNo" column="PROFSR_NO"/>
 		<result property="lctrum" column="LCTRUM"/>
+		<result property="atendScoreReflctRate" column="ATEND_SCORE_REFLCT_RATE"/>
+		<result property="taskScoreReflctRate" column="TASK_SCORE_REFLCT_RATE"/>
+		<result property="middleTestScoreReflctRate" column="MIDDLE_TEST_SCORE_REFLCT_RATE"/>
+		<result property="trmendTestScoreReflctRate" column="TRMEND_TEST_SCORE_REFLCT_RATE"/>
 		<result property="keyword" column="keyword"/>
+		<result property="totalSubmit" column="TOTAL_SUBMIT"/>
 		<result property="totalReqst" column="TOTAL_REQST"/>
+		<result property="subjctNm" column="SUBJCT_NM"/>
+		<result property="cmmn" column="CMMN"/>
 		<association property="timetable" javaType="lctreTimetableVO" resultMap="lctreTimetableMap"></association>
 		<association property="allCourse" javaType="allCourseVO" resultMap="allCourseMap"></association>
 		<association property="sklstf" javaType="sklstfVO" resultMap="sklstfMap"></association>
@@ -25,17 +33,22 @@
 		
 <!-- 		<result property="timetableNo" column="TIMETABLE_NO"/> -->
 	<resultMap type="lctreTimetableVO" id="lctreTimetableMap">
+		<result property="timetableNo" column="TIMETABLE_NO"/>
 		<result property="lctreDfk" column="LCTRE_DFK"/>
 		<result property="beginTm" column="BEGIN_TM"/>
 		<result property="endTm" column="END_TM"/>
 	</resultMap>
 	
 	<resultMap type="allCourseVO" id="allCourseMap">
+		<result property="subjctCode" column="SUBJCT_CODE"/>
 		<result property="lctreNm" column="LCTRE_NM"/>
+		<result property="operAt" column="OPER_AT"/>
+		<result property="subjctNm" column="SUBJCT_NM"/>
 	</resultMap>
 	
 	<resultMap type="sklstfVO" id="sklstfMap">
 		<result property="sklstfNm" column="SKLSTF_NM"/>
+		<result property="profsrNo" column="PROFSR_NO"/>
 		<result property="cttpc" column="CTTPC"/>
 	</resultMap>
 		
@@ -51,14 +64,50 @@
 		<result property="fileStreplace" column="FILE_STREPLACE"/>
 		<result property="fileStreDe" column="FILE_STRE_DE"/>
 	</resultMap>
+	
+	<resultMap type="subjctVO" id="subjctMap">
+		<result property="subjctCode" column="SUBJCT_CODE"/>
+		<result property="subjctNm" column="SUBJCT_NM"/>
+		<result property="operSttus" column="OPER_STTUS"/>
+	</resultMap>
+	
+	<resultMap id="estblTimetableMap" type="estblTimetableVO">
+		<id property="estbllctreCode" column="ESTBLLCTRE_CODE"/>
+		<result property="lctreNm" column="LCTRE_NM"/>
+		<result property="lctrum" column="LCTRUM"/>
+		<result property="cmmn" column="CMMN"/>
+		<result property="lctreDfk" column="LCTRE_DFK"/>
+		<result property="beginTm" column="BEGIN_TM"/>
+		<result property="endTm" column="END_TM"/>
+		<result property="sklstfNm" column="SKLSTF_NM"/>
+		<collection property="timetableList" ofType="lctreTimetableVO" resultMap="lctreTimetableMap"></collection>
+	</resultMap>
+	
+	<resultMap id="weekAcctoLrnMap" type="weekAcctoLrnVO">
+		<result property="weekAcctoLrnNo" column="WEEK_ACCTO_LRN_NO"/>
+		<result property="estbllctreCode" column="ESTBLLCTRE_CODE"/>
+		<result property="fileGroupNo" column="FILE_GROUP_NO"/>
+		<result property="week" column="WEEK"/>
+		<result property="taskAt" column="TASK_AT"/>
+		<result property="lrnThema" column="LRN_THEMA"/>
+		<result property="lrnCn" column="LRN_CN"/>
+		<result property="quizAt" column="QUIZ_AT"/>
+	</resultMap>
+	
+<!-- 	<resultMap type="EstblTimetableVO" id="estblTimetableMap"> -->
+<!-- 	</resultMap> -->
 
 	<!-- 개설 강의 조회 -->
 	<select id="list" parameterType="estblCourseVO" resultMap="lectureMap">
-		select E.ESTBLLCTRE_CODE, E.ACQS_PNT, E.COMPL_SE, A.LCTRE_NM, E.ATNLC_NMPR, E.LCTRE_USE_LANG,
+		select E.ESTBLLCTRE_CODE, E.ACQS_PNT, E.COMPL_SE, A.LCTRE_NM, E.ATNLC_NMPR, E.LCTRE_USE_LANG, 
 		       E.EVL_MTHD, E.ESTBL_SEMSTR, E.LCTRE_CODE, E.PROFSR_NO, E.LCTRUM,
 		       A.LCTRE_CODE, A.OPER_AT,
 		       L.TIMETABLE_NO, L.ESTBLLCTRE_CODE, L.LCTRE_DFK, L.BEGIN_TM, L.END_TM
-		       ,S.SKLSTF_NM,
+		       ,S.SKLSTF_NM, (
+		            case substr(e.lctrum,0,1)
+		                when 'A' then '공학관' when 'B' then '인문관' when 'C' then '경영관'
+		            end
+		       ) as cmmn,
 		       ( select COUNT(R.ESTBLLCTRE_CODE)
 		         from	ATNLC_REQST R
 		         where 	R.ESTBLLCTRE_CODE = E.ESTBLLCTRE_CODE
@@ -72,9 +121,10 @@
 		inner join LCTRE_TIMETABLE L on (E.ESTBLLCTRE_CODE = L.ESTBLLCTRE_CODE)
 		inner join PROFSR P on (E.PROFSR_NO = P.PROFSR_NO)
 		inner join SKLSTF S on (S.SKLSTF_ID = P.SKLSTF_ID)
-		where A.OPER_AT != '2'
 
 		<where>
+			A.OPER_AT != '2'
+			
 			<if test="keyword != null and keyword != ''">
 				and a.lctre_nm like concat(concat('%',#{keyword}),'%')
 			</if>
@@ -82,6 +132,8 @@
 				and e.compl_se = #{complSe}
 			</if>
 		</where>
+		
+		order by e.estbllctre_code
 	</select>
 	
 	<!-- 로그인한 계정의 교수 번호 검증 -->
@@ -95,16 +147,17 @@
 	
 	<!-- 담당 강의 목록 조회(교수) -->
 	<select id="mylist" resultMap="lectureMap">
-		select E.ESTBLLCTRE_CODE, E.ACQS_PNT, E.COMPL_SE, A.LCTRE_NM, E.ATNLC_NMPR, E.LCTRE_USE_LANG, 
-		       E.EVL_MTHD, E.ESTBL_SEMSTR, E.LCTRE_CODE, E.PROFSR_NO, E.LCTRUM,
-		       A.LCTRE_CODE, A.OPER_AT,
+		select E.ESTBLLCTRE_CODE, E.ACQS_PNT, E.COMPL_SE, E.ATNLC_NMPR, E.LCTRE_USE_LANG, 
+		       E.EVL_MTHD, E.ESTBL_YEAR, E.ESTBL_SEMSTR, E.LCTRE_CODE, E.PROFSR_NO, E.LCTRUM,
+		       E.ESTBL_STTUS, A.LCTRE_NM, A.LCTRE_CODE, A.OPER_AT, B.SUBJCT_NM,
 		       L.TIMETABLE_NO, L.ESTBLLCTRE_CODE, L.LCTRE_DFK, L.BEGIN_TM, L.END_TM
 		       ,S.SKLSTF_NM
 		from   estbl_course E
-		inner join all_course A on (E.lctre_code = A.lctre_code)
-		inner join lctre_timetable L on (E.ESTBLLCTRE_CODE = L.ESTBLLCTRE_CODE)
-		inner join profsr P on (E.profsr_no = P.profsr_no)
-		inner join sklstf S on (S.sklstf_id = P.sklstf_id)
+		left join all_course A on (E.lctre_code = A.lctre_code)
+		left join lctre_timetable L on (E.ESTBLLCTRE_CODE = L.ESTBLLCTRE_CODE)
+		left join profsr P on (E.profsr_no = P.profsr_no)
+		left join sklstf S on (S.sklstf_id = P.sklstf_id)
+		left join SUBJCT B on (A.SUBJCT_CODE = B.SUBJCT_CODE)
 		<where>
 			<if test="profsrNo != null and profsrNo != ''">
 				and E.profsr_no = #{profsrNo}
@@ -116,25 +169,40 @@
 				and e.compl_se = #{complSe}
 			</if>
 		</where>
+		order by E.ESTBL_YEAR desc, E.ESTBL_SEMSTR desc, E.ESTBLLCTRE_CODE
 	</select>
 	
 	<!-- 강의 세부 정보 -->
-	<select id="detail" parameterType="estblCourseVO" resultMap="lectureMap">
+	<select id="detail" parameterType="String" resultMap="lectureMap">
 		select E.ESTBLLCTRE_CODE, E.LCTRE_CODE, E.PROFSR_NO, E.FILE_GROUP_NO, E.ACQS_PNT, 
 		       E.LCTRUM, E.COMPL_SE, E.ATNLC_NMPR, E.LCTRE_USE_LANG, E.EVL_MTHD, 
 		       E.ATEND_SCORE_REFLCT_RATE, E.TASK_SCORE_REFLCT_RATE, E.MIDDLE_TEST_SCORE_REFLCT_RATE, 
-		       E.TRMEND_TEST_SCORE_REFLCT_RATE, E.ESTBL_YEAR, E.ESTBL_SEMSTR,
-		       A.LCTRE_NM, A.OPER_AT,
+		       E.TRMEND_TEST_SCORE_REFLCT_RATE, E.ESTBL_YEAR, E.ESTBL_SEMSTR, E.ESTBL_STTUS,
+		       A.LCTRE_NM, A.OPER_AT, B.SUBJCT_NM,
 		       L.TIMETABLE_NO, L.ESTBLLCTRE_CODE, L.LCTRE_DFK, L.BEGIN_TM, L.END_TM,
 		       P.LABRUM_LC, P.EMAIL_ADRES, S.SKLSTF_NM, S.CTTPC,
-		       F.FILE_NM, F.FILE_STREPLACE
+		       F.FILE_NM, F.FILE_STREPLACE,
+		       (
+		            case substr(E.LCTRUM,0,1)
+		                when 'A' then '공학관' when 'B' then '인문관' when 'C' then '경영관'
+		            end
+		       ) as cmmn
 		from   ESTBL_COURSE E
 		inner join ALL_COURSE A on (E.LCTRE_CODE = A.LCTRE_CODE)
-		inner join LCTRE_TIMETABLE L on (E.ESTBLLCTRE_CODE = L.ESTBLLCTRE_CODE)
+		left join LCTRE_TIMETABLE L on (E.ESTBLLCTRE_CODE = L.ESTBLLCTRE_CODE)
 		left join PROFSR P on (E.PROFSR_NO = P.PROFSR_NO)
 		inner join SKLSTF S on (S.SKLSTF_ID = P.SKLSTF_ID)
 		left join FILE_DETAIL F on (E.FILE_GROUP_NO = F.FILE_GROUP_NO)
+		left join SUBJCT B on (A.SUBJCT_CODE = B.SUBJCT_CODE)
 		where E.ESTBLLCTRE_CODE = #{estbllctreCode}
+	</select>
+	
+	<!-- 주차별 학습 목표 조회 -->
+	<select id="weekList" parameterType="estblCourseVO" resultType="WeekAcctoLrnVO">
+		select week, lrn_thema, lrn_cn
+		from   week_accto_lrn
+		where  estbllctre_code = #{estbllctreCode}
+		order by week
 	</select>
 	
 	<update id="editEstbl" parameterType="estblCourseVO">
@@ -207,30 +275,199 @@
 <!-- ////////// <관리자> ////////// -->
 
 
-	<!-- 강의 생성 -->
-	<insert id="createCourse" parameterType="allCourseVO">
+	<!-- 강의 생성(all_course) -->
+	<insert id="createCourseA" parameterType="allCourseVO">
 		<selectKey resultType="String" order="BEFORE" keyProperty="lctreCode">
 			select
-			    case #{subjct_code}
+			    case #{subjctCode}
 			        when '11' then 'A' when '12' then 'B' when '13' then 'C' when '14' then 'D' when '15' then 'E'
 			        when '16' then 'F' when '17' then 'G' when '18' then 'H' when '19' then 'I' when '20' then 'J'
 			        when '21' then 'K' when '22' then 'L' when '23' then 'M' when '24' then 'N' when '25' then 'O'
-			        else 'X'
+			        when '26' then 'P' else 'X'
 			    end
-			    || NVL(max(to_number(substr(lctre_code,2))),0)+1
+			    || lpad(to_char(
+			    		NVL(max(
+				    		case
+				    			when regexp_like(substr(lctre_code,2), '^[0-9]+$')
+				    			then to_number(substr(lctre_code,2))
+				    		end
+				    	),0)+1),
+			    	3,'0'
+			    	)
 			from all_course
-			where subjct_code = #{subjct_code}
-			and regexp_like(substr(lctre_code,2), '^[0-9]+$')
+			where subjct_code = #{subjctCode}
 		</selectKey>
-		insert into allCourseVO (lctre_code, subjct_code, pre_lectrue, lctre_nm, oper_at, recent_updt_dt)
-		value (#{lctreCode}, #{subjctCode}, #{preLecture}, #{lctreNm}, #{operAt}, sysdate )
+		insert into all_course (lctre_code, subjct_code, pre_lecture, lctre_nm, oper_at, recent_updt_dt)
+		values (#{lctreCode}, #{subjctCode}, #{preLecture}, #{lctreNm}, '0', sysdate )
+	</insert>
+	
+	<!-- 강의 생성(estbl_course) -->
+	<insert id="createCourseE" parameterType="allCourseVO">
+		<selectKey resultType="String" order="BEFORE" keyProperty="estbllctreCode">
+			select #{lctreCode} || 
+			       lpad(to_char(
+				       NVL(max(
+				            case
+				                when regexp_like(substr(estbllctre_code,5), '^[0-9]+$')
+				                then to_number(substr(estbllctre_code,5))
+				            end
+				        ),0)+1),
+				   3,'0'
+				   )
+			from   estbl_course
+			where  lctre_code = #{lctreCode}
+		</selectKey>
+		insert into estbl_course (estbllctre_code, lctre_code, compl_se, profsr_no, acqs_pnt, 
+								  evl_mthd, atend_score_reflct_rate, task_score_reflct_rate, middle_test_score_reflct_rate, trmend_test_score_reflct_rate,
+								  estbl_year, estbl_semstr, estbl_sttus)
+		values (#{estbllctreCode}, #{lctreCode}, #{complSe}, #{profsrNo}, #{acqsPnt},
+				'절대',0,0,0,0,'2025','1학기',0)
 	</insert>
 
 	<!-- 전체 강의 목록 조회 -->
 	<select id="allList" parameterType="estblCourseVO" resultMap="lectureMap">
 		select E.ESTBLLCTRE_CODE, E.ACQS_PNT, E.COMPL_SE, A.LCTRE_NM, E.ATNLC_NMPR, E.LCTRE_USE_LANG,
 		       E.EVL_MTHD, E.ESTBL_SEMSTR, E.LCTRE_CODE, E.PROFSR_NO, E.LCTRUM,
+		       A.LCTRE_CODE, A.OPER_AT, E.ESTBL_STTUS,
+		       L.TIMETABLE_NO, L.ESTBLLCTRE_CODE, L.LCTRE_DFK, L.BEGIN_TM, L.END_TM
+		       ,S.SKLSTF_NM,
+		       ( case substr(e.lctre_code,1,1)
+		            when 'A' then '컴퓨터공학과' when 'B' then '기계공학과' when 'C' then '전자공학과' when 'D' then '화학공학과' when 'E' then '건축학과'
+		                when 'F' then '국어국문학과' when 'G' then '영어영문학과' when 'H' then '사학과' when 'I' then '철학과' when 'J' then '사회학과'
+		                when 'K' then '경영학과' when 'L' then '회계학과' when 'M' then '경제학과' when 'N' then '국제무역학과' when 'O' then '마케팅학과'
+		                when 'P' then '산업공학과'
+		                else 'X'
+		            end ) as subjct_nm,
+		       ( select COUNT(R.ESTBLLCTRE_CODE)
+		         from	ATNLC_REQST R
+		         where 	R.ESTBLLCTRE_CODE = E.ESTBLLCTRE_CODE
+		         and	R.REQST_STTUS = '신청중') as TOTAL_REQST,
+		       ( select COUNT(R.ESTBLLCTRE_CODE)
+		         from	ATNLC_REQST R
+		         where 	R.ESTBLLCTRE_CODE = E.ESTBLLCTRE_CODE
+		         and	R.REQST_STTUS = '신청완료') as TOTAL_SUBMIT
+		from   ESTBL_COURSE E
+		left join ALL_COURSE A on (E.LCTRE_CODE = A.LCTRE_CODE)
+		left join LCTRE_TIMETABLE L on (E.ESTBLLCTRE_CODE = L.ESTBLLCTRE_CODE)
+		left join PROFSR P on (E.PROFSR_NO = P.PROFSR_NO)
+		left join SKLSTF S on (S.SKLSTF_ID = P.SKLSTF_ID)
+<!-- 		where A.OPER_AT != '2' -->
+		order by e.estbllctre_code
+	</select>
+	
+	<!-- 개설 강의 조회 -->
+	<select id="mngList" parameterType="estblCourseVO" resultMap="lectureMap">
+		select E.ESTBLLCTRE_CODE, E.ACQS_PNT, E.COMPL_SE, A.LCTRE_NM, E.ATNLC_NMPR, E.LCTRE_USE_LANG, 
+		       E.EVL_MTHD, E.ESTBL_SEMSTR, E.LCTRE_CODE, E.PROFSR_NO, E.LCTRUM, E.ESTBL_STTUS,
 		       A.LCTRE_CODE, A.OPER_AT,
+		       L.TIMETABLE_NO, L.ESTBLLCTRE_CODE, L.LCTRE_DFK, L.BEGIN_TM, L.END_TM
+		       ,S.SKLSTF_NM, 
+		       ( case substr(e.lctre_code,1,1)
+		            when 'A' then '컴퓨터공학과' when 'B' then '기계공학과' when 'C' then '전자공학과' when 'D' then '화학공학과' when 'E' then '건축학과'
+		                when 'F' then '국어국문학과' when 'G' then '영어영문학과' when 'H' then '사학과' when 'I' then '철학과' when 'J' then '사회학과'
+		                when 'K' then '경영학과' when 'L' then '회계학과' when 'M' then '경제학과' when 'N' then '국제무역학과' when 'O' then '마케팅학과'
+		                when 'P' then '산업공학과'
+		                else 'X'
+		            end ) as subjct_nm,
+		       ( select COUNT(R.ESTBLLCTRE_CODE)
+		         from	ATNLC_REQST R
+		         where 	R.ESTBLLCTRE_CODE = E.ESTBLLCTRE_CODE
+		         and	R.REQST_STTUS = '신청중') as TOTAL_REQST,
+		       ( select COUNT(R.ESTBLLCTRE_CODE)
+		         from	ATNLC_REQST R
+		         where 	R.ESTBLLCTRE_CODE = E.ESTBLLCTRE_CODE
+		         and	R.REQST_STTUS = '신청완료') as TOTAL_SUBMIT
+		from   ESTBL_COURSE E
+		left join ALL_COURSE A on (E.LCTRE_CODE = A.LCTRE_CODE)
+		left join LCTRE_TIMETABLE L on (E.ESTBLLCTRE_CODE = L.ESTBLLCTRE_CODE)
+		left join PROFSR P on (E.PROFSR_NO = P.PROFSR_NO)
+		left join SKLSTF S on (S.SKLSTF_ID = P.SKLSTF_ID)
+
+		<where>
+			A.OPER_AT != '2'
+			
+			<if test="keyword != null and keyword != ''">
+				and a.lctre_nm like concat(concat('%',#{keyword}),'%')
+			</if>
+			<if test="complSe != null and complSe != ''">
+				and e.compl_se = #{complSe}
+			</if>
+		</where>
+		order by e.estbllctre_code
+	</select>
+	
+	<!-- 주차별 학습 목표 조회 -->
+	<select id="getWeekList" parameterType="String" resultType="weekAcctoLrnVO">
+		select week, lrn_thema, lrn_cn
+		from   week_accto_lrn
+		where  estbllctre_code = #{estbllctreCode}
+	</select>
+	
+	<!-- 전체 학과 목록 가져오기 -->
+	<select id="getSubjct" resultMap="subjctMap">
+		select subjct_code, subjct_nm
+		from   subjct
+		where  oper_sttus = 1
+	</select>
+	
+	<!-- 선수강의 목록 가져오기 -->
+	<select id="getPreLec" parameterType="allCourseVO" resultMap="allCourseMap">
+		select lctre_code, lctre_nm
+		from all_course 
+		where subjct_code = #{subjctCode}
+	</select>
+	
+	<!-- 학과교수 목록 가져오기 -->
+	<select id="getProfsr" parameterType="String" resultMap="sklstfMap">
+		select p.profsr_no, s.sklstf_nm
+		from sklstf s
+		inner join profsr p on (s.sklstf_id = p.sklstf_id)
+		where p.subjct_code = #{subjctCode}
+	</select>
+	
+	<!-- 강의 개설 요청 처리 -->
+	<update id="updateRequestSttus" parameterType="estblCourseVO">
+		update estbl_course 
+		set    estbl_sttus = #{estblSttus}
+		where  estbllctre_code = #{estbllctreCode}
+	</update>
+	
+	<!-- 전체 교과목 목록 조회 -->
+	<select id="allCourseList" resultType="allCourseVO">
+		select a.lctre_code, s.subjct_nm, a.pre_lecture, a.lctre_nm, a.oper_at, a.recent_updt_dt
+		from   all_course a
+		inner join subjct s on (a.subjct_code = s.subjct_code)
+		order by a.lctre_code, s.subjct_nm
+	</select>
+	
+	<!-- 전체 교과목 세부 정보 조회 -->
+	<select id="allCourseDetail" parameterType="String" resultMap="lectureMap">
+		select e.estbllctre_code, e.acqs_pnt, e.compl_se, e.estbl_year, e.estbl_semstr, e.estbl_sttus,
+			   a.lctre_code, a.pre_lecture, a.oper_at, s.sklstf_nm
+		from   estbl_course e
+		inner join all_course a on (e.lctre_code = a.lctre_code)
+		inner join profsr p on (e.profsr_no = p.profsr_no)
+		inner join sklstf s on (p.sklstf_id = s.sklstf_id)
+		where e.lctre_code = #{lctreCode}
+		order by e.estbllctre_code 
+	</select>
+	
+	<!-- 교과목 운영상태 변경 -->
+	<update id="allCourseEdit" parameterType="allCourseVO">
+		update all_course
+		set    oper_at = #{operAt}
+		where  lctre_code = #{lctreCode}
+	</update>
+	
+	
+<!-- ////////// <교수> ////////// -->
+	
+	
+	<!-- 개설 강의 목록 조회 -->
+	<select id="myMngList" parameterType="String" resultMap="lectureMap">
+		select E.ESTBLLCTRE_CODE, E.ACQS_PNT, E.COMPL_SE, A.LCTRE_NM, E.ATNLC_NMPR, E.LCTRE_USE_LANG, 
+		       E.EVL_MTHD, E.ESTBL_YEAR, E.ESTBL_SEMSTR, E.LCTRE_CODE, E.PROFSR_NO, E.LCTRUM, E.ESTBL_STTUS,
+		       A.LCTRE_CODE, A.OPER_AT, B.SUBJCT_NM,
 		       L.TIMETABLE_NO, L.ESTBLLCTRE_CODE, L.LCTRE_DFK, L.BEGIN_TM, L.END_TM
 		       ,S.SKLSTF_NM,
 		       ( select COUNT(R.ESTBLLCTRE_CODE)
@@ -242,12 +479,126 @@
 		         where 	R.ESTBLLCTRE_CODE = E.ESTBLLCTRE_CODE
 		         and	R.REQST_STTUS = '신청완료') as TOTAL_SUBMIT
 		from   ESTBL_COURSE E
-		inner join ALL_COURSE A on (E.LCTRE_CODE = A.LCTRE_CODE)
-		inner join LCTRE_TIMETABLE L on (E.ESTBLLCTRE_CODE = L.ESTBLLCTRE_CODE)
-		inner join PROFSR P on (E.PROFSR_NO = P.PROFSR_NO)
-		inner join SKLSTF S on (S.SKLSTF_ID = P.SKLSTF_ID)
-<!-- 		where A.OPER_AT != '2' -->
+		left join ALL_COURSE A on (E.LCTRE_CODE = A.LCTRE_CODE)
+		left join LCTRE_TIMETABLE L on (E.ESTBLLCTRE_CODE = L.ESTBLLCTRE_CODE)
+		left join PROFSR P on (E.PROFSR_NO = P.PROFSR_NO)
+		left join SKLSTF S on (S.SKLSTF_ID = P.SKLSTF_ID)
+		left join SUBJCT B on (A.SUBJCT_CODE = B.SUBJCT_CODE)
+		<where>
+			A.OPER_AT != '2'
+			<if test="profsrNo != null and profsrNo != ''">
+				and E.profsr_no = #{profsrNo}
+			</if>
+			<if test="keyword != null and keyword != ''">
+				and a.lctre_nm like concat(concat('%',#{keyword}),'%')
+			</if>
+			<if test="complSe != null and complSe != ''">
+				and e.compl_se = #{complSe}
+			</if>
+		</where>
+		order by e.estbllctre_code
 	</select>
-
+	
+	<!-- 개설 강의 정보 입력 페이지 -->
+	<select id="editLoad" parameterType="String" resultMap="lectureMap">
+		select a.lctre_nm, a.pre_lecture, f.file_nm, f.file_streplace,
+		       e.estbllctre_code, e.file_group_no, e.acqs_pnt, e.compl_se, e.atnlc_nmpr, e.estbl_sttus, e.lctrum,
+		       e.lctre_use_lang, e.evl_mthd, e.atend_score_reflct_rate, e.task_score_reflct_rate, e.middle_test_score_reflct_rate, e.trmend_test_score_reflct_rate,
+		       e.estbl_year, e.estbl_semstr, b.subjct_nm, l.lctre_dfk, l.begin_tm, l.end_tm,
+		       s.sklstf_nm,
+		       (
+		            case substr(e.lctrum,0,1)
+		                when 'A' then '공학관' when 'B' then '인문관' when 'C' then '경영관'
+		            end
+		       ) as cmmn
+		from   estbl_course e
+		left join all_course a on (e.lctre_code = a.lctre_code)
+		left join lctre_timetable l on (e.estbllctre_code = l.estbllctre_code)
+		left join subjct b on (a.subjct_code = b.subjct_code)
+		left join profsr p on (e.profsr_no = p.profsr_no)
+		left join sklstf s on (p.sklstf_id = s.sklstf_id)
+		left join file_detail f on(e.file_group_no = f.file_group_no)
+		where  e.estbllctre_code = #{estbllctreCode}
+	</select>
+		
+	<!-- 시간표 정보 delete -->
+	<delete id="deleteTime" parameterType="lctreTimetableVO">
+		delete from lctre_timetable
+		where estbllctre_code = #{estbllctreCode}
+	</delete>
+	
+	<!-- 시간표 정보 insert -->
+	<insert id="insertTime" parameterType="lctreTimetableVO">
+		<selectKey resultType="int" order="BEFORE" keyProperty="timetable.timetableNo">
+			select nvl(max(timetable_no),0)+1
+			from   lctre_timetable
+		</selectKey>
+		insert into lctre_timetable (timetable_no, estbllctre_code, lctre_dfk, begin_tm, end_tm)
+		values (#{timetable.timetableNo}, #{estbllctreCode}, #{timetable.lctreDfk}, #{timetable.beginTm}, #{timetable.endTm})
+	</insert>
+	
+	<!-- 주차별 학습 목표 delete -->
+	<delete id="deleteWeek" parameterType="weekAcctoLrnVO">
+		delete from week_accto_lrn
+		where estbllctre_code = #{estbllctreCode}
+	</delete>
+	
+	<!-- 주차별 학습 목표 insert -->
+	<insert id="insertWeek" parameterType="weekAcctoLrnVO"> 
+		<selectKey resultType="String" order="BEFORE" keyProperty="weekAcctoLrnNo">
+			select '2025' || lpad(to_char(
+			            NVL(max(
+			                case
+			                    when regexp_like(substr(week_accto_lrn_no,5), '^[0-9]+$')
+			                    then to_number(substr(week_accto_lrn_no,5))
+			                end
+			            ),0)+1),
+			        6,'0'
+			   		)
+			from   week_accto_lrn
+		</selectKey>
+		insert into week_accto_lrn (week_accto_lrn_no, estbllctre_code, week, lrn_thema, lrn_cn)
+		values (#{weekAcctoLrnNo}, #{estbllctreCode}, #{week}, #{lrnThema}, #{lrnCn})
+	</insert>
+	
+	<delete id="deleteFile" parameterType="estblCourseVO">
+		delete from file_detail
+		where file_group_no = #{fileGroupNo}
+	</delete>
+	
+	<!-- 개설 강의 정보 저장 -->
+	<update id="confirm" parameterType="estblCourseVO">
+		update estbl_course
+		set	   lctrum = #{lctrum},
+			   atnlc_nmpr = #{atnlcNmpr},
+			   lctre_use_lang = #{lctreUseLang},
+			   evl_mthd = #{evlMthd},
+			   file_group_no = #{fileGroupNo},
+			   atend_score_reflct_rate = #{atendScoreReflctRate},
+			   task_score_reflct_rate = #{taskScoreReflctRate},
+			   middle_test_score_reflct_rate = #{middleTestScoreReflctRate},
+			   trmend_test_score_reflct_rate = #{trmendTestScoreReflctRate},
+			   estbl_sttus = '1'
+		where  estbllctre_code = #{estbllctreCode}
+	</update>
+	
+	<!-- 강의 시간표 조회 -->
+	<select id="timetableLoad" resultMap="estblTimetableMap">
+		select a.lctre_nm, e.estbllctre_code, s.sklstf_nm, l.lctre_dfk, l.begin_tm, l.end_tm,
+		       lctrum,
+		       (
+		            case substr(e.lctrum,0,1)
+		                when 'A' then '공학관' when 'B' then '인문관' when 'C' then '경영관'
+		            end
+		       ) as cmmn
+		from   estbl_course e
+		inner join all_course a on (e.lctre_code = a.lctre_code)
+		inner join profsr p on (e.profsr_no = p.profsr_no)
+		inner join sklstf s on (s.sklstf_id = p.sklstf_id)
+		inner join lctre_timetable l on (e.estbllctre_code = l.estbllctre_code)
+		where  a.oper_at != '2'
+		and	   e.estbl_sttus in ('1', '2')
+	</select>
+	
 	
 </mapper>

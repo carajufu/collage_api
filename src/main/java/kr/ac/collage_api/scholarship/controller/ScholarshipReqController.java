@@ -18,7 +18,8 @@ import kr.ac.collage_api.scholarship.service.ScholarshipReqService;
 import kr.ac.collage_api.vo.ScholarshipReqVO;
 
 @RestController
-@RequestMapping("/scholarship")
+@RequestMapping(
+        "/scholarship")
 public class ScholarshipReqController {
 
 	@Autowired

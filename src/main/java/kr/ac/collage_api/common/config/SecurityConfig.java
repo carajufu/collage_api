@@ -80,8 +80,8 @@ public class SecurityConfig {
                                 "/info/**",
                                 "/ws/**",
                                 "/scholarship/**",
-                                "/payinfo/**",
-                                "/regist/**").permitAll()
+                                "/regist/**",
+                                "/payinfo/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .requestCache(cache -> cache.requestCache(requestCache))

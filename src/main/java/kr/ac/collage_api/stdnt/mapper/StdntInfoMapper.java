@@ -3,7 +3,9 @@ package kr.ac.collage_api.stdnt.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+
 import kr.ac.collage_api.vo.AcntVO;
+import kr.ac.collage_api.vo.FileDetailVO;
 import kr.ac.collage_api.vo.StdntVO;
 
 @Mapper
@@ -32,4 +34,6 @@ public interface StdntInfoMapper {
         추가: 프로필 이미지 조회
     ------------------------------ */
     String getProfileImage(String acntId);
+
+	FileDetailVO getProfileImageDetail(String acntId);
 }

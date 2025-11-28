@@ -9,16 +9,6 @@
 <script type="text/javascript">
 document.addEventListener("DOMContentLoaded", function () {
 
-  if (new URL(location.href).searchParams.get("saved") === "Y") {
-    Swal.fire({
-      icon: 'success',
-      title: '저장되었습니다',
-      text: '입력하신 내용이 성공적으로 저장되었습니다.',
-      confirmButtonColor: '#556ee6',
-      confirmButtonText: '확인'
-    });
-  }
-
   let myBarChart = null;
 
   function recalcRowTotal(row) {
@@ -93,7 +83,7 @@ document.addEventListener("DOMContentLoaded", function () {
             ]
           }]
         },
-        options: { maintainAspectRatio:false, scales:{ y:{beginAtZero:true, max:100}}, plugins:{legend:{display:false}}}
+        options: { maintainAspectRatio:false, scales:{y:{beginAtZero:true,max:100}}, plugins:{legend:{display:false}} }
       });
     } else {
       myBarChart.data.datasets[0].data = avgData;
@@ -103,9 +93,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function bindScoreInputEvents() {
     document.querySelectorAll(".score-input").forEach(input => {
+
       const cloned = input.cloneNode(true);
       input.parentNode.replaceChild(cloned, input);
+
       cloned.addEventListener("input", function () {
+
         if (this.value > 100) this.value = 100;
         if (this.value < 0) this.value = 0;
 
@@ -120,10 +113,12 @@ document.addEventListener("DOMContentLoaded", function () {
   bindScoreInputEvents();
 
   const chartModal = document.getElementById('averageChartModal');
-  chartModal.addEventListener('shown.bs.modal', () => updateAverageChart());
+  chartModal.addEventListener('shown.bs.modal', function () {
+    updateAverageChart();
+  });
+
 });
 </script>
-
 
 <div class="row pt-3 px-5">
     <nav aria-label="breadcrumb">
@@ -141,69 +136,103 @@ document.addEventListener("DOMContentLoaded", function () {
 </div>
 
 <div class="row pt-3 px-5">
-    <div class="col-xxl-12 col-12">
+<div class="col-xxl-12 col-12">
 
-    <div class="alert alert-info mb-4">
-      <div class="row g-2">
-        <div class="col-sm-6"><strong>강의명:</strong> ${selSbject.lctreNm}</div>
-        <div class="col-sm-6"><strong>강의코드:</strong> ${selSbject.lctreCode}</div>
-        <div class="col-sm-6"><strong>이수구분:</strong> ${selSbject.complSe}</div>
-        <div class="col-sm-6"><strong>년도/학기:</strong> ${selSbject.estblYear}년 / ${selSbject.estblSemstr}</div>
-      </div>
-    </div>
-
-    <div class="d-flex justify-content-end mb-3">
-      <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#averageChartModal">전체 평균 그래프</button>
-    </div>
-
-    <form id="gradeForm" method="post" action="/prof/grade/main/save">
-      <input type="hidden" name="estbllctreCode" value="${selSbject.estbllctreCode}">
-
-      <c:if test="${empty sbjectScr}">
-        <div class="alert alert-warning text-center mt-3">수강 학생 없음</div>
-      </c:if>
-
-      <c:if test="${not empty sbjectScr}">
-        <table class="table table-bordered table-hover align-middle text-center mt-3">
-          <thead class="table-light">
-            <tr><th>학번</th><th>학생명</th><th>출석</th><th>과제</th><th>중간</th><th>기말</th><th>총점</th><th>평점</th><th>등급</th></tr>
-          </thead>
-          <tbody>
-            <c:forEach var="stdnt" items="${sbjectScr}" varStatus="st">
-              <tr>
-                <td>${stdnt.stdntNo}</td><td>${stdnt.stdntNm}</td>
-                <input type="hidden" name="grades[${st.index}].atnlcReqstNo" value="${stdnt.atnlcReqstNo}">
-                <td><input type="number" name="grades[${st.index}].atendScore" value="${stdnt.atendScore}" class="form-control form-control-sm score-input"></td>
-                <td><input type="number" name="grades[${st.index}].taskScore" value="${stdnt.taskScore}" class="form-control form-control-sm score-input"></td>
-                <td><input type="number" name="grades[${st.index}].middleScore" value="${stdnt.middleScore}" class="form-control form-control-sm score-input"></td>
-                <td><input type="number" name="grades[${st.index}].trmendScore" value="${stdnt.trmendScore}" class="form-control form-control-sm score-input"></td>
-                <td><input type="number" name="grades[${st.index}].sbjectTotpoint" value="${stdnt.sbjectTotpoint}" class="form-control form-control-sm bg-light" readonly></td>
-                <td><input type="number" name="grades[${st.index}].pntAvrg" value="${stdnt.pntAvrg}" class="form-control form-control-sm bg-light" readonly></td>
-                <td><input type="text" name="grades[${st.index}].pntGrad" value="${stdnt.pntGrad}" class="form-control form-control-sm bg-light" readonly></td>
-              </tr>
-            </c:forEach>
-          </tbody>
-        </table>
-      </c:if>
-
-      <div class="mt-4 text-end">
-        <a href="/prof/grade/main/All" class="btn btn-outline-primary">목록</a>
-        <c:if test="${not empty sbjectScr}">
-          <button type="submit" class="btn btn-primary">저장</button>
-        </c:if>
-      </div>
-    </form>
-
-    </div>
+<div class="alert alert-info mb-4">
+  <div class="row g-2">
+    <div class="col-sm-6"><strong>강의명:</strong> ${selSbject.lctreNm}</div>
+    <div class="col-sm-6"><strong>강의코드:</strong> ${selSbject.lctreCode}</strong></div>
+    <div class="col-sm-6"><strong>이수구분:</strong> ${selSbject.complSe}</div>
+    <div class="col-sm-6"><strong>년도/학기:</strong> ${selSbject.estblYear}년 / ${selSbject.estblSemstr}</div>
+  </div>
 </div>
 
-<div class="modal fade" id="averageChartModal">
+<div class="d-flex justify-content-end mb-3">
+  <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#averageChartModal">전체 평균 그래프 보기</button>
+</div>
+
+<form id="gradeForm" method="post" action="/prof/grade/main/save">
+  <input type="hidden" name="estbllctreCode" value="${selSbject.estbllctreCode}">
+
+  <c:if test="${empty sbjectScr}">
+    <div class="alert alert-warning text-center mt-3">수강 중인 학생이 없습니다.</div>
+  </c:if>
+
+  <c:if test="${not empty sbjectScr}">
+    <table class="table table-bordered table-hover align-middle text-center mt-3">
+      <thead class="table-light">
+        <tr>
+          <th>학번</th>
+          <th>학생명</th>
+          <th>출석 (20)</th>
+          <th>과제 (20)</th>
+          <th>중간 (30)</th>
+          <th>기말 (30)</th>
+          <th>총점 (100)</th>
+          <th>평점 (4.5)</th>
+          <th>등급</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <c:forEach var="stdnt" items="${sbjectScr}" varStatus="status">
+          <tr>
+            <td>${stdnt.stdntNo}</td>
+            <td>${stdnt.stdntNm}</td>
+
+            <input type="hidden" name="grades[${status.index}].atnlcReqstNo" value="${stdnt.atnlcReqstNo}" />
+
+            <td><input type="number" min="0" max="100" name="grades[${status.index}].atendScore" value="${stdnt.atendScore}" class="form-control form-control-sm score-input"></td>
+            <td><input type="number" min="0" max="100" name="grades[${status.index}].taskScore" value="${stdnt.taskScore}" class="form-control form-control-sm score-input"></td>
+            <td><input type="number" min="0" max="100" name="grades[${status.index}].middleScore" value="${stdnt.middleScore}" class="form-control form-control-sm score-input"></td>
+            <td><input type="number" min="0" max="100" name="grades[${status.index}].trmendScore" value="${stdnt.trmendScore}" class="form-control form-control-sm score-input"></td>
+
+            <td><input type="number" name="grades[${status.index}].sbjectTotpoint" value="${stdnt.sbjectTotpoint}" class="form-control form-control-sm bg-light text-center fw-semibold" readonly></td>
+            <td><input type="number" name="grades[${status.index}].pntAvrg" value="${stdnt.pntAvrg}" class="form-control form-control-sm bg-light text-center" readonly></td>
+            <td><input type="text" name="grades[${status.index}].pntGrad" value="${stdnt.pntGrad}" class="form-control form-control-sm bg-light text-center" readonly></td>
+          </tr>
+        </c:forEach>
+      </tbody>
+    </table>
+  </c:if>
+
+  <div class="mt-4 d-flex justify-content-end">
+    <a href="/prof/grade/main/All" class="btn btn-outline-primary me-2">목록으로</a>
+
+    <c:if test="${not empty sbjectScr}">
+      <button type="submit" id="saveBtn" class="btn btn-primary">저장</button>
+    </c:if>
+  </div>
+
+</form>
+</div>
+</div>
+
+
+<div class="modal fade" id="averageChartModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered modal-lg">
     <div class="modal-content">
-      <div class="modal-header"><h5>평균 그래프</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
-      <div class="modal-body" style="height:350px;"><canvas id="barChartModalCanvas"></canvas></div>
+      <div class="modal-header">
+        <h5 class="modal-title">전체 학생 평균 점수 그래프</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div style="height:350px;"><canvas id="barChartModalCanvas"></canvas></div>
+      </div>
     </div>
   </div>
 </div>
+
+<c:if test="${param.saved eq 'Y'}">
+<script>
+Swal.fire({
+    icon: 'success',
+    title: '저장되었습니다',
+    text: '입력하신 내용이 성공적으로 저장되었습니다.',
+    confirmButtonColor: '#556ee6',
+    confirmButtonText: '확인'
+});
+</script>
+</c:if>
 
 <%@ include file="../footer.jsp" %>
