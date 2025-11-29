@@ -208,7 +208,8 @@ public class CertDocxController {
     @GetMapping("/DocxHistory")
     public String certDocxHistory(Principal principal, Model model) {
         if (principal == null || principal.getName() == null) throw new IllegalStateException("인증 필요");
-        final String acntId = principal.getName();
+        
+        String acntId = principal.getName();
 
         StudentDocxVO base = studentDocxMapper.selectStudentBasic(acntId);
         if (base == null) throw new IllegalArgumentException("학생 정보 없음");

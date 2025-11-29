@@ -254,21 +254,21 @@
 	      NVL(sc.ACQS_PNT, ec.ACQS_PNT) AS credits,
 	      sc.PNT_GRAD                   AS grade_raw,
 	      CASE
-	        WHEN sc.PNT_GRAD = 'A+' THEN 4.5
-	        WHEN sc.PNT_GRAD = 'A0' THEN 4.0
-	        WHEN sc.PNT_GRAD = 'B+' THEN 3.5
-	        WHEN sc.PNT_GRAD = 'B0' THEN 3.0
-	        WHEN sc.PNT_GRAD = 'C+' THEN 2.5
-	        WHEN sc.PNT_GRAD = 'C0' THEN 2.0
-	        WHEN sc.PNT_GRAD = 'D+' THEN 1.5
-	        WHEN sc.PNT_GRAD = 'D0' THEN 1.0
-	        WHEN sc.PNT_GRAD = 'F'  THEN 0.0
-	        WHEN sc.PNT_GRAD = 'NP' THEN 0.0
-	        WHEN sc.PNT_GRAD = 'W'  THEN 0.0
-	        WHEN sc.PNT_GRAD = 'I'  THEN 0.0
+	        WHEN sc.PNT_GRAD >= 'A+' THEN 4.5
+	        WHEN sc.PNT_GRAD >= 'A0' THEN 4.0
+	        WHEN sc.PNT_GRAD >= 'B+' THEN 3.5
+	        WHEN sc.PNT_GRAD >= 'B0' THEN 3.0
+	        WHEN sc.PNT_GRAD >= 'C+' THEN 2.5
+	        WHEN sc.PNT_GRAD >= 'C0' THEN 2.0
+	        WHEN sc.PNT_GRAD >= 'D+' THEN 1.5
+	        WHEN sc.PNT_GRAD >= 'D0' THEN 1.0
+	        WHEN sc.PNT_GRAD >= 'F'  THEN 0.0
+	        WHEN sc.PNT_GRAD >= 'NP' THEN 0.0
+	        WHEN sc.PNT_GRAD >= 'W'  THEN 0.0
+	        WHEN sc.PNT_GRAD >= 'I'  THEN 0.0
 	        /* P는 취득학점 인정, 평점 계산 제외 */
-	        WHEN sc.PNT_GRAD = 'P'  THEN NULL
-	        ELSE NULL
+	        WHEN sc.PNT_GRAD = 'P'  THEN 0.0
+	        ELSE 0.0
 	      END AS grade_point
 	    FROM SEMSTR_SCRE  ss
 	    JOIN SBJECT_SCRE  sc ON sc.SEMSTR_SCRE_INNB = ss.SEMSTR_SCRE_INNB
