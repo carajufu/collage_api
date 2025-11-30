@@ -13,6 +13,7 @@ public class QuizVO {
     private String quesCn;
     private String quizBeginDe;
     private String quizClosDe;
+    private String week;
 
     private List<QuizExVO> quizeExVOList;
 }

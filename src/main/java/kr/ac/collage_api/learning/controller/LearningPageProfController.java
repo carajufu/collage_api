@@ -2,6 +2,7 @@ package kr.ac.collage_api.learning.controller;
 
 import kr.ac.collage_api.learning.service.impl.LearningPageProfServiceImpl;
 import kr.ac.collage_api.learning.vo.AtendAbsncVO;
+import kr.ac.collage_api.learning.vo.QuizPresentnVO;
 import kr.ac.collage_api.learning.vo.TaskPresentnVO;
 import kr.ac.collage_api.learning.vo.TaskVO;
 import lombok.RequiredArgsConstructor;
@@ -11,10 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -52,6 +50,42 @@ public class LearningPageProfController {
                 learningPageProfService.getTaskPresentnByTask(estbllctreCode, taskNo));
     }
 
+    @PostMapping("/task")
+    @ResponseBody
+    public ResponseEntity<?> createTask(@RequestBody Map<String, String> body) {
+        String estbllctreCode = body.getOrDefault("estbllctreCode", "").trim();
+        String week = body.getOrDefault("week", "").trim();
+        String title = body.getOrDefault("taskSj", "").trim();
+        String content = body.getOrDefault("taskCn", "").trim();
+        String beginDe = body.getOrDefault("taskBeginDe", "").trim();
+        String closDe = body.getOrDefault("taskClosDe", "").trim();
+
+        if (estbllctreCode.isEmpty() || week.isEmpty() || title.isEmpty() || beginDe.isEmpty() || closDe.isEmpty()) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("status", "error", "message", "필수 값 누락(estbllctreCode, week, taskSj, taskBeginDe, taskClosDe)"));
+        }
+
+        TaskVO created = learningPageProfService.createTask(estbllctreCode, week, title, content, beginDe, closDe);
+        return ResponseEntity.ok(Map.of("status", "success", "data", created));
+    }
+
+    @DeleteMapping("/task")
+    @ResponseBody
+    public ResponseEntity<?> deleteTask(@RequestParam String estbllctreCode,
+                                        @RequestParam String taskNo) {
+        if (!StringUtils.hasText(estbllctreCode) || !StringUtils.hasText(taskNo)) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("status", "error", "message", "estbllctreCode, taskNo \ud544\uc218 \uac12 \ub204\ub77d"));
+        }
+
+        int deleted = learningPageProfService.deleteTask(estbllctreCode, taskNo);
+        if (deleted <= 0) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("status", "error", "message", "\uc0ad\uc81c\ud560 \uacfc\uc81c\uac00 \uc5c6\uc2b5\ub2c8\ub2e4."));
+        }
+        return ResponseEntity.ok(Map.of("status", "success", "deleted", deleted));
+    }
+
     @GetMapping("/attend")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> getAttend(@RequestParam("estbllctreCode") String estbllctreCode) {
@@ -68,5 +102,23 @@ public class LearningPageProfController {
         resp.put("count", attendList.size());
 
         return ResponseEntity.ok(resp);
+    }
+
+    @GetMapping("/quiz")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> getQuiz(@RequestParam String estbllctreCode) {
+        return ResponseEntity.ok(Map.of(
+                "quizzes", learningPageProfService.getQuizzes(estbllctreCode),
+                "submissions", learningPageProfService.getQuizPresentn(estbllctreCode)
+        ));
+    }
+
+    @GetMapping("/quiz-presentn")
+    @ResponseBody
+    public ResponseEntity<List<QuizPresentnVO>> getQuizPresentnByQuiz(
+            @RequestParam String estbllctreCode,
+            @RequestParam String quizCode) {
+        return ResponseEntity.ok(
+                learningPageProfService.getQuizPresentnByQuiz(estbllctreCode, quizCode));
     }
 }

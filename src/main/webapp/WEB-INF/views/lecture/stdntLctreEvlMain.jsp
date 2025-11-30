@@ -36,7 +36,7 @@
         </div>
 
         <p class="text-muted mb-3">
-            수강 중인 강의 목록입니다. 각 강의의 평가 버튼을 클릭하여 강의평가를 진행하십시오.
+            이수한 강의 목록입니다. 각 강의의 평가 버튼을 클릭하여 강의평가를 진행하십시오.
         </p>
 
         <c:if test="${empty atnlcList}">
@@ -49,51 +49,51 @@
             <div class="table-responsive">
                 <table class="table table-hover align-middle text-center">
                     <thead class="table-light">
-                        <tr>
-                            <th style="width: 6%;">No.</th>
-                            <th style="width: 25%;">개설 강의명</th>
-                            <th>강의코드</th>
-                            <th>년도</th>
-                            <th>학기</th>
-                            <th>이수구분</th>
-                            <th>학점</th>
-                            <th>정원</th>
-                            <th>수업언어</th>
-                            <th style="width: 12%;">평가하기</th>
-                        </tr>
+                    <tr>
+                        <th style="width: 6%;">No.</th>
+                        <th style="width: 25%;">개설 강의명</th>
+                        <th>강의코드</th>
+                        <th>년도</th>
+                        <th>학기</th>
+                        <th>이수구분</th>
+                        <th>학점</th>
+                        <th>정원</th>
+                        <th>수업언어</th>
+                        <th style="width: 12%;">평가하기</th>
+                    </tr>
                     </thead>
 
                     <tbody>
-                        <c:forEach var="lecture" items="${atnlcList}" varStatus="status">
-                            <tr>
-                                <td>${status.count}</td>
-                                <td class="text-start fw-semibold">${lecture.lctreNm}</td>
-                                <td>${lecture.lctreCode}</td>
-                                <td>${lecture.estblYear}</td>
-                                <td>${lecture.estblSemstr}</td>
-                                <td>${lecture.complSe}</td>
-                                <td>${lecture.acqsPnt}</td>
-                                <td>${lecture.atnlcNmpr}</td>
-                                <td>${lecture.lctreUseLang}</td>
-                                <td>
-                                    <c:set var="done"
-                                           value="${evlDoneMap[lecture.estbllctreCode]}" />
-                                    <c:choose>
-                                        <c:when test="${done}">
-                                            <button class="btn btn-outline btn-sm px-3" disabled>
-                                                평가완료
-                                            </button>
-                                        </c:when>
-                                        <c:otherwise>
-                                            <a href="/stdnt/lecture/main/${lecture.estbllctreCode}"
-                                               class="btn btn-primary btn-sm px-3">
-                                                평가하기
-                                            </a>
-                                        </c:otherwise>
-                                    </c:choose>
-                                </td>
-                            </tr>
-                        </c:forEach>
+                    <c:forEach var="lecture" items="${atnlcList}" varStatus="status">
+                        <tr>
+                            <td>${status.count}</td>
+                            <td class="text-start fw-semibold">${lecture.lctreNm}</td>
+                            <td>${lecture.lctreCode}</td>
+                            <td>${lecture.estblYear}</td>
+                            <td>${lecture.estblSemstr}</td>
+                            <td>${lecture.complSe}</td>
+                            <td>${lecture.acqsPnt}</td>
+                            <td>${lecture.atnlcNmpr}</td>
+                            <td>${lecture.lctreUseLang}</td>
+                            <td>
+                                <c:set var="done"
+                                       value="${evlDoneMap[lecture.estbllctreCode]}" />
+                                <c:choose>
+                                    <c:when test="${done}">
+                                        <button class="btn btn-outline btn-sm px-3" disabled>
+                                            평가완료
+                                        </button>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <a href="/stdnt/lecture/main/${lecture.estbllctreCode}"
+                                           class="btn btn-primary btn-sm px-3">
+                                            평가하기
+                                        </a>
+                                    </c:otherwise>
+                                </c:choose>
+                            </td>
+                        </tr>
+                    </c:forEach>
                     </tbody>
 
                 </table>

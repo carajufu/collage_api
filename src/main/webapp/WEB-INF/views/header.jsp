@@ -297,6 +297,7 @@
 
             </div></div></div><div class="app-menu navbar-menu">
         <div class="navbar-brand-box">
+        <sec:authorize access="hasRole('ROLE_STUDENT')">
             <!-- Dark Logo-->
             <a href="/student/welcome" class="logo logo-dark">
                     <span class="logo-sm">
@@ -320,7 +321,6 @@
             </button>
         </div>
 
-        <sec:authorize access="hasRole('ROLE_STUDENT')">
         <div id="scrollbar">
             <div class="container-fluid">
                 <div id="two-column-menu">
@@ -474,6 +474,27 @@
         </sec:authorize>
 
         <sec:authorize access="hasRole('ROLE_PROF')">
+    <a href="/prof/welcome" class="logo logo-dark">
+                    <span class="logo-sm">
+                        <img src="/assets/images/logo-sm.png" alt="" height="22">
+                    </span>
+        <span class="logo-lg">
+                        <img src="/assets/images/logo-dark.png" alt="" height="17">
+                    </span>
+    </a>
+    <!-- Light Logo-->
+    <a href="/prof/welcome" class="logo logo-light">
+                    <span class="logo-sm">
+                        <img src="/assets/images/logo-sm.png" alt="" height="22">
+                    </span>
+        <span class="logo-lg">
+                        <img src="/assets/images/logo-light.png" alt="" height="17">
+                    </span>
+    </a>
+    <button type="button" class="btn btn-sm p-0 fs-20 header-item float-end btn-vertical-sm-hover" id="vertical-hover">
+        <i class="ri-record-circle-line"></i>
+    </button>
+</div>
         <div id="scrollbar">
             <div class="container-fluid">
                 <div id="two-column-menu">
@@ -517,7 +538,7 @@
                         <div class="collapse menu-dropdown" id="sidebarCounsel">
                             <ul class="nav nav-sm flex-column">
                                 <li class="nav-item">
-                                    <a href="/counselprof/prof" class="nav-link" data-key="">상담 관리</a>
+                                    <a href="/counselprof/prof" class="nav-link" data-key="t-prof-grade-manage">상담 관리</a>
                                 </li>
 
                             </ul>

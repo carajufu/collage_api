@@ -4,6 +4,100 @@
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
 
 <%@ include file="index-header.jsp"%>
+<style>
+    /* 배경 - LMS 서비스 맞춰 Glass + Dark Gradient */
+    body {
+        background: linear-gradient(115deg, #1b1e2e 0%, #121421 45%, #0c0e18 100%);
+        font-family: 'Pretendard', sans-serif;
+        color: #e5e7eb;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
+
+    main.main-content-with-header {
+        display:flex;
+        justify-content:center;
+        align-items:center;
+        padding-top:80px;
+        padding-bottom:60px;
+    }
+
+    /* 로그인 카드 Glass UI */
+    .auth-card {
+        width: 380px;
+        background: rgba(255,255,255,0.07);
+        backdrop-filter: blur(18px) saturate(180%);
+        -webkit-backdrop-filter: blur(18px) saturate(180%);
+        border: 1px solid rgba(255,255,255,0.09);
+        transition: all .28s ease;
+        color:#fff;
+    }
+    .auth-card:hover {
+        transform: translateY(-6px);
+        box-shadow:0 18px 35px rgba(0,0,0,0.45),
+        0 0 30px rgba(90,150,255,.35);
+    }
+
+    /* 입력창 */
+    .form-control {
+        background: rgba(255,255,255,0.08);
+        border:1px solid rgba(255,255,255,0.15);
+        color:#fff;
+    }
+    .form-control:focus {
+        background: rgba(255,255,255,0.12);
+        border-color:#4da3ff;
+        box-shadow:0 0 0 0.2rem rgba(77,163,255,.45);
+        color:#fff;
+    }
+    label.form-label{font-weight:500;}
+
+    /* 보기/숨기기 버튼 */
+    #toggleLoginPassword {
+        background:#4F8BFF;
+        color:#FFFFFF;
+        border:none;
+    }
+    #toggleLoginPassword:hover {
+        background:#0052D9;
+        color:#FFFFFF;
+    }
+
+    /* 로그인 버튼 */
+    #login-btn {
+        font-size:1.05rem;
+        font-weight:600;
+        background:#4F8BFF;
+        border:none;
+        transition:.25s;
+    }
+    #login-btn:hover { filter:brightness(109%); }
+    #login-btn:disabled { opacity:.65; }
+
+    /* 아이디/비번 찾기 */
+    a.text-primary {
+        color:#6ea8ff !important;
+        font-weight:400;
+    }
+    a.text-primary:hover {
+        text-decoration:none !important;
+        color:#a6c8ff !important;
+    }
+
+    /* CapsLock 표시 */
+    #capsIndicator{font-size:.85rem;font-weight:600;}
+
+    /* 오류 메시지 */
+    #login-alert {
+        background:#d30f0fdd;
+        border:none;
+        color:#fff;
+        font-size:.85rem;
+        text-align:center;
+    }
+</style>
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -65,113 +159,113 @@
     · Caps/Num 상태 표시(capsIndicator, numIndicator)로 비의도 입력 방지.
 --%>
 
-<main class="main-content-with-header">
-    <!-- 로그인 폼 영역 -->
-    <div id="main-container" class="container-fluid">
-        <div class="auth-wrap d-flex justify-content-center">
-            <!-- 계약: POST /login, CSRF 필수, 파라미터 acntId·password -->
-            <form
-                    id="sessionLoginForm"
-                    class="card shadow-sm rounded-4 p-4 auth-card needs-validation"
-                    action="/login"
-                    method="post"
-                    role="form"
-                    aria-label="세션 로그인 폼"
-                    autocomplete="off"
-                    novalidate
-            >
+<section class="hero-section">
+    <main class="main-content-with-header">
+        <!-- 로그인 폼 영역 -->
+        <div id="main-container" class="container-fluid">
+            <div class="auth-wrap d-flex justify-content-center">
+                <!-- 계약: POST /login, CSRF 필수, 파라미터 acntId·password -->
+                <form
+                        id="sessionLoginForm"
+                        class="card shadow-sm rounded-4 p-4 auth-card needs-validation"
+                        action="/login"
+                        method="post"
+                        role="form"
+                        aria-label="세션 로그인 폼"
+                        autocomplete="off"
+                        novalidate
+                >
 
-                <h3 class="mb-2 fw-semibold text-center">로그인</h3>
-                <p class="text-secondary small text-center mb-3">
-                    서비스를 사용하려면 로그인하세요
-                </p>
+                    <h3 class="mb-2 fw-semibold text-center">로그인</h3>
+                    <p class="text-secondary small text-center mb-3">
+                        서비스를 사용하려면 로그인하세요
+                    </p>
 
-                <!-- 서버측 인증 실패 경고: SPRING_SECURITY_LAST_EXCEPTION 또는 errorMessage 사용 가능 -->
-                <%-- JSTL 사용 시:
-                <c:if test="${not empty SPRING_SECURITY_LAST_EXCEPTION or not empty errorMessage}">
-                  <div id="login-alert" class="alert alert-danger py-2 small" role="alert">
-                    <c:out value="${errorMessage != null ? errorMessage : SPRING_SECURITY_LAST_EXCEPTION.message}" />
-                  </div>
-                </c:if>
-                --%>
-                <div id="login-alert" class="alert alert-danger py-2 small d-none" role="alert"></div>
+                    <!-- 서버측 인증 실패 경고: SPRING_SECURITY_LAST_EXCEPTION 또는 errorMessage 사용 가능 -->
+                    <%-- JSTL 사용 시:
+                    <c:if test="${not empty SPRING_SECURITY_LAST_EXCEPTION or not empty errorMessage}">
+                      <div id="login-alert" class="alert alert-danger py-2 small" role="alert">
+                        <c:out value="${errorMessage != null ? errorMessage : SPRING_SECURITY_LAST_EXCEPTION.message}" />
+                      </div>
+                    </c:if>
+                    --%>
+                    <div id="login-alert" class="alert alert-danger py-2 small d-none" role="alert"></div>
 
-                <!-- 아이디 -->
-                <div class="mb-3">
-                    <label for="acntId" class="form-label">아이디</label>
-                    <input
-                            id="acntId"
-                            name="acntId"
-                            type="text"
-                            class="form-control"
-                            placeholder="학번 또는 아이디"
-                            required
-                            autofocus
-                            inputmode="text"
-                            autocapitalize="none"
-                            spellcheck="false"
-                            autocomplete="username"
-                            aria-describedby="acntIdFeedback"
-                    />
-                    <div id="acntIdFeedback" class="invalid-feedback">아이디를 입력하세요</div>
-                </div>
-
-                <!-- 비밀번호 (보기/숨기기 + Caps/Num + 규칙 안내) -->
-                <div class="mb-3">
-                    <label for="password" class="form-label">비밀번호</label>
-
-                    <div class="input-group">
+                    <!-- 아이디 -->
+                    <div class="mb-3">
+                        <label for="acntId" class="form-label">아이디</label>
                         <input
-                                id="password"
-                                name="password"
-                                type="password"
+                                id="acntId"
+                                name="acntId"
+                                type="text"
                                 class="form-control"
-                                placeholder="비밀번호"
+                                placeholder="학번 또는 아이디"
                                 required
-                                autocomplete="current-password"
-                                aria-describedby="passwordFeedback passwordRuleText capsIndicator numIndicator"
+                                autofocus
+                                inputmode="text"
+                                autocapitalize="none"
+                                spellcheck="false"
+                                autocomplete="username"
+                                aria-describedby="acntIdFeedback"
                         />
-                        <button type="button"
-                                class="btn btn-outline-secondary"
-                                id="toggleLoginPassword"
-                                tabindex="-1">
-                            보기
-                        </button>
+                        <div id="acntIdFeedback" class="invalid-feedback">아이디를 입력하세요</div>
                     </div>
 
-                    <div id="passwordFeedback" class="invalid-feedback">
-                        비밀번호를 입력하세요
+                    <!-- 비밀번호 (보기/숨기기 + Caps/Num + 규칙 안내) -->
+                    <div class="mb-3">
+                        <label for="password" class="form-label">비밀번호</label>
+
+                        <div class="input-group">
+                            <input
+                                    id="password"
+                                    name="password"
+                                    type="password"
+                                    class="form-control"
+                                    placeholder="비밀번호"
+                                    required
+                                    autocomplete="current-password"
+                                    aria-describedby="passwordFeedback passwordRuleText capsIndicator numIndicator"
+                            />
+                            <button type="button"
+                                    class="btn btn-outline-secondary"
+                                    id="toggleLoginPassword"
+                                    tabindex="-1">
+                                보기
+                            </button>
+                        </div>
+
+                        <div id="passwordFeedback" class="invalid-feedback">
+                            비밀번호를 입력하세요
+                        </div>
+
+                        <div class="small mt-1">
+                            <span id="capsIndicator" class="text-danger d-none">Caps Lock 켜짐</span>
+                        </div>
                     </div>
 
-                    <div class="small mt-1">
-                        <span id="capsIndicator" class="text-danger d-none">Caps Lock 켜짐</span>
+                    <!-- 보조 링크 -->
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="small">
+                            <a href="javascript:void(0)"
+                               onclick="openFindIdPopup()">
+                                아이디 찾기
+                            </a>
+                            <span class="text-secondary mx-1">|</span>
+                            <a href="javascript:void(0)"
+                               onclick="openResetPwPopup()">
+                                비밀번호 재설정
+                            </a>
+                        </div>
                     </div>
-                </div>
 
-                <!-- 보조 링크 -->
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <div class="small">
-                        <a href="javascript:void(0)"
-                           class="text-primary text-decoration-underline"
-                           onclick="openFindIdPopup()"
-                           role="button">아이디 찾기</a>
-
-                        <span class="text-secondary mx-1">|</span>
-
-                        <a href="javascript:void(0)"
-                           class="text-primary text-decoration-underline"
-                           onclick="openResetPwPopup()"
-                           role="button">비밀번호 재설정</a>
-                    </div>
-                </div>
-
-                <!-- 제출 -->
-                <button type="submit" id="login-btn" class="btn btn-primary w-100">
-                    로그인
-                </button>
-            </form>
+                    <!-- 제출 -->
+                    <button type="submit" id="login-btn" class="btn btn-primary w-100">
+                        로그인
+                    </button>
+                </form>
+            </div>
         </div>
-    </div>
+</section>
 </main>
 
 <script>
@@ -205,13 +299,7 @@
                     const capsOn = e.getModifierState && e.getModifierState("CapsLock");
                     caps.classList.toggle("d-none", !capsOn);
                 }
-                if (num) {
-                    const numOn = e.getModifierState && e.getModifierState("NumLock");
-                    num.classList.toggle("d-none", !numOn);
-                }
-            } catch (_e) {
-                // 일부 브라우저에서 getModifierState 비지원이면 조용히 무시
-            }
+            } catch (_e) {}
         };
 
         input.addEventListener("keydown", updateModifierState);
@@ -287,7 +375,8 @@
 
         // 직전 로그인 실패 안내
         if (hasLoginError) {
-            showFormAlert("아이디 또는 비밀번호가 올바르지 않습니다.");
+            document.getElementById("login-alert").classList.remove("d-none");
+            document.getElementById("login-alert").textContent="아이디 또는 비밀번호가 올바르지 않습니다.";
         }
 
         // 폼 제출 바인딩
@@ -304,7 +393,7 @@
         window.open(
             "/account/find-id",
             "findIdPopup",
-            `width=\${width},height=\${height},left=\${left},top=\${top},scrollbars=no,resizable=no`
+            `width=${width},height=${height},left=${left},top=${top},scrollbars=no,resizable=no`
         );
     };
 
@@ -318,9 +407,57 @@
         window.open(
             "/account/reset-pw",
             "resetPwPopup",
-            `width=\${width},height=\${height},left=\${left},top=\${top},scrollbars=no,resizable=no`
+            `width=${width},height=${height},left=${left},top=${top},scrollbars=no,resizable=no`
         );
     };
+
+    //index부분의 hero영역(이미지변환하는 뒷배경)
+    (function () {
+        const heroSection = document.querySelector('.hero-section');
+        if (!heroSection) return;
+
+        const basePath = '${pageContext.request.contextPath}/img/background/';
+
+        const backgroundFiles = [
+            "A2876-15.jpg",
+            "npv1202507.jpg",
+            "캠퍼스 전경 이미지_3.png",
+            "CSU-Liberal-Arts-students-walking-on-campus.png",
+            "university-3776785_1280.jpg"
+        ];
+
+        if (!backgroundFiles.length) {
+            console.warn('[hero-bg] background_images 비어 있음, 랜덤 배경 비활성');
+            return;
+        }
+
+        const backgroundUrls = backgroundFiles.map(function (name) {
+            return basePath + name;
+        });
+
+        // 미리 로드
+        backgroundUrls.forEach(function (src) {
+            const img = new Image();
+            img.src = src;
+        });
+
+        function setRandomBackground() {
+            const idx = Math.floor(Math.random() * backgroundUrls.length);
+            const url = backgroundUrls[idx];
+
+            heroSection.style.backgroundImage =
+                'linear-gradient(to bottom, rgba(15,23,42,0.45), rgba(15,23,42,0.35)), url("' + url + '")';
+            heroSection.style.backgroundSize = 'cover';
+            heroSection.style.backgroundPosition = 'center center';
+            heroSection.style.backgroundRepeat = 'no-repeat';
+
+            heroSection.style.opacity = 1;
+        }
+
+        setRandomBackground();
+        setInterval(setRandomBackground, 5000);
+    })();
+
 </script>
 
 <%@ include file="index-footer.jsp"%>
@@ -329,3 +466,13 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
+
+
+
+<style>
+    .auth-card{ box-shadow:0 0 22px rgba(120,170,255,.28) inset,0 0 35px rgba(80,120,255,.28); }
+    .form-control:hover{ background:rgba(255,255,255,.14)!important; }
+    a.text-primary:hover{ text-shadow:0 0 7px rgba(150,200,255,.9); }
+    .navbar-landing.main-header{ backdrop-filter:blur(18px) brightness(.92); }
+    #capsIndicator{ text-shadow:0 0 6px rgba(255,60,60,.9); }
+</style>
