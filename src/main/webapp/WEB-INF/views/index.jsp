@@ -13,7 +13,6 @@
 <style>
 	/* ============================================
 	   0. 공통 레이아웃 / 타이포
-	   - 메인 섹션 상하 패딩 및 타이틀 타이포 통일
 	   ============================================ */
 	.news-section,
 	.section-main-bbs,
@@ -26,6 +25,16 @@
 	.research-section-title {
 	    font-size: 1.9rem;
 	    font-weight: 450;
+	}
+
+	/* 섹션 타이틀 텍스트 링크 공통 스타일 */
+	.section-title-link {
+	    color: inherit;
+	    text-decoration: none;
+	}
+	.section-title-link:hover {
+	    color: inherit;
+	    text-decoration: underline;
 	}
 
 	/* 공통 2줄 말줄임 처리 */
@@ -48,7 +57,6 @@
 	   1. 메인 게시판(공지사항 + 학사일정) 레이아웃
 	   ============================================ */
 
-	/* 공지+학사일정 컨테이너 (폭/센터 정렬) */
 	.section-main-bbs .main-bbs-container {
 	    max-width: 1250px;
 	    margin-inline: auto;
@@ -144,23 +152,10 @@
 	    box-sizing: border-box;
 	}
 
-	/* 공지 리스트 스크롤바 스타일 */
-	.main-bbs-card .main-bbs-list::-webkit-scrollbar {
-	    width: 6px;
-	}
-	.main-bbs-card .main-bbs-list::-webkit-scrollbar-track {
-	    background: transparent;
-	}
-	.main-bbs-card .main-bbs-list::-webkit-scrollbar-thumb {
-	    background: #cbd5f5;
-	    border-radius: 999px;
-	}
-
 	/* ============================================
 	   1-2. 메인 학사일정 카드 레이아웃
 	   ============================================ */
 
-	/* 학사일정 카드 전체 래퍼(폭/높이/패딩) */
 	.section-main-bbs .main-calendar-card {
 	    position: relative;
 	    width: 112%;
@@ -173,7 +168,6 @@
 	    box-shadow: none;
 	}
 
-	/* 학사일정 카드 헤더(부제) */
 	.section-main-bbs .main-calendar-card .card-header {
 	    flex: 0 0 auto;
 	    padding: 4px 0 8px;
@@ -271,22 +265,18 @@
 	    z-index: 5;
 	}
 
-	/* 학사일정 화살표 아이콘 */
 	.main-calendar-card .calendar-arrow i {
 	    font-size: 18px;
 	}
 
-	/* 학사일정 화살표 hover 상태 */
 	.main-calendar-card .calendar-arrow:hover {
 	    background: #111827;
 	}
 
-	/* 학사일정 이전 달 화살표 위치 */
+	/* 학사일정 이전/다음 화살표 위치 */
 	.main-calendar-card .calendar-arrow-prev {
 	    left: -55px;
 	}
-
-	/* 학사일정 다음 달 화살표 위치 */
 	.main-calendar-card .calendar-arrow-next {
 	    right: -55px;
 	}
@@ -310,13 +300,16 @@
 	    min-width: 0;
 	}
 
-	/* 학사일정 리스트 스크롤바 스타일 */
+	/* 공지/학사일정 리스트 스크롤바 공통 */
+	.main-bbs-card .main-bbs-list::-webkit-scrollbar,
 	.main-calendar-card .main-calendar-list::-webkit-scrollbar {
 	    width: 6px;
 	}
+	.main-bbs-card .main-bbs-list::-webkit-scrollbar-track,
 	.main-calendar-card .main-calendar-list::-webkit-scrollbar-track {
 	    background: transparent;
 	}
+	.main-bbs-card .main-bbs-list::-webkit-scrollbar-thumb,
 	.main-calendar-card .main-calendar-list::-webkit-scrollbar-thumb {
 	    background: #cbd5f5;
 	    border-radius: 999px;
@@ -351,7 +344,6 @@
 	   2. 학교 행사 단일 포스터 카드(index-event-card)
 	   ============================================ */
 
-	/* 단일 행사 포스터 카드 */
 	.index-event-card {
 	    max-width: 280px;
 	    margin-inline: auto;
@@ -361,12 +353,10 @@
 	    color: #fff;
 	}
 
-	/* 단일 행사 카드 썸네일 영역 패딩 */
 	.index-event-thumb-wrap {
 	    padding: 1rem 1rem 0.5rem;
 	}
 
-	/* 단일 행사 포스터 비율 유지 */
 	.index-event-thumb {
 	    position: relative;
 	    width: 100%;
@@ -376,20 +366,17 @@
 	    background: #020617 center/cover no-repeat;
 	}
 
-	/* 단일 행사 카드 본문 텍스트 */
 	.index-event-body {
 	    padding: 0.75rem 1.25rem 1.1rem;
 	    text-align: center;
 	}
 
-	/* 단일 행사 제목 */
 	.index-event-title {
 	    font-size: 0.98rem;
 	    font-weight: 600;
 	    margin-bottom: 0.25rem;
 	}
 
-	/* 단일 행사 설명 */
 	.index-event-desc {
 	    font-size: 0.8rem;
 	    color: rgba(248, 250, 252, 0.7);
@@ -400,12 +387,10 @@
 	   3. 학교 행사 포커 카드 캐러셀(event-card)
 	   ============================================ */
 
-	/* 행사 섹션(상단 공통 패딩만 사용) */
 	.section-main-events {
-	    /* 추가 스타일 없음 */
+	    /* 섹션 공통 패딩만 사용 */
 	}
 
-	/* 행사 캐러셀 래퍼(폭/패딩/가운데 정렬) */
 	.event-carousel {
 	    position: relative;
 	    max-width: 920px;
@@ -438,7 +423,6 @@
 	    pointer-events: none;
 	}
 
-	/* 행사 카드 내부 실제 내용 영역 */
 	.event-card-inner {
 	    position: relative;
 	    background: #020617;
@@ -448,13 +432,11 @@
 	    box-shadow: 0 20px 40px rgba(15, 23, 42, 0.45);
 	}
 
-	/* 행사 카드 포스터 이미지 wrapper */
 	.event-card-thumb {
 	    position: absolute;
 	    inset: 0;
 	}
 
-	/* 행사 카드 포스터 이미지 크기 */
 	.event-card-thumb img {
 	    width: 100%;
 	    height: 100%;
@@ -462,7 +444,6 @@
 	    display: block;
 	}
 
-	/* 행사 카드 하단 텍스트 영역 */
 	.event-card-body {
 	    position: absolute;
 	    left: 0;
@@ -473,7 +454,6 @@
 	    text-align: left;
 	}
 
-	/* 행사 카드 제목(10% 확대) */
 	.event-card-title {
 	    font-size: 1rem;  
 	    font-weight: 600;
@@ -481,7 +461,6 @@
 	    margin-bottom: 4px;
 	}
 
-	/* 행사 카드 설명(10% 확대) */
 	.event-card-desc {
 	    font-size: 0.90rem;  
 	    color: rgba(226, 232, 240, 0.9);
@@ -499,7 +478,7 @@
 
 	/* 양 옆 1단계 카드 (data-pos="1", "-1") */
 	.event-card[data-pos="1"] {
-	    transform: translateX(calc(-50% + 209px)) scale(0.95); /* 190px → 10% 확대 */
+	    transform: translateX(calc(-50% + 209px)) scale(0.95);
 	    z-index: 4;
 	    opacity: 1;
 	}
@@ -511,7 +490,7 @@
 
 	/* 양 옆 2단계 카드 (data-pos="2", "-2") */
 	.event-card[data-pos="2"] {
-	    transform: translateX(calc(-50% + 363px)) scale(0.88); /* 330px → 10% 확대 */
+	    transform: translateX(calc(-50% + 363px)) scale(0.88);
 	    z-index: 3;
 	    opacity: 0.95;
 	}
@@ -521,14 +500,12 @@
 	    opacity: 0.95;
 	}
 
-	/* 오른쪽 스택 카드 */
+	/* 오른쪽/왼쪽 스택 카드 */
 	.event-card[data-pos="right-stack"] {
-	    transform: translateX(calc(-50% + 473px)) scale(0.78) rotateY(-15deg); /* 430px → 10% 확대 */
+	    transform: translateX(calc(-50% + 473px)) scale(0.78) rotateY(-15deg);
 	    z-index: 2;
 	    opacity: 0.7;
 	}
-
-	/* 왼쪽 스택 카드 */
 	.event-card[data-pos="left-stack"] {
 	    transform: translateX(calc(-50% - 473px)) scale(0.78) rotateY(15deg);
 	    z-index: 2;
@@ -554,17 +531,13 @@
 	    z-index: 10;
 	}
 
-	/* 행사 화살표 hover 상태 */
 	.event-arrow:hover {
 	    background: #111827;
 	}
 
-	/* 행사 캐러셀 이전 화살표 위치(바깥으로 더 띄움) */
 	.event-arrow-prev {
 	    left: -130px;
 	}
-
-	/* 행사 캐러셀 다음 화살표 위치 */
 	.event-arrow-next {
 	    right: -130px;
 	}
@@ -573,7 +546,6 @@
 	   4. 학술 논문 리서치 캐러셀
 	   ============================================ */
 
-	/* 연구 카드 전체(둥근 모서리+그림자) */
 	.research-carousel .research-card {
 	    background: #ffffff;
 	    border-radius: 1.5rem;
@@ -581,13 +553,11 @@
 	    overflow: hidden;
 	}
 
-	/* 연구 이미지 영역 최소 높이 */
 	.research-image-wrap {
 	    min-height: 260px;
 	    height: 100%;
 	}
 
-	/* 연구 이미지 크기 */
 	.research-image-wrap img {
 	    width: 100%;
 	    height: 100%;
@@ -595,37 +565,31 @@
 	    display: block;
 	}
 
-	/* 연구 본문 영역 배경 */
 	.research-body {
 	    background: #ffffff;
 	}
 
-	/* 연구 메타 텍스트(Research + 날짜) */
 	.research-body .research-meta {
 	    font-size: 0.85rem;
 	    letter-spacing: 0.04em;
 	    text-transform: uppercase;
 	}
 
-	/* 연구 제목 텍스트 */
 	.research-body .research-title {
 	    font-size: 1.4rem;
 	    font-weight: 600;
 	    line-height: 1.4;
 	}
 
-	/* 연구 요약 텍스트 */
 	.research-body .research-desc {
 	    font-size: 0.95rem;
 	}
 
-	/* 캐러셀 컨트롤(화살표) 너비 확장 */
 	.research-carousel .carousel-control-prev,
 	.research-carousel .carousel-control-next {
 	    width: 3.5rem;
 	}
 
-	/* 캐러셀 화살표 아이콘 색 반전 */
 	.research-carousel .carousel-control-prev-icon,
 	.research-carousel .carousel-control-next-icon {
 	    filter: invert(1);
@@ -635,7 +599,6 @@
 	   5. 메인 학사일정 legend 타입 토글
 	   ============================================ */
 
-	/* 학사일정 legend 전체 래퍼 */
 	.section-main-bbs .main-legend {
 	    display: flex;
 	    flex-wrap: wrap;
@@ -647,7 +610,6 @@
 	   6. hero 섹션 배경 및 딤 레이어
 	   ============================================ */
 
-	/* hero 전체 섹션(배경 이미지 컨테이너) */
 	.hero-section {
 	    position: relative;
 	    overflow: hidden;
@@ -656,13 +618,11 @@
 	    background-repeat: no-repeat;
 	}
 
-	/* hero 내부 실제 콘텐츠 컨테이너 */
 	.hero-section > .container {
 	    position: relative;
 	    z-index: 1;
 	}
 
-	/* hero 딤 레이어(배경 어둡게 + 페이드 전환) */
 	.hero-bg-layer {
 	    position: absolute;
 	    inset: 0;
@@ -677,7 +637,6 @@
 	   7. 섹션 상단 View More 링크 버튼
 	   ============================================ */
 
-	/* View More 링크 공통 스타일 */
 	.section-link-more {
 	    position: relative;
 	    display: inline-flex;
@@ -695,7 +654,6 @@
 	    cursor: pointer;
 	}
 
-	/* View More plus 기호(hover 회전) */
 	.section-link-more::after {
 	    content: "+";
 	    display: inline-block;
@@ -707,35 +665,29 @@
 	    opacity: 0.9;
 	}
 
-	/* View More hover 상태 */
 	.section-link-more:hover::after {
 	    transform: rotate(180deg);
 	    opacity: 1;
 	}
-	
-	/* 공지사항 | 학사일정, 가운데 세로 구분선 */
+
+	/* 공지사항 | 학사일정 가운데 세로 구분선 */
 	.main-bbs-row-divider {
 	    position: relative;
 	}
-	
-	/* 가운데 세로 구분선 */
 	.main-bbs-row-divider::before {
 	    content: "";
 	    position: absolute;
-	    top: 16px;        /* 위 여백 (필요하면 조절) */
-	    bottom: 16px;     /* 아래 여백 (필요하면 조절) */
-	    left: 50%;        /* 가운데 정렬 */
+	    top: 16px;
+	    bottom: 16px;
+	    left: 50%;
 	    width: 3px;
-	    background: #e3e6ee;  /* 연한 회색 */
+	    background: #e3e6ee;
 	}
-	
-	/* 공지사항 컬럼 -> 구분선 사이 패딩 추가 */
 	.main-bbs-row-divider > .col-xl-6:first-child,
 	.main-bbs-row-divider > .col-lg-6:first-child,
 	.main-bbs-row-divider > .col-md-6:first-child {
-	    padding-right: 2.5rem; /* 기존보다 오른쪽 패딩 늘림 */
+	    padding-right: 2.5rem;
 	}
-	
 </style>
 
 
@@ -800,10 +752,10 @@
                 <c:set var="firstNews" value="${news_bbs[0]}"/>
 
                 <div class="row g-5 align-items-stretch">
-                    <!-- 좌측 썸네일 -->
+                    <!-- 좌측 썸네일 (클릭 시 게시판 상세 이동) -->
                     <div class="col-lg-5">
-                        <a href="${pageContext.request.contextPath}/news/detail/${firstNews.bbscttNo}"
-                           class="d-block rounded-3 overflow-hidden shadow-sm">
+                        <a href="${cPath}/bbs/detail?bbscttNo=${firstNews.bbscttNo}"
+                           class="d-block rounded-3 overflow-hidden shadow-sm text-decoration-none">
                             <div class="ratio ratio-4x3 bg-light">
                                 <c:choose>
                                     <c:when test="${not empty firstNews.fileGroupNo}">
@@ -820,6 +772,7 @@
                     </div>
 
                     <!-- 우측 헤드라인/리스트 -->
+                    <!-- 헤드라인 제목 클릭 시 게시판 상세 이동 -->
                     <div class="col-lg-7">
                         <div class="h-100 d-flex flex-column justify-content-between">
                             <div>
@@ -827,7 +780,7 @@
                                     캠퍼스·대내외 뉴스
                                 </div>
                                 <h3 class="h4 fw-bold mb-3">
-                                    <a href="${pageContext.request.contextPath}/news/detail/${firstNews.bbscttNo}.png"
+                                   <a href="${cPath}/bbs/detail?bbscttNo=${firstNews.bbscttNo}"
                                        class="text-decoration-none text-dark">
                                         <c:out value="${firstNews.bbscttSj}"/>
                                     </a>
@@ -837,10 +790,11 @@
                                 </p>
                             </div>
 
+                            <!-- 나머지 뉴스 목록: 각 제목 클릭 시 게시판 상세 이동 -->
                             <ul class="list-unstyled mt-4 mb-0">
                                 <c:forEach var="item" items="${news_bbs}" varStatus="st" begin="1" end="4">
                                     <li class="d-flex justify-content-between align-items-baseline py-2 border-top border-light-subtle">
-                                        <a href="${pageContext.request.contextPath}/news/detail/${item.bbscttNo}"
+                                        <a href="${cPath}/bbs/detail?bbscttNo=${item.bbscttNo}"
                                            class="flex-grow-1 me-3 text-decoration-none text-body text-truncate">
                                             <c:out value="${item.bbscttSj}"/>
                                         </a>
@@ -886,14 +840,15 @@
 	                                    등록된 공지사항이 없습니다.
 	                                </li>
 	                            </c:if>
-	
+							  <!-- 제목 클릭 시 공지 게시판 상세 이동 -->
+							                                                
 	                            <c:forEach var="row" items="${notices_bbs}" varStatus="st">
 	                                <c:if test="${st.index lt 6}">
 	                                    <li class="list-group-item">
 	                                        <div class="d-flex flex-column">
 	                                            <div class="d-flex justify-content-between align-items-start">
-	                                                <a href="#"
-	                                                   class="main-bbs-title text-body text-truncate">
+	                                              <a href="${cPath}/bbs/detail?bbscttNo=${row.bbscttNo}"
+	                                                   class="main-bbs-title text-body text-truncate text-decoration-none">
 	                                                    <c:out value="${row.bbscttSj}" />
 	                                                </a>
 	                                                <span class="text-muted main-bbs-meta ms-2">
@@ -1027,35 +982,39 @@
             </button>
 
             <ul class="event-card-track">
+	            <!-- 카드 전체 클릭 시 게시판 상세 이동 -->
                 <c:forEach var="item" items="${events_bbs}" varStatus="st">
                     <li class="event-card" data-index="${st.index}">
                         <div class="event-card-inner">
-                            <div class="event-card-thumb">
-                                <c:choose>
-                                    <c:when test="${not empty item.fileGroupNo}">
-                                        <div class="poster-wrapper">
-                                            <img src="${pageContext.request.contextPath}/images/event/${item.fileGroupNo}.png"
-                                                 alt="<c:out value='${item.bbscttSj}'/>"
-                                                 class="poster-img"/>
-                                        </div>
-                                    </c:when>
-                                    <c:otherwise>
-                                        <img src="${cPath}/images/event/default.jpg"
-                                             alt="<c:out value='${item.bbscttSj}'/>" />
-                                    </c:otherwise>
-                                </c:choose>
-                            </div>
-                            <div class="event-card-body">
-                                <h5 class="event-card-title">
-                                    <c:out value="${item.bbscttSj}" />
-                                </h5>
-                                <p class="event-card-desc">
-                                    <c:out
-                                        value="${fn:length(item.bbscttCn) > 30
-                                                 ? fn:substring(item.bbscttCn,0,30).concat('...')
-                                                 : item.bbscttCn}" />
-                                </p>
-                            </div>
+                           <a href="${cPath}/bbs/detail?bbscttNo=${item.bbscttNo}"
+                               class="d-block h-100 text-decoration-none text-reset">
+                                <div class="event-card-thumb">
+                                    <c:choose>
+                                        <c:when test="${not empty item.fileGroupNo}">
+                                            <div class="poster-wrapper">
+                                                <img src="${pageContext.request.contextPath}/images/event/${item.fileGroupNo}.png"
+                                                     alt="<c:out value='${item.bbscttSj}'/>"
+                                                     class="poster-img"/>
+                                            </div>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <img src="${cPath}/images/event/default.jpg"
+                                                 alt="<c:out value='${item.bbscttSj}'/>" />
+                                        </c:otherwise>
+                                    </c:choose>
+                                </div>
+                                <div class="event-card-body">
+                                    <h5 class="event-card-title">
+                                        <c:out value="${item.bbscttSj}" />
+                                    </h5>
+                                    <p class="event-card-desc">
+                                        <c:out
+                                            value="${fn:length(item.bbscttCn) > 30
+                                                     ? fn:substring(item.bbscttCn,0,30).concat('...')
+                                                     : item.bbscttCn}" />
+                                    </p>
+                                </div>
+                            </a>
                         </div>
                     </li>
                 </c:forEach>
@@ -1082,26 +1041,31 @@
                  data-bs-interval="8000">
 
                 <div class="carousel-inner">
+	                <!-- 좌측 썸네일 (클릭 시 게시판 상세 이동) -->
+	                                
                     <c:forEach var="paper" items="${papers_bbs}" varStatus="st">
                         <div class="carousel-item <c:if test='${st.first}'>active</c:if>">
                             <div class="row g-0 align-items-stretch research-card">
-                                <!-- 좌측 썸네일 -->
                                 <div class="col-lg-5 col-md-6">
                                     <div class="research-image-wrap">
-                                        <c:choose>
-                                            <c:when test="${not empty paper.fileGroupNo}">
-                                                <img src="${pageContext.request.contextPath}/images/research_act/${paper.fileGroupNo}.png"
-                                                     alt="<c:out value='${paper.bbscttSj}'/>">
-                                            </c:when>
-                                            <c:otherwise>
-                                                <img src="${cPath}/images/research_act/default.jpg"
-                                                     alt="연구 대표 이미지">
-                                            </c:otherwise>
-                                        </c:choose>
+                                        <a href="${cPath}/bbs/detail?bbscttNo=${paper.bbscttNo}"
+                                           class="d-block h-100">
+                                            <c:choose>
+                                                <c:when test="${not empty paper.fileGroupNo}">
+                                                    <img src="${pageContext.request.contextPath}/images/research_act/${paper.fileGroupNo}.png"
+                                                         alt="<c:out value='${paper.bbscttSj}'/>">
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <img src="${cPath}/images/research_act/default.jpg"
+                                                         alt="연구 대표 이미지">
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </a>
                                     </div>
                                 </div>
 
                                 <!-- 우측 연구 제목/요약 -->
+                                <!-- 제목 클릭 시 게시판 상세 이동 -->
                                 <div class="col-lg-7 col-md-6">
                                     <div class="research-body h-100 d-flex flex-column justify-content-center p-4 p-lg-5">
                                         <div class="research-meta text-muted mb-2">
@@ -1109,7 +1073,7 @@
                                             <fmt:formatDate value="${paper.bbscttWritngDe}" pattern="yyyy.MM.dd"/>
                                         </div>
                                         <h3 class="research-title mb-3">
-                                            <a href="${cPath}/bbs/3/detail/${paper.bbscttNo}"
+                                            <a href="${cPath}/bbs/detail?bbscttNo=${paper.bbscttNo}"
                                                class="text-reset text-decoration-none">
                                                 <c:out value="${paper.bbscttSj}"/>
                                             </a>
@@ -1350,7 +1314,7 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         }
 
-     	// AJAX 응답 렌더링
+     	// AJAX 응답 렌더링 (부트스트랩 list-group 스타일과 일치)
 		function renderEvents(events) {
 		    listEl.innerHTML = '';
 		
@@ -1371,8 +1335,8 @@ document.addEventListener('DOMContentLoaded', function () {
 		    }
 		    
             events.forEach(function (ev) {
-                const row = document.createElement('div');
-                row.className = 'main-calendar-item d-flex align-items-start px-3 pb-3';
+                const row = document.createElement('li');
+                row.className = 'list-group-item d-flex main-calendar-item';
 
                 // type 코드 정규화해서 data-event-type 에 저장
                 const typeKey = normalizeType(ev.type);
@@ -1390,12 +1354,12 @@ document.addEventListener('DOMContentLoaded', function () {
                         '<div class="fw-semibold fs-6">' + escapeHtml(dateLabel) + '</div>' +
                     '</div>' +
                     '<div class="flex-grow-1">' +
-                        '<div class="fw-semibold small mb-1 text-truncate">' +
+                        '<div class="fw-semibold mb-1 text-truncate">' +
                             escapeHtml(ev.title || '') +
                         '</div>' +
-                        '<div class="text-muted small text-truncate">' +
+                        '<p class="mb-0 text-muted small text-truncate">' +
                             escapeHtml(ev.memo || '') +
-                        '</div>' +
+                        '</p>' +
                     '</div>';
 
                 listEl.appendChild(row);
