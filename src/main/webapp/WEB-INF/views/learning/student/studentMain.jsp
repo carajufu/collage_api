@@ -301,15 +301,31 @@
 
             article.appendChild(document.createElement("hr"));
 
-            const content = detail.taskCn;
-            const pContent = document.createElement("p");
-            pContent.className = "my-4";
-            pContent.textContent = content;
-            article.appendChild(pContent);
+            const taskContent = document.createElement("div");
+            taskContent.className = "my-4 task-content";
+            taskContent.innerHTML = sanitizeHtml(detail.taskCn || "");
+            article.appendChild(taskContent);
 
             article.appendChild( await renderSubmitBtn(detail.taskNo) );
 
             body.appendChild(article);
+        }
+
+        // Remove obvious dangerous tags/attributes before injecting CKEditor HTML
+        function sanitizeHtml(html) {
+            const tpl = document.createElement("template");
+            tpl.innerHTML = html;
+
+            tpl.content.querySelectorAll("script, iframe, object, embed").forEach(el => el.remove());
+            tpl.content.querySelectorAll("*").forEach(node => {
+                [...node.attributes].forEach(attr => {
+                    if (attr.name.toLowerCase().startsWith("on")) {
+                        node.removeAttribute(attr.name);
+                    }
+                });
+            });
+
+            return tpl.innerHTML;
         }
 
         /**
@@ -942,9 +958,6 @@
                             <li class="nav-item waves-effect waves-light" role="presentation">
                                 <a href="#quiz" class="nav-link" role="tab" data-bs-toggle="tab" aria-selected="false"><h6>퀴즈</h6></a>
                             </li>
-                            <li class="nav-item waves-effect waves-light" role="presentation">
-                                <a href="#info" class="nav-link" role="tab" data-bs-toggle="tab" aria-selected="false"><h6>학습 정보</h6></a>
-                            </li>
                         </ul>
                     </div>
                     <div class="card-body p-0" style="min-height: 330px;">
@@ -1182,86 +1195,6 @@
                                     <div data-simplebar style="max-height: 330px;">
                                         <div class="card-body">
                                             <div id="questionTable"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-xxl-5 col-5">
-                <div class="card card-height-100 border border-1 shadow rounded-3">
-                    <div class="card-title">
-                        <ul class="nav nav-tabs" role="tablist">
-                            <li class="nav-item waves-effect waves-light" role="presentation">
-                                <a href="#progress" class="nav-link active" role="tab" data-bs-toggle="tab" aria-selected="true"><h6>학습 진척도</h6></a>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="card-body p-0" style="min-height: 330px;">
-                        <div class="tab-content">
-                            <div class="tab-pane active show" id="progress" role="tabpanel">
-                                <div class="card h-100">
-                                    <div data-simplebar style="max-height: 330px;">
-                                        <div class="card-body">
-                                            <div class="mb-3">
-                                                <div class="d-flex align-items-center mb-2">
-                                                    <h6 class="mb-0 fw-semibold">이번 주 할 일</h6>
-                                                </div>
-                                                <div class="list-group list-group-flush">
-                                                    <div class="list-group-item d-flex align-items-center justify-content-between px-0">
-                                                        <span>[2주차] 과제 제출</span>
-                                                        <span class="badge bg-danger rounded-pill px-3">D-1</span>
-                                                    </div>
-                                                    <div class="list-group-item d-flex align-items-center justify-content-between px-0">
-                                                        <span>[2주차] 퀴즈 응시</span>
-                                                        <span class="badge bg-warning text-dark rounded-pill px-3">D-2</span>
-                                                    </div>
-                                                    <div class="list-group-item d-flex align-items-center justify-content-between px-0">
-                                                        <span>질문게시판 답변 확인</span>
-                                                        <span class="text-muted small">읽지않음 2</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <hr class="my-3">
-
-                                            <div>
-                                                <div class="d-flex align-items-center mb-2">
-                                                    <h6 class="mb-0 fw-semibold">나의 학습 진척도</h6>
-                                                </div>
-
-                                                <div class="mb-3">
-                                                    <div class="d-flex justify-content-between align-items-center mb-1">
-                                                        <span class="fw-medium">영상 시청</span>
-                                                        <span class="text-muted">70%</span>
-                                                    </div>
-                                                    <div class="progress" style="height:10px;">
-                                                        <div class="progress-bar bg-primary" style="width:70%;" role="progressbar" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100"></div>
-                                                    </div>
-                                                </div>
-
-                                                <div class="mb-3">
-                                                    <div class="d-flex justify-content-between align-items-center mb-1">
-                                                        <span class="fw-medium">과제</span>
-                                                        <span class="text-muted">5 / 7</span>
-                                                    </div>
-                                                    <div class="progress" style="height:10px;">
-                                                        <div class="progress-bar bg-primary" style="width:71.4%;" role="progressbar" aria-valuenow="71.4" aria-valuemin="0" aria-valuemax="100"></div>
-                                                    </div>
-                                                </div>
-
-                                                <div>
-                                                    <div class="d-flex justify-content-between align-items-center mb-1">
-                                                        <span class="fw-medium">퀴즈</span>
-                                                        <span class="text-muted">4 / 5</span>
-                                                    </div>
-                                                    <div class="progress" style="height:10px;">
-                                                        <div class="progress-bar bg-primary" style="width:80%;" role="progressbar" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div>
-                                                    </div>
-                                                </div>
-                                            </div>
                                         </div>
                                     </div>
                                 </div>

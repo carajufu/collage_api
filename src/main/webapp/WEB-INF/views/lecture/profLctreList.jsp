@@ -26,13 +26,13 @@
 	                    <!-- Nav tabs -->
 	                    <ul class="nav nav-tabs nav-justified mb-3" role="tablist">
 	                        <li class="nav-item" role="presentation">
-	                            <a class="nav-link active" data-bs-toggle="tab" href="#nav-badge-home" data-filter="all" role="tab" aria-selected="true" tabindex="-1" >
-	                                전체
+	                            <a class="nav-link align-middle" data-bs-toggle="tab" href="#nav-badge-home" data-filter="1" role="tab" aria-selected="false" tabindex="-1">
+	                                현재 학기 <span class="badge rounded-pill text-bg-success">now</span>
 	                            </a>
 	                        </li>
 	                        <li class="nav-item" role="presentation">
-	                            <a class="nav-link align-middle" data-bs-toggle="tab" href="#nav-badge-home" data-filter="1" role="tab" aria-selected="false" tabindex="-1">
-	                                현재 학기 <span class="badge rounded-pill text-bg-success">now</span>
+	                            <a class="nav-link active" data-bs-toggle="tab" href="#nav-badge-home" data-filter="all" role="tab" aria-selected="true" tabindex="-1" >
+	                                전체
 	                            </a>
 	                        </li>
 	                        <li class="nav-item" role="presentation">

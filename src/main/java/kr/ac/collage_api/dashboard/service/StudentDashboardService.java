@@ -2,11 +2,16 @@ package kr.ac.collage_api.dashboard.service;
 
 import kr.ac.collage_api.dashboard.mapper.DashboardMapper;
 import kr.ac.collage_api.dashboard.vo.DashLectureVO;
+import kr.ac.collage_api.graduation.mapper.GraduationMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Slf4j
@@ -14,10 +19,74 @@ public class StudentDashboardService {
     @Autowired
     DashboardMapper dashboardMapper;
 
-    public List<DashLectureVO> selectStudent(String studentNo, String year, String currentPeriod) {
-        List<DashLectureVO> dashLectureVOList;
-        dashLectureVOList = dashboardMapper.selectStudent(studentNo, year, currentPeriod);
+    @Autowired
+    GraduationMapper graduationMapper;
 
-        return dashLectureVOList;
+    private static final int MIN_TOTAL_PNT = 130;
+    private static final int MIN_MAJOR_PNT = 54;
+    private static final int MIN_LIBERAL_PNT = 30;
+    private static final int MIN_FOREIGN_LANG = 2;
+    private static final double MIN_TOTAL_GPA = 2.0;
+
+    public List<DashLectureVO> selectStudent(String studentNo, String year, String currentPeriod) {
+        return dashboardMapper.selectStudent(studentNo, year, currentPeriod);
+    }
+
+    /**
+     * 졸업 요건 진행 현황을 대시보드 카드에 주입하기 위한 간략 스냅샷을 계산한다.
+     */
+    public Map<String, Object> getGraduationSnapshot(String studentNo) {
+        Map<String, Object> requirements = new HashMap<>();
+
+        int totalPnt = graduationMapper.getAllPnt(studentNo);
+        List<Map<String, Object>> subjects = graduationMapper.getSubjectCompletions(studentNo);
+
+        int majorPnt = 0;
+        int liberalPnt = 0;
+        long foreignLangCount = 0;
+
+        if (subjects != null) {
+            for (Map<String, Object> s : subjects) {
+                String complSe = s.get("COMPL_SE") == null ? null : s.get("COMPL_SE").toString();
+                String subjctCode = s.get("SUBJCT_CODE") == null ? null : s.get("SUBJCT_CODE").toString();
+
+                int acqsPnt = 0;
+                Object acqsPntObj = s.get("ACQS_PNT");
+                if (acqsPntObj instanceof Number) {
+                    acqsPnt = ((Number) acqsPntObj).intValue();
+                } else if (acqsPntObj != null) {
+                    try {
+                        acqsPnt = Integer.parseInt(acqsPntObj.toString());
+                    } catch (NumberFormatException ignored) { }
+                }
+
+                if ("전필".equals(complSe)) {
+                    majorPnt += acqsPnt;
+                } else if ("교필".equals(complSe)) {
+                    liberalPnt += acqsPnt;
+                }
+
+                if (subjctCode != null && subjctCode.startsWith("ENG")) {
+                    foreignLangCount++;
+                }
+            }
+        }
+
+        double totalGpa = graduationMapper.getCumulativeGpa(studentNo);
+        totalGpa = BigDecimal.valueOf(totalGpa).setScale(2, RoundingMode.HALF_UP).doubleValue();
+
+        requirements.put("MIN_TOTAL_PNT", MIN_TOTAL_PNT);
+        requirements.put("MIN_MAJOR_PNT", MIN_MAJOR_PNT);
+        requirements.put("MIN_LIBERAL_PNT", MIN_LIBERAL_PNT);
+        requirements.put("MIN_FOREIGN_LANG", MIN_FOREIGN_LANG);
+        requirements.put("MIN_TOTAL_GPA", MIN_TOTAL_GPA);
+
+        requirements.put("totalPnt", totalPnt);
+        requirements.put("majorPnt", majorPnt);
+        requirements.put("liberalPnt", liberalPnt);
+        requirements.put("foreignLangCount", foreignLangCount);
+        requirements.put("totalGpa", totalGpa);
+
+        return requirements;
     }
 }

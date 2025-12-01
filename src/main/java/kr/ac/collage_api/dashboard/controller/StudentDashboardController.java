@@ -34,6 +34,7 @@ public class StudentDashboardController {
                 currentSemester.getCurrentPeriod());
 
         model.addAttribute("lectureList", dashLectureVOList);
+        model.addAttribute("requirements", studentDashboardService.getGraduationSnapshot(principal.getName()));
 
         log.info("chkng student (model) > {}", model);
 
