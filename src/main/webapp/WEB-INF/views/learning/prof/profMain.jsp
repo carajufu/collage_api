@@ -74,6 +74,10 @@
                         <div class="card-body">
                             <div id="quizSection">
                                 <div id="quizGrid"></div>
+                                <div class="d-flex justify-content-end gap-2 mt-3">
+                                    <button type="button" class="btn btn-primary" id="quiz-create-btn"
+                                            data-bs-toggle="modal" data-bs-target="#createQuizModal">등록</button>
+                                </div>
                             </div>
                             <div id="quizSubGrid" class="d-none">
                                 <div class="d-flex justify-content-between align-items-center mb-3">
@@ -221,6 +225,129 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">닫기</button>
                 <button type="button" class="btn btn-primary" id="create-task-submit-btn">등록</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="createQuizModal" data-bs-backdrop="static" data-bs-keyboard="false"
+     tabindex="-1" aria-labelledby="createQuizModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createQuizModalLabel">퀴즈 등록</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="createQuizForm">
+                    <div class="mb-3">
+                        <label for="create-quiz-question" class="form-label">문항</label>
+                        <textarea class="form-control" id="create-quiz-question" name="quesCn" rows="4" required></textarea>
+                    </div>
+                    <div class="row">
+                        <div class="col-4 mb-3">
+                            <label for="create-quiz-week" class="form-label">주차</label>
+                            <select class="form-select" id="create-quiz-week" name="week" required>
+                                <option value="" disabled selected>주차 선택</option>
+                                <option value="1">1주차</option>
+                                <option value="2">2주차</option>
+                                <option value="3">3주차</option>
+                                <option value="4">4주차</option>
+                                <option value="5">5주차</option>
+                                <option value="6">6주차</option>
+                                <option value="7">7주차</option>
+                                <option value="8">8주차</option>
+                                <option value="9">9주차</option>
+                                <option value="10">10주차</option>
+                                <option value="11">11주차</option>
+                                <option value="12">12주차</option>
+                                <option value="13">13주차</option>
+                                <option value="14">14주차</option>
+                                <option value="15">15주차</option>
+                            </select>
+                        </div>
+                        <div class="col-4 mb-3">
+                            <label for="create-quiz-begin" class="form-label">시작일</label>
+                            <input type="date" class="form-control" id="create-quiz-begin" name="quizBeginDe" required />
+                        </div>
+                        <div class="col-4 mb-3">
+                            <label for="create-quiz-close" class="form-label">마감일</label>
+                            <input type="date" class="form-control" id="create-quiz-close" name="quizClosDe" required />
+                        </div>
+                        <div class="mb-2 d-flex justify-content-between align-items-center">
+                            <label class="form-label mb-0">보기</label>
+                            <div class="btn-group btn-group-sm">
+                                <button type="button" class="btn btn-outline-primary" id="quiz-ex-add">+</button>
+                                <button type="button" class="btn btn-outline-secondary" id="quiz-ex-del">-</button>
+                            </div>
+                        </div>
+                        <div id="quiz-ex-list" class="d-flex flex-column gap-2"></div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">취소</button>
+                <button type="button" class="btn btn-primary" id="create-quiz-submit-btn">등록</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="editQuizModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header"><h5 class="modal-title">퀴즈 수정</h5></div>
+            <div class="modal-body">
+                <form id="editQuizForm">
+                    <input type="hidden" id="edit-quiz-code" name="quizCode" />
+                    <div class="mb-3">
+                        <label for="edit-quiz-question" class="form-label">문항</label>
+                        <textarea class="form-control" id="edit-quiz-question" name="quesCn" rows="4" required></textarea>
+                    </div>
+                    <div class="row">
+                        <div class="col-4 mb-3">
+                            <label for="edit-quiz-week" class="form-label">주차</label>
+                            <select class="form-select" id="edit-quiz-week" name="week" required>
+                                <option value="" disabled selected>주차 선택</option>
+                                <option value="1">1주차</option>
+                                <option value="2">2주차</option>
+                                <option value="3">3주차</option>
+                                <option value="4">4주차</option>
+                                <option value="5">5주차</option>
+                                <option value="6">6주차</option>
+                                <option value="7">7주차</option>
+                                <option value="8">8주차</option>
+                                <option value="9">9주차</option>
+                                <option value="10">10주차</option>
+                                <option value="11">11주차</option>
+                                <option value="12">12주차</option>
+                                <option value="13">13주차</option>
+                                <option value="14">14주차</option>
+                                <option value="15">15주차</option>
+                            </select>
+                        </div>
+                        <div class="col-4 mb-3">
+                            <label for="edit-quiz-begin" class="form-label">시작일</label>
+                            <input type="date" class="form-control" id="edit-quiz-begin" name="quizBeginDe" required />
+                        </div>
+                        <div class="col-4 mb-3">
+                            <label for="edit-quiz-close" class="form-label">마감일</label>
+                            <input type="date" class="form-control" id="edit-quiz-close" name="quizClosDe" required />
+                        </div>
+                        <div class="mb-2 d-flex justify-content-between align-items-center">
+                            <label class="form-label mb-0">보기</label>
+                            <div class="btn-group btn-group-sm">
+                                <button type="button" class="btn btn-outline-primary" id="edit-quiz-ex-add">+</button>
+                                <button type="button" class="btn btn-outline-secondary" id="edit-quiz-ex-del">-</button>
+                            </div>
+                        </div>
+                        <div id="edit-quiz-ex-list" class="d-flex flex-column gap-2"></div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">취소</button>
+                <button type="button" class="btn btn-primary" id="edit-quiz-submit-btn">저장</button>
             </div>
         </div>
     </div>

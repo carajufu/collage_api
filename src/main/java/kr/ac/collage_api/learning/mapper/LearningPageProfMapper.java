@@ -1,6 +1,7 @@
 package kr.ac.collage_api.learning.mapper;
 
 import kr.ac.collage_api.learning.vo.*;
+import kr.ac.collage_api.vo.FileDetailVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -37,4 +38,26 @@ public interface LearningPageProfMapper {
 
     List<QuizPresentnVO> selectQuizPresentnByQuiz(@Param("estbllctreCode") String estbllctreCode,
                                                   @Param("quizCode") String quizCode);
+
+    String nextQuizCode();
+
+    void insertQuiz(QuizVO vo);
+
+    QuizVO getQuizByCode(String quizCode);
+
+    int updateQuiz(QuizVO vo);
+
+    int deleteQuiz(@Param("estbllctreCode") String estbllctreCode, @Param("quizCode") String quizCode);
+
+    int deleteQuizPresentnByQuiz(@Param("quizCode") String quizCode);
+
+    String nextQuizExCode();
+
+    void insertQuizEx(QuizExVO vo);
+
+    int deleteQuizExByQuiz(@Param("quizCode") String quizCode);
+
+    List<QuizExVO> selectQuizExByQuiz(@Param("quizCode") String quizCode);
+
+    FileDetailVO selectFileDetailByFileNo(@Param("fileGroupNo") long fileGroupNo, @Param("fileNo") long fileNo);
 }

@@ -59,7 +59,7 @@ public class LearningPageProfServiceImpl {
 
         String weekAcctoLrnNo = learningPageProfMapper.findWeekAcctoLrnNo(estbllctreCode, week);
         if (weekAcctoLrnNo == null) {
-            throw new IllegalArgumentException("해당 주차 정보를 찾을 수 없습니다.");
+            throw new IllegalArgumentException("?�당 주차 ?�보�?찾을 ???�습?�다.");
         }
 
         String nextTaskNo = learningPageProfMapper.nextTaskNo();
@@ -78,7 +78,7 @@ public class LearningPageProfServiceImpl {
 
     @Transactional
     public int deleteTask(String estbllctreCode, String taskNo) {
-        // 제출물이 있으면 함께 삭제
+        // ?�출물이 ?�으�??�께 ??��
         learningPageProfMapper.deleteTaskPresentnByTask(taskNo);
         return learningPageProfMapper.deleteTask(estbllctreCode, taskNo);
     }
@@ -105,7 +105,7 @@ public class LearningPageProfServiceImpl {
                              String closDe,
                              List<Map<String, Object>> exList) {
         String weekAcctoLrnNo = learningPageProfMapper.findWeekAcctoLrnNo(estbllctreCode, week);
-        if (weekAcctoLrnNo == null) throw new IllegalArgumentException("해당 주차 정보를 찾을 수 없습니다.");
+        if (weekAcctoLrnNo == null) throw new IllegalArgumentException("?�당 주차 ?�보�?찾을 ???�습?�다.");
         String nextQuizCode = learningPageProfMapper.nextQuizCode();
 
         QuizVO vo = new QuizVO();
@@ -132,7 +132,7 @@ public class LearningPageProfServiceImpl {
                              List<Map<String, Object>> exList) {
 
         String weekAcctoLrnNo = learningPageProfMapper.findWeekAcctoLrnNo(estbllctreCode, week);
-        if (weekAcctoLrnNo == null) throw new IllegalArgumentException("해당 주차 정보를 찾을 수 없습니다.");
+        if (weekAcctoLrnNo == null) throw new IllegalArgumentException("?�당 주차 ?�보�?찾을 ???�습?�다.");
 
         QuizVO vo = new QuizVO();
         vo.setQuizCode(quizCode);
@@ -142,7 +142,7 @@ public class LearningPageProfServiceImpl {
         vo.setQuizClosDe(closDe);
 
         int affected = learningPageProfMapper.updateQuiz(vo);
-        if (affected <= 0) throw new IllegalStateException("수정 대상 퀴즈가 없습니다.");
+        if (affected <= 0) throw new IllegalStateException("?�정 ?�???�즈가 ?�습?�다.");
 
         learningPageProfMapper.deleteQuizExByQuiz(quizCode);
         saveQuizExList(quizCode, exList);

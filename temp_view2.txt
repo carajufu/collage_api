@@ -415,17 +415,6 @@
         DELETE FROM quiz_ex WHERE quiz_code = #{quizCode}
     </delete>
 
-    <select id="selectQuizExByQuiz" parameterType="string" resultType="quizExVO">
-        SELECT quiz_ex_code,
-               quiz_code,
-               ex_no,
-               ex_cn,
-               cnsl_at
-        FROM quiz_ex
-        WHERE quiz_code = #{quizCode}
-        ORDER BY TO_NUMBER(ex_no)
-    </select>
-
     <insert id="insertQuizEx" parameterType="quizExVO">
         INSERT INTO quiz_ex(quiz_ex_code, quiz_code, ex_no, ex_cn, cnsl_at)
         VALUES(#{quizExCode}, #{quizCode}, #{exNo}, #{exCn}, #{cnslAt})

@@ -197,6 +197,8 @@
                       ON EC.LCTRE_CODE = AC.LCTRE_CODE
         WHERE AR.STDNT_NO = #{stdntNo}
           AND AR.REQST_STTUS = '신청완료'
+          AND AR.REQST_YEAR = '2025'
+          AND AR.REQST_SEMSTR = '2학기'
         ORDER BY
             EC.ESTBL_YEAR DESC
                ,EC.ESTBL_SEMSTR DESC

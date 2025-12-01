@@ -1,4 +1,4 @@
-ï»¿(() => {
+(() => {
     const params = new URLSearchParams(location.search);
     const estbllctreCode = window.__ESTBLLCTRE_CODE || params.get('estbllctreCode');
     const initialTab = params.get('tab') || 'tasks';
@@ -31,9 +31,6 @@
     const createQuizWeek = document.getElementById('create-quiz-week');
     const createQuizBegin = document.getElementById('create-quiz-begin');
     const createQuizClose = document.getElementById('create-quiz-close');
-    const quizExList = document.getElementById('quiz-ex-list');
-    const quizExAddBtn = document.getElementById('quiz-ex-add');
-    const quizExDelBtn = document.getElementById('quiz-ex-del');
     const editQuizModal = document.getElementById('editQuizModal');
     const editQuizForm = document.getElementById('editQuizForm');
     const editQuizCode = document.getElementById('edit-quiz-code');
@@ -41,10 +38,10 @@
     const editQuizWeek = document.getElementById('edit-quiz-week');
     const editQuizBegin = document.getElementById('edit-quiz-begin');
     const editQuizClose = document.getElementById('edit-quiz-close');
-    const editQuizExList = document.getElementById('edit-quiz-ex-list');
-    const editQuizExAddBtn = document.getElementById('edit-quiz-ex-add');
-    const editQuizExDelBtn = document.getElementById('edit-quiz-ex-del');
     const quizCodeHidden = document.getElementById('edit-quiz-code');
+    const quizExList = document.getElementById('quiz-ex-list');
+    const quizExAddBtn = document.getElementById('quiz-ex-add');
+    const quizExDelBtn = document.getElementById('quiz-ex-del');
     let editTaskEditor = null;
     const createModalEl = document.getElementById('createTaskModal');
     const createTaskForm = document.getElementById('createTaskForm');
@@ -63,7 +60,7 @@
         if (!head || head.querySelector('.gridjs-total')) return;
         const totalEl = document.createElement('div');
         totalEl.className = 'gridjs-total';
-        totalEl.textContent = `ì´ ${count}ê±´`;
+        totalEl.textContent = `ÃÑ ${count}°Ç`;
         head.insertBefore(totalEl, head.firstChild);
     };
 
@@ -91,7 +88,7 @@
 
         submissionTitleEl = document.createElement('h6');
         submissionTitleEl.className = 'mb-0';
-        submissionTitleEl.textContent = 'ëª©ë¡';
+        submissionTitleEl.textContent = '¸ñ·Ï';
 
         header.append(submissionTitleEl);
 
@@ -124,7 +121,7 @@
         if (!gridTarget) return;
 
         if (submissionTitleEl) {
-            submissionTitleEl.textContent = title ? `${title}` : 'ì œì¶œ ëª©ë¡';
+            submissionTitleEl.textContent = title ? `${title}` : 'Á¦Ãâ ¸ñ·Ï';
         }
 
         const rows = toArray(list).map(item => {
@@ -135,7 +132,7 @@
                       <div class="dropend">
                         <button class="btn btn-ghost-primary btn-sm dropdown-toggle" type="button"
                                 data-bs-toggle="dropdown" aria-expanded="false">
-                          ì œì¶œíŒŒì¼ (${files.length})
+                          Á¦ÃâÆÄÀÏ (${files.length})
                         </button>
                         <ul class="dropdown-menu">
                           ${files.map(fd => `
@@ -143,7 +140,7 @@
                               <a class="dropdown-item d-flex align-items-center gap-2"
                                  href="/learning/prof/downloadFile?fileGroupNo=${encodeURIComponent(item.fileGroupNo)}${fd.fileNo ? `&fileNo=${encodeURIComponent(fd.fileNo)}` : ''}">
                                 <i class="las la-paperclip text-muted"></i>
-                                <span>${escapeAttr(fd.fileNm || '(ë¬´ì œ)')}</span>
+                                <span>${escapeAttr(fd.fileNm || '(¹«Á¦)')}</span>
                               </a>
                             </li>
                           `).join('')}
@@ -154,7 +151,7 @@
             return [
                 item.stdntNo,
                 item.stdntNm,
-                item.presentnAt === '1' ? 'ì œì¶œ' : 'ë¯¸ì œì¶œ',
+                item.presentnAt === '1' ? 'Á¦Ãâ' : '¹ÌÁ¦Ãâ',
                 item.taskPresentnDe || '-',
                 fileCell || '-'
             ];
@@ -166,31 +163,31 @@
             columns: [
                 {
                     id: "stdntNo",
-                    name: "í•™ë²ˆ",
+                    name: "ÇĞ¹ø",
                     search: true,
                     sort: true
                 },
                 {
                     id: "stdntNm",
-                    name: "ì´ë¦„",
+                    name: "ÀÌ¸§",
                     search: true,
                     sort: true
                 },
                 {
                     id: "submitAt",
-                    name: "ì œì¶œìƒíƒœ",
+                    name: "Á¦Ãâ»óÅÂ",
                     search: false,
                     sort: true
                 },
                 {
                     id: "submitDe",
-                    name: "ì œì¶œì¼",
+                    name: "Á¦ÃâÀÏ",
                     search: false,
                     sort: true
                 },
                 {
                     id: "fileGroup",
-                    name: "ì œì¶œê³¼ì œ",
+                    name: "Á¦Ãâ°úÁ¦",
                     search: false,
                     sort: false
                 }
@@ -201,8 +198,8 @@
                 limit: 20
             },
             language: {
-                noRecordsFound: 'ì œì¶œ ë°ì´í„°ê°€ ì—†ìŠµë‹ˆë‹¤.',
-                search: 'í•™ë²ˆë° ì´ë¦„ìœ¼ë¡œ ê²€ìƒ‰ '
+                noRecordsFound: 'Á¦Ãâ µ¥ÀÌÅÍ°¡ ¾ø½À´Ï´Ù.',
+                search: 'ÇĞ¹ø¹× ÀÌ¸§À¸·Î °Ë»ö '
             }
         }
         gridInit(options, gridTarget)
@@ -213,11 +210,11 @@
     const loadSubmissions = (taskNo, taskTitle) => {
         const gridTarget = ensureSubmissionLayout();
         if (!gridTarget) return;
-        gridTarget.innerHTML = '<div class="text-muted">ì œì¶œ ëª©ë¡ì„ ë¶ˆëŸ¬ì˜¤ëŠ” ì¤‘...</div>';
+        gridTarget.innerHTML = '<div class="text-muted">Á¦Ãâ ¸ñ·ÏÀ» ºÒ·¯¿À´Â Áß...</div>';
         showSubmissions();
 
         fetch(`/learning/prof/task-presentn?estbllctreCode=${encodeURIComponent(estbllctreCode)}&taskNo=${encodeURIComponent(taskNo)}`)
-            .then(res => res.ok ? res.json() : Promise.reject(new Error('ì œì¶œ ëª©ë¡ ë¶ˆëŸ¬ì˜¤ê¸° ì‹¤íŒ¨')))
+            .then(res => res.ok ? res.json() : Promise.reject(new Error('Á¦Ãâ ¸ñ·Ï ºÒ·¯¿À±â ½ÇÆĞ')))
             .then(data => renderSubmissionsGrid(toArray(data), taskTitle))
             .catch(err => gridTarget.innerHTML = `<div class="text-danger">${err.message}</div>`);
     };
@@ -256,11 +253,11 @@
     const handleDeleteTask = async (taskNo) => {
         const confirm = await Swal.fire({
             icon: 'warning',
-            title: 'ê³¼ì œë¥¼ ì‚­ì œí•˜ì‹œê² ìŠµë‹ˆê¹Œ?',
-            text: 'ì œì¶œ ë°ì´í„°ê°€ í•¨ê»˜ ì‚­ì œë  ìˆ˜ ìˆìŠµë‹ˆë‹¤.',
+            title: '°úÁ¦¸¦ »èÁ¦ÇÏ½Ã°Ú½À´Ï±î?',
+            text: 'Á¦Ãâ µ¥ÀÌÅÍ°¡ ÇÔ²² »èÁ¦µÉ ¼ö ÀÖ½À´Ï´Ù.',
             showCancelButton: true,
-            confirmButtonText: 'ì‚­ì œ',
-            cancelButtonText: 'ì·¨ì†Œ'
+            confirmButtonText: '»èÁ¦',
+            cancelButtonText: 'Ãë¼Ò'
         });
         if (!confirm.isConfirmed) return;
 
@@ -268,21 +265,21 @@
             const res = await fetch(`/learning/prof/task?estbllctreCode=${encodeURIComponent(estbllctreCode)}&taskNo=${encodeURIComponent(taskNo)}`, {
                 method: 'DELETE'
             });
-            if (!res.ok) throw new Error(`ì‚­ì œ ì‹¤íŒ¨ (${res.status})`);
+            if (!res.ok) throw new Error(`»èÁ¦ ½ÇÆĞ (${res.status})`);
 
             window.__INIT_TASKS = toArray(window.__INIT_TASKS).filter(t => String(t.taskNo) !== String(taskNo));
             renderTasksWithGrid(window.__INIT_TASKS, window.__INIT_TASK_PRESENTN);
-            Swal.fire({ icon: 'success', title: 'ì‚­ì œë˜ì—ˆìŠµë‹ˆë‹¤.', timer: 1200, showConfirmButton: false });
+            Swal.fire({ icon: 'success', title: '»èÁ¦µÇ¾ú½À´Ï´Ù.', timer: 1200, showConfirmButton: false });
         } catch (err) {
             console.error(err);
-            Swal.fire({ icon: 'error', title: 'ì‚­ì œ ì‹¤íŒ¨', text: err.message || 'ì ì‹œ í›„ ë‹¤ì‹œ ì‹œë„í•˜ì„¸ìš”.' });
+            Swal.fire({ icon: 'error', title: '»èÁ¦ ½ÇÆĞ', text: err.message || 'Àá½Ã ÈÄ ´Ù½Ã ½ÃµµÇÏ¼¼¿ä.' });
         }
     };
 
     submissionBackBtn && submissionBackBtn.addEventListener('click', showTasks);
 
     const renderTasksWithGrid = (tasks, submissions) => {
-        // ê¸°ë³¸ê°’: ì´ˆê¸° ì£¼ì… ë°ì´í„° ì‚¬ìš©, ë°°ì—´ ì•ˆì „ ë³€í™˜
+        // ±âº»°ª: ÃÊ±â ÁÖÀÔ µ¥ÀÌÅÍ »ç¿ë, ¹è¿­ ¾ÈÀü º¯È¯
         const taskList = toArray(tasks ?? window.__INIT_TASKS ?? []);
         const submissionList = toArray(submissions ?? window.__INIT_TASK_PRESENTN ?? []);
 
@@ -298,7 +295,7 @@
             const taskTitle = t.taskSj || '';
             const taskDue = t.taskClosDe || '';
             const taskContent = t.taskCn || '';
-            const taskNoNum = parseInt(t.taskNo) || 0; // ìˆ«ìë¡œ ë³€í™˜í•´ ì •ë ¬ ê°€ëŠ¥í•˜ë„ë¡
+            const taskNoNum = parseInt(t.taskNo) || 0; // ¼ıÀÚ·Î º¯È¯ÇØ Á¤·Ä °¡´ÉÇÏµµ·Ï
             return [
                 taskNoNum,
                 t.taskSj,
@@ -319,10 +316,10 @@
                           </svg>
                         </button>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#" data-action="edit-task" data-task-no="${t.taskNo}" data-task-title="${escapeAttr(taskTitle)}" data-task-start="${escapeAttr(t.taskBeginDe || '')}" data-task-due="${escapeAttr(taskDue)}" data-task-cn="${escapeAttr(taskContent)}">ê³¼ì œ ìˆ˜ì •</a></li>
-                            <li><a class="dropdown-item" href="#" data-action="view-submissions" data-task-no="${t.taskNo}">ì œì¶œ í™•ì¸</a></li>
+                            <li><a class="dropdown-item" href="#" data-action="edit-task" data-task-no="${t.taskNo}" data-task-title="${escapeAttr(taskTitle)}" data-task-start="${escapeAttr(t.taskBeginDe || '')}" data-task-due="${escapeAttr(taskDue)}" data-task-cn="${escapeAttr(taskContent)}">°úÁ¦ ¼öÁ¤</a></li>
+                            <li><a class="dropdown-item" href="#" data-action="view-submissions" data-task-no="${t.taskNo}">Á¦Ãâ È®ÀÎ</a></li>
                             <li><div class="dropdown-divider"></div></li>
-                            <li><a class="dropdown-item text-danger" href="#" data-action="delete-task" data-task-no="${t.taskNo}">ì‚­ì œ</a></li>
+                            <li><a class="dropdown-item text-danger" href="#" data-action="delete-task" data-task-no="${t.taskNo}">»èÁ¦</a></li>
                         </ul>
                       </div>
         `)
@@ -336,32 +333,32 @@
             columns: [
                 {
                     id: 'no',
-                    name: 'ë²ˆí˜¸',
+                    name: '¹øÈ£',
                     search: false
                 },
                 {
                     id: 'title',
-                    name: 'ì œëª©',
+                    name: 'Á¦¸ñ',
                     search: true
                 },
                 {
                     id: 'week',
-                    name: 'ì£¼ì°¨',
+                    name: 'ÁÖÂ÷',
                     search: false
                 },
                 {
                     id: 'opnDe',
-                    name: 'ì‹œì‘ì¼ì',
+                    name: '½ÃÀÛÀÏÀÚ',
                     search: false
                 },
                 {
                     id: 'closDe',
-                    name: 'ë§ˆê°ì¼ì',
+                    name: '¸¶°¨ÀÏÀÚ',
                     search: false
                 },
                 {
                     id: 'submit',
-                    name: 'ì œì¶œ',
+                    name: 'Á¦Ãâ',
                     search: false
                 },
                 {
@@ -376,8 +373,8 @@
                 limit: 20
             },
             language: {
-                noRecordsFound: 'ê³¼ì œê°€ ì—†ìŠµë‹ˆë‹¤.',
-                search: 'ê³¼ì œ ì œëª©ìœ¼ë¡œ ê²€ìƒ‰'
+                noRecordsFound: '°úÁ¦°¡ ¾ø½À´Ï´Ù.',
+                search: '°úÁ¦ Á¦¸ñÀ¸·Î °Ë»ö'
             }
         };
 
@@ -385,7 +382,7 @@
         requestAnimationFrame(() => injectTotal(target, rows.length));
     };
 
-    // ë‚ ì§œ ê´€ë ¨ ìœ í‹¸
+    // ³¯Â¥ °ü·Ã À¯Æ¿
     const todayStr = () => new Date().toISOString().slice(0, 10);
 
     const normalizeDate = raw => {
@@ -423,7 +420,7 @@
 
     const ensureEditEditor = () => {
         if (editTaskEditor) return Promise.resolve(editTaskEditor);
-        if (!window.ClassicEditor || !editTaskContentInput) return Promise.reject(new Error('CKEditor ë¡œë”ë¥¼ ì°¾ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤.'));
+        if (!window.ClassicEditor || !editTaskContentInput) return Promise.reject(new Error('CKEditor ·Î´õ¸¦ Ã£À» ¼ö ¾ø½À´Ï´Ù.'));
         return ClassicEditor
             .create(editTaskContentInput)
             .then(editor => {
@@ -432,42 +429,44 @@
             });
     };
 
-    const addExRow = (listEl, data = {}) => {
-        const idx = listEl.children.length + 1;
+    const addExRow = (data = {}) => {
+        const idx = quizExList.children.length + 1;
         const row = document.createElement('div');
         row.className = 'd-flex align-items-center gap-2 quiz-ex-row';
         row.innerHTML = `
-          <div class="d-flex align-items-center gap-2 mb-2">
-             <input type="text" class="form-control form-control-sm" style="width:30px" value="${idx}" data-field="exNo" readonly>
-            <input type="text" class="form-control form-control-sm" style="width:350px" placeholder="ë³´ê¸° ë‚´ìš©" value="${data.exCn || ''}" data-field="exCn" required>
-             <div class="form-check d-flex align-items-center ms-1" style="white-space: nowrap;">
-                <input class="form-check-input"
-                       type="checkbox"
-                       ${data.cnslAt === '1' ? 'checked' : ''}
-                       data-field="cnslAt">
-                <label class="form-check-label small ms-1">ì •ë‹µ</label>
-              </div>
-          </div>
+      <input type="text" class="form-control form-control-sm" style="width:60px" value="${idx}" data-field="exNo" readonly>
+      <input type="text" class="form-control form-control-sm" placeholder="º¸±â ³»¿ë" value="${data.exCn || ''}" data-field="exCn" required>
+      <div class="form-check ms-2">
+        <input class="form-check-input" type="checkbox" ${data.cnslAt === '1' ? 'checked' : ''} data-field="cnslAt">
+        <label class="form-check-label small">Á¤´ä</label>
+      </div>
     `;
-        listEl.appendChild(row);
+        quizExList.appendChild(row);
     };
-    const renumberEx = (listEl) => [...listEl.querySelectorAll('[data-field="exNo"]')].forEach((el, i) => el.value = i + 1);
-    const fillExList = (listEl, arr = []) => { listEl.innerHTML = ''; (arr.length ? arr : [{}]).forEach(d => addExRow(listEl, d)); renumberEx(listEl); };
-    const collectExList = (listEl) => [...listEl.querySelectorAll('.quiz-ex-row')].map((row, i) => ({
+    const renumberEx = () => [...quizExList.querySelectorAll('[data-field="exNo"]')].forEach((el, i) => el.value = i + 1);
+    const fillExList = (arr = []) => {
+        quizExList.innerHTML = '';
+        (arr.length ? arr : [{}]).forEach(addExRow);
+        renumberEx();
+    };
+    const collectExList = () => [...quizExList.querySelectorAll('.quiz-ex-row')].map((row, i) => ({
         exNo: i + 1,
         exCn: row.querySelector('[data-field="exCn"]').value.trim(),
         cnslAt: row.querySelector('[data-field="cnslAt"]').checked ? '1' : '0'
     })).filter(ex => ex.exCn);
 
-    quizExAddBtn?.addEventListener('click', () => { addExRow(quizExList); renumberEx(quizExList); });
-    quizExDelBtn?.addEventListener('click', () => { if (quizExList.lastElementChild) quizExList.removeChild(quizExList.lastElementChild); renumberEx(quizExList); });
+    quizExAddBtn?.addEventListener('click', () => { addExRow(); renumberEx(); });
+    quizExDelBtn?.addEventListener('click', () => {
+        if (quizExList.lastElementChild) quizExList.removeChild(quizExList.lastElementChild);
+        renumberEx();
+    });
 
     const openCreateQuizModal = () => {
         if (!createQuizForm) return;
         createQuizForm.reset();
-        createQuizBegin.value = todayStr();
-        createQuizClose.value = todayStr();
-        fillExList(quizExList, [{},{},{},{}]); // ê¸°ë³¸ 4ì§€ì„ ë‹¤
+        if (createQuizBegin) createQuizBegin.value = todayStr();
+        if (createQuizClose) createQuizClose.value = todayStr();
+        fillExList([{},{},{},{}]); // ±âº» 4Áö¼±´Ù
         bootstrap.Modal.getOrCreateInstance(createQuizModal).show();
     };
 
@@ -477,11 +476,11 @@
         if (!createQuizForm?.checkValidity()) { createQuizForm.reportValidity(); return; }
         const payload = {
             estbllctreCode,
-            quesCn: createQuizQuestion.value.trim(),
-            week: createQuizWeek?.value,
-            quizBeginDe: createQuizBegin.value.replace(/-/g, ''),
-            quizClosDe: createQuizClose.value.replace(/-/g, ''),
-            quizExVOList: collectExList(quizExList)
+            quesCn: quizQuestion.value.trim(),
+            week: quizWeek?.value,
+            quizBeginDe: quizBegin.value.replace(/-/g, ''),
+            quizClosDe: quizClose.value.replace(/-/g, ''),
+            quizExVOList: collectExList()
         };
 
         try {
@@ -491,14 +490,14 @@
                 body: JSON.stringify(payload)
             });
 
-            if (!res.ok) throw new Error(`ë“±ë¡ ì‹¤íŒ¨ (${res.status})`);
+            if (!res.ok) throw new Error(`µî·Ï ½ÇÆĞ (${res.status})`);
             const saved = (await res.json().catch(() => ({})))?.data || payload;
             window.__INIT_QUIZZES = toArray(window.__INIT_QUIZZES).concat(saved);
             renderQuizGrid(window.__INIT_QUIZZES, window.__INIT_QUIZ_PRESENTN);
-            Swal.fire({ icon: 'success', title: 'ë“±ë¡ë˜ì—ˆìŠµë‹ˆë‹¤.', timer: 1200, showConfirmButton: false });
+            Swal.fire({ icon: 'success', title: 'µî·ÏµÇ¾ú½À´Ï´Ù.', timer: 1200, showConfirmButton: false });
             bootstrap.Modal.getOrCreateInstance(createQuizModal).hide();
         } catch (err) {
-            Swal.fire({ icon: 'error', title: 'ë“±ë¡ ì‹¤íŒ¨', text: err.message || 'ì ì‹œ í›„ ë‹¤ì‹œ ì‹œë„í•˜ì„¸ìš”.' });
+            Swal.fire({ icon: 'error', title: 'µî·Ï ½ÇÆĞ', text: err.message || 'Àá½Ã ÈÄ ´Ù½Ã ½ÃµµÇÏ¼¼¿ä.' });
         }
     });
 
@@ -514,7 +513,7 @@
 
         ensureEditEditor()
             .then(editor => editor.setData(task.content || ''))
-            .catch(err => console.warn('CKEditor ì´ˆê¸°í™” ì‹¤íŒ¨:', err));
+            .catch(err => console.warn('CKEditor ÃÊ±âÈ­ ½ÇÆĞ:', err));
 
         modal.show();
     };
@@ -522,11 +521,11 @@
     const handleDeleteQuiz = async (quizCode) => {
         const confirm = await Swal.fire({
             icon: 'warning',
-            title: 'í€´ì¦ˆë¥¼ ì‚­ì œí•˜ì‹œê² ìŠµë‹ˆê¹Œ?',
-            text: 'ì œì¶œ ë°ì´í„°ê°€ í•¨ê»˜ ì‚­ì œë  ìˆ˜ ìˆìŠµë‹ˆë‹¤.',
+            title: 'ÄûÁî¸¦ »èÁ¦ÇÏ½Ã°Ú½À´Ï±î?',
+            text: 'Á¦Ãâ µ¥ÀÌÅÍ°¡ ÇÔ²² »èÁ¦µÉ ¼ö ÀÖ½À´Ï´Ù.',
             showCancelButton: true,
-            confirmButtonText: 'ì‚­ì œ',
-            cancelButtonText: 'ì·¨ì†Œ'
+            confirmButtonText: '»èÁ¦',
+            cancelButtonText: 'Ãë¼Ò'
         });
         if (!confirm.isConfirmed) return;
 
@@ -534,42 +533,39 @@
             const res = await fetch(`/learning/prof/quiz?estbllctreCode=${encodeURIComponent(estbllctreCode)}&quizCode=${encodeURIComponent(quizCode)}`, {
                 method: 'DELETE'
             });
-            if (!res.ok) throw new Error(`ì‚­ì œ ì‹¤íŒ¨ (${res.status})`);
+            if (!res.ok) throw new Error(`»èÁ¦ ½ÇÆĞ (${res.status})`);
 
             window.__INIT_QUIZZES = toArray(window.__INIT_QUIZZES).filter(q => String(q.quizCode) !== String(quizCode));
             renderQuizGrid(window.__INIT_QUIZZES, window.__INIT_QUIZ_PRESENTN);
-            Swal.fire({ icon: 'success', title: 'ì‚­ì œë˜ì—ˆìŠµë‹ˆë‹¤.', timer: 1200, showConfirmButton: false });
+            Swal.fire({ icon: 'success', title: '»èÁ¦µÇ¾ú½À´Ï´Ù.', timer: 1200, showConfirmButton: false });
         } catch (err) {
             console.error(err);
-            Swal.fire({ icon: 'error', title: 'ì‚­ì œ ì‹¤íŒ¨', text: err.message || 'ì ì‹œ í›„ ë‹¤ì‹œ ì‹œë„í•˜ì„¸ìš”.' });
+            Swal.fire({ icon: 'error', title: '»èÁ¦ ½ÇÆĞ', text: err.message || 'Àá½Ã ÈÄ ´Ù½Ã ½ÃµµÇÏ¼¼¿ä.' });
         }
     };
 
     const openEditQuizModal = (quiz) => {
         if (!editQuizForm) return;
-        editQuizForm.reset();
-        editQuizCode.value = quiz.quizCode || '';
-        editQuizQuestion.value = quiz.quesCn || '';
-        if (editQuizWeek) editQuizWeek.value = quiz.week || '';
-        if (editQuizBegin) editQuizBegin.value = normalizeDate(quiz.quizBeginDe);
-        if (editQuizClose) editQuizClose.value = normalizeDate(quiz.quizClosDe);
-        fillExList(editQuizExList, quiz.quizeExVOList || quiz.quizExVOList || []);
+        editQuizForm?.reset();
+        quizCodeHidden.value = quiz.quizCode || '';
+        quizQuestion.value = quiz.quesCn || '';
+        if (quizWeek) quizWeek.value = quiz.week || '';
+        if (quizBegin) quizBegin.value = normalizeDate(quiz.quizBeginDe);
+        if (quizClose) quizClose.value = normalizeDate(quiz.quizClosDe);
+        fillExList(quiz.quizeExVOList || quiz.quizExVOList || []);
         bootstrap.Modal.getOrCreateInstance(editQuizModal).show();
     };
-
-    editQuizExAddBtn?.addEventListener('click', () => { addExRow(editQuizExList); renumberEx(editQuizExList); });
-    editQuizExDelBtn?.addEventListener('click', () => { if (editQuizExList.lastElementChild) editQuizExList.removeChild(editQuizExList.lastElementChild); renumberEx(editQuizExList); });
 
     document.getElementById('edit-quiz-submit-btn')?.addEventListener('click', async () => {
         if (!editQuizForm?.checkValidity()) { editQuizForm.reportValidity(); return; }
         const payload = {
-            quizCode: editQuizCode.value,
+            quizCode: quizCodeHidden.value,
             estbllctreCode,
-            quesCn: editQuizQuestion.value.trim(),
-            week: editQuizWeek?.value,
-            quizBeginDe: editQuizBegin.value.replace(/-/g, ''),
-            quizClosDe: editQuizClose.value.replace(/-/g, ''),
-            quizExVOList: collectExList(editQuizExList)
+            quesCn: quizQuestion.value.trim(),
+            week: quizWeek?.value,
+            quizBeginDe: quizBegin.value.replace(/-/g, ''),
+            quizClosDe: quizClose.value.replace(/-/g, ''),
+            quizExVOList: collectExList()
         };
         try {
             const res = await fetch('/learning/prof/quiz', {
@@ -577,22 +573,22 @@
                 headers: { 'Content-Type': 'application/json;charset=utf-8' },
                 body: JSON.stringify(payload)
             });
-            if (!res.ok) throw new Error(`ìˆ˜ì • ì‹¤íŒ¨ (${res.status})`);
+            if (!res.ok) throw new Error(`¼öÁ¤ ½ÇÆĞ (${res.status})`);
             const saved = (await res.json().catch(() => ({})))?.data || payload;
             window.__INIT_QUIZZES = toArray(window.__INIT_QUIZZES).map(q =>
                 String(q.quizCode) === String(saved.quizCode) ? { ...q, ...saved } : q
             );
             renderQuizGrid(window.__INIT_QUIZZES, window.__INIT_QUIZ_PRESENTN);
-            Swal.fire({ icon: 'success', title: 'ìˆ˜ì •ë˜ì—ˆìŠµë‹ˆë‹¤.', timer: 1200, showConfirmButton: false });
+            Swal.fire({ icon: 'success', title: '¼öÁ¤µÇ¾ú½À´Ï´Ù.', timer: 1200, showConfirmButton: false });
             bootstrap.Modal.getOrCreateInstance(editQuizModal).hide();
         } catch (err) {
-            Swal.fire({ icon: 'error', title: 'ìˆ˜ì • ì‹¤íŒ¨', text: err.message || 'ì ì‹œ í›„ ë‹¤ì‹œ ì‹œë„í•˜ì„¸ìš”.' });
+            Swal.fire({ icon: 'error', title: '¼öÁ¤ ½ÇÆĞ', text: err.message || 'Àá½Ã ÈÄ ´Ù½Ã ½ÃµµÇÏ¼¼¿ä.' });
         }
     });
 
     const ensureCreateEditor = () => {
         if (createTaskEditor) return Promise.resolve(createTaskEditor);
-        if (!window.ClassicEditor || !createTaskContent) return Promise.reject(new Error('CKEditor ë¡œë”ê°€ ì—†ìŠµë‹ˆë‹¤.'));
+        if (!window.ClassicEditor || !createTaskContent) return Promise.reject(new Error('CKEditor ·Î´õ°¡ ¾ø½À´Ï´Ù.'));
         return ClassicEditor.create(createTaskContent).then(editor => {
             createTaskEditor = editor;
             return editor;
@@ -632,23 +628,23 @@
                 headers: { 'Content-Type': 'application/json;charset=utf-8' },
                 body: JSON.stringify(payload)
             });
-            if (!res.ok) throw new Error(`ë“±ë¡ ì‹¤íŒ¨ (${res.status})`);
+            if (!res.ok) throw new Error(`µî·Ï ½ÇÆĞ (${res.status})`);
             const json = await res.json().catch(() => ({}));
             const created = json?.data || {};
 
             const nextTasks = toArray(window.__INIT_TASKS).concat(created);
             window.__INIT_TASKS = nextTasks;
             renderTasksWithGrid(nextTasks, window.__INIT_TASK_PRESENTN);
-            Swal.fire({ icon: 'success', title: 'ê³¼ì œê°€ ë“±ë¡ë˜ì—ˆìŠµë‹ˆë‹¤.', timer: 1200, showConfirmButton: false });
+            Swal.fire({ icon: 'success', title: '°úÁ¦°¡ µî·ÏµÇ¾ú½À´Ï´Ù.', timer: 1200, showConfirmButton: false });
             bootstrap.Modal.getOrCreateInstance(createModalEl).hide();
         } catch (err) {
             console.error(err);
-            Swal.fire({ icon: 'error', title: 'ê³¼ì œ ë“±ë¡ ì‹¤íŒ¨', text: err.message || 'ì ì‹œ í›„ ë‹¤ì‹œ ì‹œë„í•˜ì„¸ìš”.' });
+            Swal.fire({ icon: 'error', title: '°úÁ¦ µî·Ï ½ÇÆĞ', text: err.message || 'Àá½Ã ÈÄ ´Ù½Ã ½ÃµµÇÏ¼¼¿ä.' });
         }
     });
 
-    const statusLabel = { "1": "ì¶œì„", "2": "ì§€ê°", "3": "ì¡°í‡´" };
-    const mapStatus = code => statusLabel[code] || "ê²°ì„";
+    const statusLabel = { "1": "Ãâ¼®", "2": "Áö°¢", "3": "Á¶Åğ" };
+    const mapStatus = code => statusLabel[code] || "°á¼®";
 
     const attendanceModule = (() => {
         const attendGrid = document.querySelector("#attendGrid");
@@ -665,10 +661,10 @@
         statusFilterEl.className = 'form-select form-select-sm';
         statusFilterEl.style.width = '120px';
         statusFilterEl.innerHTML = `
-            <option value="ALL">ì „ì²´</option>
-            <option value="1">ì¶œì„</option>
-            <option value="2">ì§€ê°</option>
-            <option value="0">ê²°ì„</option>
+            <option value="ALL">ÀüÃ¼</option>
+            <option value="1">Ãâ¼®</option>
+            <option value="2">Áö°¢</option>
+            <option value="0">°á¼®</option>
           `;
         statusFilterEl.addEventListener('change', e => {
             console.log(e.target.value);
@@ -676,7 +672,7 @@
             renderFiltered();
         });
 
-        // ì¶œê²° DOMì´ ì•„ì˜ˆ ì—†ìœ¼ë©´ noop
+        // Ãâ°á DOMÀÌ ¾Æ¿¹ ¾øÀ¸¸é noop
         if (!attendGrid || !dateLabel || !datePicker) {
             return { load: () => {} };
         }
@@ -742,7 +738,7 @@
                           </svg>
                         </button>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#">ì¶œì„ë¥  ë³´ê¸°</a></li>
+                            <li><a class="dropdown-item" href="#">Ãâ¼®·ü º¸±â</a></li>
                         </ul>
                       </div>
                     `)
@@ -751,16 +747,16 @@
 
             const options = {
                 columns: [
-                    { id: "stdntNo", name: "í•™ë²ˆ", sort: true, search: true },
-                    { id: "stdntNm", name: "ì´ë¦„", sort: true, search: true },
-                    { id: "sbjctNm", name: "í•™ê³¼", sort: false, search: false },
-                    { id: "atendSttusCode", name: "ìƒíƒœ", sort: false, search: false },
+                    { id: "stdntNo", name: "ÇĞ¹ø", sort: true, search: true },
+                    { id: "stdntNm", name: "ÀÌ¸§", sort: true, search: true },
+                    { id: "sbjctNm", name: "ÇĞ°ú", sort: false, search: false },
+                    { id: "atendSttusCode", name: "»óÅÂ", sort: false, search: false },
                     { id: "actions", name: "", sort: false, search: false }
                 ],
                 data,
                 language: {
-                    noRecordsFound: 'ì¶œê²° ë°ì´í„°ê°€ ì—†ìŠµë‹ˆë‹¤.',
-                    search: 'í•™ë²ˆ ë° ì´ë¦„ìœ¼ë¡œ ê²€ìƒ‰'
+                    noRecordsFound: 'Ãâ°á µ¥ÀÌÅÍ°¡ ¾ø½À´Ï´Ù.',
+                    search: 'ÇĞ¹ø ¹× ÀÌ¸§À¸·Î °Ë»ö'
                 }
             }
 
@@ -789,12 +785,12 @@
         const load = async () => {
             if (!estbllctreCode) {
                 toggle(emptyBox, true);
-                if (emptyBox) emptyBox.textContent = "ê°œì„¤ê°•ì˜ ì½”ë“œê°€ ì—†ì–´ ì¶œê²°ì„ ë¶ˆëŸ¬ì˜¬ ìˆ˜ ì—†ìŠµë‹ˆë‹¤.";
+                if (emptyBox) emptyBox.textContent = "°³¼³°­ÀÇ ÄÚµå°¡ ¾ø¾î Ãâ°áÀ» ºÒ·¯¿Ã ¼ö ¾ø½À´Ï´Ù.";
                 hideLoading();
                 return;
             }
 
-            // ì´ë¯¸ í•œ ë²ˆ ë¡œë”©í–ˆë‹¤ë©´ ì„œë²„ ì¬í˜¸ì¶œ ì—†ì´ í•„í„°ë§Œ
+            // ÀÌ¹Ì ÇÑ ¹ø ·ÎµùÇß´Ù¸é ¼­¹ö ÀçÈ£Ãâ ¾øÀÌ ÇÊÅÍ¸¸
             if (state.loaded) {
                 hideLoading();
                 updateDateLabel();
@@ -804,16 +800,16 @@
 
             try {
                 toggle(emptyBox, false);
-                if (loadingText) loadingText.textContent = "ì¶œê²° ë°ì´í„°ë¥¼ ë¶ˆëŸ¬ì˜¤ëŠ” ì¤‘...";
+                if (loadingText) loadingText.textContent = "Ãâ°á µ¥ÀÌÅÍ¸¦ ºÒ·¯¿À´Â Áß...";
 
                 const res = await fetch(
                     `/learning/prof/attend?estbllctreCode=${encodeURIComponent(estbllctreCode)}`
                 );
 
-                if (!res.ok) throw new Error(`ìš”ì²­ ì‹¤íŒ¨ (${res.status})`);
+                if (!res.ok) throw new Error(`¿äÃ» ½ÇÆĞ (${res.status})`);
 
                 const json = await res.json();
-                // ì‘ë‹µì´ ë°°ì—´ì´ê±°ë‚˜ { data: [...] } ëª¨ë‘ ëŒ€ì‘
+                // ÀÀ´äÀÌ ¹è¿­ÀÌ°Å³ª { data: [...] } ¸ğµÎ ´ëÀÀ
                 state.allRows = toArray(json);
                 state.loaded = true;
 
@@ -829,13 +825,13 @@
                 console.error(err);
                 attendGrid.innerHTML = "";
                 toggle(emptyBox, true);
-                if (emptyBox) emptyBox.textContent = "ì¶œê²° ë°ì´í„°ë¥¼ ë¶ˆëŸ¬ì˜¤ì§€ ëª»í–ˆìŠµë‹ˆë‹¤.";
+                if (emptyBox) emptyBox.textContent = "Ãâ°á µ¥ÀÌÅÍ¸¦ ºÒ·¯¿ÀÁö ¸øÇß½À´Ï´Ù.";
             } finally {
                 hideLoading();
             }
         };
 
-        // ë‚ ì§œ ë„¤ë¹„ê²Œì´ì…˜ ì´ë²¤íŠ¸
+        // ³¯Â¥ ³×ºñ°ÔÀÌ¼Ç ÀÌº¥Æ®
         prevBtn && prevBtn.addEventListener("click", () => {
             state.attendDate = shiftDate(toISODate(state.attendDate), -1);
             updateDateLabel();
@@ -860,7 +856,7 @@
             renderFiltered();
         });
 
-        // ì´ˆê¸° ë¼ë²¨ë§Œ ì„¸íŒ… (ì‹¤ì œ ë°ì´í„° ë¡œë“œëŠ” íƒ­ ì „í™˜ ì‹œ)
+        // ÃÊ±â ¶óº§¸¸ ¼¼ÆÃ (½ÇÁ¦ µ¥ÀÌÅÍ ·Îµå´Â ÅÇ ÀüÈ¯ ½Ã)
         updateDateLabel();
 
         return { load };
@@ -870,7 +866,7 @@
     const loadBoard = () => {
         const target = document.getElementById('boardTable');
         fetch(`/learning/prof/board?estbllctreCode=${encodeURIComponent(estbllctreCode)}`)
-            .then(res => res.ok ? res.json() : Promise.reject(new Error('ê²Œì‹œíŒ ë¡œë“œ ì‹¤íŒ¨')))
+            .then(res => res.ok ? res.json() : Promise.reject(new Error('°Ô½ÃÆÇ ·Îµå ½ÇÆĞ')))
             .then(data => target.innerHTML = JSON.stringify(data))
             .catch(err => target.innerHTML = `<div class="text-danger">${err.message}</div>`);
     };
@@ -892,28 +888,28 @@
         quizSubmissionGrid.innerHTML = '';
 
         if (quizSubmissionTitleEl) {
-            quizSubmissionTitleEl.textContent = title ? `${title}` : 'ì œì¶œ ëª©ë¡';
+            quizSubmissionTitleEl.textContent = title ? `${title}` : 'Á¦Ãâ ¸ñ·Ï';
         }
 
         const rows = toArray(list).map(item => [
             item.stdntNo,
             item.stdntNm || '',
-            item.presentnAt === '1' ? 'ì œì¶œ' : 'ë¯¸ì œì¶œ',
+            item.presentnAt === '1' ? 'Á¦Ãâ' : '¹ÌÁ¦Ãâ',
             item.quizPresentnDe || '-',
             item.quizExCode || '-'
         ]);
 
         const options = {
             columns: [
-                { id: 'stdntNo', name: 'í•™ë²ˆ', search: true, sort: true },
-                { id: 'stdntNm', name: 'ì´ë¦„', search: true, sort: true },
-                { id: 'status', name: 'ì œì¶œìƒíƒœ', search: false, sort: true },
-                { id: 'submitDe', name: 'ì œì¶œì¼', search: false, sort: true },
-                { id: 'answer', name: 'ì„ íƒí•œ ë³´ê¸°', search: false, sort: false }
+                { id: 'stdntNo', name: 'ÇĞ¹ø', search: true, sort: true },
+                { id: 'stdntNm', name: 'ÀÌ¸§', search: true, sort: true },
+                { id: 'status', name: 'Á¦Ãâ»óÅÂ', search: false, sort: true },
+                { id: 'submitDe', name: 'Á¦ÃâÀÏ', search: false, sort: true },
+                { id: 'answer', name: '¼±ÅÃÇÑ º¸±â', search: false, sort: false }
             ],
             data: rows,
             pagination: { ...DEFAULT_GRID_OPTIONS.pagination, limit: 20 },
-            language: { noRecordsFound: 'ì œì¶œ ë°ì´í„°ê°€ ì—†ìŠµë‹ˆë‹¤.', search: 'í•™ë²ˆ ë° ì´ë¦„ìœ¼ë¡œ ê²€ìƒ‰' }
+            language: { noRecordsFound: 'Á¦Ãâ µ¥ÀÌÅÍ°¡ ¾ø½À´Ï´Ù.', search: 'ÇĞ¹ø ¹× ÀÌ¸§À¸·Î °Ë»ö' }
         };
         gridInit(options, quizSubmissionGrid);
         requestAnimationFrame(() => injectTotal(quizSubmissionGrid, rows.length));
@@ -922,11 +918,11 @@
 
     const loadQuizSubmissions = (quizCode, quizTitle) => {
         if (!quizSubmissionGrid) return;
-        quizSubmissionGrid.innerHTML = '<div class="text-muted">ì œì¶œ ëª©ë¡ì„ ë¶ˆëŸ¬ì˜¤ëŠ” ì¤‘...</div>';
+        quizSubmissionGrid.innerHTML = '<div class="text-muted">Á¦Ãâ ¸ñ·ÏÀ» ºÒ·¯¿À´Â Áß...</div>';
         showQuizSubmissions();
 
         fetch(`/learning/prof/quiz-presentn?estbllctreCode=${encodeURIComponent(estbllctreCode)}&quizCode=${encodeURIComponent(quizCode)}`)
-            .then(res => res.ok ? res.json() : Promise.reject(new Error('ì œì¶œ ëª©ë¡ ë¶ˆëŸ¬ì˜¤ê¸° ì‹¤íŒ¨')))
+            .then(res => res.ok ? res.json() : Promise.reject(new Error('Á¦Ãâ ¸ñ·Ï ºÒ·¯¿À±â ½ÇÆĞ')))
             .then(data => renderQuizSubmissions(toArray(data), quizTitle))
             .catch(err => quizSubmissionGrid.innerHTML = `<div class="text-danger">${err.message}</div>`);
     };
@@ -970,12 +966,12 @@
                                    data-quiz-week="${escapeAttr(q.week || '')}"
                                    data-quiz-begin="${escapeAttr(q.quizBeginDe || '')}"
                                    data-quiz-close="${escapeAttr(q.quizClosDe || '')}"
-                                   data-quiz-question="${escapeAttr(q.quesCn || '')}">í€´ì¦ˆ ìˆ˜ì •
+                                   data-quiz-question="${escapeAttr(q.quesCn || '')}">ÄûÁî ¼öÁ¤
                                 </a>
                               </li>
-                              <li><a class="dropdown-item" href="#" data-action="view-quiz-submissions" data-quiz-code="${q.quizCode}">ì œì¶œ í™•ì¸</a></li>
+                              <li><a class="dropdown-item" href="#" data-action="view-quiz-submissions" data-quiz-code="${q.quizCode}">Á¦Ãâ È®ÀÎ</a></li>
                               <li><div class="dropdown-divider"></div></li>
-                              <li><a class="dropdown-item text-danger" href="#" data-action="delete-quiz" data-quiz-code="${q.quizCode}">ì‚­ì œ</a></li>
+                              <li><a class="dropdown-item text-danger" href="#" data-action="delete-quiz" data-quiz-code="${q.quizCode}">»èÁ¦</a></li>
                           </ul>
                       </div>
                   `)
@@ -985,17 +981,17 @@
         quizGrid.innerHTML = '';
         const options = {
             columns: [
-                { id: 'code', name: 'í€´ì¦ˆì½”ë“œ', search: true, sort: true },
-                { id: 'title', name: 'ë¬¸í•­ ìš”ì•½', search: true, sort: false },
-                { id: 'week', name: 'ì£¼ì°¨', search: false, sort: true },
-                { id: 'begin', name: 'ì‹œì‘ì¼ì', search: false, sort: true },
-                { id: 'close', name: 'ë§ˆê°ì¼ì', search: false, sort: true },
-                { id: 'submit', name: 'ì œì¶œ', search: false, sort: false },
+                { id: 'code', name: 'ÄûÁîÄÚµå', search: true, sort: true },
+                { id: 'title', name: '¹®Ç× ¿ä¾à', search: true, sort: false },
+                { id: 'week', name: 'ÁÖÂ÷', search: false, sort: true },
+                { id: 'begin', name: '½ÃÀÛÀÏÀÚ', search: false, sort: true },
+                { id: 'close', name: '¸¶°¨ÀÏÀÚ', search: false, sort: true },
+                { id: 'submit', name: 'Á¦Ãâ', search: false, sort: false },
                 { id: 'actions', name: '', search: false, sort: false }
             ],
             data: rows,
             pagination: { ...DEFAULT_GRID_OPTIONS.pagination, limit: 20 },
-            language: { noRecordsFound: 'í€´ì¦ˆê°€ ì—†ìŠµë‹ˆë‹¤.', search: 'ë¬¸í•­ ë‚´ìš©ìœ¼ë¡œ ê²€ìƒ‰' }
+            language: { noRecordsFound: 'ÄûÁî°¡ ¾ø½À´Ï´Ù.', search: '¹®Ç× ³»¿ëÀ¸·Î °Ë»ö' }
         };
         gridInit(options, quizGrid);
         requestAnimationFrame(() => injectTotal(quizGrid, rows.length));
@@ -1003,10 +999,14 @@
     };
 
     quizGrid?.addEventListener('click', (e) => {
-        const viewLink = e.target.closest('[data-action="view-quiz-submissions"]');
-        const editLink = e.target.closest('[data-action="edit-quiz"]');
-        const delLink = e.target.closest('[data-action="delete-quiz"]');
+        const link = e.target.closest('[data-action="view-quiz-submissions"]');
+        if (!link) return;
+        e.preventDefault();
+        const quizCode = link.getAttribute('data-quiz-code');
+        const quizTitle = link.closest('tr')?.querySelector('td:nth-child(2)')?.textContent?.trim();
+        if (quizCode) loadQuizSubmissions(quizCode, quizTitle);
 
+        const viewLink = e.target.closest('[data-action="view-quiz-submissions"]');
         if (viewLink) {
             e.preventDefault();
             const quizCode = viewLink.getAttribute('data-quiz-code');
@@ -1015,22 +1015,21 @@
             return;
         }
 
+        const editLink = e.target.closest('[data-action="edit-quiz"]');
         if (editLink) {
             e.preventDefault();
-            const quizCode = editLink.getAttribute('data-quiz-code');
-            const fromState = toArray(window.__INIT_QUIZZES).find(q => String(q.quizCode) === String(quizCode)) || {};
             const quiz = {
-                quizCode,
-                week: editLink.getAttribute('data-quiz-week') || fromState.week,
-                quizBeginDe: editLink.getAttribute('data-quiz-begin') || fromState.quizBeginDe,
-                quizClosDe: editLink.getAttribute('data-quiz-close') || fromState.quizClosDe,
-                quesCn: editLink.getAttribute('data-quiz-question') || fromState.quesCn,
-                quizeExVOList: fromState.quizeExVOList || fromState.quizExVOList || []
+                quizCode: editLink.getAttribute('data-quiz-code'),
+                week: editLink.getAttribute('data-quiz-week'),
+                quizBeginDe: editLink.getAttribute('data-quiz-begin'),
+                quizClosDe: editLink.getAttribute('data-quiz-close'),
+                quesCn: editLink.getAttribute('data-quiz-question')
             };
             openEditQuizModal(quiz);
             return;
         }
 
+        const delLink = e.target.closest('[data-action="delete-quiz"]');
         if (delLink) {
             e.preventDefault();
             const quizCode = delLink.getAttribute('data-quiz-code');
@@ -1040,27 +1039,23 @@
 
     const loadQuiz = () => {
         if (!quizGrid) return;
-        quizGrid.innerHTML = '<div class="text-muted">í€´ì¦ˆ ë°ì´í„°ë¥¼ ë¶ˆëŸ¬ì˜¤ëŠ” ì¤‘...</div>';
+        quizGrid.innerHTML = '<div class="text-muted">ÄûÁî µ¥ÀÌÅÍ¸¦ ºÒ·¯¿À´Â Áß...</div>';
 
         fetch(`/learning/prof/quiz?estbllctreCode=${encodeURIComponent(estbllctreCode)}`)
-            .then(res => res.ok ? res.json() : Promise.reject(new Error('í€´ì¦ˆ ë¡œë“œ ì‹¤íŒ¨')))
-            .then(data => {
-                const quizzes = toArray(data?.quizzes);
-                window.__INIT_QUIZZES = quizzes; // í¸ì§‘ ì‹œ ë³´ê¸°ê¹Œì§€ í¬í•¨ëœ ìµœì‹  ë°ì´í„° ìœ ì§€
-                renderQuizGrid(quizzes, toArray(data?.submissions));
-            })
+            .then(res => res.ok ? res.json() : Promise.reject(new Error('ÄûÁî ·Îµå ½ÇÆĞ')))
+            .then(data => renderQuizGrid(toArray(data?.quizzes), toArray(data?.submissions)))
             .catch(err => {
                 quizGrid.innerHTML = '';
-                // ì„œë²„ í˜¸ì¶œ ì‹¤íŒ¨ ì‹œ ì´ˆê¸° ì„œë²„ ë Œë” ë°ì´í„°ë¡œ ëŒ€ì²´
+                // ¼­¹ö È£Ãâ ½ÇÆĞ ½Ã ÃÊ±â ¼­¹ö ·»´õ µ¥ÀÌÅÍ·Î ´ëÃ¼
                 renderQuizGrid(window.__INIT_QUIZZES || [], window.__INIT_QUIZ_PRESENTN || []);
                 console.error(err);
             });
     };
 
-    // ì´ˆê¸° ê³¼ì œëŠ” ëª¨ë¸ ë°ì´í„°ë¡œ ì¦‰ì‹œ ë Œë”
+    // ÃÊ±â °úÁ¦´Â ¸ğµ¨ µ¥ÀÌÅÍ·Î Áï½Ã ·»´õ
     renderTasksWithGrid(window.__INIT_TASKS || [], window.__INIT_TASK_PRESENTN || []);
 
-    // íƒ­ ì „í™˜ ì‹œ ë¹„ë™ê¸° ë¡œë“œ
+    // ÅÇ ÀüÈ¯ ½Ã ºñµ¿±â ·Îµå
     document.querySelectorAll('#profTabs a[data-bs-toggle="tab"]').forEach(tab => {
         tab.addEventListener('shown.bs.tab', (event) => {
             const id = event.target.getAttribute('href').replace('#', '');
@@ -1071,7 +1066,7 @@
     });
 
     const updateTask = e => {
-        const editForm = document.querySelector("editTaskForm");
+        const editFrom = document.querySelector("editTaskForm");
 
         fetch("/learning/prof/updTask", {
             method: "PUT",
@@ -1084,7 +1079,7 @@
                 if(resp.ok) {
                     Swal.fire({
                         icon: "success",
-                        title: "ê³¼ì œ ë‚´ìš©ì„ ìˆ˜ì • í–ˆì–´ìš”.",
+                        title: "°úÁ¦ ³»¿ëÀ» ¼öÁ¤ Çß¾î¿ä.",
                         timer:1000,
                         timerProgressBar: !0,
                         showConfirmButton: 0
@@ -1094,7 +1089,7 @@
             .catch(err => {
                 Swal.fire({
                     icon: "error",
-                    title: "ê³¼ì œ ë‚´ìš© ìˆ˜ì •ì´ ì‹¤íŒ¨ í–ˆì–´ìš”",
+                    title: "°úÁ¦ ³»¿ë ¼öÁ¤ÀÌ ½ÇÆĞ Çß¾î¿ä",
                     timer: 1000,
                     timerProgressBar: !0,
                     showConfirmButton: 0
