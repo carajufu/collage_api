@@ -118,7 +118,33 @@
                 <div class="card h-100">
                     <div data-simplebar style="max-height: 550px;">
                         <div class="card-body">
-                            <div id="boardTable" class="text-muted">게시판 데이터를 불러오는 중...</div>
+                            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+                                <div class="d-flex align-items-center gap-2">
+                                    <label class="form-label mb-0" for="board-type-filter">게시판 분류</label>
+                                    <select id="board-type-filter" class="form-select form-select-sm" style="width: 170px;">
+                                        <option value="">전체</option>
+                                    </select>
+                                </div>
+                                <button type="button" class="btn btn-primary btn-sm" id="board-create-btn" data-bs-toggle="modal" data-bs-target="#boardModal">새 글 작성</button>
+                            </div>
+                            <div id="boardGrid"></div>
+                            <div id="boardDetail" class="mt-4 d-none">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <div>
+                                        <div class="badge bg-light text-dark mb-2" id="board-detail-type">분류</div>
+                                        <h5 class="mb-1" id="board-detail-title"></h5>
+                                        <div class="text-muted small" id="board-detail-meta"></div>
+                                    </div>
+                                    <div class="btn-group btn-group-sm">
+                                        <button type="button" class="btn btn-outline-primary" id="board-edit-btn" data-bs-toggle="modal" data-bs-target="#boardModal">수정</button>
+                                        <button type="button" class="btn btn-outline-danger" id="board-delete-btn">삭제</button>
+                                    </div>
+                                </div>
+                                <div class="border rounded p-3" id="board-detail-body" style="min-height: 180px;"></div>
+                                <div class="mt-3">
+                                    <button type="button" class="btn btn-link px-0" id="board-back-btn">목록으로</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -172,7 +198,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="createTaskModalLabel">과제 등록</h5>
+                <h5 class="modal-title" id="createTaskModalLabel">과제 목록</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -353,6 +379,42 @@
     </div>
 </div>
 
+
+<div class="modal fade" id="boardModal" tabindex="-1" aria-labelledby="boardModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="boardModalLabel">게시글 작성</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="boardForm">
+                    <input type="hidden" id="board-ctt-no" name="bbscttNo" />
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label for="board-bbs-code" class="form-label">분류</label>
+                            <select class="form-select" id="board-bbs-code" name="bbsCode" required>
+                                <option value="">선택</option>
+                            </select>
+                        </div>
+                        <div class="col-md-8">
+                            <label for="board-title" class="form-label">제목</label>
+                            <input type="text" class="form-control" id="board-title" name="bbscttSj" required />
+                        </div>
+                        <div class="col-12">
+                            <label for="board-content" class="form-label">내용</label>
+                            <textarea class="form-control" id="board-content" name="bbscttCn" rows="6" required></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">취소</button>
+                <button type="button" class="btn btn-primary" id="board-save-btn">저장</button>
+            </div>
+        </div>
+    </div>
+</div>
 <script type="text/javascript">
     window.__INIT_TASKS = [
         <c:forEach var="t" items="${body.tasks}" varStatus="st">
@@ -436,3 +498,5 @@
 </style>
 
 <%@ include file="../../footer.jsp" %>
+
+

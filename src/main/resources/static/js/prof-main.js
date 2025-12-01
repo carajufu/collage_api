@@ -53,6 +53,26 @@
     const createTaskStart = document.getElementById('create-task-start');
     const createTaskDue = document.getElementById('create-task-due');
     let createTaskEditor = null;
+    const boardGrid = document.getElementById('boardGrid');
+    const boardDetail = document.getElementById('boardDetail');
+    const boardDetailTitle = document.getElementById('board-detail-title');
+    const boardDetailType = document.getElementById('board-detail-type');
+    const boardDetailMeta = document.getElementById('board-detail-meta');
+    const boardDetailBody = document.getElementById('board-detail-body');
+    const boardBackBtn = document.getElementById('board-back-btn');
+    const boardDeleteBtn = document.getElementById('board-delete-btn');
+    const boardEditBtn = document.getElementById('board-edit-btn');
+    const boardFilter = document.getElementById('board-type-filter');
+    const boardCreateBtn = document.getElementById('board-create-btn');
+    const boardModalEl = document.getElementById('boardModal');
+    const boardTitleInput = document.getElementById('board-title');
+    const boardContentInput = document.getElementById('board-content');
+    const boardBbsCodeSelect = document.getElementById('board-bbs-code');
+    const boardCttNoInput = document.getElementById('board-ctt-no');
+    const boardSaveBtn = document.getElementById('board-save-btn');
+    const boardModalInstance = boardModalEl ? new bootstrap.Modal(boardModalEl) : null;
+    const boardState = { list: [], meta: [], loaded: false };
+    let currentBoard = null;
     const toArray = val => Array.isArray(val) ? val : (Array.isArray(val?.data) ? val.data : []);
 
     const tabEl = document.querySelector(`#profTabs a[href="#${initialTab}"]`);
@@ -867,13 +887,210 @@
     })();
 
 
-    const loadBoard = () => {
-        const target = document.getElementById('boardTable');
-        fetch(`/learning/prof/board?estbllctreCode=${encodeURIComponent(estbllctreCode)}`)
-            .then(res => res.ok ? res.json() : Promise.reject(new Error('게시판 로드 실패')))
-            .then(data => target.innerHTML = JSON.stringify(data))
-            .catch(err => target.innerHTML = `<div class="text-danger">${err.message}</div>`);
+    const boardNameByCode = (code) => {
+        const found = boardState.meta.find(b => String(b.bbsCode) === String(code));
+        return found?.bbsNm || '';
     };
+
+    const renderBoardFilter = () => {
+        if (!boardFilter) return;
+        const selected = boardFilter.value;
+        boardFilter.innerHTML = '<option value=\"\">전체</option>';
+        boardState.meta.forEach(b => {
+            const opt = document.createElement('option');
+            opt.value = b.bbsCode;
+            opt.textContent = b.bbsNm || `분류 ${b.bbsCode}`;
+            if (selected && String(selected) === String(b.bbsCode)) opt.selected = true;
+            boardFilter.appendChild(opt);
+        });
+    };
+
+    const renderBoardList = () => {
+        if (!boardGrid) return;
+        const filtered = boardFilter?.value
+            ? boardState.list.filter(item => String(item.bbsCode) === String(boardFilter.value))
+            : boardState.list;
+
+        const rows = filtered.map(item => {
+            const typeName = boardNameByCode(item.bbsCode);
+            const writer = item.sklstfNm || item.stdntNm || item.stdntNo || item.acntId || '-';
+            const date = normalizeDate(item.bbscttWritngDe);
+            const title = escapeAttr(item.bbscttSj || '(제목 없음)');
+            return [
+                item.bbscttNo,
+                typeName || '-',
+                gridjs.html(`<a href=\"#\" data-action=\"open-board\" data-board-no=\"${item.bbscttNo}\">${title}</a>`),
+                writer,
+                date,
+                item.bbscttRdcnt ?? 0
+            ];
+        });
+
+        boardGrid.innerHTML = '';
+        const options = {
+            columns: [
+                { id: 'no', name: '번호', sort: true, search: false },
+                { id: 'type', name: '분류', sort: false, search: true },
+                { id: 'title', name: '제목', sort: false, search: true },
+                { id: 'writer', name: '작성자', sort: false, search: true },
+                { id: 'date', name: '작성일', sort: true, search: false },
+                { id: 'view', name: '조회수', sort: true, search: false }
+            ],
+            data: rows,
+            pagination: { ...DEFAULT_GRID_OPTIONS.pagination, limit: 15 },
+            language: { noRecordsFound: '게시글이 없습니다.', search: '제목, 작성자로 검색' }
+        };
+        gridInit(options, boardGrid);
+        requestAnimationFrame(() => injectTotal(boardGrid, rows.length));
+    };
+
+    const renderBoardDetail = (board) => {
+        if (!boardDetail) return;
+        currentBoard = board;
+        boardDetail.classList.remove('d-none');
+        if (boardDetailTitle) boardDetailTitle.textContent = board?.bbscttSj || '(제목 없음)';
+        if (boardDetailType) boardDetailType.textContent = boardNameByCode(board?.bbsCode) || '분류 없음';
+        const writer = board?.sklstfNm || board?.stdntNm || board?.stdntNo || board?.acntId || '-';
+        const date = normalizeDate(board?.bbscttWritngDe);
+        if (boardDetailMeta) boardDetailMeta.textContent = `${writer}${date ? ` · ${date}` : ''}`;
+        if (boardDetailBody) {
+            const body = board?.bbscttCn || '';
+            boardDetailBody.innerHTML = body.replace(/\n/g, '<br/>');
+        }
+    };
+
+    const openBoardDetail = (bbscttNo) => {
+        if (!bbscttNo) return;
+        if (boardDetailBody) boardDetailBody.innerHTML = '<div class=\"text-muted\">게시글을 불러오는 중...</div>';
+        if (boardDetail) boardDetail.classList.remove('d-none');
+        fetch(`/learning/prof/board/detail?estbllctreCode=${encodeURIComponent(estbllctreCode)}&bbscttNo=${encodeURIComponent(bbscttNo)}`)
+            .then(res => res.ok ? res.json() : Promise.reject(new Error('게시글을 불러오지 못했습니다.')))
+            .then(data => renderBoardDetail(data?.data || data))
+            .catch(err => boardDetailBody && (boardDetailBody.innerHTML = `<div class=\"text-danger\">${err.message}</div>`));
+    };
+
+    const resetBoardForm = (board = null) => {
+        if (!boardModalEl) return;
+        boardModalEl.querySelector('#boardForm')?.reset();
+        if (boardCttNoInput) boardCttNoInput.value = board?.bbscttNo || '';
+        if (boardTitleInput) boardTitleInput.value = board?.bbscttSj || '';
+        if (boardContentInput) boardContentInput.value = board?.bbscttCn || '';
+
+        if (boardBbsCodeSelect) {
+            boardBbsCodeSelect.innerHTML = '';
+            const targetCode = board?.bbsCode ? String(board.bbsCode) : (boardFilter?.value || '');
+            boardState.meta.forEach(b => {
+                const opt = document.createElement('option');
+                opt.value = b.bbsCode;
+                opt.textContent = b.bbsNm || `분류 ${b.bbsCode}`;
+                if (String(targetCode) === String(b.bbsCode)) opt.selected = true;
+                boardBbsCodeSelect.appendChild(opt);
+            });
+        }
+
+        const modalTitle = boardModalEl.querySelector('#boardModalLabel');
+        if (modalTitle) modalTitle.textContent = board ? '게시글 수정' : '게시글 작성';
+        if (boardModalInstance) boardModalInstance.show();
+    };
+
+    const loadBoard = async (force = false) => {
+        if (!boardGrid) return;
+        if (boardState.loaded && !force) {
+            renderBoardFilter();
+            renderBoardList();
+            return;
+        }
+        boardGrid.innerHTML = '<div class=\"text-muted\">게시판을 불러오는 중...</div>';
+        try {
+            const res = await fetch(`/learning/prof/board?estbllctreCode=${encodeURIComponent(estbllctreCode)}`);
+            if (!res.ok) throw new Error('게시판 로드 실패');
+            const data = await res.json();
+            boardState.meta = toArray(data?.bbsList);
+            boardState.list = toArray(data?.data);
+            boardState.loaded = true;
+            renderBoardFilter();
+            renderBoardList();
+        } catch (err) {
+            console.error(err);
+            boardGrid.innerHTML = `<div class=\"text-danger\">${err.message}</div>`;
+        }
+    };
+
+    const saveBoard = () => {
+        if (!boardTitleInput || !boardBbsCodeSelect) return;
+        const payload = {
+            estbllctreCode,
+            bbscttSj: boardTitleInput.value.trim(),
+            bbscttCn: boardContentInput?.value?.trim() || '',
+            bbsCode: boardBbsCodeSelect.value
+        };
+        const isEdit = !!(boardCttNoInput?.value);
+        if (isEdit) payload.bbscttNo = boardCttNoInput.value;
+
+        const method = isEdit ? 'PUT' : 'POST';
+        fetch('/learning/prof/board', {
+            method,
+            headers: { 'Content-Type': 'application/json; charset=utf-8' },
+            body: JSON.stringify(payload)
+        })
+            .then(res => res.ok ? res.json() : res.json().catch(() => ({})).then(body => Promise.reject(new Error(body.message || '저장 실패'))))
+            .then(data => {
+                boardState.loaded = false;
+                boardModalInstance?.hide();
+                return loadBoard(true).then(() => {
+                    const createdNo = data?.data?.bbscttNo;
+                    if (createdNo) openBoardDetail(createdNo);
+                });
+            })
+            .catch(err => Swal.fire({ icon: 'error', title: '저장 실패', text: err.message || '잠시 후 다시 시도하세요.' }));
+    };
+
+    const deleteBoard = () => {
+        if (!currentBoard?.bbscttNo) return;
+        Swal.fire({
+            icon: 'warning',
+            title: '게시글을 삭제할까요?',
+            text: '삭제 후 되돌릴 수 없습니다.',
+            showCancelButton: true,
+            confirmButtonText: '삭제',
+            cancelButtonText: '취소'
+        }).then(res => {
+            if (!res.isConfirmed) return;
+            fetch(`/learning/prof/board?estbllctreCode=${encodeURIComponent(estbllctreCode)}&bbscttNo=${encodeURIComponent(currentBoard.bbscttNo)}`, {
+                method: 'DELETE'
+            })
+                .then(resp => resp.ok ? resp.json() : Promise.reject(new Error('삭제에 실패했습니다.')))
+                .then(() => {
+                    Swal.fire({ icon: 'success', title: '삭제되었습니다.', timer: 1200, showConfirmButton: false });
+                    currentBoard = null;
+                    boardDetail?.classList.add('d-none');
+                    boardState.loaded = false;
+                    return loadBoard(true);
+                })
+                .catch(err => Swal.fire({ icon: 'error', title: '삭제 실패', text: err.message || '잠시 후 다시 시도하세요.' }));
+        });
+    };
+
+    boardGrid?.addEventListener('click', (e) => {
+        const link = e.target.closest('[data-action=\"open-board\"]');
+        if (link) {
+            e.preventDefault();
+            openBoardDetail(link.getAttribute('data-board-no'));
+        }
+    });
+    boardFilter?.addEventListener('change', () => {
+        renderBoardList();
+        boardDetail?.classList.add('d-none');
+    });
+    boardBackBtn?.addEventListener('click', () => {
+        boardDetail?.classList.add('d-none');
+    });
+    boardCreateBtn?.addEventListener('click', () => resetBoardForm(null));
+    boardEditBtn?.addEventListener('click', () => {
+        if (currentBoard) resetBoardForm(currentBoard);
+    });
+    boardDeleteBtn?.addEventListener('click', deleteBoard);
+    boardSaveBtn?.addEventListener('click', saveBoard);
 
     const showQuizList = () => {
         quizSection?.classList.remove('d-none');
@@ -1069,6 +1286,9 @@
             if (id === 'attend') attendanceModule.load();
         });
     });
+    if (initialTab === 'quiz') loadQuiz();
+    if (initialTab === 'board') loadBoard();
+    if (initialTab === 'attend') attendanceModule.load();
 
     const updateTask = e => {
         const editForm = document.querySelector("editTaskForm");

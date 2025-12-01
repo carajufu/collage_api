@@ -4,35 +4,26 @@ import lombok.Data;
 import lombok.ToString;
 
 @Data
-@ToString
 public class PayInfoVO {
 
-	private int payNo;
-	private int registCtNo;
-	private String stdntNo;
-	private String payDe;
-	private int payGld;
-	private String payMthd;
-	private String paySttus;
+    private int payNo;            // PAY_NO
+    private int registCtNo;       // REGIST_CT_NO
+    private String stdntNo;       // STDNT_NO
+    private String payDe;         // PAY_DE
+    private int payGld;           // PAY_GLD
+    private String payMthd;       // PAY_MTHD
+    private String paySttus;      // PAY_STTUS
+    private int schlship;         // SCHLSHIP
+    private String vrtlAcntno;    // VRTL_ACNTNO
 
-	private String stdntNm;
-	private String payYear;
-
-	private String rqestDe;
-	private String payEndde;
-
-	private String rqestYear;
-	private String rqestSemstr;
-
-	private String rqestUniv;
-	private String subjctCode;
-
-	private String rqestGrade;
-
-	private int rqestGld;
-
-	private String vrtlAcntno;
-
-	private String subjctName;
-	private String univName;
+    private String rqestYear;     // RQEST_YEAR
+    private String rqestSemstr;   // RQEST_SEMSTR
+    private String rqestDe;       // RQEST_DE
+    private String payEndde;      // PAY_ENDDE
+    private String rqestUniv;     // RQEST_UNIV
+    private int rqestGld;         // RQEST_GLD
+    private String rqestGrade;    // RQEST_GRADE
+    private String stdntNm;       // STDNT_NM
+    private String subjctName;    // SUBJCT_NAME
+    private String univName;      // UNIV_NAME
 }

@@ -89,6 +89,27 @@
         <result property="fileDwldCo" column="FILE_DWLD_CO"/>
     </resultMap>
 
+    <resultMap id="BbsMap" type="bbsVO">
+        <id property="bbsCode" column="BBS_CODE"/>
+        <result property="estbllctreCode" column="ESTBLLCTRE_CODE"/>
+        <result property="bbsNm" column="BBS_NM"/>
+        <result property="bbsDc" column="BBS_DC"/>
+    </resultMap>
+
+    <resultMap id="BbsCttMap" type="bbsCttVO">
+        <id property="bbscttNo" column="BBSCTT_NO"/>
+        <result property="acntId" column="ACNT_ID"/>
+        <result property="bbsCode" column="BBS_CODE"/>
+        <result property="parntsBbscttNo" column="PARNTS_BBSCTT_NO"/>
+        <result property="fileGroupNo" column="FILE_GROUP_NO"/>
+        <result property="bbscttSj" column="BBSCTT_SJ"/>
+        <result property="bbscttCn" column="BBSCTT_CN"/>
+        <result property="bbscttWritngDe" column="BBSCTT_WRITNG_DE"/>
+        <result property="bbscttRdcnt" column="BBSCTT_RDCNT"/>
+        <result property="sklstfNm" column="SKLSTF_NM"/>
+        <result property="stdntNo" column="STDNT_NO"/>
+    </resultMap>
+
     <resultMap id="TaskPresentnWithFileMap" type="taskPresentnVO">
         <id column="TASK_PRESENTN_NO" property="taskPresentnNo"/>
         <result column="STDNT_NO" property="stdntNo"/>
@@ -430,6 +451,120 @@
         INSERT INTO quiz_ex(quiz_ex_code, quiz_code, ex_no, ex_cn, cnsl_at)
         VALUES(#{quizExCode}, #{quizCode}, #{exNo}, #{exCn}, #{cnslAt})
     </insert>
+
+    <select id="selectLectureBbs" parameterType="string" resultMap="BbsMap">
+        SELECT
+            bbs_code,
+            estbllctre_code,
+            bbs_nm,
+            bbs_dc
+        FROM bbs
+        WHERE estbllctre_code = #{estbllctreCode}
+        ORDER BY bbs_code
+    </select>
+
+    <select id="findBbsCode" parameterType="map" resultType="int">
+        SELECT bbs_code
+        FROM bbs
+        WHERE estbllctre_code = #{estbllctreCode}
+          AND bbs_nm = #{bbsNm}
+    </select>
+
+    <select id="selectBoardList" parameterType="map" resultMap="BbsCttMap">
+        SELECT
+            ctt.bbsctt_no,
+            ctt.acnt_id,
+            ctt.bbs_code,
+            ctt.parnts_bbsctt_no,
+            ctt.file_group_no,
+            ctt.bbsctt_sj,
+            ctt.bbsctt_cn,
+            ctt.bbsctt_writng_de,
+            ctt.bbsctt_rdcnt,
+            skl.sklstf_nm,
+            std.stdnt_no
+        FROM bbs_ctt ctt
+                 INNER JOIN bbs b
+                            ON ctt.bbs_code = b.bbs_code
+                 LEFT OUTER JOIN sklstf skl
+                                 ON ctt.acnt_id = skl.acnt_id
+                 LEFT OUTER JOIN stdnt std
+                                 ON ctt.acnt_id = std.acnt_id
+        WHERE b.estbllctre_code = #{estbllctreCode}
+        <if test="bbsCode != null">
+            AND ctt.bbs_code = #{bbsCode}
+        </if>
+        ORDER BY ctt.bbsctt_no DESC
+    </select>
+
+    <select id="selectBoardDetail" parameterType="map" resultMap="BbsCttMap">
+        SELECT
+            ctt.bbsctt_no,
+            ctt.acnt_id,
+            ctt.bbs_code,
+            ctt.parnts_bbsctt_no,
+            ctt.file_group_no,
+            ctt.bbsctt_sj,
+            ctt.bbsctt_cn,
+            ctt.bbsctt_writng_de,
+            ctt.bbsctt_rdcnt,
+            skl.sklstf_nm,
+            std.stdnt_no
+        FROM bbs_ctt ctt
+                 INNER JOIN bbs b
+                            ON ctt.bbs_code = b.bbs_code
+                 LEFT OUTER JOIN sklstf skl
+                                 ON ctt.acnt_id = skl.acnt_id
+                 LEFT OUTER JOIN stdnt std
+                                 ON ctt.acnt_id = std.acnt_id
+        WHERE b.estbllctre_code = #{estbllctreCode}
+          AND ctt.bbsctt_no = #{bbscttNo}
+    </select>
+
+    <select id="nextBoardNo" resultType="int">
+        SELECT NVL(MAX(bbsctt_no), 0) + 1
+        FROM bbs_ctt
+    </select>
+
+    <insert id="insertBoard" parameterType="bbsCttVO">
+        INSERT INTO bbs_ctt (
+            bbsctt_no,
+            acnt_id,
+            bbs_code,
+            parnts_bbsctt_no,
+            file_group_no,
+            bbsctt_sj,
+            bbsctt_cn,
+            bbsctt_writng_de,
+            bbsctt_rdcnt
+        ) VALUES (
+            #{bbscttNo},
+            #{acntId},
+            #{bbsCode},
+            NVL(#{parntsBbscttNo}, 0),
+            #{fileGroupNo},
+            #{bbscttSj},
+            #{bbscttCn},
+            SYSDATE,
+            NVL(#{bbscttRdcnt}, 0)
+        )
+    </insert>
+
+    <update id="updateBoard" parameterType="bbsCttVO">
+        UPDATE bbs_ctt
+        SET bbs_code = #{bbsCode},
+            bbsctt_sj = #{bbscttSj},
+            bbsctt_cn = #{bbscttCn}
+        WHERE bbsctt_no = #{bbscttNo}
+    </update>
+
+    <delete id="deleteBoard" parameterType="map">
+        DELETE FROM bbs_ctt
+        WHERE bbsctt_no = #{bbscttNo}
+          AND bbs_code IN (
+            SELECT bbs_code FROM bbs WHERE estbllctre_code = #{estbllctreCode}
+        )
+    </delete>
 
     <select id="selectFileDetailByFileNo" parameterType="long" resultType="fileDetailVO">
         SELECT

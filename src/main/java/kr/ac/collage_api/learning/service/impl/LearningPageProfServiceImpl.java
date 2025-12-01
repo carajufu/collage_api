@@ -3,6 +3,8 @@ package kr.ac.collage_api.learning.service.impl;
 import kr.ac.collage_api.common.attach.service.BeanController;
 import kr.ac.collage_api.learning.mapper.LearningPageProfMapper;
 import kr.ac.collage_api.learning.vo.*;
+import kr.ac.collage_api.vo.BbsCttVO;
+import kr.ac.collage_api.vo.BbsVO;
 import kr.ac.collage_api.vo.FileDetailVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -177,6 +179,86 @@ public class LearningPageProfServiceImpl {
             exVO.setCnslAt(String.valueOf(ex.getOrDefault("cnslAt", "0")));
             learningPageProfMapper.insertQuizEx(exVO);
         }
+    }
+
+    public List<BbsVO> getBoardMeta(String estbllctreCode) {
+        return learningPageProfMapper.selectLectureBbs(estbllctreCode);
+    }
+
+    public List<BbsCttVO> getBoardList(String estbllctreCode, Integer bbsCode) {
+        return learningPageProfMapper.selectBoardList(estbllctreCode, bbsCode);
+    }
+
+    public BbsCttVO getBoardDetail(String estbllctreCode, Integer bbscttNo) {
+        return learningPageProfMapper.selectBoardDetail(estbllctreCode, bbscttNo);
+    }
+
+    public BbsCttVO createBoard(String estbllctreCode,
+                                String bbsNm,
+                                Integer bbsCode,
+                                String title,
+                                String content,
+                                String acntId) {
+        Integer resolvedCode = resolveBbsCode(estbllctreCode, bbsCode, bbsNm);
+        if (resolvedCode == null) {
+            throw new IllegalArgumentException("게시판 코드를 찾을 수 없습니다.");
+        }
+        Integer nextNo = learningPageProfMapper.nextBoardNo();
+
+        BbsCttVO vo = new BbsCttVO();
+        vo.setBbscttNo(nextNo);
+        vo.setBbsCode(resolvedCode);
+        vo.setBbscttSj(title);
+        vo.setBbscttCn(content);
+        vo.setAcntId(acntId);
+        vo.setBbscttRdcnt(0);
+
+        learningPageProfMapper.insertBoard(vo);
+        return learningPageProfMapper.selectBoardDetail(estbllctreCode, nextNo);
+    }
+
+    public BbsCttVO updateBoard(String estbllctreCode,
+                                Integer bbscttNo,
+                                Integer bbsCode,
+                                String title,
+                                String content,
+                                String acntId) {
+        if (bbscttNo == null) {
+            throw new IllegalArgumentException("bbscttNo is required");
+        }
+        BbsCttVO existing = learningPageProfMapper.selectBoardDetail(estbllctreCode, bbscttNo);
+        if (existing == null) {
+            throw new IllegalStateException("게시글을 찾을 수 없습니다.");
+        }
+
+        Integer resolvedCode = resolveBbsCode(estbllctreCode, bbsCode, null);
+
+        BbsCttVO vo = new BbsCttVO();
+        vo.setBbscttNo(bbscttNo);
+        vo.setBbsCode(resolvedCode != null ? resolvedCode : existing.getBbsCode());
+        vo.setBbscttSj(title);
+        vo.setBbscttCn(content);
+        vo.setAcntId(acntId);
+
+        learningPageProfMapper.updateBoard(vo);
+        return learningPageProfMapper.selectBoardDetail(estbllctreCode, bbscttNo);
+    }
+
+    public int deleteBoard(String estbllctreCode, Integer bbscttNo) {
+        if (bbscttNo == null) {
+            throw new IllegalArgumentException("bbscttNo is required");
+        }
+        return learningPageProfMapper.deleteBoard(estbllctreCode, bbscttNo);
+    }
+
+    private Integer resolveBbsCode(String estbllctreCode, Integer bbsCode, String bbsNm) {
+        if (bbsCode != null) {
+            return bbsCode;
+        }
+        if (bbsNm != null) {
+            return learningPageProfMapper.findBbsCode(estbllctreCode, bbsNm);
+        }
+        return null;
     }
 
     public FileDetailVO getFileDetail(long fileGroupNo, long fileNo) {

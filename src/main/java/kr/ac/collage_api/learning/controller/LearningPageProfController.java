@@ -2,6 +2,8 @@ package kr.ac.collage_api.learning.controller;
 
 import kr.ac.collage_api.learning.service.impl.LearningPageProfServiceImpl;
 import kr.ac.collage_api.learning.vo.*;
+import kr.ac.collage_api.vo.BbsCttVO;
+import kr.ac.collage_api.vo.BbsVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -12,6 +14,7 @@ import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -184,5 +187,110 @@ public class LearningPageProfController {
     public ResponseEntity<Resource> getFiles(@RequestParam long fileGroupNo,
                                              @RequestParam long fileNo) throws Exception {
         return learningPageProfService.downloadFile(fileGroupNo, fileNo);
+    }
+
+    @GetMapping("/board")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> getBoardList(@RequestParam String estbllctreCode,
+                                                            @RequestParam(required = false) Integer bbsCode) {
+        List<BbsVO> bbsList = learningPageProfService.getBoardMeta(estbllctreCode);
+        List<BbsCttVO> boards = learningPageProfService.getBoardList(estbllctreCode, bbsCode);
+
+        Map<String, Object> resp = new HashMap<>();
+        resp.put("status", "success");
+        resp.put("bbsList", bbsList);
+        resp.put("data", boards);
+        return ResponseEntity.ok(resp);
+    }
+
+    @GetMapping("/board/detail")
+    @ResponseBody
+    public ResponseEntity<?> getBoardDetail(@RequestParam String estbllctreCode,
+                                            @RequestParam Integer bbscttNo) {
+        if (!StringUtils.hasText(estbllctreCode) || bbscttNo == null) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("status", "error", "message", "estbllctreCode, bbscttNo 값이 필요합니다."));
+        }
+        BbsCttVO detail = learningPageProfService.getBoardDetail(estbllctreCode, bbscttNo);
+        if (detail == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("status", "error", "message", "게시글을 찾을 수 없습니다."));
+        }
+        return ResponseEntity.ok(Map.of("status", "success", "data", detail));
+    }
+
+    @PostMapping("/board")
+    @ResponseBody
+    public ResponseEntity<?> createBoard(@RequestBody Map<String, Object> body,
+                                         Principal principal) {
+        String estbllctreCode = String.valueOf(body.getOrDefault("estbllctreCode", "")).trim();
+        String title = String.valueOf(body.getOrDefault("bbscttSj", "")).trim();
+        String content = String.valueOf(body.getOrDefault("bbscttCn", "")).trim();
+        String bbsNm = String.valueOf(body.getOrDefault("bbsNm", "")).trim();
+        bbsNm = StringUtils.hasText(bbsNm) ? bbsNm : null;
+        Integer bbsCode = null;
+        Object bbsCodeObj = body.get("bbsCode");
+        if (bbsCodeObj != null && StringUtils.hasText(String.valueOf(bbsCodeObj))) {
+            bbsCode = Integer.parseInt(String.valueOf(bbsCodeObj));
+        }
+
+        if (!StringUtils.hasText(estbllctreCode) || !StringUtils.hasText(title)) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("status", "error", "message", "estbllctreCode, bbscttSj 필수값 누락"));
+        }
+
+        String acntId = principal != null ? principal.getName() : null;
+        if (!StringUtils.hasText(acntId)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("status", "error", "message", "로그인 정보가 없습니다."));
+        }
+        BbsCttVO created = learningPageProfService.createBoard(estbllctreCode, bbsNm, bbsCode, title, content, acntId);
+        return ResponseEntity.ok(Map.of("status", "success", "data", created));
+    }
+
+    @PutMapping("/board")
+    @ResponseBody
+    public ResponseEntity<?> updateBoard(@RequestBody Map<String, Object> body,
+                                         Principal principal) {
+        String estbllctreCode = String.valueOf(body.getOrDefault("estbllctreCode", "")).trim();
+        String title = String.valueOf(body.getOrDefault("bbscttSj", "")).trim();
+        String content = String.valueOf(body.getOrDefault("bbscttCn", "")).trim();
+        Integer bbscttNo = null;
+        if (body.get("bbscttNo") != null) {
+            bbscttNo = Integer.parseInt(String.valueOf(body.get("bbscttNo")));
+        }
+        Integer bbsCode = null;
+        if (body.get("bbsCode") != null) {
+            bbsCode = Integer.parseInt(String.valueOf(body.get("bbsCode")));
+        }
+
+        if (!StringUtils.hasText(estbllctreCode) || bbscttNo == null || !StringUtils.hasText(title)) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("status", "error", "message", "estbllctreCode, bbscttNo, bbscttSj 필수값 누락"));
+        }
+
+        String acntId = principal != null ? principal.getName() : null;
+        if (!StringUtils.hasText(acntId)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("status", "error", "message", "로그인 정보가 없습니다."));
+        }
+        BbsCttVO updated = learningPageProfService.updateBoard(estbllctreCode, bbscttNo, bbsCode, title, content, acntId);
+        return ResponseEntity.ok(Map.of("status", "success", "data", updated));
+    }
+
+    @DeleteMapping("/board")
+    @ResponseBody
+    public ResponseEntity<?> deleteBoard(@RequestParam String estbllctreCode,
+                                         @RequestParam Integer bbscttNo) {
+        if (!StringUtils.hasText(estbllctreCode) || bbscttNo == null) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("status", "error", "message", "estbllctreCode, bbscttNo 필수값 누락"));
+        }
+        int deleted = learningPageProfService.deleteBoard(estbllctreCode, bbscttNo);
+        if (deleted <= 0) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("status", "error", "message", "삭제할 게시글이 없습니다."));
+        }
+        return ResponseEntity.ok(Map.of("status", "success", "deleted", deleted));
     }
 }

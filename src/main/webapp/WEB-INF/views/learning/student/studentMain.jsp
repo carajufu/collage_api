@@ -1229,7 +1229,7 @@
             </c:forEach>
         ]
 
-        gridInit({ columns: noticeColumns, data: noticeData }, notice);
+        gridInit({ columns: noticeColumns, data: noticeData, search: false }, notice);
 
         let resourceInited = false;
         let questionInited = false;
@@ -1266,13 +1266,13 @@
 
                 if (targetId === '#resource' && !resourceInited) {
                     const node = document.querySelector("#resourceTable");
-                    gridInit({ columns: resourceColumns, data: resourceData }, node);
+                    gridInit({ columns: resourceColumns, data: resourceData, search: false}, node);
                     resourceInited = true;
                 }
 
                 if (targetId === '#question' && !questionInited) {
                     const node = document.querySelector("#questionTable");
-                    gridInit({ columns: questionColumns, data: questionData }, node);
+                    gridInit({ columns: questionColumns, data: questionData, search: false }, node);
                     questionInited = true;
                 }
             });

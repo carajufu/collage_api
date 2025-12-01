@@ -145,19 +145,23 @@
 						{ label: "이수구분", key: "complSe" },
 						{ label: "강의명", key: "allCourse.lctreNm" },
 						{ label: "개설학과", key: "subjctNm" },
+                        { label: "평가방식", key: "evlMthd" },
 						{ label: "취득학점", key: "acqsPnt" },
-						{ label: "수강인원", key: "atnlcNmpr" }
+						{ label: "수강인원", key: "atnlcNmpr" },
+                        { label: "개설학기", key: "semstrInfo" },
 					 ]
 		};
 
-		const renderStatusBadge = (operAt, estblSttus) => {
+		const renderStatusBadge = (operAt, estblSttus, estblSemstr) => {
 
 			switch (operAt.toString()) {
 				case "0" :
 					return `<span class="badge bg-secondary-subtle text-secondary"><span> 미운영 </span></span>`;
 					break;
 				case "1" :
-					if (estblSttus == "1" || estblSttus == "3") {
+					if (estblSemstr.substring(0,1) != "2") {
+                        return `<span class="badge bg-secondary-subtle text-secondary"><span> 미운영 </span></span>`;
+                    } else if (estblSttus != "2") {
 						return `<span class="badge bg-warning-subtle text-warning"><span> 운영전 </span></span>`;
 					} else {
 						return `<span class="badge bg-success-subtle text-success"><span> 운영중 </span></span>`;
@@ -176,12 +180,14 @@
 			if(filterValue != "all") {
 				filteredList = courseList.filter(item => {
 					const operat = item.allCourse.operAt.toString();
+                    const estblsttus = item.estblSttus.toString();
+                    const semstr = item.estblSemstr.substring(0,1);
 					if (filterValue == "0") {
 						return operat == "0";
 					} else if (filterValue == "1") {
 						return operat == "1";
 					} else if (filterValue == "2") {
-						return operat == "2";
+						return operat == "2" || (operAt == "1" && semstr == "1");
 					}
 					return false;
 				});
@@ -219,7 +225,7 @@
 					                    </a>
 				                      `;
 						} else if (h.key == "allCourse.operAt") {
-							cellValue = renderStatusBadge(cellValue, item.estblSttus);
+							cellValue = renderStatusBadge(cellValue, item.estblSttus, item.estblSemstr);
 						} else if (h.key == "atnlcNmpr") {
 							if (filterValue == "1") {
 								cellValue = `
