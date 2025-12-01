@@ -32,12 +32,7 @@
 .main-content-with-header-calendar h3 {
     font-size: 1.0rem;
 }
-/* FullCalendar 일자 숫자 줄바꿈 금지 */
-.fc .fc-daygrid-day-number {
-    white-space: nowrap !important;  /* 한 줄 유지 */
-    word-break: keep-all !important; /* 숫자+한글 사이에서 강제 줄바꿈 금지 */
-    display: inline-block;           /* 폭 계산 안정화  */
-}
+
 </style>
 <div class="row pt-3 px-5">
     <nav aria-label="breadcrumb">

@@ -11,12 +11,12 @@ public interface LectureEvlService {
     // ------------------------------------------------------------
     //  (공통) ACNT_ID → ID 변환
     // ------------------------------------------------------------
-    
+
     String getProfsrNoByAcntId(String acntId);
-    
+
     String getStdntNoByAcntId(String acntId);
 
-    
+
     // ------------------------------------------------------------
     //  (교수) 강의 목록
     // ------------------------------------------------------------
@@ -42,18 +42,22 @@ public interface LectureEvlService {
     //  (학생) 강의평가 목록 및 제출
     // ------------------------------------------------------------
 
-
     List<LectureEvlVO> getAllLecturesByStdntNo(String stdntNo);
 
     void insertLectureEval(String estbllctreCode, String stdntId,
-                           List<Integer> evlInnb,
-                           List<Integer> evlScore,
-                           List<String> evlCn);
-    
+                           List<Integer> evlScore, List<Integer> evlScore2, List<String> evlCn);
+
     // ------------------------------------------------------------
     //  (시스템) 평가 '질문지' 자동 생성용
     // ------------------------------------------------------------
 
     Integer createDefaultEvaluation(String estbllctreCode);
 
+    int countEvlItems(Integer evlNo);
+
+    boolean isLectureEvaluatedByStdnt(String estbllctreCode, String stdntNo);
+
+    List<LectureEvlVO> getEvalItemsByEstbllctreCode(String estbllctreCode);
+
+    List<LectureEvlVO> getLectureEvalNarratives(String estbllctreCode);
 }

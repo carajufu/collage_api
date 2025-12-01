@@ -1,12 +1,26 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.0/dist/sweetalert2.min.css">
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.0/dist/sweetalert2.all.min.js"></script>
+
 <%@ include file="../header.jsp" %>
 
-    <div id="main-container" class="container-fluid">
-        <div class="flex-grow-1 p-5 overflow-auto">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.0/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.0/dist/sweetalert2.all.min.js"></script>
 
-			<h2 class="section-title">나의 상담 관리</h2>
+<div class="row pt-3 px-5">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/dashboard/prof"><i class="las la-home"></i></a></li>
+            <li class="breadcrumb-item active"><a href="#">학사 정보</a></li>
+            <li class="breadcrumb-item active"><a href="#">상담</a></li>
+            <li class="breadcrumb-item active" aria-current="page">나의 상담 관리</li>
+        </ol>
+    </nav>
+    <div class="col-12 page-title mt-2">
+        <h2 class="fw-semibold">나의 상담 관리</h2>
+        <div class="my-4 p-0 bg-primary" style="width: 100px; height:5px;"></div>
+    </div>
+</div>
+<div class="row pt-3 px-5">
+    <div class="col-xxl-12 col-12">
 
         <div class="row g-4">
                 <div class="col-md-4">
@@ -26,6 +40,22 @@
             <hr class="my-4">
 
             <h2 class="section-title">상담 요청 리스트</h2>
+                  <div class="text-end">
+			    	 <div id="example1_filter" class="dataTables_filter" style="float:right;">
+			          <div class="dropup-center dropup">
+			            <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+			              진행 상태별 모아보기
+			            </button>
+			            <ul class="dropdown-menu">
+			              <li><a class="dropdown-item status-filter" href="#" value="">전체 보기</a></li>
+			              <li><a class="dropdown-item status-filter" href="#" value="1">예약 대기중</a></li>
+			              <li><a class="dropdown-item status-filter" href="#" value="2">상담예약 완료</a></li>
+			              <li><a class="dropdown-item status-filter" href="#" value="3">상담 취소</a></li>
+			              <li><a class="dropdown-item status-filter" href="#" value="4">상담 완료</a></li>
+			            </ul>
+			          </div>
+			          </div>
+			      </div>
 
             <table class="table table-bordered table-hover bg-white">
                 <thead class="table-light">
@@ -34,6 +64,7 @@
                         <th>상담요청일</th>
                         <th>상담요청 교시</th>
                         <th>신청상태</th>
+                        <th>상담방법</th>
                         <th>상담신청일</th>
                     </tr>
                 </thead>
@@ -48,22 +79,7 @@
 
 		</div>
 
-      <div class="text-end">
-     <div id="example1_filter" class="dataTables_filter" style="float:right;">
-          <div class="dropup-center dropup">
-            <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-              진행 상태별 모아보기
-            </button>
-            <ul class="dropdown-menu">
-              <li><a class="dropdown-item status-filter" href="#" value="">전체 보기</a></li>
-              <li><a class="dropdown-item status-filter" href="#" value="1">예약 대기중</a></li>
-              <li><a class="dropdown-item status-filter" href="#" value="2">상담예약 완료</a></li>
-              <li><a class="dropdown-item status-filter" href="#" value="3">상담 취소</a></li>
-              <li><a class="dropdown-item status-filter" href="#" value="4">상담 완료</a></li>
-            </ul>
-          </div>
-          </div>
-      </div>
+
         </div>
     </div>
 
@@ -153,6 +169,8 @@ function getCnsltList(currentPage = 1, keyword ='') {
     	    regDay = cnslt.reqstDe.substring(0,10);	//상담신청일
             time = cnslt.cnsltRequstHour + " 교시"; //상담요청교시
             day = cnslt.cnsltRequstDe.substring(0,10); //요청일
+            mthd = cnslt.cnsltMthd;	//상담방법
+            if (mthd == null) mthd = "미정";
 
             str += `
                 <tr onClick="seletCnsltDetail(\${cnslt.cnsltInnb})" style="cursor:pointer;"class="text-center">
@@ -160,6 +178,7 @@ function getCnsltList(currentPage = 1, keyword ='') {
                     <td>\${day}</td>
                     <td>\${time}</td>
                     <td><span style="width:100px; display: inline-block; text-align: center;" class="badge \${bg} \${text}">\${cnslt.sttus}</span></td>
+                    <td>\${mthd}</td>
                     <td>\${regDay}</td>
                 </tr>
                 `;
@@ -385,6 +404,8 @@ document.addEventListener("DOMContentLoaded",function()  {
 
 <script>
 
+  
+
     //목록 디테일 보기
     function seletCnsltDetail(cnsltInnb) {
         fetch(`/counsel/seletCnsltDetail?cnsltInnb=\${cnsltInnb}`,{
@@ -404,6 +425,7 @@ document.addEventListener("DOMContentLoaded",function()  {
             document.querySelector("#modal-cnsltRequstHour").value = cnsltVO.cnsltRequstHour + " 교시";
             document.querySelector("#modal-cnsltRequstCn").value = cnsltVO.cnsltRequstCn;
             document.querySelector("#modal-reqstDe").value = cnsltVO.reqstDe.substring(0,10);
+            document.querySelector("#modal-stdntNo").value = cnsltVO.stdntNo;
 
 
 
@@ -414,9 +436,20 @@ document.addEventListener("DOMContentLoaded",function()  {
             const canclReason = document.querySelector("#modal-canclReason"); //취소이유
             const cnsltResult = document.querySelector("#modal-cnsltResult"); //상담완료
 
+            const cnsltMthdVideo = document.querySelector("#modal-cnsltMthd-video"); //상담방법-비디오버튼
+
+
             cnsltMthd.value = cnsltVO.cnsltMthd;
             canclReason.value = cnsltVO.canclReason;
             cnsltResult.value = cnsltVO.cnsltResult;
+
+            cnsltMthdVideo.parentElement.style.display="none";
+
+            if (cnsltMthd.value =="VIDEO" && cnsltVO.sttus =="2") {
+            	cnsltMthdVideo.parentElement.style.display="block";
+            }
+
+
             /*
                const modalcnsltMthd = document.querySelector("#modal-cnsltMthd");
             if (cnsltVO.cnsltMthd ==null) {
@@ -583,6 +616,7 @@ cnsltResult: null
 	            <div class="mb-3">
 	              <label for="modal-stdntNm" class="col-form-label">상담 학생</label>
 	              <input type="text" class="form-control bg-light" id="modal-stdntNm" readonly>
+                <input type="hidden" id="modal-stdntNo" />
 	            </div>
 	          </div>
           </div>
@@ -592,14 +626,22 @@ cnsltResult: null
               <input type="text" class="form-control bg-light" id="modal-cnsltRequstCn" readonly>
             </div>
 
-          <div class="mb-3">
-              <label for="modal-cnsltMthd" class="col-form-label">상담방식</label>
-              <select class="form-select form-select-lg" id="modal-cnsltMthd" required="">
-                <option selected disabled value=null >상담방식 선택</option>
-                <option value="OFFLINE">OFFLINE</option>
-                <option value="VIDEO">VIDEO</option>
-          	  </select>
-          </div>
+		   <div class="row ">
+	          <div class="col-md-6">
+		          <div class="mb-3">
+		              <label for="modal-cnsltMthd" class="col-form-label">상담방식</label>
+		              <select class="form-select form-select-lg" id="modal-cnsltMthd" required="">
+		                <option selected disabled value=null >상담방식 선택</option>
+		                <option value="OFFLINE">OFFLINE</option>
+		                <option value="VIDEO">VIDEO</option>
+		          	  </select>
+		          </div>
+	          </div>
+	          <div class="col-md-6 mt-4" >
+	          	<span class="col-form-label"> 상담일, 상담시간에 아래 버튼을 클릭해서 video 상담을 시작하세요.</span><br/>
+	          	<button type="button" id="modal-cnsltMthd-video" class="btn btn-primary" onClick="startVideoConsult()">Video 상담 시작</button>
+	          </div>
+	      </div>
           <div class="mb-3" style="display:none">
             <label for="modal-canclReason" class="col-form-label">취소 사유</label>
             <textarea class="form-control" id="modal-canclReason"></textarea>

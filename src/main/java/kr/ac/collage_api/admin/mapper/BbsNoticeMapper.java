@@ -46,6 +46,10 @@ public interface BbsNoticeMapper {
 	public int adminPutDetail(BbsCttVO bbsVO);
 
 
+	//학생, 교수 게시판에서 클릭시 조회수 올라가기
+	public void updateCount(int bbscttNo);
 
-	
+
+
+
 }

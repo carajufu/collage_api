@@ -60,7 +60,7 @@ public class IndexCalendarApiController {
      *    해당 월의 학사 등록 행사 일정을 JSON 으로 반환
      *
      * 데이터 흐름
-     *  - 입력   
+     *  - 입력
      *      year  요청 쿼리스트링 YYYY
      *      month 요청 쿼리스트링 M 또는 MM
      *      principal 현재 로그인 계정 아이디
@@ -171,9 +171,9 @@ public class IndexCalendarApiController {
      *  - type 과 calGroup 매핑 규칙이 바뀌면 여기 한 곳만 수정
      */
     private IndexCalendarEventVO toVo(ScheduleEventVO vo) {
-        IndexCalendarEventVO indexCalendarEventVO = new IndexCalendarEventVO();
+        IndexCalendarEventVO dto = new IndexCalendarEventVO();
 
-        indexCalendarEventVO.setType(vo.getType());
+        dto.setType(vo.getType());
 
         // type → calGroup 매핑
         String calGroup;
@@ -184,19 +184,19 @@ public class IndexCalendarApiController {
         } else {
             calGroup = "ACAD";
         }
-        indexCalendarEventVO.setCalGroup(calGroup);
+        dto.setCalGroup(calGroup);
 
-        indexCalendarEventVO.setTitle(vo.getTitle());
-        indexCalendarEventVO.setMemo(vo.getMemo());
+        dto.setTitle(vo.getTitle());
+        dto.setMemo(vo.getMemo());
 
         // startDate 예시 2025 11 03 형식 문자열 사용
-        indexCalendarEventVO.setStartDate(vo.getStartDate());
+        dto.setStartDate(vo.getStartDate());
         if (vo.getStartDate() != null && vo.getStartDate().length() >= 10) {
             String mm = vo.getStartDate().substring(5, 7);
             String dd = vo.getStartDate().substring(8, 10);
-            indexCalendarEventVO.setStartLabel(mm + "." + dd);
+            dto.setStartLabel(mm + "." + dd);
         }
 
-        return indexCalendarEventVO;
+        return dto;
     }
 }

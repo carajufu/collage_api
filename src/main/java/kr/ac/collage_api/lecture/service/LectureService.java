@@ -36,10 +36,50 @@ public interface LectureService {
 
 	// -------- <관리자> --------
 
+	
 	// 강의 생성
 	public int createCourse(AllCourseVO allCourseVO);
 
 	// 전체 강의 목록 조회
 	public List<EstblCourseVO> allList(EstblCourseVO estblCourseVO);
+	
+	// 개설 강의 목록 조회
+	public List<EstblCourseVO> mngList(EstblCourseVO estblCourseVO);
+
+	// 전체 학과 목록 가져오기
+	public List<AllCourseVO> getSubjct();
+
+	// 선수과목 목록 가져오기
+	public Map<String, Object> getData(String subjctCode);
+	
+	// 강의 개설 요청 처리
+	public int updateRequestSttus(EstblCourseVO estblCourseVO);
+
+	// 전체 교과목 목록 조회
+	public List<AllCourseVO> allCourseList(AllCourseVO allCourseVO);
+	
+	// 전체 교과목 세부 정보 조회
+	public List<EstblCourseVO> allCourseDetail(String lctreCode);
+	
+	// 교과목 운영상태 변경
+	public int allCourseEdit(AllCourseVO allCourseVO);
+	
+
+	// -------- <교수> --------
+	
+	
+	// 개설 강의 목록 조회
+	public List<EstblCourseVO> myMnglist(Map<String, Object> map);
+
+	// 개설 강의 정보 입력 페이지
+	public EstblCourseVO editLoad(String estbllctreCode);
+
+	// 개설 강의 정보 저장
+	public int confirm(EstblCourseVO estblCourseVO);
+
+	// 강의 시간표 조회
+	public List<EstblCourseVO> timetableLoad();
+	
+	
 
 }

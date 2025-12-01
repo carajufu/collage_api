@@ -11,7 +11,7 @@ public class AcntVO {
 	private long fileGroupNo;  //파일그룹번호
 	private String password;  //비밀번호
 	private String acntTy;    //계정_유형
-	
+
 	private List<AuthorVO> authorVOList;
 
     private String name;
@@ -22,5 +22,6 @@ public class AcntVO {
     private String userSttusNm;
     private String userSubjctNm;
     private String userNo;
-    
+
+    private String email; //이메일 주소
 }

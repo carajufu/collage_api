@@ -61,5 +61,5 @@ public class IndexBbsVO {
 
     // 게시글 작성자 (이름 또는 아이디, BBS_CTT 작성자 컬럼 매핑)
     private String writer;
-    
+
 }

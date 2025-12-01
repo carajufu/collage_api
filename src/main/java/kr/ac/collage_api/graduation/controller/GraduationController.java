@@ -1,11 +1,7 @@
 package kr.ac.collage_api.graduation.controller;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -32,10 +28,9 @@ public class GraduationController {
     @GetMapping("/main")
     public String mainGradu(Model model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String stdntNo = auth.getName(); // 학번(=username) 가정
+        String stdntNo = auth.getName();
 
-        Map<String, Object> data = graduService.getGraduMainData(stdntNo);
-        model.addAllAttributes(data);
+        model.addAllAttributes(graduService.getGraduMainData(stdntNo));
         model.addAttribute("stdntNo", stdntNo);
 
         return "graduation/Stdgraduation";
@@ -45,7 +40,6 @@ public class GraduationController {
     public String mainGraduAll(Model model) {
         return mainGradu(model);
     }
-
 
     @PostMapping("/main/request")
     @ResponseBody
@@ -69,5 +63,4 @@ public class GraduationController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("처리 중 오류가 발생했습니다");
         }
     }
-
 }
