@@ -974,14 +974,8 @@
                                                                 <span class="fw-bold fs-5 mx-1">[${week.WEEK}주차]</span><span class="fs-5">${week.LRN_THEMA}</span>
                                                             </div>
                                                             <div class="d-flex align-items-center gap-1 ms-auto badge-group">
-                                                                <c:if test="${week.TASK_AT eq '0'}">
-                                                                    <span class="badge rounded-pill border boder-light text-body text-center lh-sm">과제</span>
-                                                                </c:if>
                                                                 <c:if test="${week.TASK_AT eq '1'}">
-                                                                    <span class="badge rounded-pill bg-primary text-center lh-sm">과제</span>
-                                                                </c:if>
-                                                                <c:if test="${week.QUIZ_AT eq '0'}">
-                                                                    <span class="badge rounded-pill border boder-light text-center text-body lh-sm me-3">퀴즈</span>
+                                                                    <span class="badge rounded-pill bg-primary text-center lh-sm me-3">과제</span>
                                                                 </c:if>
                                                                 <c:if test="${week.QUIZ_AT eq '1'}">
                                                                     <span class="badge rounded-pill bg-primary text-center lh-sm me-3">퀴즈</span>
@@ -1236,7 +1230,7 @@
 
         const resourceColumns = ["글번호", "제목", "등록일자"];
         const resourceData = [
-            <c:forEach var="row" items="${learnInfo.notice.lectureBbsCttVOList}" varStatus="st">
+            <c:forEach var="row" items="${learnInfo.resource.lectureBbsCttVOList}" varStatus="st">
             [
                 "${row.bbscttNo}",
                 gridjs.html(
@@ -1249,11 +1243,11 @@
 
         const questionColumns = ["글번호", "제목", "등록일자"];
         const questionData = [
-            <c:forEach var="row" items="${learnInfo.notice.lectureBbsCttVOList}" varStatus="st">
+            <c:forEach var="row" items="${learnInfo.question.lectureBbsCttVOList}" varStatus="st">
             [
                 "${row.bbscttNo}",
                 gridjs.html(
-                    "<a href='/learning/student/board?no=${row.bbscttNo}'>${row.bbscttSj}</a>"
+                    "<a href='/learning/student/board?no=${row.bbscttNo}&code=${row.bbsCode}'>${row.bbscttSj}</a>"
                 ),
                 dtFmt(${row.bbscttWritngDe.time})
             ] ,
