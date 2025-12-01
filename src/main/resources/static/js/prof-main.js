@@ -24,6 +24,27 @@
     const quizSubmissionTitleEl = document.getElementById('quiz-submission-title');
     const quizSubmissionBackRow = document.getElementById('quizSubmissionBackRow');
     const quizSubmissionBackBtn = document.getElementById('quiz-submission-back-btn');
+    const quizCreateBtn = document.getElementById('quiz-create-btn');
+    const createQuizModal = document.getElementById('createQuizModal');
+    const createQuizForm = document.getElementById('createQuizForm');
+    const createQuizQuestion = document.getElementById('create-quiz-question');
+    const createQuizWeek = document.getElementById('create-quiz-week');
+    const createQuizBegin = document.getElementById('create-quiz-begin');
+    const createQuizClose = document.getElementById('create-quiz-close');
+    const quizExList = document.getElementById('quiz-ex-list');
+    const quizExAddBtn = document.getElementById('quiz-ex-add');
+    const quizExDelBtn = document.getElementById('quiz-ex-del');
+    const editQuizModal = document.getElementById('editQuizModal');
+    const editQuizForm = document.getElementById('editQuizForm');
+    const editQuizCode = document.getElementById('edit-quiz-code');
+    const editQuizQuestion = document.getElementById('edit-quiz-question');
+    const editQuizWeek = document.getElementById('edit-quiz-week');
+    const editQuizBegin = document.getElementById('edit-quiz-begin');
+    const editQuizClose = document.getElementById('edit-quiz-close');
+    const editQuizExList = document.getElementById('edit-quiz-ex-list');
+    const editQuizExAddBtn = document.getElementById('edit-quiz-ex-add');
+    const editQuizExDelBtn = document.getElementById('edit-quiz-ex-del');
+    const quizCodeHidden = document.getElementById('edit-quiz-code');
     let editTaskEditor = null;
     const createModalEl = document.getElementById('createTaskModal');
     const createTaskForm = document.getElementById('createTaskForm');
@@ -106,13 +127,38 @@
             submissionTitleEl.textContent = title ? `${title}` : '제출 목록';
         }
 
-        const rows = toArray(list).map(item => [
-            item.stdntNo,
-            item.stdntNm,
-            item.presentnAt === '1' ? '제출' : '미제출',
-            item.taskPresentnDe || '-',
-            item.fileGroupNo || '-'
-        ]);
+        const rows = toArray(list).map(item => {
+            const files = toArray(item.fileDetailVOList);
+            const fileCell = !files.length
+                ? '-'
+                : gridjs.html(`
+                      <div class="dropend">
+                        <button class="btn btn-ghost-primary btn-sm dropdown-toggle" type="button"
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                          제출파일 (${files.length})
+                        </button>
+                        <ul class="dropdown-menu">
+                          ${files.map(fd => `
+                            <li>
+                              <a class="dropdown-item d-flex align-items-center gap-2"
+                                 href="/learning/prof/downloadFile?fileGroupNo=${encodeURIComponent(item.fileGroupNo)}${fd.fileNo ? `&fileNo=${encodeURIComponent(fd.fileNo)}` : ''}">
+                                <i class="las la-paperclip text-muted"></i>
+                                <span>${escapeAttr(fd.fileNm || '(무제)')}</span>
+                              </a>
+                            </li>
+                          `).join('')}
+                        </ul>
+                      </div>
+                     `);
+
+            return [
+                item.stdntNo,
+                item.stdntNm,
+                item.presentnAt === '1' ? '제출' : '미제출',
+                item.taskPresentnDe || '-',
+                fileCell || '-'
+            ];
+        });
 
         gridTarget.innerHTML = '';
 
@@ -386,6 +432,76 @@
             });
     };
 
+    const addExRow = (listEl, data = {}) => {
+        const idx = listEl.children.length + 1;
+        const row = document.createElement('div');
+        row.className = 'd-flex align-items-center gap-2 quiz-ex-row';
+        row.innerHTML = `
+          <div class="d-flex align-items-center gap-2 mb-2">
+             <input type="text" class="form-control form-control-sm" style="width:30px" value="${idx}" data-field="exNo" readonly>
+            <input type="text" class="form-control form-control-sm" style="width:350px" placeholder="보기 내용" value="${data.exCn || ''}" data-field="exCn" required>
+             <div class="form-check d-flex align-items-center ms-1" style="white-space: nowrap;">
+                <input class="form-check-input"
+                       type="checkbox"
+                       ${data.cnslAt === '1' ? 'checked' : ''}
+                       data-field="cnslAt">
+                <label class="form-check-label small ms-1">정답</label>
+              </div>
+          </div>
+    `;
+        listEl.appendChild(row);
+    };
+    const renumberEx = (listEl) => [...listEl.querySelectorAll('[data-field="exNo"]')].forEach((el, i) => el.value = i + 1);
+    const fillExList = (listEl, arr = []) => { listEl.innerHTML = ''; (arr.length ? arr : [{}]).forEach(d => addExRow(listEl, d)); renumberEx(listEl); };
+    const collectExList = (listEl) => [...listEl.querySelectorAll('.quiz-ex-row')].map((row, i) => ({
+        exNo: i + 1,
+        exCn: row.querySelector('[data-field="exCn"]').value.trim(),
+        cnslAt: row.querySelector('[data-field="cnslAt"]').checked ? '1' : '0'
+    })).filter(ex => ex.exCn);
+
+    quizExAddBtn?.addEventListener('click', () => { addExRow(quizExList); renumberEx(quizExList); });
+    quizExDelBtn?.addEventListener('click', () => { if (quizExList.lastElementChild) quizExList.removeChild(quizExList.lastElementChild); renumberEx(quizExList); });
+
+    const openCreateQuizModal = () => {
+        if (!createQuizForm) return;
+        createQuizForm.reset();
+        createQuizBegin.value = todayStr();
+        createQuizClose.value = todayStr();
+        fillExList(quizExList, [{},{},{},{}]); // 기본 4지선다
+        bootstrap.Modal.getOrCreateInstance(createQuizModal).show();
+    };
+
+    quizCreateBtn?.addEventListener('click', openCreateQuizModal);
+
+    document.getElementById('create-quiz-submit-btn')?.addEventListener('click', async () => {
+        if (!createQuizForm?.checkValidity()) { createQuizForm.reportValidity(); return; }
+        const payload = {
+            estbllctreCode,
+            quesCn: createQuizQuestion.value.trim(),
+            week: createQuizWeek?.value,
+            quizBeginDe: createQuizBegin.value.replace(/-/g, ''),
+            quizClosDe: createQuizClose.value.replace(/-/g, ''),
+            quizExVOList: collectExList(quizExList)
+        };
+
+        try {
+            const res = await fetch('/learning/prof/quiz', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json;charset=utf-8' },
+                body: JSON.stringify(payload)
+            });
+
+            if (!res.ok) throw new Error(`등록 실패 (${res.status})`);
+            const saved = (await res.json().catch(() => ({})))?.data || payload;
+            window.__INIT_QUIZZES = toArray(window.__INIT_QUIZZES).concat(saved);
+            renderQuizGrid(window.__INIT_QUIZZES, window.__INIT_QUIZ_PRESENTN);
+            Swal.fire({ icon: 'success', title: '등록되었습니다.', timer: 1200, showConfirmButton: false });
+            bootstrap.Modal.getOrCreateInstance(createQuizModal).hide();
+        } catch (err) {
+            Swal.fire({ icon: 'error', title: '등록 실패', text: err.message || '잠시 후 다시 시도하세요.' });
+        }
+    });
+
     const openEditModal = (task) => {
         if (!editModalEl || !editTaskForm) return;
         const modal = bootstrap.Modal.getOrCreateInstance(editModalEl);
@@ -402,6 +518,77 @@
 
         modal.show();
     };
+
+    const handleDeleteQuiz = async (quizCode) => {
+        const confirm = await Swal.fire({
+            icon: 'warning',
+            title: '퀴즈를 삭제하시겠습니까?',
+            text: '제출 데이터가 함께 삭제될 수 있습니다.',
+            showCancelButton: true,
+            confirmButtonText: '삭제',
+            cancelButtonText: '취소'
+        });
+        if (!confirm.isConfirmed) return;
+
+        try {
+            const res = await fetch(`/learning/prof/quiz?estbllctreCode=${encodeURIComponent(estbllctreCode)}&quizCode=${encodeURIComponent(quizCode)}`, {
+                method: 'DELETE'
+            });
+            if (!res.ok) throw new Error(`삭제 실패 (${res.status})`);
+
+            window.__INIT_QUIZZES = toArray(window.__INIT_QUIZZES).filter(q => String(q.quizCode) !== String(quizCode));
+            renderQuizGrid(window.__INIT_QUIZZES, window.__INIT_QUIZ_PRESENTN);
+            Swal.fire({ icon: 'success', title: '삭제되었습니다.', timer: 1200, showConfirmButton: false });
+        } catch (err) {
+            console.error(err);
+            Swal.fire({ icon: 'error', title: '삭제 실패', text: err.message || '잠시 후 다시 시도하세요.' });
+        }
+    };
+
+    const openEditQuizModal = (quiz) => {
+        if (!editQuizForm) return;
+        editQuizForm.reset();
+        editQuizCode.value = quiz.quizCode || '';
+        editQuizQuestion.value = quiz.quesCn || '';
+        if (editQuizWeek) editQuizWeek.value = quiz.week || '';
+        if (editQuizBegin) editQuizBegin.value = normalizeDate(quiz.quizBeginDe);
+        if (editQuizClose) editQuizClose.value = normalizeDate(quiz.quizClosDe);
+        fillExList(editQuizExList, quiz.quizeExVOList || quiz.quizExVOList || []);
+        bootstrap.Modal.getOrCreateInstance(editQuizModal).show();
+    };
+
+    editQuizExAddBtn?.addEventListener('click', () => { addExRow(editQuizExList); renumberEx(editQuizExList); });
+    editQuizExDelBtn?.addEventListener('click', () => { if (editQuizExList.lastElementChild) editQuizExList.removeChild(editQuizExList.lastElementChild); renumberEx(editQuizExList); });
+
+    document.getElementById('edit-quiz-submit-btn')?.addEventListener('click', async () => {
+        if (!editQuizForm?.checkValidity()) { editQuizForm.reportValidity(); return; }
+        const payload = {
+            quizCode: editQuizCode.value,
+            estbllctreCode,
+            quesCn: editQuizQuestion.value.trim(),
+            week: editQuizWeek?.value,
+            quizBeginDe: editQuizBegin.value.replace(/-/g, ''),
+            quizClosDe: editQuizClose.value.replace(/-/g, ''),
+            quizExVOList: collectExList(editQuizExList)
+        };
+        try {
+            const res = await fetch('/learning/prof/quiz', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json;charset=utf-8' },
+                body: JSON.stringify(payload)
+            });
+            if (!res.ok) throw new Error(`수정 실패 (${res.status})`);
+            const saved = (await res.json().catch(() => ({})))?.data || payload;
+            window.__INIT_QUIZZES = toArray(window.__INIT_QUIZZES).map(q =>
+                String(q.quizCode) === String(saved.quizCode) ? { ...q, ...saved } : q
+            );
+            renderQuizGrid(window.__INIT_QUIZZES, window.__INIT_QUIZ_PRESENTN);
+            Swal.fire({ icon: 'success', title: '수정되었습니다.', timer: 1200, showConfirmButton: false });
+            bootstrap.Modal.getOrCreateInstance(editQuizModal).hide();
+        } catch (err) {
+            Swal.fire({ icon: 'error', title: '수정 실패', text: err.message || '잠시 후 다시 시도하세요.' });
+        }
+    });
 
     const ensureCreateEditor = () => {
         if (createTaskEditor) return Promise.resolve(createTaskEditor);
@@ -705,7 +892,7 @@
         quizSubmissionGrid.innerHTML = '';
 
         if (quizSubmissionTitleEl) {
-            quizSubmissionTitleEl.textContent = title ? `${title} 제출 목록` : '제출 목록';
+            quizSubmissionTitleEl.textContent = title ? `${title}` : '제출 목록';
         }
 
         const rows = toArray(list).map(item => [
@@ -777,7 +964,18 @@
                             </svg>
                           </button>
                           <ul class="dropdown-menu">
+                              <li>
+                                <a class="dropdown-item" href="#" data-action="edit-quiz"
+                                   data-quiz-code="${q.quizCode}"
+                                   data-quiz-week="${escapeAttr(q.week || '')}"
+                                   data-quiz-begin="${escapeAttr(q.quizBeginDe || '')}"
+                                   data-quiz-close="${escapeAttr(q.quizClosDe || '')}"
+                                   data-quiz-question="${escapeAttr(q.quesCn || '')}">퀴즈 수정
+                                </a>
+                              </li>
                               <li><a class="dropdown-item" href="#" data-action="view-quiz-submissions" data-quiz-code="${q.quizCode}">제출 확인</a></li>
+                              <li><div class="dropdown-divider"></div></li>
+                              <li><a class="dropdown-item text-danger" href="#" data-action="delete-quiz" data-quiz-code="${q.quizCode}">삭제</a></li>
                           </ul>
                       </div>
                   `)
@@ -805,12 +1003,39 @@
     };
 
     quizGrid?.addEventListener('click', (e) => {
-        const link = e.target.closest('[data-action="view-quiz-submissions"]');
-        if (!link) return;
-        e.preventDefault();
-        const quizCode = link.getAttribute('data-quiz-code');
-        const quizTitle = link.closest('tr')?.querySelector('td:nth-child(2)')?.textContent?.trim();
-        if (quizCode) loadQuizSubmissions(quizCode, quizTitle);
+        const viewLink = e.target.closest('[data-action="view-quiz-submissions"]');
+        const editLink = e.target.closest('[data-action="edit-quiz"]');
+        const delLink = e.target.closest('[data-action="delete-quiz"]');
+
+        if (viewLink) {
+            e.preventDefault();
+            const quizCode = viewLink.getAttribute('data-quiz-code');
+            const quizTitle = viewLink.closest('tr')?.querySelector('td:nth-child(2)')?.textContent?.trim();
+            if (quizCode) loadQuizSubmissions(quizCode, quizTitle);
+            return;
+        }
+
+        if (editLink) {
+            e.preventDefault();
+            const quizCode = editLink.getAttribute('data-quiz-code');
+            const fromState = toArray(window.__INIT_QUIZZES).find(q => String(q.quizCode) === String(quizCode)) || {};
+            const quiz = {
+                quizCode,
+                week: editLink.getAttribute('data-quiz-week') || fromState.week,
+                quizBeginDe: editLink.getAttribute('data-quiz-begin') || fromState.quizBeginDe,
+                quizClosDe: editLink.getAttribute('data-quiz-close') || fromState.quizClosDe,
+                quesCn: editLink.getAttribute('data-quiz-question') || fromState.quesCn,
+                quizeExVOList: fromState.quizeExVOList || fromState.quizExVOList || []
+            };
+            openEditQuizModal(quiz);
+            return;
+        }
+
+        if (delLink) {
+            e.preventDefault();
+            const quizCode = delLink.getAttribute('data-quiz-code');
+            if (quizCode) handleDeleteQuiz(quizCode);
+        }
     });
 
     const loadQuiz = () => {
@@ -819,7 +1044,11 @@
 
         fetch(`/learning/prof/quiz?estbllctreCode=${encodeURIComponent(estbllctreCode)}`)
             .then(res => res.ok ? res.json() : Promise.reject(new Error('퀴즈 로드 실패')))
-            .then(data => renderQuizGrid(toArray(data?.quizzes), toArray(data?.submissions)))
+            .then(data => {
+                const quizzes = toArray(data?.quizzes);
+                window.__INIT_QUIZZES = quizzes; // 편집 시 보기까지 포함된 최신 데이터 유지
+                renderQuizGrid(quizzes, toArray(data?.submissions));
+            })
             .catch(err => {
                 quizGrid.innerHTML = '';
                 // 서버 호출 실패 시 초기 서버 렌더 데이터로 대체
@@ -842,7 +1071,7 @@
     });
 
     const updateTask = e => {
-        const editFrom = document.querySelector("editTaskForm");
+        const editForm = document.querySelector("editTaskForm");
 
         fetch("/learning/prof/updTask", {
             method: "PUT",

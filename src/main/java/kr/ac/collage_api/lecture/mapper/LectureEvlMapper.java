@@ -13,7 +13,7 @@ public interface LectureEvlMapper {
     //  (공통) ACNT_ID → ID 변환
     // ------------------------------------------------------------
     String getProfsrNoByAcntId(String acntId);
-    
+
     /**  학생용: ACNT_ID -> STDNT_NO */
     String getStdntNoByAcntId(String acntId);
 
@@ -35,33 +35,33 @@ public interface LectureEvlMapper {
     //  (학생) 강의평가 목록 불러오기
     // ------------------------------------------------------------    
     LectureEvlVO getEstblCourseById(String estbllctreCode);
-    
+
     List<LectureEvlVO> getTimetableByEstblCode(String estbllctreCode);
-    
+
     Integer getEvlNoByEstbllctreCode(String estbllctreCode);
     // ------------------------------------------------------------
     //  (학생) 강의평가 제출
     // ------------------------------------------------------------
-    
+
     List<LectureEvlVO> getAllLecturesByStdntNo(String stdntNo);
 
     void insertLectureEval(Map<String, Object> param);
 
     void insertLctreEvlMaster(Map<String, Object> param);
-    
+
     void insertLctreEvlIem(Map<String, Object> param);
-    
+
     int getNextEvlNo();
 
-	int countEvlItems(Integer evlNo);
+    int countEvlItems(Integer evlNo);
 
-	int isLectureEvaluatedByStdnt(Map<String, Object> param);
+    int isLectureEvaluatedByStdnt(Map<String, Object> param);
 
-	List<LectureEvlVO> getEvlItemsByEvlNo(Integer evlNo);
+    List<LectureEvlVO> getEvlItemsByEvlNo(Integer evlNo);
 
-	List<LectureEvlVO> getEvalItemsByEstbllctreCode(String estbllctreCode);
+    List<LectureEvlVO> getEvalItemsByEstbllctreCode(String estbllctreCode);
 
-	List<LectureEvlVO> getLectureEvalNarratives(String estbllctreCode);
+    List<LectureEvlVO> getLectureEvalNarratives(String estbllctreCode);
 
-	List<Map<String, Object>> getLectureEvalScoreCountsMap(String estbllctreCode);
+    List<Map<String, Object>> getLectureEvalScoreCountsMap(String estbllctreCode);
 }

@@ -1,19 +1,34 @@
 package kr.ac.collage_api.learning.service.impl;
 
+import kr.ac.collage_api.common.attach.service.BeanController;
 import kr.ac.collage_api.learning.mapper.LearningPageProfMapper;
 import kr.ac.collage_api.learning.vo.*;
+import kr.ac.collage_api.vo.FileDetailVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
 public class LearningPageProfServiceImpl {
     @Autowired
     private final LearningPageProfMapper learningPageProfMapper;
+    @Autowired
+    private BeanController beanController;
 
     public String getLctreNm(String estbllctreCode) {
         return learningPageProfMapper.getLctreNm(estbllctreCode);
@@ -69,7 +84,10 @@ public class LearningPageProfServiceImpl {
     }
 
     public List<QuizVO> getQuizzes(String estbllctreCode) {
-        return learningPageProfMapper.selectQuiz(estbllctreCode);
+        List<QuizVO> quizzes = learningPageProfMapper.selectQuiz(estbllctreCode);
+        fillQuizEx(quizzes);
+
+        return quizzes;
     }
 
     public List<QuizPresentnVO> getQuizPresentn(String estbllctreCode) {
@@ -78,5 +96,112 @@ public class LearningPageProfServiceImpl {
 
     public List<QuizPresentnVO> getQuizPresentnByQuiz(String estbllctreCode, String quizCode) {
         return learningPageProfMapper.selectQuizPresentnByQuiz(estbllctreCode, quizCode);
+    }
+
+    public QuizVO createQuiz(String estbllctreCode,
+                             String week,
+                             String quesCn,
+                             String beginDe,
+                             String closDe,
+                             List<Map<String, Object>> exList) {
+        String weekAcctoLrnNo = learningPageProfMapper.findWeekAcctoLrnNo(estbllctreCode, week);
+        if (weekAcctoLrnNo == null) throw new IllegalArgumentException("해당 주차 정보를 찾을 수 없습니다.");
+        String nextQuizCode = learningPageProfMapper.nextQuizCode();
+
+        QuizVO vo = new QuizVO();
+        vo.setQuizCode(nextQuizCode);
+        vo.setWeekAcctoLrnNo(weekAcctoLrnNo);
+        vo.setQuesCn(quesCn);
+        vo.setQuizBeginDe(beginDe);
+        vo.setQuizClosDe(closDe);
+
+        learningPageProfMapper.insertQuiz(vo);
+        saveQuizExList(nextQuizCode, exList);
+
+        QuizVO created = learningPageProfMapper.getQuizByCode(nextQuizCode);
+        created.setQuizeExVOList(learningPageProfMapper.selectQuizExByQuiz(nextQuizCode));
+        return created;
+    }
+
+    public QuizVO updateQuiz(String estbllctreCode,
+                             String quizCode,
+                             String week,
+                             String quesCn,
+                             String beginDe,
+                             String closDe,
+                             List<Map<String, Object>> exList) {
+
+        String weekAcctoLrnNo = learningPageProfMapper.findWeekAcctoLrnNo(estbllctreCode, week);
+        if (weekAcctoLrnNo == null) throw new IllegalArgumentException("해당 주차 정보를 찾을 수 없습니다.");
+
+        QuizVO vo = new QuizVO();
+        vo.setQuizCode(quizCode);
+        vo.setWeekAcctoLrnNo(weekAcctoLrnNo);
+        vo.setQuesCn(quesCn);
+        vo.setQuizBeginDe(beginDe);
+        vo.setQuizClosDe(closDe);
+
+        int affected = learningPageProfMapper.updateQuiz(vo);
+        if (affected <= 0) throw new IllegalStateException("수정 대상 퀴즈가 없습니다.");
+
+        learningPageProfMapper.deleteQuizExByQuiz(quizCode);
+        saveQuizExList(quizCode, exList);
+
+        QuizVO updated = learningPageProfMapper.getQuizByCode(quizCode);
+        updated.setQuizeExVOList(learningPageProfMapper.selectQuizExByQuiz(quizCode));
+        return updated;
+
+    }
+
+    @Transactional
+    public int deleteQuiz(String estbllctreCode, String quizCode) {
+        learningPageProfMapper.deleteQuizPresentnByQuiz(quizCode);
+        return learningPageProfMapper.deleteQuiz(estbllctreCode, quizCode);
+    }
+
+    private void fillQuizEx(List<QuizVO> list) {
+        if (list == null) return;
+        for (QuizVO q : list) {
+            q.setQuizeExVOList(learningPageProfMapper.selectQuizExByQuiz(q.getQuizCode()));
+        }
+    }
+
+    private void saveQuizExList(String quizCode, List<Map<String, Object>> exList) {
+        if (exList == null) return;
+        for (Map<String, Object> ex : exList) {
+            QuizExVO exVO = new QuizExVO();
+            exVO.setQuizExCode(learningPageProfMapper.nextQuizExCode());
+            exVO.setQuizCode(quizCode);
+            exVO.setExNo(String.valueOf(Integer.parseInt(String.valueOf(ex.getOrDefault("exNo", "0")))));
+            exVO.setExCn(String.valueOf(ex.getOrDefault("exCn", "")));
+            exVO.setCnslAt(String.valueOf(ex.getOrDefault("cnslAt", "0")));
+            learningPageProfMapper.insertQuizEx(exVO);
+        }
+    }
+
+    public FileDetailVO getFileDetail(long fileGroupNo, long fileNo) {
+        return learningPageProfMapper.selectFileDetailByFileNo(fileGroupNo, fileNo);
+    }
+
+    public ResponseEntity<Resource> downloadFile(long fileGroupNo, long fileNo) throws FileNotFoundException {
+        FileDetailVO fileVO = getFileDetail(fileGroupNo, fileNo);
+        if (fileVO == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        String uploadRoot = beanController.getUploadFolder();
+        File file = new File(uploadRoot + fileVO.getFileStreplace().replace("/", File.separator));
+        if (!file.exists()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        String encodedName = URLEncoder.encode(fileVO.getFileNm(), StandardCharsets.UTF_8);
+        InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + encodedName + "\"")
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .contentLength(file.length())
+                .body(resource);
     }
 }

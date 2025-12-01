@@ -80,15 +80,15 @@ public class LectureEvlServiceImpl implements LectureEvlService {
     public List<Integer> getLectureEvalScoreCounts(String estbllctreCode) {
         // DB에서는 {SCORE: 5, CNT: 10}, {SCORE: 3, CNT: 2} 형태로 넘어옴
         List<Map<String, Object>> rawCounts = lectureMapper.getLectureEvalScoreCountsMap(estbllctreCode);
-        
+
         // 차트용 [1점개수, 2점개수, 3점개수, 4점개수, 5점개수] 리스트 초기화
         List<Integer> result = new ArrayList<>(List.of(0, 0, 0, 0, 0));
-        
+
         for (Map<String, Object> map : rawCounts) {
             // DB 컬럼이 VARCHAR2일 수 있으므로 안전하게 파싱
-            int score = Integer.parseInt(String.valueOf(map.get("SCORE"))); 
+            int score = Integer.parseInt(String.valueOf(map.get("SCORE")));
             int cnt = Integer.parseInt(String.valueOf(map.get("CNT")));
-            
+
             // 점수가 1~5 사이일 때만 해당 인덱스에 매핑 (1점 -> index 0)
             if (score >= 1 && score <= 5) {
                 result.set(score - 1, cnt);
@@ -144,14 +144,26 @@ public class LectureEvlServiceImpl implements LectureEvlService {
             throw new RuntimeException("평가 기준(EVL_NO)이 존재하지 않아 평가를 진행할 수 없습니다.");
         }
 
-        // 반복문을 통해 항목별 점수 저장
-        for (int i = 0; i < evlScore.size(); i++) {
+        List<LectureEvlVO> dbItems = lectureMapper.getEvalItemsByEstbllctreCode(estbllctreCode);
+
+        if (dbItems == null || dbItems.isEmpty()) {
+            throw new RuntimeException("DB 평가 항목이 존재하지 않아 저장이 불가능합니다.");
+        }
+
+        if (dbItems.size() != evlScore.size()) {
+            throw new RuntimeException("평가 항목 개수와 제출 데이터 개수가 일치하지 않습니다.");
+        }
+
+        for (int i = 0; i < dbItems.size(); i++) {
+
+            Integer pkInnb = dbItems.get(i).getLctreEvlInnb();
+
             Map<String, Object> param = new HashMap<>();
-            param.put("stdntId", stdntNo);                  
-            param.put("lctreEvlInnb", lctreEvlInnb.get(i)); 
-            param.put("evlScore", String.valueOf(evlScore.get(i))); // DB가 VARCHAR2이므로 String 변환
-            param.put("evlCn", evlCn.get(i));               // 주관식 의견
-            
+            param.put("stdntId", stdntNo);
+            param.put("lctreEvlInnb", pkInnb);
+            param.put("evlScore", String.valueOf(evlScore.get(i)));
+            param.put("evlCn", evlCn.get(i));
+
             lectureMapper.insertLectureEval(param);
         }
     }
@@ -172,11 +184,11 @@ public class LectureEvlServiceImpl implements LectureEvlService {
 
         // 기본 문항 세트
         List<String> defaultQuestions = List.of(
-              "이 강의의 수업 목표가 명확하게 제시되었습니까?"
-            , "교수님은 강의 준비를 충실히 하였습니까?"
-            , "강의 내용은 체계적이고 유익했습니까?"
-            , "과제 및 시험에 대한 피드백이 적절히 이루어졌습니까?"
-            , "전반적으로 이 강의에 만족합니까?"
+                "이 강의의 수업 목표가 명확하게 제시되었습니까?"
+                , "교수님은 강의 준비를 충실히 하였습니까?"
+                , "강의 내용은 체계적이고 유익했습니까?"
+                , "과제 및 시험에 대한 피드백이 적절히 이루어졌습니까?"
+                , "전반적으로 이 강의에 만족합니까?"
         );
 
         for (String question : defaultQuestions) {

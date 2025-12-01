@@ -76,6 +76,30 @@
         <result column="WEEK" property="week"/>
     </resultMap>
 
+    <resultMap id="FileDetailMap" type="fileDetailVO">
+        <id property="fileNo" column="FILE_NO"/>
+        <result property="fileGroupNo" column="FILE_GROUP_NO"/>
+        <result property="fileNm" column="FILE_NM"/>
+        <result property="fileStreNm" column="FILE_STRE_NM"/>
+        <result property="fileStreplace" column="FILE_STREPLACE"/>
+        <result property="fileMg" column="FILE_MG"/>
+        <result property="fileExtsn" column="FILE_EXTSN"/>
+        <result property="fileTy" column="FILE_TY"/>
+        <result property="fileStreDe" column="FILE_STRE_DE"/>
+        <result property="fileDwldCo" column="FILE_DWLD_CO"/>
+    </resultMap>
+
+    <resultMap id="TaskPresentnWithFileMap" type="taskPresentnVO">
+        <id column="TASK_PRESENTN_NO" property="taskPresentnNo"/>
+        <result column="STDNT_NO" property="stdntNo"/>
+        <result column="STDNT_NM" property="stdntNm"/>
+        <result column="TASK_NO" property="taskNo"/>
+        <result column="FILE_GROUP_NO" property="fileGroupNo"/>
+        <result column="TASK_PRESENTN_DE" property="taskPresentnDe"/>
+        <result column="PRESENTN_AT" property="presentnAt"/>
+        <collection property="fileDetailVOList" resultMap="FileDetailMap"/>
+    </resultMap>
+
     <select id="getLctreNm" parameterType="string">
         SELECT
             ac.lctre_nm
@@ -103,7 +127,7 @@
         ORDER BY TO_NUMBER(t.task_no)
     </select>
 
-    <select id="selectTaskPresentn" parameterType="string" resultMap="TaskPresentnMap">
+    <select id="selectTaskPresentn" parameterType="string" resultMap="TaskPresentnWithFileMap">
         SELECT
             p.task_presentn_no
             , p.stdnt_no
@@ -112,6 +136,15 @@
             , p.task_presentn_de
             , p.presentn_at
             , std.stdnt_nm
+            , fd.file_no
+            , fd.file_nm
+            , fd.file_stre_nm
+            , fd.file_streplace
+            , fd.file_mg
+            , fd.file_extsn
+            , fd.file_ty
+            , fd.file_stre_de
+            , fd.file_dwld_co
         FROM task_presentn p
              INNER JOIN task t
                   ON p.task_no = t.task_no
@@ -119,11 +152,13 @@
                   ON t.week_accto_lrn_no = w.week_accto_lrn_no
             INNER JOIN stdnt std
                 ON p.stdnt_no = std.stdnt_no
+             LEFT OUTER JOIN file_detail fd
+                ON p.file_group_no = fd.file_group_no
         WHERE w.estbllctre_code = #{estbllctreCode}
         ORDER BY TO_NUMBER(p.task_presentn_no)
     </select>
 
-    <select id="selectTaskPresentnByTask" parameterType="map" resultMap="TaskPresentnMap">
+    <select id="selectTaskPresentnByTask" parameterType="map" resultMap="TaskPresentnWithFileMap">
         SELECT
             p.task_presentn_no
             , p.stdnt_no
@@ -132,6 +167,15 @@
             , p.task_presentn_de
             , p.presentn_at
             , std.stdnt_nm
+            , fd.file_no
+            , fd.file_nm
+            , fd.file_stre_nm
+            , fd.file_streplace
+            , fd.file_mg
+            , fd.file_extsn
+            , fd.file_ty
+            , fd.file_stre_de
+            , fd.file_dwld_co
         FROM task_presentn p
              INNER JOIN task t
                  ON p.task_no = t.task_no
@@ -139,6 +183,8 @@
                  ON t.week_accto_lrn_no = w.week_accto_lrn_no
              INNER JOIN stdnt std
                         ON p.stdnt_no = std.stdnt_no
+             LEFT OUTER JOIN file_detail fd
+                        ON p.file_group_no = fd.file_group_no
         WHERE w.estbllctre_code = #{estbllctreCode}
           AND p.task_no = #{taskNo}
         ORDER BY TO_NUMBER(p.task_presentn_no)
@@ -308,5 +354,97 @@
         WHERE w.estbllctre_code = #{estbllctreCode}
           AND qp.quiz_code = #{quizCode}
         ORDER BY TO_NUMBER(qp.quiz_presentn_no)
+    </select>
+
+    <select id="nextQuizCode" resultType="string">
+        SELECT TO_CHAR(NVL(MAX(TO_NUMBER(quiz_code)), 0) + 1) FROM quiz
+    </select>
+
+    <select id="getQuizByCode" parameterType="string" resultMap="QuizMap">
+        SELECT q.quiz_code, q.week_accto_lrn_no, q.ques_cn, q.quiz_begin_de, q.quiz_clos_de, w.week
+        FROM quiz q
+                 JOIN week_accto_lrn w ON q.week_accto_lrn_no = w.week_accto_lrn_no
+        WHERE q.quiz_code = #{quizCode}
+    </select>
+
+    <insert id="insertQuiz" parameterType="quizVO">
+        INSERT INTO quiz (
+            quiz_code,
+            week_accto_lrn_no,
+            ques_cn,
+            quiz_begin_de,
+            quiz_clos_de
+        ) VALUES (
+                     #{quizCode},
+                     #{weekAcctoLrnNo},
+                     #{quesCn},
+                     #{quizBeginDe},
+                     #{quizClosDe}
+                 )
+    </insert>
+
+    <delete id="deleteQuizPresentnByQuiz" parameterType="string">
+        DELETE FROM quiz_presentn
+        WHERE quiz_code = #{quizCode}
+    </delete>
+
+    <update id="updateQuiz" parameterType="quizVO">
+        UPDATE quiz
+        SET week_accto_lrn_no = #{weekAcctoLrnNo},
+            ques_cn = #{quesCn},
+            quiz_begin_de = #{quizBeginDe},
+            quiz_clos_de = #{quizClosDe}
+        WHERE quiz_code = #{quizCode}
+    </update>
+
+    <delete id="deleteQuiz" parameterType="map">
+        DELETE FROM quiz
+        WHERE quiz_code = #{quizCode}
+          AND week_accto_lrn_no IN (
+            SELECT week_accto_lrn_no
+            FROM week_accto_lrn
+            WHERE estbllctre_code = #{estbllctreCode}
+        )
+    </delete>
+
+    <select id="nextQuizExCode" resultType="string">
+        SELECT TO_CHAR(NVL(MAX(TO_NUMBER(quiz_ex_code)),0)+1) FROM quiz_ex
+    </select>
+
+    <delete id="deleteQuizExByQuiz" parameterType="string">
+        DELETE FROM quiz_ex WHERE quiz_code = #{quizCode}
+    </delete>
+
+    <select id="selectQuizExByQuiz" parameterType="string" resultType="quizExVO">
+        SELECT quiz_ex_code,
+               quiz_code,
+               ex_no,
+               ex_cn,
+               cnsl_at
+        FROM quiz_ex
+        WHERE quiz_code = #{quizCode}
+        ORDER BY TO_NUMBER(ex_no)
+    </select>
+
+    <insert id="insertQuizEx" parameterType="quizExVO">
+        INSERT INTO quiz_ex(quiz_ex_code, quiz_code, ex_no, ex_cn, cnsl_at)
+        VALUES(#{quizExCode}, #{quizCode}, #{exNo}, #{exCn}, #{cnslAt})
+    </insert>
+
+    <select id="selectFileDetailByFileNo" parameterType="long" resultType="fileDetailVO">
+        SELECT
+            file_no,
+            file_group_no,
+            file_nm,
+            file_stre_nm,
+            file_streplace,
+            file_mg,
+            file_extsn,
+            file_ty,
+            file_stre_de,
+            file_dwld_co
+        FROM file_detail
+        WHERE file_group_no = #{fileGroupNo}
+            AND file_no = #{fileNo}
     </select>
 </mapper>
