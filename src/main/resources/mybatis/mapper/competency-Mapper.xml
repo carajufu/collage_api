@@ -4,10 +4,6 @@
 
 <mapper namespace="kr.ac.collage_api.competency.mapper.CompetencyMapper">
 
-	<select id="getNextFormNo" resultType="int">
-        SELECT NVL(MAX(FORM_ID), 0) + 1 FROM COMPETENCY
-    </select>
-
     <select id="getFormData" resultType="kr.ac.collage_api.competency.vo.CompetencyVO">
         SELECT
              A.FORM_ID
@@ -19,11 +15,7 @@
             ,A.EDC_HISTORY
             ,A.MAIN_PROJECT
             ,A.CHARACTER
-            ,B.STDNT_NM
-            ,B.BRTHDY
         FROM COMPETENCY A
-        JOIN STDNT B
-          ON A.STDNT_NO = B.STDNT_NO
         WHERE A.STDNT_NO = #{stdntNo}
     </select>
 
@@ -40,7 +32,7 @@
             ,MAIN_PROJECT
             ,CHARACTER
         ) VALUES (
-            #{formId}
+             COMPETENCY_SEQ.NEXTVAL
             ,#{stdntNo}
             ,#{lastAcdmcr}
             ,#{miltrAt}

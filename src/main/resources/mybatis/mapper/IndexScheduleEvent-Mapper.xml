@@ -42,7 +42,7 @@
 
 <mapper namespace="kr.ac.collage_api.index.mapper.IndexScheduleEventMapper">
 
-    <resultMap id="IndexScheduleEventMap" type="kr.ac.collage_api.schedule.vo.ScheduleEventVO">
+    <resultMap id="IndexScheduleEventMap" type="scheduleEventVO">
         <id     property="id"        column="EVENT_ID"/>
         <result property="title"     column="TITLE"/>
         <result property="type"      column="TYPE"/>
@@ -59,23 +59,27 @@
     - SELECT * FROM ( ... UNION ALL ... ) ORDER BY 로 정렬
     - START_DT/END_DT 전부 VARCHAR로 통일
     -->
-      <!-- [1] 강의 일정: LECTURE (index.jsp 메인에서는 강의 시간표 비노출)
+      <!--
+      [1] 강의 일정: LECTURE (index.jsp 메인에서는 강의 시간표 비노출)
 
-      	- 주의사항 : LCTRE_TIMETABLE.BEGIN_TM / END_TM 은 NUMBER(4,0) "교시" 컬럼임.
-        	· 예: 1,2,3 교시 / 0900, 1030 같은 형태의 정수 (시간 슬롯)일 뿐,
-          	  DATE 타입이 아니고, 'YYYYMMDD' 와 직접 비교 불가. -->
-          
+      - 주의사항 : LCTRE_TIMETABLE.BEGIN_TM / END_TM 은 NUMBER(4,0) "교시" 컬럼임.
+        · 예: 1,2,3 교시 / 0900, 1030 같은 형태의 정수 (시간 슬롯)일 뿐,
+          DATE 타입이 아니고, 'YYYYMMDD' 와 직접 비교 불가. -->
       <!-- [2] 과제 일정: TASK (TASK_BEGIN_DE / TASK_CLOS_DE = VARCHAR2(8, YYYYMMDD)) -->
       <!-- [3] 팀 프로젝트 일정: TEAM_PRJCT (BEGIN_DE / CLOS_DE = VARCHAR2(8, YYYYMMDD)) -->
          
       <!-- [4-1] 상담 가능 슬롯: CNSLT_AT (DATE + VARCHAR2(2) 시간) -->
+
       <!-- [4-2] 실제 상담: CNSLT (DATE + VARCHAR2(2) 시간) -->
 
       <!-- [5] 수강신청: ATNLC_REQST.REQST_DE = VARCHAR2(8, YYYYMMDD) -->
  
       <!-- [6-1] 증명서 발급: CRTF_ISSU_REQUST (REQST_DT / ISSU_DT = DATE) -->
+ 
       <!-- [6-2] 학적변동: SKNRGS_CHANGE_HIST.CHANGE_DE = VARCHAR2(8, YYYYMMDD) -->
+ 
       <!-- [6-3] 졸업요건 등록: GRDTN_RQISIT.REGIST_DE = VARCHAR2(8, YYYYMMDD) -->
+    
       <!-- [6-4] 등록금 납부 기간: REGIST_CT.RQEST_DE / PAY_ENDDE = VARCHAR2(8, YYYYMMDD) -->
       
 	<select id="selectIndexScheduleEvents"
@@ -357,18 +361,16 @@
                 JOIN SUBJCT sj       ON sj.SUBJCT_CODE     = ac.SUBJCT_CODE
             WHERE REGEXP_LIKE(ar.REQST_DE, '^[0-9]{8}$')
               AND ar.REQST_DE BETWEEN #{startDate} AND #{endDate}
-			  AND (
-			      CASE
-			          WHEN #{role} = 'ROLE_STUDENT' THEN
-			              CASE WHEN ar.STDNT_NO = #{stdntNo} THEN 1 ELSE 0 END
-			          WHEN #{role} = 'ROLE_PROF' THEN
-			              CASE WHEN ec.PROFSR_NO = #{profsrNo} THEN 1 ELSE 0 END
-			          WHEN #{role} = 'ROLE_ADMIN' THEN
-			              1                         -- 관리자: 전체 수강신청 이벤트 조회
-			          ELSE
-			              1                         -- guest/기타: 개인정보 없는 전역 수강신청 이벤트 허용
-			      END
-			    ) = 1
+              AND (
+                    CASE
+                        WHEN #{role} = 'ROLE_STUDENT' THEN
+                            CASE WHEN ar.STDNT_NO = #{stdntNo} THEN 1 ELSE 0 END
+                        WHEN #{role} = 'ROLE_PROF' THEN
+                            CASE WHEN ec.PROFSR_NO = #{profsrNo} THEN 1 ELSE 0 END
+                        ELSE 0
+                    END
+                  ) = 1
+
             UNION ALL
 	     SELECT
                 'CERT_' || ci.CRTF_ISSU_INNB AS EVENT_ID,

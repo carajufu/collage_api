@@ -5,11 +5,21 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
 <%@ include file="index-header.jsp"%>
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>대덕대학교 메인 포털</title>
-    
-    <!-- 메인페이지 전용 CSS -->
+   <!-- Pretendard + Bootstrap -->
     <link rel="stylesheet"
-          href="${pageContext.request.contextPath}/css/main-pages.css" />
+          href="https://cdn.jsdelivr.net/npm/pretendard/dist/web/static/pretendard.css" />
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+  	<!-- 메인 포털 전용 CSS -->
+    <link rel="stylesheet"
+          href="${pageContext.request.contextPath}/css/main-portal.css" />
+
 <style>
 	/* ============================================
 	   0. 공통 레이아웃 / 타이포
@@ -688,9 +698,113 @@
 	.main-bbs-row-divider > .col-md-6:first-child {
 	    padding-right: 2.5rem;
 	}
+	/* 공지/학사일정 카드 공통 래퍼 */
+	.section-main-bbs .main-bbs-card,
+	.section-main-bbs .main-calendar-card {
+	    position: relative;
+	    width: 100%;             /* 둘 다 그리드 폭 안에서 100% */
+	    min-height: 470px;       /* 동일 최소 높이 */
+	    display: flex;
+	    flex-direction: column;
+	    background: transparent;
+	    padding: 0;
+	    box-shadow: none;
+	}
+	
+	/* 공지/학사일정 내부 흰색 카드 공통화 */
+	.main-bbs-inner,
+	.main-calendar-inner {
+	    position: relative;
+	    flex: 1 1 auto;
+	    min-height: 0;
+	    display: flex;
+	    flex-direction: column;
+	    background: #ffffff;
+	    border-radius: 18px;
+	    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+	    padding: 10px 10px 10px;   /* 양쪽 동일 패딩 */
+	    box-sizing: border-box;
+	}
+	/* 공지/학사일정 컬럼 gutter 조정 */
+	.section-main-bbs .row {
+	    --bs-gutter-x: 3rem;   /* 기존 2rem → 3rem */
+	}
+	
+	/* 공지사항 | 학사일정 가운데 세로 구분선 */
+	.main-bbs-row-divider {
+	    position: relative;
+	}
+	.main-bbs-row-divider::before {
+	    content: "";
+	    position: absolute;
+	    top: 16px;
+	    bottom: 16px;
+	    left: 50%;
+	    width: 3px;
+	    background: #e3e6ee;
+	}
+	.main-calendar-card .main-calendar-row {
+	    position: relative;
+	    display: flex;
+	    align-items: flex-start;
+	    gap: 0.75rem;
+	    flex: 1 1 auto;
+	    min-height: 0;
+	    padding: -0.5rem 0 1rem;
+	}
+	/* 세로 구분선 주변 여백 (좌우 카드 사이 간격) */
+	.main-bbs-row-divider > .col-xl-6:first-child,
+	.main-bbs-row-divider > .col-lg-6:first-child,
+	.main-bbs-row-divider > .col-md-6:first-child {
+	    padding-right: 3.5rem;   /* 기존 2.5rem → 3rem */
+	}
+	.main-bbs-row-divider > .col-xl-6:last-child,
+	.main-bbs-row-divider > .col-lg-6:last-child,
+	.main-bbs-row-divider > .col-md-6:last-child {
+	    padding-left: 3.5rem;    /* 새로 추가: 오른쪽 카드도 동일 간격 */
+	}
+	/* 학사일정 이전/다음 화살표 위치 */
+	.main-calendar-card .calendar-arrow-prev {
+	    left: -48px;   /* 카드 기준 살짝만 밖으로, 구분선 오른쪽에 위치 */
+	}
+	.main-calendar-card .calendar-arrow-next {
+	    right: -48px;
+	}
+	/* 행사 캐러셀 래퍼: 좌우 여백 늘림 */
+	.event-carousel {
+	    position: relative;
+	    max-width: 920px;
+	    margin: 0 auto;
+	    padding: 35px 80px;  
+	 }
+	
+	/* 행사 캐러셀 화살표: 컨테이너 안쪽으로 정렬 + 여유 */
+	.event-arrow {
+	    position: absolute;
+	    top: 50%;
+	    transform: translateY(-50%);
+	    width: 34px;
+	    height: 34px;
+	    border-radius: 999px;
+	    border: none;
+	    background: #0f172a;
+	    color: #f9fafb;
+	    display: inline-flex;
+	    align-items: center;
+	    justify-content: center;
+	    cursor: pointer;
+	    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.45);
+	    z-index: 10;
+	}
+	
+	.event-arrow-prev {
+	    left: -150px;     
+	}
+	.event-arrow-next {
+	    right: -150px; 
+	}
+		
 </style>
-
-
 </head>
 <body>
 
@@ -712,8 +826,8 @@
                         창의적 인재와 함께 미래 캠퍼스를<br /> 만들어 가는 대덕대학교
                     </h1>
                     <p class="hero-desc">
-                        입학·학사·장학·대학생활·연구 정보를 한 화면에서 연결하는 대덕대학교 메인
-                        포털입니다. 재학생, 예비대학생, 동문 모두를 위한 캠퍼스 허브를 목표로 합니다.
+                        입학·학사·장학·대학생활·연구 정보를 한 화면에서 연결하는 대덕대학교 메인포털입니다. 
+                        재학생, 예비대학생, 동문 모두를 위한 캠퍼스 허브를 목표로 합니다.
                     </p>
 
                     <form id="globalSearchForm"
@@ -759,11 +873,11 @@
                             <div class="ratio ratio-4x3 bg-light">
                                 <c:choose>
                                     <c:when test="${not empty firstNews.fileGroupNo}">
-                                        <img src="${pageContext.request.contextPath}/images/news/${firstNews.fileGroupNo}.png"
+                                        <img src="${pageContext.request.contextPath}/img/news/${firstNews.fileGroupNo}.png"
                                              alt="<c:out value='${firstNews.bbscttSj}'/>" />
                                     </c:when>
                                     <c:otherwise>
-                                        <img src="${cPath}/images/news/default.jpg"
+                                        <img src="${cPath}/img/news/default.jpg"
                                              alt="<c:out value='${firstNews.bbscttSj}'/>" />
                                     </c:otherwise>
                                 </c:choose>
@@ -819,7 +933,7 @@
 	            <!-- 공지사항 -->
 	            <div class="col-xl-6 col-lg-6 col-md-6">
 	                <div class="d-flex justify-content-between align-items-center mb-0">
-	                    <h2 class="research-section-title mb-0">&nbsp;&nbsp;&nbsp;&nbsp;공지사항</h2>
+	                    <h2 class="research-section-title mb-0">&nbsp;&nbsp;&nbsp;공지사항</h2>
 	                    <a href="${cPath}/bbs/notice" class="section-link-more">View More</a>
 	                </div>
 	
@@ -871,7 +985,7 @@
 	            <!-- 학사일정 카드 -->
 	            <div class="col-xl-6 col-lg-6 col-md-6">
 	                <div class="d-flex justify-content-between align-items-center mb-0">
-	                    <h2 class="research-section-title mb-0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;학사일정</h2>
+	                    <h2 class="research-section-title mb-0">&nbsp;학사일정</h2>
 	                    <a href="/schedule/calendar" class="section-link-more">View More</a>
 	                </div>
 	
@@ -992,13 +1106,13 @@
                                     <c:choose>
                                         <c:when test="${not empty item.fileGroupNo}">
                                             <div class="poster-wrapper">
-                                                <img src="${pageContext.request.contextPath}/images/event/${item.fileGroupNo}.png"
+                                                <img src="${pageContext.request.contextPath}/img/event/${item.fileGroupNo}.png"
                                                      alt="<c:out value='${item.bbscttSj}'/>"
                                                      class="poster-img"/>
                                             </div>
                                         </c:when>
                                         <c:otherwise>
-                                            <img src="${cPath}/images/event/default.jpg"
+                                            <img src="${cPath}/img/event/default.jpg"
                                                  alt="<c:out value='${item.bbscttSj}'/>" />
                                         </c:otherwise>
                                     </c:choose>
@@ -1052,11 +1166,11 @@
                                            class="d-block h-100">
                                             <c:choose>
                                                 <c:when test="${not empty paper.fileGroupNo}">
-                                                    <img src="${pageContext.request.contextPath}/images/research_act/${paper.fileGroupNo}.png"
+                                                    <img src="${pageContext.request.contextPath}/img/research_act/${paper.fileGroupNo}.png"
                                                          alt="<c:out value='${paper.bbscttSj}'/>">
                                                 </c:when>
                                                 <c:otherwise>
-                                                    <img src="${cPath}/images/research_act/default.jpg"
+                                                    <img src="${cPath}/img/research_act/default.jpg"
                                                          alt="연구 대표 이미지">
                                                 </c:otherwise>
                                             </c:choose>
@@ -1111,7 +1225,9 @@
     src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
     crossorigin="anonymous"></script>
+
 <script>
+
 /**
  * index.jsp 공통 스크립트
  * 1) 통합 검색 폼 검증
@@ -1120,410 +1236,409 @@
  * 4) 메인 학사일정 카드 (이전/다음 월 AJAX + 범례 필터)
  * 5) 학교 행사 포커 캐러셀
  */
-
 document.addEventListener('DOMContentLoaded', function () {
 
-    /* -------------------------------------------------------
-     * 1 통합 검색 폼 검증
-     *  - 공백 검색 방지
-     * ----------------------------------------------------- */
-    (function () {
-        const form  = document.getElementById('globalSearchForm');
-        if (!form) return;
+     /* -------------------------------------------------------
+      * 1 통합 검색 폼 검증
+      *  - 공백 검색 방지
+      * ----------------------------------------------------- */
+     (function () {
+         const form  = document.getElementById('globalSearchForm');
+         if (!form) return;
 
-        const input = form.querySelector('input[name="q"]');
-        if (!input) return;
+         const input = form.querySelector('input[name="q"]');
+         if (!input) return;
 
-        form.addEventListener('submit', function (e) {
-            if (!input.value.trim()) {
-                e.preventDefault();
-                alert('검색어를 입력해주세요.');
-                input.focus();
-            }
-        });
-    })();
+         form.addEventListener('submit', function (e) {
+             if (!input.value.trim()) {
+                 e.preventDefault();
+                 alert('검색어를 입력해주세요.');
+                 input.focus();
+             }
+         });
+     })();
 
-    /* -------------------------------------------------------
-     * 2 히어로 섹션 랜덤 배경 (어두워졌다가 새 이미지로)
-     *  - 10초마다: 현재 이미지 유지 → 딤 레이어 서서히 1 → 새 이미지로 교체 → 딤 0
-     * ----------------------------------------------------- */
-    (function () {
-        const heroSection = document.querySelector('.hero-section');
-        if (!heroSection) return;
+     /* -------------------------------------------------------
+      * 2 히어로 섹션 랜덤 배경 (어두워졌다가 새 이미지로)
+      *  - 10초마다: 현재 이미지 유지 → 딤 레이어 서서히 1 → 새 이미지로 교체 → 딤 0
+      * ----------------------------------------------------- */
+     (function () {
+         const heroSection = document.querySelector('.hero-section');
+         if (!heroSection) return;
 
-        const basePath = '${pageContext.request.contextPath}/images/background/';
+         const basePath = '${pageContext.request.contextPath}/img/background/';
 
-        const backgroundFiles = [
-            <c:forEach var="img" items="${background_images}" varStatus="st">
-            '${img}'<c:if test="${!st.last}">,</c:if>
-            </c:forEach>
-        ].filter(function (name) {
-            return !!name;
-        });
+         const backgroundFiles = [
+             <c:forEach var="img" items="${background_images}" varStatus="st">
+             '${img}'<c:if test="${!st.last}">,</c:if>
+             </c:forEach>
+         ].filter(function (name) {
+             return !!name;
+         });
 
-        if (!backgroundFiles.length) {
-            console.warn('[hero-bg] background_images 비어 있음, 랜덤 배경 비활성');
-            return;
-        }
+         if (!backgroundFiles.length) {
+             console.warn('[hero-bg] background_images 비어 있음, 랜덤 배경 비활성');
+             return;
+         }
 
-        const backgroundUrls = backgroundFiles.map(function (name) {
-            return basePath + name;
-        });
+         const backgroundUrls = backgroundFiles.map(function (name) {
+             return basePath + name;
+         });
 
-        // 미리 로드
-        backgroundUrls.forEach(function (src) {
-            const img = new Image();
-            img.src = src;
-        });
+         // 미리 로드
+         backgroundUrls.forEach(function (src) {
+             const img = new Image();
+             img.src = src;
+         });
 
-        // 딤 레이어 준비
-        let dimLayer = heroSection.querySelector('.hero-bg-layer');
-        if (!dimLayer) {
-            dimLayer = document.createElement('div');
-            dimLayer.className = 'hero-bg-layer';
-            heroSection.prepend(dimLayer);
-        }
+         // 딤 레이어 준비
+         let dimLayer = heroSection.querySelector('.hero-bg-layer');
+         if (!dimLayer) {
+             dimLayer = document.createElement('div');
+             dimLayer.className = 'hero-bg-layer';
+             heroSection.prepend(dimLayer);
+         }
 
-        let currentIndex = -1;
-        let isTransitionRunning = false;
-        let phase = 'idle'; // 'darkening' | 'brightening'
+         let currentIndex = -1;
+         let isTransitionRunning = false;
+         let phase = 'idle'; // 'darkening' | 'brightening'
 
-        function pickNextIndex() {
-            if (backgroundUrls.length <= 1) return 0;
-            let idx = Math.floor(Math.random() * backgroundUrls.length);
-            if (idx === currentIndex) {
-                idx = (idx + 1) % backgroundUrls.length;
-            }
-            return idx;
-        }
+         function pickNextIndex() {
+             if (backgroundUrls.length <= 1) return 0;
+             let idx = Math.floor(Math.random() * backgroundUrls.length);
+             if (idx === currentIndex) {
+                 idx = (idx + 1) % backgroundUrls.length;
+             }
+             return idx;
+         }
 
-        function applyBackground(url) {
-            heroSection.style.backgroundImage =
-                'linear-gradient(to bottom, rgba(15,23,42,0.45), rgba(15,23,42,0.35)), url("' + url + '")';
-        }
+         function applyBackground(url) {
+             heroSection.style.backgroundImage =
+                 'linear-gradient(to bottom, rgba(15,23,42,0.45), rgba(15,23,42,0.35)), url("' + url + '")';
+         }
 
-        function handleTransitionEnd(event) {
-            if (event.propertyName !== 'opacity') return;
+         function handleTransitionEnd(event) {
+             if (event.propertyName !== 'opacity') return;
 
-            if (phase === 'darkening') {
-                // 완전히 어두워진 시점 → 새 이미지로 교체
-                const nextIdx = pickNextIndex();
-                const nextUrl = backgroundUrls[nextIdx];
-                currentIndex = nextIdx;
-                applyBackground(nextUrl);
+             if (phase === 'darkening') {
+                 // 완전히 어두워진 시점 → 새 이미지로 교체
+                 const nextIdx = pickNextIndex();
+                 const nextUrl = backgroundUrls[nextIdx];
+                 currentIndex = nextIdx;
+                 applyBackground(nextUrl);
 
-                phase = 'brightening';
+                 phase = 'brightening';
 
-                // 다음 프레임에서 다시 밝게
-                requestAnimationFrame(function () {
-                    dimLayer.style.opacity = '0';
-                });
-            } else if (phase === 'brightening') {
-                // 밝기 회복 완료
-                dimLayer.removeEventListener('transitionend', handleTransitionEnd);
-                phase = 'idle';
-                isTransitionRunning = false;
-            }
-        }
+                 // 다음 프레임에서 다시 밝게
+                 requestAnimationFrame(function () {
+                     dimLayer.style.opacity = '0';
+                 });
+             } else if (phase === 'brightening') {
+                 // 밝기 회복 완료
+                 dimLayer.removeEventListener('transitionend', handleTransitionEnd);
+                 phase = 'idle';
+                 isTransitionRunning = false;
+             }
+         }
 
-        function startBackgroundTransition() {
-            if (isTransitionRunning) return;
-            isTransitionRunning = true;
-            phase = 'darkening';
+         function startBackgroundTransition() {
+             if (isTransitionRunning) return;
+             isTransitionRunning = true;
+             phase = 'darkening';
 
-            dimLayer.addEventListener('transitionend', handleTransitionEnd);
+             dimLayer.addEventListener('transitionend', handleTransitionEnd);
 
-            // 딤 레이어 점점 1 → 어두워지는 구간
-            requestAnimationFrame(function () {
-                dimLayer.style.opacity = '1';
-            });
-        }
+             // 딤 레이어 점점 1 → 어두워지는 구간
+             requestAnimationFrame(function () {
+                 dimLayer.style.opacity = '1';
+             });
+         }
 
-        // 초기 1회: 그냥 이미지만 세팅 (어두워졌다 밝아지는 효과 없이)
-        (function init() {
-            const firstIdx = pickNextIndex();
-            currentIndex = firstIdx;
-            applyBackground(backgroundUrls[firstIdx]);
-            dimLayer.style.opacity = '0';
-        })();
+         // 초기 1회: 그냥 이미지만 세팅 (어두워졌다 밝아지는 효과 없이)
+         (function init() {
+             const firstIdx = pickNextIndex();
+             currentIndex = firstIdx;
+             applyBackground(backgroundUrls[firstIdx]);
+             dimLayer.style.opacity = '0';
+         })();
 
-        // 10초마다 전환
-        setInterval(startBackgroundTransition, 10000);
-    })();
-    /* -------------------------------------------------------
-     * 3 메인 학사일정 카드
-     *  - /api/index/calendar AJAX로 월별 일정 조회
-     *  - 범례 클릭 시 해당 type 숨김/표시
-     *  - 초기 진입 시 서버 렌더 결과에 바로 필터만 적용
-     * ----------------------------------------------------- */
-    (function () {
-        const card = document.querySelector('.main-calendar-card');
-        if (!card) return;
+         // 10초마다 전환
+         setInterval(startBackgroundTransition, 10000);
+     })();
+     /* -------------------------------------------------------
+      * 3 메인 학사일정 카드
+      *  - /api/index/calendar AJAX로 월별 일정 조회
+      *  - 범례 클릭 시 해당 type 숨김/표시
+      *  - 초기 진입 시 서버 렌더 결과에 바로 필터만 적용
+      * ----------------------------------------------------- */
+     (function () {
+         const card = document.querySelector('.main-calendar-card');
+         if (!card) return;
 
-        const endpoint    = card.getAttribute('data-calendar-endpoint');
-        const monthLabel  = card.querySelector('#miniCalendarMonthLabel');
-        const listEl      = card.querySelector('.main-calendar-list');
-        const prevBtn     = card.querySelector('.calendar-arrow-prev');
-        const nextBtn     = card.querySelector('.calendar-arrow-next');
-        const legendItems = card.querySelectorAll('.legend-item');
+         const endpoint    = card.getAttribute('data-calendar-endpoint');
+         const monthLabel  = card.querySelector('#miniCalendarMonthLabel');
+         const listEl      = card.querySelector('.main-calendar-list');
+         const prevBtn     = card.querySelector('.calendar-arrow-prev');
+         const nextBtn     = card.querySelector('.calendar-arrow-next');
+         const legendItems = card.querySelectorAll('.legend-item');
 
-        if (!endpoint || !monthLabel || !listEl) {
-            console.warn('[index-calendar] 필수 요소 누락');
-            return;
-        }
+         if (!endpoint || !monthLabel || !listEl) {
+             console.warn('[index-calendar] 필수 요소 누락');
+             return;
+         }
 
-        // 숨김 처리된 type 코드 집합
-        const hiddenTypes = new Set();
+         // 숨김 처리된 type 코드 집합
+         const hiddenTypes = new Set();
 
-        // type 코드 정규화 (공백 제거 + 대문자 통일)
-        function normalizeType(raw) {
-            return (raw || '').trim().toUpperCase();
-        }
+         // type 코드 정규화 (공백 제거 + 대문자 통일)
+         function normalizeType(raw) {
+             return (raw || '').trim().toUpperCase();
+         }
 
-        function escapeHtml(str) {
-            return String(str == null ? '' : str)
-                .replace(/&/g, '&amp;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
-                .replace(/"/g, '&quot;')
-                .replace(/'/g, '&#39;');
-        }
+         function escapeHtml(str) {
+             return String(str == null ? '' : str)
+                 .replace(/&/g, '&amp;')
+                 .replace(/</g, '&lt;')
+                 .replace(/>/g, '&gt;')
+                 .replace(/"/g, '&quot;')
+                 .replace(/'/g, '&#39;');
+         }
 
-        function getCurrentYearMonth() {
-            const y = parseInt(monthLabel.getAttribute('data-year'), 10);
-            const m = parseInt(monthLabel.getAttribute('data-month'), 10);
-            return {
-                year: isNaN(y) ? new Date().getFullYear() : y,
-                month: isNaN(m) ? new Date().getMonth() + 1 : m
-            };
-        }
+         function getCurrentYearMonth() {
+             const y = parseInt(monthLabel.getAttribute('data-year'), 10);
+             const m = parseInt(monthLabel.getAttribute('data-month'), 10);
+             return {
+                 year: isNaN(y) ? new Date().getFullYear() : y,
+                 month: isNaN(m) ? new Date().getMonth() + 1 : m
+             };
+         }
 
-        function updateMonthLabel(year, month) {
-            const mm = month < 10 ? '0' + month : '' + month;
-            monthLabel.setAttribute('data-year', year);
-            monthLabel.setAttribute('data-month', month);
-            monthLabel.textContent = year + '. ' + mm;
-        }
+         function updateMonthLabel(year, month) {
+             const mm = month < 10 ? '0' + month : '' + month;
+             monthLabel.setAttribute('data-year', year);
+             monthLabel.setAttribute('data-month', month);
+             monthLabel.textContent = year + '. ' + mm;
+         }
 
-        // hiddenTypes 상태를 실제 DOM에 반영
-        function applyLegendFilter() {
-            const rows = listEl.querySelectorAll('.main-calendar-item');
-            rows.forEach(function (row) {
-                const t = normalizeType(row.dataset.eventType);
-                row.style.display = (t && hiddenTypes.has(t)) ? 'none' : '';
-            });
-        }
+         // hiddenTypes 상태를 실제 DOM에 반영
+         function applyLegendFilter() {
+             const rows = listEl.querySelectorAll('.main-calendar-item');
+             rows.forEach(function (row) {
+                 const t = normalizeType(row.dataset.eventType);
+                 row.style.display = (t && hiddenTypes.has(t)) ? 'none' : '';
+             });
+         }
 
-     	// AJAX 응답 렌더링 (부트스트랩 list-group 스타일과 일치)
-		function renderEvents(events) {
-		    listEl.innerHTML = '';
-		
-		    if (!events || !events.length) {
-		        const emptyRow = document.createElement('li');
-		        emptyRow.className =
-		            'list-group-item main-calendar-item main-calendar-empty text-muted text-center py-5';
-		        emptyRow.innerHTML = `
-		            <div class="calendar-empty-wrapper">
-		                <i class="ri-calendar-line calendar-empty-icon" aria-hidden="true"></i>
-		                <div class="calendar-empty-text">
-		                    등록된 학사일정이 없습니다.
-		                </div>
-		            </div>
-		        `;
-		        listEl.appendChild(emptyRow);
-		        return;
-		    }
-		    
-            events.forEach(function (ev) {
-                const row = document.createElement('li');
-                row.className = 'list-group-item d-flex main-calendar-item';
+      	// AJAX 응답 렌더링 (부트스트랩 list-group 스타일과 일치)
+ 		function renderEvents(events) {
+ 		    listEl.innerHTML = '';
+ 		
+ 		    if (!events || !events.length) {
+ 		        const emptyRow = document.createElement('li');
+ 		        emptyRow.className =
+ 		            'list-group-item main-calendar-item main-calendar-empty text-muted text-center py-5';
+ 		        emptyRow.innerHTML = `
+ 		            <div class="calendar-empty-wrapper">
+ 		                <i class="ri-calendar-line calendar-empty-icon" aria-hidden="true"></i>
+ 		                <div class="calendar-empty-text">
+ 		                    등록된 학사일정이 없습니다.
+ 		                </div>
+ 		            </div>
+ 		        `;
+ 		        listEl.appendChild(emptyRow);
+ 		        return;
+ 		    }
+ 		    
+             events.forEach(function (ev) {
+                 const row = document.createElement('li');
+                 row.className = 'list-group-item d-flex main-calendar-item';
 
-                // type 코드 정규화해서 data-event-type 에 저장
-                const typeKey = normalizeType(ev.type);
-                row.dataset.eventType = typeKey;
+                 // type 코드 정규화해서 data-event-type 에 저장
+                 const typeKey = normalizeType(ev.type);
+                 row.dataset.eventType = typeKey;
 
-                let dateLabel = ev.startLabel || '';
-                if (!dateLabel && ev.startDate && ev.startDate.length >= 10) {
-                    const mm = ev.startDate.substring(5, 7);
-                    const dd = ev.startDate.substring(8, 10);
-                    dateLabel = mm + '.' + dd;
-                }
+                 let dateLabel = ev.startLabel || '';
+                 if (!dateLabel && ev.startDate && ev.startDate.length >= 10) {
+                     const mm = ev.startDate.substring(5, 7);
+                     const dd = ev.startDate.substring(8, 10);
+                     dateLabel = mm + '.' + dd;
+                 }
 
-                row.innerHTML =
-                    '<div class="me-3 text-center" style="min-width:4.5rem;">' +
-                        '<div class="fw-semibold fs-6">' + escapeHtml(dateLabel) + '</div>' +
-                    '</div>' +
-                    '<div class="flex-grow-1">' +
-                        '<div class="fw-semibold mb-1 text-truncate">' +
-                            escapeHtml(ev.title || '') +
-                        '</div>' +
-                        '<p class="mb-0 text-muted small text-truncate">' +
-                            escapeHtml(ev.memo || '') +
-                        '</p>' +
-                    '</div>';
+                 row.innerHTML =
+                     '<div class="me-3 text-center" style="min-width:4.5rem;">' +
+                         '<div class="fw-semibold fs-6">' + escapeHtml(dateLabel) + '</div>' +
+                     '</div>' +
+                     '<div class="flex-grow-1">' +
+                         '<div class="fw-semibold mb-1 text-truncate">' +
+                             escapeHtml(ev.title || '') +
+                         '</div>' +
+                         '<p class="mb-0 text-muted small text-truncate">' +
+                             escapeHtml(ev.memo || '') +
+                         '</p>' +
+                     '</div>';
 
-                listEl.appendChild(row);
-            });
+                 listEl.appendChild(row);
+             });
 
-            applyLegendFilter();
-        }
+             applyLegendFilter();
+         }
 
-        // 월 변경 → API 호출
-        function loadMonth(year, month) {
-            const url = endpoint
-                + '?year=' + encodeURIComponent(year)
-                + '&month=' + encodeURIComponent(month);
+         // 월 변경 → API 호출
+         function loadMonth(year, month) {
+             const url = endpoint
+                 + '?year=' + encodeURIComponent(year)
+                 + '&month=' + encodeURIComponent(month);
 
-            fetch(url, {
-                method: 'GET',
-                headers: { 'Accept': 'application/json' },
-                credentials: 'same-origin'
-            })
-                .then(function (res) {
-                    if (!res.ok) throw new Error('calendar http ' + res.status);
-                    return res.json();
-                })
-                .then(function (data) {
-                    updateMonthLabel(year, month);
-                    renderEvents(data);
-                })
-                .catch(function (err) {
-                    console.error('[index-calendar] fetch 실패', err);
-                });
-        }
+             fetch(url, {
+                 method: 'GET',
+                 headers: { 'Accept': 'application/json' },
+                 credentials: 'same-origin'
+             })
+                 .then(function (res) {
+                     if (!res.ok) throw new Error('calendar http ' + res.status);
+                     return res.json();
+                 })
+                 .then(function (data) {
+                     updateMonthLabel(year, month);
+                     renderEvents(data);
+                 })
+                 .catch(function (err) {
+                     console.error('[index-calendar] fetch 실패', err);
+                 });
+         }
 
-        function moveMonth(delta) {
-            const ym = getCurrentYearMonth();
-            let y = ym.year;
-            let m = ym.month + delta;
+         function moveMonth(delta) {
+             const ym = getCurrentYearMonth();
+             let y = ym.year;
+             let m = ym.month + delta;
 
-            if (m <= 0) {
-                m += 12;
-                y -= 1;
-            } else if (m > 12) {
-                m -= 12;
-                y += 1;
-            }
-            loadMonth(y, m);
-        }
+             if (m <= 0) {
+                 m += 12;
+                 y -= 1;
+             } else if (m > 12) {
+                 m -= 12;
+                 y += 1;
+             }
+             loadMonth(y, m);
+         }
 
-        if (prevBtn) {
-            prevBtn.addEventListener('click', function (e) {
-                e.preventDefault();
-                moveMonth(-1);
-            });
-        }
-        if (nextBtn) {
-            nextBtn.addEventListener('click', function (e) {
-                e.preventDefault();
-                moveMonth(1);
-            });
-        }
+         if (prevBtn) {
+             prevBtn.addEventListener('click', function (e) {
+                 e.preventDefault();
+                 moveMonth(-1);
+             });
+         }
+         if (nextBtn) {
+             nextBtn.addEventListener('click', function (e) {
+                 e.preventDefault();
+                 moveMonth(1);
+             });
+         }
 
-        // 범례 클릭 시 type 토글
-        legendItems.forEach(function (item) {
-            const typeKey = normalizeType(item.getAttribute('data-type'));
-            if (!typeKey) return;
+         // 범례 클릭 시 type 토글
+         legendItems.forEach(function (item) {
+             const typeKey = normalizeType(item.getAttribute('data-type'));
+             if (!typeKey) return;
 
-            // 정규화된 type 코드 저장 (디버깅용)
-            item.dataset.typeKey = typeKey;
+             // 정규화된 type 코드 저장 (디버깅용)
+             item.dataset.typeKey = typeKey;
 
-            item.addEventListener('click', function () {
-                if (hiddenTypes.has(typeKey)) {
-                    hiddenTypes.delete(typeKey);
-                    item.classList.remove('legend-disabled');
-                } else {
-                    hiddenTypes.add(typeKey);
-                    item.classList.add('legend-disabled');
-                }
-                applyLegendFilter();
-            });
-        });
+             item.addEventListener('click', function () {
+                 if (hiddenTypes.has(typeKey)) {
+                     hiddenTypes.delete(typeKey);
+                     item.classList.remove('legend-disabled');
+                 } else {
+                     hiddenTypes.add(typeKey);
+                     item.classList.add('legend-disabled');
+                 }
+                 applyLegendFilter();
+             });
+         });
 
-        // 서버에서 처음 렌더한 li 도 type 정규화 + 클래스 부여
-        (function initServerRendered() {
-            const rows = listEl.querySelectorAll('[data-event-type]');
-            rows.forEach(function (row) {
-                const key = normalizeType(row.getAttribute('data-event-type'));
-                row.dataset.eventType = key;
-                row.classList.add('main-calendar-item');
-            });
-            applyLegendFilter();
-        })();
+         // 서버에서 처음 렌더한 li 도 type 정규화 + 클래스 부여
+         (function initServerRendered() {
+             const rows = listEl.querySelectorAll('[data-event-type]');
+             rows.forEach(function (row) {
+                 const key = normalizeType(row.getAttribute('data-event-type'));
+                 row.dataset.eventType = key;
+                 row.classList.add('main-calendar-item');
+             });
+             applyLegendFilter();
+         })();
 
-    })();
+     })();
 
-    /* -------------------------------------------------------
-     * 4 학교 행사 포커 캐러셀
-     *  - data-pos 값(left-stack, -2, -1, 0, 1, 2, right-stack) 갱신
-     * ----------------------------------------------------- */
-    (function () {
-        const track = document.querySelector('.event-card-track');
-        if (!track) return;
+     /* -------------------------------------------------------
+      * 4 학교 행사 포커 캐러셀
+      *  - data-pos 값(left-stack, -2, -1, 0, 1, 2, right-stack) 갱신
+      * ----------------------------------------------------- */
+     (function () {
+         const track = document.querySelector('.event-card-track');
+         if (!track) return;
 
-        const cards = Array.from(track.querySelectorAll('.event-card'));
-        const total = cards.length;
-        if (total === 0) return;
+         const cards = Array.from(track.querySelectorAll('.event-card'));
+         const total = cards.length;
+         if (total === 0) return;
 
-        let activeIndex = 0;
+         let activeIndex = 0;
 
-        function updatePositions() {
-            cards.forEach(function (card, idx) {
-                const diffRaw = idx - activeIndex;
-                let diff = ((diffRaw % total) + total) % total;
+         function updatePositions() {
+             cards.forEach(function (card, idx) {
+                 const diffRaw = idx - activeIndex;
+                 let diff = ((diffRaw % total) + total) % total;
 
-                let pos;
-                if (diff === 0) {
-                    pos = 0;
-                } else if (diff === 1 || diff === total - 1) {
-                    pos = diff === 1 ? 1 : -1;
-                } else if (diff === 2 || diff === total - 2) {
-                    pos = diff === 2 ? 2 : -2;
-                } else {
-                    pos = (diff < total / 2) ? 'right-stack' : 'left-stack';
-                }
-                card.setAttribute('data-pos', String(pos));
-            });
-        }
+                 let pos;
+                 if (diff === 0) {
+                     pos = 0;
+                 } else if (diff === 1 || diff === total - 1) {
+                     pos = diff === 1 ? 1 : -1;
+                 } else if (diff === 2 || diff === total - 2) {
+                     pos = diff === 2 ? 2 : -2;
+                 } else {
+                     pos = (diff < total / 2) ? 'right-stack' : 'left-stack';
+                 }
+                 card.setAttribute('data-pos', String(pos));
+             });
+         }
 
-        function move(step) {
-            activeIndex = (activeIndex + step + total) % total;
-            updatePositions();
-        }
+         function move(step) {
+             activeIndex = (activeIndex + step + total) % total;
+             updatePositions();
+         }
 
-        updatePositions();
+         updatePositions();
 
-        const prevBtn = document.querySelector('.event-arrow-prev');
-        const nextBtn = document.querySelector('.event-arrow-next');
+         const prevBtn = document.querySelector('.event-arrow-prev');
+         const nextBtn = document.querySelector('.event-arrow-next');
 
-        if (prevBtn) {
-            prevBtn.addEventListener('click', function () {
-                move(-1);
-            });
-        }
-        if (nextBtn) {
-            nextBtn.addEventListener('click', function () {
-                move(1);
-            });
-        }
-    })();
-});
+         if (prevBtn) {
+             prevBtn.addEventListener('click', function () {
+                 move(-1);
+             });
+         }
+         if (nextBtn) {
+             nextBtn.addEventListener('click', function () {
+                 move(1);
+             });
+         }
+     })();
+ });
 
-/* -----------------------------------------------------------
- * 5 헤더 스크롤 배경 전환
- *  - 스크롤 위치에 따라 .is-scrolled 클래스 토글
- * --------------------------------------------------------- */
-document.addEventListener('scroll', function () {
-    var header = document.querySelector('.main-header');
-    if (!header) return;
+ /* -----------------------------------------------------------
+  * 5 헤더 스크롤 배경 전환
+  *  - 스크롤 위치에 따라 .is-scrolled 클래스 토글
+  * --------------------------------------------------------- */
+ document.addEventListener('scroll', function () {
+     var header = document.querySelector('.main-header');
+     if (!header) return;
 
-    if (window.scrollY > 25) {
-        header.classList.add('is-scrolled');
-    } else {
-        header.classList.remove('is-scrolled');
-    }
-});
-</script>
+     if (window.scrollY > 25) {
+         header.classList.add('is-scrolled');
+     } else {
+         header.classList.remove('is-scrolled');
+     }
+ });
+ </script>
 
-</body>
-</html>
+ </body>
+ </html>

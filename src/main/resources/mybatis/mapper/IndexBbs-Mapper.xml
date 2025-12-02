@@ -10,7 +10,7 @@
       										 → 서비스/컨트롤러.
       - 계약: 유효한 bbsCode(1=공지, 2=행사, 3=학술/논문 등)를 넣으면 최신 5건 반환.
     -->
-    <resultMap id="IndexBbsMap" type="kr.ac.collage_api.index.vo.IndexBbsVO">
+    <resultMap id="IndexBbsMap" type="indexBbsVO">
         <id     property="bbscttNo"       column="BBSCTT_NO"/>
         <result property="bbsCode"        column="BBS_CODE"/>
         <result property="bbsNm"          column="BBS_NM"/>
@@ -19,8 +19,6 @@
         <result property="bbscttCn"       column="BBSCTT_CN"/>
         <result property="bbscttWritngDe" column="BBSCTT_WRITNG_DE"/>
         <result property="bbscttRdcnt"    column="BBSCTT_RDCNT"/>
-        <result property="writer"    column="ACNT_ID"/>
-        
     </resultMap>
 
     <!--
@@ -38,13 +36,13 @@
             c.BBSCTT_SJ,
             c.BBSCTT_CN,
             c.BBSCTT_WRITNG_DE,
-            c.BBSCTT_RDCNT,
-            c.ACNT_ID
+            c.BBSCTT_RDCNT
         FROM BBS_CTT c
         JOIN BBS b
           ON c.BBS_CODE = b.BBS_CODE
         WHERE c.BBS_CODE = #{bbsCode}
         ORDER BY c.BBSCTT_WRITNG_DE DESC
+        FETCH FIRST 20 ROWS ONLY
     </select>
 
 </mapper>

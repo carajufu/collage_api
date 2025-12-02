@@ -29,7 +29,7 @@ footer.custom-footer .container-fluid {
                        class="d-flex align-items-center mb-3">
                         <img src="${pageContext.request.contextPath}/img/logo/univ-logo-kor-vite-dark.png"
                              alt="대덕대학교 로고"
-                             height="60"
+                             height="55"
                              class="me-2" />
                     </a>
                     <p class="mb-2">

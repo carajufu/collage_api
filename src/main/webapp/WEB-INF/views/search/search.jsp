@@ -23,7 +23,7 @@
     <title>대덕대학교-통합검색</title>
     <!-- 메인 포털 공통 CSS -->
     <link rel="stylesheet"
-          href="${pageContext.request.contextPath}/css/main-portal.css" />
+          href="${pageContext.request.contextPath}/static/css/main-portal.css" />
 <style>
   /* =========================
      공통 타이포 / 레이아웃

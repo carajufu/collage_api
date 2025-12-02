@@ -41,7 +41,6 @@ public class SecurityConfig {
                         "/.well-known/**",
                         "/assets/**",
                         "/img/**",
-                        "/images/**",
                         "/cert-templates/**",
                         "/fonts/**");
     }

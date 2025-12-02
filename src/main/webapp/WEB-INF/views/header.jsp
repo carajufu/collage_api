@@ -301,19 +301,19 @@
             <!-- Dark Logo-->
             <a href="/student/welcome" class="logo logo-dark">
                     <span class="logo-sm">
-                        <img src="/assets/images/logo-sm.png" alt="" height="22">
+                        <img src="/img/logo/univ-logo-kor-vite-dark.png" alt="" height="65">
                     </span>
                 <span class="logo-lg">
-                        <img src="/assets/images/logo-dark.png" alt="" height="17">
+                        <img src="/img/logo/univ-logo-kor-vite-dark.png" alt="" height="65">
                     </span>
             </a>
             <!-- Light Logo-->
             <a href="/student/welcome" class="logo logo-light">
                     <span class="logo-sm">
-                        <img src="/assets/images/logo-sm.png" alt="" height="22">
+                        <img src="/img/logo/univ-logo-kor-vite-dark.png" alt="" height="65">
                     </span>
                 <span class="logo-lg">
-                        <img src="/assets/images/logo-light.png" alt="" height="17">
+                        <img src="/img/logo/univ-logo-kor-vite-dark.png" alt="" height="65">
                     </span>
             </a>
             <button type="button" class="btn btn-sm p-0 fs-20 header-item float-end btn-vertical-sm-hover" id="vertical-hover">
@@ -336,9 +336,6 @@
                             <ul class="nav nav-sm flex-column">
                                 <li class="nav-item">
                                     <a href="/payinfo/studentView/${user.username}" class="nav-link" data-key="t-payment-view">납부</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="/payinfo/stdnt/list" class="nav-link" data-key="t-payment-payment-log">납부내역</a>
                                 </li>
                             </ul>
                         </div>
@@ -476,19 +473,19 @@
         <sec:authorize access="hasRole('ROLE_PROF')">
     <a href="/prof/welcome" class="logo logo-dark">
                     <span class="logo-sm">
-                        <img src="/assets/images/logo-sm.png" alt="" height="22">
+                        <img src="/img/logo/dd-logo-horizontal.png" alt="" height="22">
                     </span>
         <span class="logo-lg">
-                        <img src="/assets/images/logo-dark.png" alt="" height="17">
+                        <img src="/img/logo/dd-logo-horizontal.png" alt="" height="17">
                     </span>
     </a>
     <!-- Light Logo-->
     <a href="/prof/welcome" class="logo logo-light">
                     <span class="logo-sm">
-                        <img src="/assets/images/logo-sm.png" alt="" height="22">
+                        <img src="/img/logo/dd-logo-horizontal.png" alt="" height="22">
                     </span>
         <span class="logo-lg">
-                        <img src="/assets/images/logo-light.png" alt="" height="17">
+                        <img src="/img/logo/dd-logo-horizontal.png" alt="" height="17">
                     </span>
     </a>
     <button type="button" class="btn btn-sm p-0 fs-20 header-item float-end btn-vertical-sm-hover" id="vertical-hover">
@@ -574,7 +571,3 @@
 
         <div class="page-content">
             <div id="main-container" class="container-fluid">
-
-
-
-

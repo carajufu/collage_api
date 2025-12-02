@@ -3,7 +3,7 @@ package kr.ac.collage_api.common.util;
 import com.ibm.icu.text.Transliterator;
 
 /**
- * KorNameTranUtil.resolveDisplayEngName
+ * KorNameTranUtil
  *
  * 역할:
  * - 학생 한글 이름을 증명서용 영문 표기 문자열로 만든다.
@@ -65,5 +65,4 @@ public final class KorNameTranUtil {
 
         return sb.toString().trim();
     }
-
 }

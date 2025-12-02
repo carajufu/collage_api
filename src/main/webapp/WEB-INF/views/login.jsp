@@ -96,21 +96,6 @@
         font-size:.85rem;
         text-align:center;
     }
-	.navbar-landing .navbar-brand {
-	    margin-left: 80px;
-	}
-	.mx-auto {
-	    margin-right: 23rem;
-	}
-	.container, .container-fluid, .container-lg, .container-md, .container-sm, .container-xl, .container-xxl {
-	    --vz-gutter-x: 5.5rem;
-	    --vz-gutter-y: 0;
-	    width: 100%;
-	    padding-right: calc(var(--vz-gutter-x) * .5);
-	    padding-left: calc(var(--vz-gutter-x) * .5);
-	    margin-right: auto;
-	    margin-left: auto;
-	}
 </style>
 
 <!DOCTYPE html>

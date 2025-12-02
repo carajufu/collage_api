@@ -15,6 +15,7 @@ import kr.ac.collage_api.common.util.CurrentSemstr;
 import kr.ac.collage_api.dashboard.service.StudentDashboardService;
 import kr.ac.collage_api.dashboard.vo.AcademicProgressRawVO;
 import kr.ac.collage_api.dashboard.vo.DashLectureVO;
+import kr.ac.collage_api.graduation.service.GraduationService;
 import kr.ac.collage_api.index.service.IndexBbsService;
 import kr.ac.collage_api.index.service.IndexScheduleEventService;
 import kr.ac.collage_api.index.vo.IndexBbsVO;
@@ -28,6 +29,8 @@ import kr.ac.collage_api.vo.AcntVO;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -62,6 +65,9 @@ public class StudentDashboardController {
 
 	@Autowired
 	IndexBbsService indexBbsService;
+
+    @Autowired
+    GraduationService graduService;
 
 	/**
 	 * 학생 대시보드
@@ -160,6 +166,12 @@ public class StudentDashboardController {
 		// 학적 이행(학점/전공/교양/외국어) 집계
 		AcademicProgressRawVO p = studentDashboardService.selectAcademicProgress(stdntNo);
 
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        stdntNo = auth.getName();
+
+        model.addAllAttributes(graduService.getGraduMainData(stdntNo));
+        model.addAttribute("stdntNo", stdntNo);
+        
 		// 총 이수학점
 		model.addAttribute("totalCompletedCredits",  safeInt(p.getTotalCompletedCredits()));
 		model.addAttribute("totalRequiredCredits",   safeInt(p.getTotalRequiredCredits()));

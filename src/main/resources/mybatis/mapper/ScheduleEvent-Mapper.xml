@@ -399,9 +399,9 @@
     -->
     <select id="selectAdminEvents" parameterType="map" resultMap="ScheduleEventMap">
 
-        <!-- 6-1. 증명서 발급 -->
+<!--         6-1. 증명서 발급
         SELECT
-            'CERT_' || ci.CRTF_ISSU_INNB                                  AS EVENT_ID,
+            ci.CRTF_ISSU_INNB                                  AS EVENT_ID,
             '증명서발급(' || ci.ISSU_STTUS || ')'                         AS TITLE,
             'ADMIN_CERT'                                                  AS TYPE,
             NULL                                                          AS PLACE,
@@ -430,13 +430,13 @@
                     1 = 0
                 </otherwise>
             </choose>
-            AND ci.REQST_DT BETWEEN TO_DATE(#{startDate},'YYYYMMDD')
-                               AND TO_DATE(#{endDate},'YYYYMMDD')
+            AND ci.REQST_DT BETWEEN TO_DATE(#{startDate},'RR/MM/DD')
+                               AND TO_DATE(#{endDate},'RR/MM/DD')
         </where>
 
         UNION ALL
-
-        <!-- 6-2. 학적변동 -->
+ -->
+<!--         6-2. 학적변동
         SELECT
             'SKNRG_' || ch.SKNRGS_HIST_INNB                               AS EVENT_ID,
             '학적변동(' || ch.SKNRGS || ')'                               AS TITLE,
@@ -474,7 +474,7 @@
                     AND TO_DATE(#{endDate},'YYYYMMDD')
         </where>
 
-        UNION ALL
+        UNION ALL -->
 
         <!-- 6-3. 졸업요건 등록 -->
         SELECT
@@ -546,7 +546,72 @@
                 BETWEEN TO_DATE(#{startDate},'YYYYMMDD')
                     AND TO_DATE(#{endDate},'YYYYMMDD')
         </where>
-
+        
+        UNION ALL
+        
+        <!-- 6-5. 학사행정 일정: SCHAFS_SCHDUL (교무/행정 캘린더) -->
+		SELECT
+		    'SCHDUL_' || ss.SCHDUL_NO                                      AS EVENT_ID,
+		    ss.SCHDUL_NM                                                   AS TITLE,
+		    'ADMIN_REGIST'                                                 AS TYPE,
+		    NULL                                                           AS PLACE,
+		    NULL                                                           AS TARGET,
+		    '구분 : ' || ss.SCHDUL_CODE                                    AS CONTENT,
+		
+		    /* ===== startDate ===== */
+		    CASE
+		        -- 종일 일정: 날짜만
+		        WHEN ss.ALL_DAY_YN = 'Y' THEN
+		            TO_CHAR(TO_DATE(ss.BEGIN_DE, 'YYYYMMDD'),
+		                    'YYYY-MM-DD')
+		        -- 시간 있는 일정: 날짜+시각
+		        ELSE
+		            TO_CHAR(
+		                TO_DATE(ss.BEGIN_DE || NVL(ss.BEGIN_TIME, '0000'),
+		                        'YYYYMMDDHH24MI'),
+		                'YYYY-MM-DD"T"HH24:MI'
+		            )
+		    END AS START_DT,
+		
+		    /* ===== endDate (FC 규칙: allDay 는 +1일, 시간 일정은 그대로) ===== */
+		    CASE
+		        WHEN ss.ALL_DAY_YN = 'Y' THEN
+		            -- allDay: 마지막 날까지 보이게 하려면 +1일 (exclusive)
+		            TO_CHAR(
+		                TO_DATE(ss.END_DE, 'YYYYMMDD') + 1,
+		                'YYYY-MM-DD'
+		            )
+		        ELSE
+		            -- 시간 있는 일정
+		            TO_CHAR(
+		                TO_DATE(
+		                    ss.END_DE || NVL(ss.END_TIME, ss.BEGIN_TIME),
+		                    'YYYYMMDDHH24MI'
+		                ),
+		                'YYYY-MM-DD"T"HH24:MI'
+		            )
+		    END AS END_DT,
+		
+		    CASE WHEN ss.ALL_DAY_YN = 'Y' THEN 1 ELSE 0 END                AS ALL_DAY_YN
+		FROM SCHAFS_SCHDUL ss
+		<where>
+		    TO_DATE(ss.BEGIN_DE,'YYYYMMDD') &lt;= TO_DATE(#{endDate},'YYYYMMDD')
+		    AND TO_DATE(ss.END_DE,'YYYYMMDD') &gt;= TO_DATE(#{startDate},'YYYYMMDD')
+		    <choose>
+		        <when test="role == 'ROLE_STUDENT'">
+		            AND ss.VIEW_SCOPE = 'ALL'
+		        </when>
+		        <when test="role == 'ROLE_PROF'">
+		            AND ss.VIEW_SCOPE IN ('ALL', 'ROLE_PROF')
+		        </when>
+		        <when test="role == 'ROLE_ADMIN'">
+		            AND 1 = 1
+		        </when>
+		        <otherwise>
+		            AND 1 = 0
+		        </otherwise>
+		    </choose>
+		</where>
     </select>
 
 </mapper>

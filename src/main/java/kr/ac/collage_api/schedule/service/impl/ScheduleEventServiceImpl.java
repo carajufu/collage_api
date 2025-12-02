@@ -106,13 +106,13 @@ public class ScheduleEventServiceImpl implements ScheduleEventService {
 
         List<ScheduleEventVO> result = new ArrayList<>();
 
-        // 쿼리 오류 //result.addAll(selectScheduleEvents(role, stdntNo, profsrNo, startDate, endDate));
+        // result.addAll(selectScheduleEvents(role, stdntNo, profsrNo, startDate, endDate));
         result.addAll(selectLectureEvents(role, stdntNo, profsrNo));
         result.addAll(selectTaskEvents(role, stdntNo, profsrNo, startDate, endDate));
         result.addAll(selectTeamProjectEvents(role, stdntNo, profsrNo, startDate, endDate));
         result.addAll(selectCounselEvents(role, stdntNo, profsrNo, startDate, endDate));
         result.addAll(selectEnrollRequestEvents(role, stdntNo, profsrNo, startDate, endDate));
-        // 쿼리 오류 //result.addAll(selectAdminEvents(role, stdntNo, startDate, endDate));
+        result.addAll(selectAdminEvents(role, stdntNo, startDate, endDate));
 
         // start(문자열 또는 Comparable) → eventId 기준 정렬
         result.sort((a, b) -> {
