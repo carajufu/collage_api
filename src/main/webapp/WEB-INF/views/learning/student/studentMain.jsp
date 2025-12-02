@@ -95,7 +95,11 @@
                         },
                         body: JSON.stringify({ lecNo, weekNo })
                     })
-                        .then(resp => resp.json())
+                        .then(resp => {
+                            const ct = resp.headers.get("content-type") || "";
+                            if (!resp.ok || ct.indexOf("application/json") === -1) return {};
+                            return resp.json();
+                        })
                         .then(rslt => {
                             console.log("chkng rslt > ", rslt);
                             const tasks = rslt.result || [];
@@ -131,7 +135,11 @@
                           "weekNo": weekNo
                       })
                   })
-                      .then(resp => resp.json())
+                      .then(resp => {
+                          const ct = resp.headers.get("content-type") || "";
+                          if (!resp.ok || ct.indexOf("application/json") === -1) return {};
+                          return resp.json();
+                      })
                       .then(rslt => {
                           const quizzes = rslt.result || [];
                           if(!quizzes.length) return;
@@ -510,6 +518,7 @@
          * @returns {Promise<null>} 데이터 존재 여부에 따라 null 또는 제출 데이터
          */
         async function isSubmit(id, { type = "task" } = {}) {
+            if (id === undefined || id === null || id === "") return null;
             let data = null;
             let resp, rslt;
 
@@ -521,12 +530,15 @@
                 const qs = `\${config.param}=\${encodeURIComponent(id)}`;
                 resp = await fetch(`\${config.url}?\${qs}`,
                     { method: "GET" });
+                if (!resp.ok) return data;
+                const ct = resp.headers.get("content-type") || "";
+                if (ct.indexOf("application/json") === -1) return data;
                 rslt = await resp.json();
 
                 if(!rslt.data) { return data; }
-                if(rslt.data.presentnAt === "1") { data = rslt.data; }
+                data = rslt.data;
             } catch(err) {
-                console.error("failed get response reason > {}", resp.status);
+                console.error("failed get response", err);
             }
 
             return data;
@@ -547,9 +559,20 @@
             section.appendChild(container);
 
             const submit = await isSubmit(taskNo);
+            const presentnNo = submit?.taskPresentnNo || "";
+            const isSubmitted = submit?.presentnAt === "1";
+
+            if (!presentnNo) {
+                const warn = document.createElement("div");
+                warn.className = "alert alert-warning";
+                warn.textContent = "제출 번호를 불러오지 못해 업로드를 진행할 수 없습니다. 새로고침 후 다시 시도하세요.";
+                section.appendChild(warn);
+                return section;
+            }
+            const targetPresentnNo = presentnNo;
 
             const state = { mode: "form" };
-            if(!submit) {
+            if(!isSubmitted) {
                 const dz = document.createElement("div");
                 dz.className = "dropzone dz-clickable d-flex align-items-center justify-content-center mb-3";
                 dz.setAttribute("style", "min-height: 240px");
@@ -629,7 +652,7 @@
 
                         taskDz.on("addedfile", () => state.mode = "upload");
                         taskDz.on("sendingmultiple", (file, xhr, formData) => {
-                            formData.append("taskPresentnNo", taskNo);
+                            formData.append("taskPresentnNo", targetPresentnNo);
                         });
                         taskDz.on("successmultiple", (file, resp) => {
                             Swal.fire({
@@ -670,7 +693,7 @@
                             updateBtn.className = "btn btn-outline-primary w-xs";
                             updateBtn.textContent = "수정";
 
-                            updateBtn.addEventListener("click", e => upHandler({ e, taskNo, container, updateBtn: e.currentTarget }));
+                            updateBtn.addEventListener("click", e => upHandler({ e, taskNo, presentnNo: targetPresentnNo, container, updateBtn: e.currentTarget }));
 
                             container.appendChild(updateBtn);
                         });
@@ -710,12 +733,12 @@
                 container.appendChild(submitBtn);
             }
 
-            if(submit) {
+            if(isSubmitted) {
                 const updateBtn = document.createElement("button");
                 updateBtn.className = "btn btn-outline-primary w-xs";
                 updateBtn.textContent = "수정";
                 //todo : 수정 이벤트 핸들러 작성
-                updateBtn.addEventListener("click", e => upHandler({ e, taskNo, container, updateBtn: e.currentTarget }));
+                updateBtn.addEventListener("click", e => upHandler({ e, taskNo, presentnNo: targetPresentnNo, container, updateBtn: e.currentTarget }));
                 container.appendChild(updateBtn);
             }
 
@@ -724,9 +747,19 @@
 
         // todo: 수정 버튼 클릭 시 dropzone 레이아웃 화면에 출력 및 Dropzone.displayExistingFile() 이용해 업로드 되었떤 파일 목록 출력
         function upHandler(ctx) {
-            const { e, taskNo, container, updateBtn } = ctx || {};
+            const { e, taskNo, presentnNo, container, updateBtn } = ctx || {};
             if (e) { e.preventDefault(); e.stopPropagation(); }
-            if (!taskNo || !container || !updateBtn) return;
+            if (!taskNo || !presentnNo || !container || !updateBtn) {
+                Swal.fire({
+                    icon: "warning",
+                    title: "제출 번호가 없어 수정할 수 없습니다.",
+                    timer: 1200,
+                    timerProgressBar: !0,
+                    showConfirmButton: 0
+                });
+                return;
+            }
+            const targetPresentnNo = presentnNo || taskNo;
 
             ["#taskDz", "#dropzone-preview", "#submitTitle"].forEach(sel => {
                 const el = document.querySelector(sel);
@@ -831,7 +864,7 @@
 
             dzInst.on("sendingmultiple", (files, xhr, formData) => {
                 startedUpload = true;
-                formData.append("taskPresentnNo", taskNo);
+                formData.append("taskPresentnNo", targetPresentnNo);
 
                 // Include existing files (that the user did not remove) as metadata
                 const retained = existingMetas.filter(m => !deletedExistingNos.has(String(m.fileNo)));
@@ -866,7 +899,7 @@
 
                 // 삭제만 있는 경우: 메타데이터만 포함하여 수동 전송
                 const formData = new FormData();
-                formData.append("taskPresentnNo", taskNo);
+                formData.append("taskPresentnNo", targetPresentnNo);
                 formData.append("retainedExisting", JSON.stringify(retained));
                 formData.append("deletedExisting", JSON.stringify([...deletedExistingNos]));
 
@@ -913,7 +946,7 @@
                 cloned.replaceWith(resetClone);
                 resetClone.textContent = "수정";
                 resetClone.addEventListener("click", ev =>
-                    upHandler({ e: ev, taskNo, container, updateBtn: ev.currentTarget })
+                    upHandler({ e: ev, taskNo, presentnNo: targetPresentnNo, container, updateBtn: ev.currentTarget })
                 );
             };
 

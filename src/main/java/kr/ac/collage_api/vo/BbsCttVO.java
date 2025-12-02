@@ -16,7 +16,7 @@ public class BbsCttVO {
 	private Date bbscttWritngDe; // 게시글_작성일시
 	private int bbscttRdcnt; // 게시글_조회수
 	private int bbsCode; // 게시글_유형 private String bbscttTy; 이걸 코드로 바꿈
-	private int parntsBbscttNo; // 부모_게시글_번호
+	private Integer parntsBbscttNo; // 부모_게시글_번호
 	private Long fileGroupNo; // 파일_그룹_번호(FK)
 	private String acntId; // 계정_ID(FK)
 
@@ -29,6 +29,7 @@ public class BbsCttVO {
 
 	// 작성자 : 학생
 	private String stdntNo;
+	private String stdntNm;
 
 	// 페이징할때 필요함. 현재 페이지에 보여지는 리스트 담아 올때 쓰는 파라미터
 	private List<BbsCttVO> bbsVOList;

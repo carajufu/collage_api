@@ -74,6 +74,7 @@
         <result column="QUIZ_PRESENTN_DE" property="quizPresentnDe"/>
         <result column="PRESENTN_AT" property="presentnAt"/>
         <result column="WEEK" property="week"/>
+        <result column="CNSL_AT" property="cnslAt"/>
     </resultMap>
 
     <resultMap id="FileDetailMap" type="fileDetailVO">
@@ -108,6 +109,7 @@
         <result property="bbscttRdcnt" column="BBSCTT_RDCNT"/>
         <result property="sklstfNm" column="SKLSTF_NM"/>
         <result property="stdntNo" column="STDNT_NO"/>
+        <result property="stdntNm" column="STDNT_NM"/>
     </resultMap>
 
     <resultMap id="TaskPresentnWithFileMap" type="taskPresentnVO">
@@ -211,6 +213,14 @@
         ORDER BY TO_NUMBER(p.task_presentn_no)
     </select>
 
+    <select id="selectLectureStudents" parameterType="string" resultType="string">
+        SELECT ar.stdnt_no
+        FROM atnlc_reqst ar
+        WHERE ar.estbllctre_code = #{estbllctreCode}
+          AND ar.reqst_sttus = '신청완료'
+        ORDER BY ar.stdnt_no
+    </select>
+
     <select id="findWeekAcctoLrnNo" parameterType="map" resultType="string">
         SELECT week_accto_lrn_no
         FROM week_accto_lrn
@@ -220,6 +230,10 @@
 
     <select id="nextTaskNo" resultType="string">
         SELECT TO_CHAR(NVL(MAX(TO_NUMBER(task_no)), 0) + 1) FROM task
+    </select>
+
+    <select id="nextTaskPresentnNo" resultType="string">
+        SELECT TO_CHAR(NVL(MAX(TO_NUMBER(task_presentn_no)), 0) + 1) FROM task_presentn
     </select>
 
     <select id="getTaskByNo" parameterType="string" resultMap="TaskMap">
@@ -260,6 +274,22 @@
                  )
     </insert>
 
+    <update id="updateTask" parameterType="map">
+        UPDATE task
+        SET task_sj = #{task.taskSj},
+            task_cn = #{task.taskCn},
+            task_begin_de = #{task.taskBeginDe},
+            task_clos_de = #{task.taskClosDe},
+            week_accto_lrn_no = #{task.weekAcctoLrnNo},
+            updt_dt = SYSDATE
+        WHERE task_no = #{task.taskNo}
+          AND week_accto_lrn_no IN (
+            SELECT week_accto_lrn_no
+            FROM week_accto_lrn
+            WHERE estbllctre_code = #{estbllctreCode}
+        )
+    </update>
+
     <delete id="deleteTaskPresentnByTask" parameterType="string">
         DELETE FROM task_presentn
         WHERE task_no = #{taskNo}
@@ -274,6 +304,24 @@
             WHERE estbllctre_code = #{estbllctreCode}
         )
     </delete>
+
+    <insert id="insertTaskPresentn" parameterType="taskPresentnVO">
+        INSERT INTO task_presentn (
+            task_presentn_no,
+            stdnt_no,
+            task_no,
+            file_group_no,
+            task_presentn_de,
+            presentn_at
+        ) VALUES (
+                 #{taskPresentnNo},
+                 #{stdntNo},
+                 #{taskNo},
+                 NULL,
+                 NULL,
+                 #{presentnAt}
+        )
+    </insert>
 
     <select id="getAttend" parameterType="hashMap" resultMap="attendDetailMap">
         SELECT
@@ -350,11 +398,13 @@
                qp.quiz_presentn_de,
                qp.presentn_at,
                std.stdnt_nm,
-               w.week
+               w.week,
+               ex.cnsl_at
         FROM quiz_presentn qp
                  JOIN quiz q ON qp.quiz_code = q.quiz_code
                  JOIN week_accto_lrn w ON q.week_accto_lrn_no = w.week_accto_lrn_no
                  JOIN stdnt std ON qp.stdnt_no = std.stdnt_no
+                 LEFT JOIN quiz_ex ex ON qp.quiz_ex_code = ex.quiz_ex_code
         WHERE w.estbllctre_code = #{estbllctreCode}
         ORDER BY TO_NUMBER(qp.quiz_presentn_no)
     </select>
@@ -367,11 +417,13 @@
                qp.quiz_presentn_de,
                qp.presentn_at,
                std.stdnt_nm,
-               w.week
+               w.week,
+               ex.cnsl_at
         FROM quiz_presentn qp
                  JOIN quiz q ON qp.quiz_code = q.quiz_code
                  JOIN week_accto_lrn w ON q.week_accto_lrn_no = w.week_accto_lrn_no
                  JOIN stdnt std ON qp.stdnt_no = std.stdnt_no
+                 LEFT JOIN quiz_ex ex ON qp.quiz_ex_code = ex.quiz_ex_code
         WHERE w.estbllctre_code = #{estbllctreCode}
           AND qp.quiz_code = #{quizCode}
         ORDER BY TO_NUMBER(qp.quiz_presentn_no)
@@ -379,6 +431,10 @@
 
     <select id="nextQuizCode" resultType="string">
         SELECT TO_CHAR(NVL(MAX(TO_NUMBER(quiz_code)), 0) + 1) FROM quiz
+    </select>
+
+    <select id="nextQuizPresentnNo" resultType="string">
+        SELECT TO_CHAR(NVL(MAX(TO_NUMBER(quiz_presentn_no)), 0) + 1) FROM quiz_presentn
     </select>
 
     <select id="getQuizByCode" parameterType="string" resultMap="QuizMap">
@@ -408,6 +464,12 @@
         DELETE FROM quiz_presentn
         WHERE quiz_code = #{quizCode}
     </delete>
+
+    <update id="clearQuizPresentnExByQuiz" parameterType="string">
+        UPDATE quiz_presentn
+        SET quiz_ex_code = NULL
+        WHERE quiz_code = #{quizCode}
+    </update>
 
     <update id="updateQuiz" parameterType="quizVO">
         UPDATE quiz
@@ -452,6 +514,24 @@
         VALUES(#{quizExCode}, #{quizCode}, #{exNo}, #{exCn}, #{cnslAt})
     </insert>
 
+    <insert id="insertQuizPresentn" parameterType="quizPresentnVO">
+        INSERT INTO quiz_presentn (
+            quiz_presentn_no,
+            stdnt_no,
+            quiz_code,
+            quiz_ex_code,
+            quiz_presentn_de,
+            presentn_at
+        ) VALUES (
+                 #{quizPresentnNo},
+                 #{stdntNo},
+                 #{quizCode},
+                 NULL,
+                 NULL,
+                 #{presentnAt}
+        )
+    </insert>
+
     <select id="selectLectureBbs" parameterType="string" resultMap="BbsMap">
         SELECT
             bbs_code,
@@ -482,7 +562,8 @@
             ctt.bbsctt_writng_de,
             ctt.bbsctt_rdcnt,
             skl.sklstf_nm,
-            std.stdnt_no
+            std.stdnt_no,
+            std.stdnt_nm
         FROM bbs_ctt ctt
                  INNER JOIN bbs b
                             ON ctt.bbs_code = b.bbs_code
@@ -509,7 +590,8 @@
             ctt.bbsctt_writng_de,
             ctt.bbsctt_rdcnt,
             skl.sklstf_nm,
-            std.stdnt_no
+            std.stdnt_no,
+            std.stdnt_nm
         FROM bbs_ctt ctt
                  INNER JOIN bbs b
                             ON ctt.bbs_code = b.bbs_code
@@ -541,7 +623,7 @@
             #{bbscttNo},
             #{acntId},
             #{bbsCode},
-            NVL(#{parntsBbscttNo}, 0),
+            #{parntsBbscttNo,jdbcType=INTEGER},
             #{fileGroupNo},
             #{bbscttSj},
             #{bbscttCn},
@@ -596,6 +678,7 @@
              , b.bbs_nm
              , ac.lctre_nm
              , skl.sklstf_nm
+             , std.stdnt_nm
         FROM bbs_ctt bc
                  INNER JOIN bbs b
                             ON b.bbs_code = #{code}
@@ -605,8 +688,42 @@
                             ON e.lctre_code = ac.lctre_code
                  LEFT OUTER JOIN sklstf skl
                                  ON bc.acnt_id = skl.acnt_id
-                 LEFT OUTER JOIN stdnt std
-                                 ON bc.acnt_id = std.acnt_id
+        LEFT OUTER JOIN stdnt std
+            ON bc.acnt_id = std.acnt_id
         WHERE  bc.bbsctt_no = #{no}
+    </select>
+
+    <update id="updateBoardReadCount" parameterType="int">
+        UPDATE bbs_ctt
+        SET bbsctt_rdcnt = NVL(bbsctt_rdcnt,0) + 1
+        WHERE bbsctt_no = #{bbscttNo}
+    </update>
+
+    <select id="selectPrevBoard" parameterType="map" resultType="hashMap">
+        <![CDATA[
+        SELECT *
+        FROM (
+            SELECT bbsctt_no AS bbscttNo, bbsctt_sj AS bbscttSj
+            FROM bbs_ctt
+            WHERE bbs_code = #{code}
+              AND bbsctt_no < #{no}
+            ORDER BY bbsctt_no DESC
+        )
+        WHERE ROWNUM = 1
+        ]]>
+    </select>
+
+    <select id="selectNextBoard" parameterType="map" resultType="hashMap">
+        <![CDATA[
+        SELECT *
+        FROM (
+            SELECT bbsctt_no AS bbscttNo, bbsctt_sj AS bbscttSj
+            FROM bbs_ctt
+            WHERE bbs_code = #{code}
+              AND bbsctt_no > #{no}
+            ORDER BY bbsctt_no ASC
+        )
+        WHERE ROWNUM = 1
+        ]]>
     </select>
 </mapper>

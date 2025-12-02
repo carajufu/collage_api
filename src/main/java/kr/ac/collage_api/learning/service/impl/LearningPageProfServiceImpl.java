@@ -23,6 +23,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -52,6 +53,7 @@ public class LearningPageProfServiceImpl {
         return learningPageProfMapper.selectTaskPresentnByTask(estbllctreCode, taskNo);
     }
 
+    @Transactional
     public TaskVO createTask(String estbllctreCode,
                              String week,
                              String title,
@@ -75,7 +77,40 @@ public class LearningPageProfServiceImpl {
         vo.setTaskClosDe(closDe);
 
         learningPageProfMapper.insertTask(vo);
+        createTaskPresentnForStudents(estbllctreCode, nextTaskNo);
         return learningPageProfMapper.getTaskByNo(nextTaskNo);
+    }
+
+    public TaskVO updateTask(String estbllctreCode,
+                             String taskNo,
+                             String title,
+                             String content,
+                             String beginDe,
+                             String closDe,
+                             String week) {
+        TaskVO existing = learningPageProfMapper.getTaskByNo(taskNo);
+        if (existing == null) {
+            throw new IllegalStateException("수정할 과제를 찾을 수 없습니다.");
+        }
+
+        String weekAcctoLrnNo = learningPageProfMapper.findWeekAcctoLrnNo(estbllctreCode, week);
+        if (weekAcctoLrnNo == null) {
+            throw new IllegalArgumentException("해당 주차 정보를 찾을 수 없습니다.");
+        }
+
+        TaskVO vo = new TaskVO();
+        vo.setTaskNo(taskNo);
+        vo.setTaskSj(title);
+        vo.setTaskCn(content);
+        vo.setTaskBeginDe(beginDe);
+        vo.setTaskClosDe(closDe);
+        vo.setWeekAcctoLrnNo(weekAcctoLrnNo);
+
+        int affected = learningPageProfMapper.updateTask(estbllctreCode, vo);
+        if (affected <= 0) {
+            throw new IllegalStateException("수정할 과제를 찾을 수 없습니다.");
+        }
+        return learningPageProfMapper.getTaskByNo(taskNo);
     }
 
     @Transactional
@@ -100,6 +135,7 @@ public class LearningPageProfServiceImpl {
         return learningPageProfMapper.selectQuizPresentnByQuiz(estbllctreCode, quizCode);
     }
 
+    @Transactional
     public QuizVO createQuiz(String estbllctreCode,
                              String week,
                              String quesCn,
@@ -119,6 +155,7 @@ public class LearningPageProfServiceImpl {
 
         learningPageProfMapper.insertQuiz(vo);
         saveQuizExList(nextQuizCode, exList);
+        createQuizPresentnForStudents(estbllctreCode, nextQuizCode);
 
         QuizVO created = learningPageProfMapper.getQuizByCode(nextQuizCode);
         created.setQuizeExVOList(learningPageProfMapper.selectQuizExByQuiz(nextQuizCode));
@@ -146,6 +183,8 @@ public class LearningPageProfServiceImpl {
         int affected = learningPageProfMapper.updateQuiz(vo);
         if (affected <= 0) throw new IllegalStateException("수정 대상 퀴즈가 없습니다.");
 
+        // 기존 제출 데이터의 보기 FK를 모두 해제한 후 보기 삭제
+        learningPageProfMapper.clearQuizPresentnExByQuiz(quizCode);
         learningPageProfMapper.deleteQuizExByQuiz(quizCode);
         saveQuizExList(quizCode, exList);
 
@@ -212,6 +251,7 @@ public class LearningPageProfServiceImpl {
         vo.setBbscttCn(content);
         vo.setAcntId(acntId);
         vo.setBbscttRdcnt(0);
+        vo.setParntsBbscttNo(null);
 
         learningPageProfMapper.insertBoard(vo);
         return learningPageProfMapper.selectBoardDetail(estbllctreCode, nextNo);
@@ -288,6 +328,65 @@ public class LearningPageProfServiceImpl {
     }
 
     public Map<String, Object> getBoard(Map<String, Object> paramMap) {
-        return learningPageProfMapper.getBoard(paramMap);
+        Map<String, Object> resp = learningPageProfMapper.getBoard(paramMap);
+        Object codeObj = paramMap.get("code");
+        Object noObj = paramMap.get("no");
+        Integer bbsCode = codeObj != null ? Integer.parseInt(String.valueOf(codeObj)) : null;
+        Integer bbscttNo = noObj != null ? Integer.parseInt(String.valueOf(noObj)) : null;
+        if (bbscttNo != null) {
+            learningPageProfMapper.updateBoardReadCount(bbscttNo);
+        }
+        if (bbsCode == null && resp != null && resp.get("BBS_CODE") != null) {
+            bbsCode = Integer.parseInt(String.valueOf(resp.get("BBS_CODE")));
+        }
+        if (bbsCode != null && bbscttNo != null) {
+            Map<String, Object> prev = learningPageProfMapper.selectPrevBoard(bbsCode, bbscttNo);
+            Map<String, Object> next = learningPageProfMapper.selectNextBoard(bbsCode, bbscttNo);
+            resp.put("prevCtt", prev);
+            resp.put("nextCtt", next);
+        }
+        return resp;
+    }
+
+    private int parseSequence(String seq) {
+        try {
+            return Integer.parseInt(Optional.ofNullable(seq).orElse("0"));
+        } catch (NumberFormatException e) {
+            return 0;
+        }
+    }
+
+    private void createTaskPresentnForStudents(String estbllctreCode, String taskNo) {
+        List<String> students = learningPageProfMapper.selectLectureStudents(estbllctreCode);
+        if (students == null || students.isEmpty()) return;
+
+        int next = parseSequence(learningPageProfMapper.nextTaskPresentnNo());
+        if (next <= 0) next = 1;
+
+        for (String stdntNo : students) {
+            TaskPresentnVO presentnVO = new TaskPresentnVO();
+            presentnVO.setTaskPresentnNo(String.valueOf(next++));
+            presentnVO.setStdntNo(stdntNo);
+            presentnVO.setTaskNo(taskNo);
+            presentnVO.setPresentnAt("0");
+            learningPageProfMapper.insertTaskPresentn(presentnVO);
+        }
+    }
+
+    private void createQuizPresentnForStudents(String estbllctreCode, String quizCode) {
+        List<String> students = learningPageProfMapper.selectLectureStudents(estbllctreCode);
+        if (students == null || students.isEmpty()) return;
+
+        int next = parseSequence(learningPageProfMapper.nextQuizPresentnNo());
+        if (next <= 0) next = 1;
+
+        for (String stdntNo : students) {
+            QuizPresentnVO presentnVO = new QuizPresentnVO();
+            presentnVO.setQuizPresentnNo(String.valueOf(next++));
+            presentnVO.setStdntNo(stdntNo);
+            presentnVO.setQuizCode(quizCode);
+            presentnVO.setPresentnAt("0");
+            learningPageProfMapper.insertQuizPresentn(presentnVO);
+        }
     }
 }

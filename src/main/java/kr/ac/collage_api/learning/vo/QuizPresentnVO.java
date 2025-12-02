@@ -15,4 +15,5 @@ public class QuizPresentnVO {
 
     private String stdntNm;
     private String week;
+    private String cnslAt;
 }

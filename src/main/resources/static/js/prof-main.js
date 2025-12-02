@@ -13,6 +13,7 @@
     const editModalEl = document.getElementById('editTaskModal');
     const editTaskForm = document.getElementById('editTaskForm');
     const editTaskTitleInput = document.getElementById('edit-task-title');
+    const editTaskWeekSelect = document.getElementById('edit-task-week');
     const editTaskContentInput = document.getElementById('edit-task-content');
     const editTaskStartInput = document.getElementById('edit-task-start');
     const editTaskDueInput = document.getElementById('edit-task-due');
@@ -72,6 +73,7 @@
     const boardSaveBtn = document.getElementById('board-save-btn');
     const boardModalInstance = boardModalEl ? new bootstrap.Modal(boardModalEl) : null;
     const boardState = { list: [], meta: [], loaded: false };
+    let boardEditor = null;
     let currentBoard = null;
     const toArray = val => Array.isArray(val) ? val : (Array.isArray(val?.data) ? val.data : []);
     const decodeBase64Utf8 = (val) => {
@@ -259,7 +261,8 @@
                 title: editLink.getAttribute('data-task-title') || editLink.closest('tr')?.querySelector('td:nth-child(2)')?.textContent?.trim() || '',
                 content: editLink.getAttribute('data-task-cn') || '',
                 startDate: editLink.getAttribute('data-task-start') || editLink.closest('tr')?.querySelector('td:nth-child(3)')?.textContent?.trim() || '',
-                dueDate: editLink.getAttribute('data-task-due') || editLink.closest('tr')?.querySelector('td:nth-child(4)')?.textContent?.trim() || ''
+                dueDate: editLink.getAttribute('data-task-due') || editLink.closest('tr')?.querySelector('td:nth-child(4)')?.textContent?.trim() || '',
+                week: editLink.getAttribute('data-task-week') || editLink.closest('tr')?.querySelector('td:nth-child(3)')?.textContent?.trim() || ''
             };
             openEditModal(task);
             return;
@@ -346,7 +349,7 @@
                           </svg>
                         </button>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#" data-action="edit-task" data-task-no="${t.taskNo}" data-task-title="${escapeAttr(taskTitle)}" data-task-start="${escapeAttr(t.taskBeginDe || '')}" data-task-due="${escapeAttr(taskDue)}" data-task-cn="${escapeAttr(taskContent)}">과제 수정</a></li>
+                            <li><a class="dropdown-item" href="#" data-action="edit-task" data-task-no="${t.taskNo}" data-task-title="${escapeAttr(taskTitle)}" data-task-week="${escapeAttr(t.week || '')}" data-task-start="${escapeAttr(t.taskBeginDe || '')}" data-task-due="${escapeAttr(taskDue)}" data-task-cn="${escapeAttr(taskContent)}">과제 수정</a></li>
                             <li><a class="dropdown-item" href="#" data-action="view-submissions" data-task-no="${t.taskNo}">제출 확인</a></li>
                             <li><div class="dropdown-divider"></div></li>
                             <li><a class="dropdown-item text-danger" href="#" data-action="delete-task" data-task-no="${t.taskNo}">삭제</a></li>
@@ -448,15 +451,37 @@
 
     const escapeAttr = v => String(v ?? '').replace(/"/g, '&quot;');
 
+    const createUploadAdapterPlugin = (uploadUrl) => {
+        function CustomUploadAdapterPlugin(editor) {
+            editor.plugins.get('FileRepository').createUploadAdapter = (loader) => ({
+                upload: () => loader.file.then(file => {
+                    const data = new FormData();
+                    data.append('upload', file);
+                    return fetch(uploadUrl, { method: 'POST', body: data })
+                        .then(res => res.json())
+                        .then(resp => ({ default: resp.url || '' }));
+                }),
+                abort: () => { /* no-op */ }
+            });
+        }
+        CustomUploadAdapterPlugin.pluginName = 'CustomUploadAdapterPlugin';
+        return CustomUploadAdapterPlugin;
+    };
+
+    const createCkEditor = (el) => {
+        if (!window.ClassicEditor || !el) return Promise.reject(new Error('CKEditor 로더를 찾을 수 없습니다.'));
+        const uploadPlugin = createUploadAdapterPlugin('/common/ck-upload');
+        return ClassicEditor.create(el, {
+            extraPlugins: [uploadPlugin]
+        });
+    };
+
     const ensureEditEditor = () => {
         if (editTaskEditor) return Promise.resolve(editTaskEditor);
-        if (!window.ClassicEditor || !editTaskContentInput) return Promise.reject(new Error('CKEditor 로더를 찾을 수 없습니다.'));
-        return ClassicEditor
-            .create(editTaskContentInput)
-            .then(editor => {
-                editTaskEditor = editor;
-                return editor;
-            });
+        return createCkEditor(editTaskContentInput).then(editor => {
+            editTaskEditor = editor;
+            return editor;
+        });
     };
 
     const addExRow = (listEl, data = {}) => {
@@ -466,7 +491,7 @@
         row.innerHTML = `
           <div class="d-flex align-items-center gap-2 mb-2">
              <input type="text" class="form-control form-control-sm" style="width:30px" value="${idx}" data-field="exNo" readonly>
-            <input type="text" class="form-control form-control-sm" style="width:350px" placeholder="보기 내용" value="${data.exCn || ''}" data-field="exCn" required>
+            <input type="text" class="form-control form-control-sm" style="width:850px" placeholder="보기 내용" value="${data.exCn || ''}" data-field="exCn" required>
              <div class="form-check d-flex align-items-center ms-1" style="white-space: nowrap;">
                 <input class="form-check-input"
                        type="checkbox"
@@ -520,8 +545,24 @@
 
             if (!res.ok) throw new Error(`등록 실패 (${res.status})`);
             const saved = (await res.json().catch(() => ({})))?.data || payload;
+            let quizPresentn = window.__INIT_QUIZ_PRESENTN;
+            if (saved?.quizCode) {
+                try {
+                    const presentnRes = await fetch(`/learning/prof/quiz-presentn?estbllctreCode=${encodeURIComponent(estbllctreCode)}&quizCode=${encodeURIComponent(saved.quizCode)}`);
+                    if (presentnRes.ok) {
+                        const createdPresentn = await presentnRes.json();
+                        quizPresentn = toArray(quizPresentn)
+                            .filter(p => String(p.quizCode) !== String(saved.quizCode))
+                            .concat(toArray(createdPresentn));
+                        window.__INIT_QUIZ_PRESENTN = quizPresentn;
+                    }
+                } catch (err) {
+                    console.warn('퀴즈 제출 기본 데이터 조회 실패', err);
+                }
+            }
+
             window.__INIT_QUIZZES = toArray(window.__INIT_QUIZZES).concat(saved);
-            renderQuizGrid(window.__INIT_QUIZZES, window.__INIT_QUIZ_PRESENTN);
+            renderQuizGrid(window.__INIT_QUIZZES, quizPresentn);
             Swal.fire({ icon: 'success', title: '등록되었습니다.', timer: 1200, showConfirmButton: false });
             bootstrap.Modal.getOrCreateInstance(createQuizModal).hide();
         } catch (err) {
@@ -536,6 +577,7 @@
         if (editTaskNoInput) editTaskNoInput.value = task.taskNo || '';
         if (editTaskTitleInput) editTaskTitleInput.value = task.title || '';
         if (editTaskContentInput) editTaskContentInput.value = task.content || '';
+        if (editTaskWeekSelect) editTaskWeekSelect.value = task.week || '';
         if (editTaskStartInput) editTaskStartInput.value = toISODate(task.startDate || todayStr());
         if (editTaskDueInput) editTaskDueInput.value = toISODate(task.dueDate || todayStr());
 
@@ -620,7 +662,7 @@
     const ensureCreateEditor = () => {
         if (createTaskEditor) return Promise.resolve(createTaskEditor);
         if (!window.ClassicEditor || !createTaskContent) return Promise.reject(new Error('CKEditor 로더가 없습니다.'));
-        return ClassicEditor.create(createTaskContent).then(editor => {
+        return createCkEditor(createTaskContent).then(editor => {
             createTaskEditor = editor;
             return editor;
         });
@@ -663,9 +705,25 @@
             const json = await res.json().catch(() => ({}));
             const created = json?.data || {};
 
+            let taskPresentn = window.__INIT_TASK_PRESENTN;
+            if (created?.taskNo) {
+                try {
+                    const presentnRes = await fetch(`/learning/prof/task-presentn?estbllctreCode=${encodeURIComponent(estbllctreCode)}&taskNo=${encodeURIComponent(created.taskNo)}`);
+                    if (presentnRes.ok) {
+                        const createdPresentn = await presentnRes.json();
+                        taskPresentn = toArray(taskPresentn)
+                            .filter(p => String(p.taskNo) !== String(created.taskNo))
+                            .concat(toArray(createdPresentn));
+                        window.__INIT_TASK_PRESENTN = taskPresentn;
+                    }
+                } catch (err) {
+                    console.warn('과제 제출 기본 데이터 조회 실패', err);
+                }
+            }
+
             const nextTasks = toArray(window.__INIT_TASKS).concat(created);
             window.__INIT_TASKS = nextTasks;
-            renderTasksWithGrid(nextTasks, window.__INIT_TASK_PRESENTN);
+            renderTasksWithGrid(nextTasks, taskPresentn);
             Swal.fire({ icon: 'success', title: '과제가 등록되었습니다.', timer: 1200, showConfirmButton: false });
             bootstrap.Modal.getOrCreateInstance(createModalEl).hide();
         } catch (err) {
@@ -980,7 +1038,7 @@
             const writer = item.sklstfNm || item.stdntNm || item.stdntNo || item.acntId || '-';
             const date = normalizeDate(item.bbscttWritngDe);
             const title = escapeAttr(item.bbscttSj || '(제목 없음)');
-            const viewUrl = `/learning/prof/board?code=${encodeURIComponent(item.bbsCode || '')}&no=${encodeURIComponent(item.bbscttNo || '')}`;
+            const viewUrl = `/learning/prof/boardDetail?code=${encodeURIComponent(item.bbsCode || '')}&no=${encodeURIComponent(item.bbscttNo || '')}`;
             return [
                 idx + 1,
                 typeName || '-',
@@ -1026,12 +1084,12 @@
 
     const openBoardDetail = (bbscttNo) => {
         if (!bbscttNo) return;
-        if (boardDetailBody) boardDetailBody.innerHTML = '<div class=\"text-muted\">게시글을 불러오는 중...</div>';
-        if (boardDetail) boardDetail.classList.remove('d-none');
-        fetch(`/learning/prof/board/detail?estbllctreCode=${encodeURIComponent(estbllctreCode)}&bbscttNo=${encodeURIComponent(bbscttNo)}`)
-            .then(res => res.ok ? res.json() : Promise.reject(new Error('게시글을 불러오지 못했습니다.')))
-            .then(data => renderBoardDetail(data?.data || data))
-            .catch(err => boardDetailBody && (boardDetailBody.innerHTML = `<div class=\"text-danger\">${err.message}</div>`));
+        let bbsCode = null;
+        const found = toArray(boardState.list).find(b => String(b.bbscttNo) === String(bbscttNo));
+        if (found?.bbsCode) bbsCode = found.bbsCode;
+        const code = bbsCode || boardFilter?.value || '';
+        const url = `/learning/prof/boardDetail?code=${encodeURIComponent(code)}&no=${encodeURIComponent(bbscttNo)}`;
+        window.location.href = url;
     };
 
     const resetBoardForm = (board = null) => {
@@ -1051,6 +1109,17 @@
                 if (String(targetCode) === String(b.bbsCode)) opt.selected = true;
                 boardBbsCodeSelect.appendChild(opt);
             });
+        }
+
+        // CKEditor로 내용 설정
+        if (window.ClassicEditor && boardContentInput) {
+            const ensure = boardEditor
+                ? Promise.resolve(boardEditor)
+                : createCkEditor(boardContentInput).then(ed => {
+                    boardEditor = ed;
+                    return ed;
+                });
+            ensure.then(ed => ed.setData(board?.bbscttCn || '')).catch(console.warn);
         }
 
         const modalTitle = boardModalEl.querySelector('#boardModalLabel');
@@ -1086,7 +1155,7 @@
         const payload = {
             estbllctreCode,
             bbscttSj: boardTitleInput.value.trim(),
-            bbscttCn: boardContentInput?.value?.trim() || '',
+            bbscttCn: boardEditor ? boardEditor.getData() : (boardContentInput?.value?.trim() || ''),
             bbsCode: boardBbsCodeSelect.value
         };
         const isEdit = !!(boardCttNoInput?.value);
@@ -1104,7 +1173,13 @@
                 boardModalInstance?.hide();
                 return loadBoard(true).then(() => {
                     const createdNo = data?.data?.bbscttNo;
-                    if (createdNo) openBoardDetail(createdNo);
+                    const createdCode = payload.bbsCode;
+                    if (createdNo) {
+                        const url = `/learning/prof/boardDetail?code=${encodeURIComponent(createdCode || '')}&no=${encodeURIComponent(createdNo)}`;
+                        window.location.href = url;
+                        return;
+                    }
+                    Swal.fire({ icon: 'success', title: '등록되었습니다.', timer: 1200, showConfirmButton: false });
                 });
             })
             .catch(err => Swal.fire({ icon: 'error', title: '저장 실패', text: err.message || '잠시 후 다시 시도하세요.' }));
@@ -1171,13 +1246,19 @@
             quizSubmissionTitleEl.textContent = title ? `${title}` : '제출 목록';
         }
 
-        const rows = toArray(list).map(item => [
-            item.stdntNo,
-            item.stdntNm || '',
-            item.presentnAt === '1' ? '제출' : '미제출',
-            item.quizPresentnDe || '-',
-            item.quizExCode || '-'
-        ]);
+        const rows = toArray(list).map(item => {
+            const status = item.presentnAt === '1' ? '제출' : '미제출';
+            const answer = item.presentnAt === '1'
+                ? (item.cnslAt === '1' ? '정답' : '오답')
+                : '-';
+            return [
+                item.stdntNo,
+                item.stdntNm || '',
+                status,
+                item.quizPresentnDe || '-',
+                answer
+            ];
+        });
 
         const options = {
             columns: [
@@ -1185,7 +1266,7 @@
                 { id: 'stdntNm', name: '이름', search: true, sort: true },
                 { id: 'status', name: '제출상태', search: false, sort: true },
                 { id: 'submitDe', name: '제출일', search: false, sort: true },
-                { id: 'answer', name: '선택한 보기', search: false, sort: false }
+                { id: 'answer', name: '정답 여부', search: false, sort: false }
             ],
             data: rows,
             pagination: { ...DEFAULT_GRID_OPTIONS.pagination, limit: 20 },
@@ -1262,7 +1343,7 @@
         quizGrid.innerHTML = '';
         const options = {
             columns: [
-                { id: 'code', name: '퀴즈코드', search: true, sort: true },
+                { id: 'code', name: '퀴즈코드', search: true, sort: true, width: '130px' },
                 { id: 'title', name: '문항', search: true, sort: false },
                 { id: 'week', name: '주차', search: false, sort: true },
                 { id: 'begin', name: '시작일자', search: false, sort: true },
@@ -1359,35 +1440,69 @@
         renderAttendanceChart(stdntNo, stdntNm);
     });
 
-    const updateTask = e => {
-        const editForm = document.querySelector("editTaskForm");
+    const updateTask = async (e) => {
+        e?.preventDefault();
+        if (!editTaskForm) return;
+        if (!editTaskForm.checkValidity()) {
+            editTaskForm.reportValidity();
+            return;
+        }
 
-        fetch("/learning/prof/updTask", {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json; charset=utf-8"
-            },
-            data: JSON.stringify(editForm)
-        })
-            .then(resp => {
-                if(resp.ok) {
-                    Swal.fire({
-                        icon: "success",
-                        title: "과제 내용을 수정 했어요.",
-                        timer:1000,
-                        timerProgressBar: !0,
-                        showConfirmButton: 0
-                    });
-                }
-            })
-            .catch(err => {
-                Swal.fire({
-                    icon: "error",
-                    title: "과제 내용 수정이 실패 했어요",
-                    timer: 1000,
-                    timerProgressBar: !0,
-                    showConfirmButton: 0
-                });
-            })
-    }
+        const payload = {
+            taskNo: editTaskNoInput?.value,
+            taskSj: editTaskTitleInput?.value.trim(),
+            taskCn: editTaskEditor ? editTaskEditor.getData() : (editTaskContentInput?.value || ''),
+            week: editTaskWeekSelect?.value,
+            taskBeginDe: toDbDate(editTaskStartInput?.value),
+            taskClosDe: toDbDate(editTaskDueInput?.value),
+            estbllctreCode
+        };
+
+        try {
+            const resp = await fetch("/learning/prof/updTask", {
+                method: "PUT",
+                headers: { "Content-Type": "application/json; charset=utf-8" },
+                body: JSON.stringify(payload)
+            });
+
+            if (!resp.ok) throw new Error(`수정 실패 (${resp.status})`);
+            const updated = (await resp.json().catch(() => ({})))?.data || payload;
+
+            window.__INIT_TASKS = toArray(window.__INIT_TASKS).map(t =>
+                String(t.taskNo) === String(payload.taskNo)
+                    ? {
+                        ...t,
+                        ...updated,
+                        taskSj: payload.taskSj,
+                        taskCn: payload.taskCn,
+                        taskBeginDe: payload.taskBeginDe,
+                        taskClosDe: payload.taskClosDe,
+                        week: payload.week
+                    }
+                    : t
+            );
+            renderTasksWithGrid(window.__INIT_TASKS, window.__INIT_TASK_PRESENTN);
+
+            Swal.fire({
+                icon: "success",
+                title: "과제 내용을 수정했어요.",
+                timer: 1200,
+                timerProgressBar: !0,
+                showConfirmButton: 0
+            });
+            bootstrap.Modal.getOrCreateInstance(editModalEl)?.hide();
+        } catch (err) {
+            console.error(err);
+            Swal.fire({
+                icon: "error",
+                title: "과제 내용 수정이 실패했어요",
+                text: err.message || '잠시 후 다시 시도하세요.',
+                timer: 1200,
+                timerProgressBar: !0,
+                showConfirmButton: 0
+            });
+        }
+    };
+
+    window.updateTask = updateTask;
 })();
