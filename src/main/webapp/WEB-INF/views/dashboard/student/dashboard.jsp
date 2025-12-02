@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+	pageEncoding="UTF-8"%>
 
 <%@ include file="../../header.jsp"%>
 
@@ -9,266 +9,364 @@
 <!-- ================================================================== -->
 <!-- Pretendard + Bootstrap -->
 <link rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/pretendard/dist/web/static/pretendard.css" />
+	href="https://cdn.jsdelivr.net/npm/pretendard/dist/web/static/pretendard.css" />
 
 <!-- 전역 스케줄러 css -->
 <link rel="stylesheet"
-      href="${pageContext.request.contextPath}/css/schedule.css" />
+	href="${pageContext.request.contextPath}/css/schedule.css" />
 <link rel="stylesheet"
-      href="${pageContext.request.contextPath}/css/potalSchedule.css" />
+	href="${pageContext.request.contextPath}/css/potalSchedule.css" />
 
 <!-- FullCalendar 정적 리소스 (전역 공용) -->
-<script src="${pageContext.request.contextPath}/assets/libs/fullcalendar/index.global.min.js"></script>
+<script
+	src="${pageContext.request.contextPath}/assets/libs/fullcalendar/index.global.min.js"></script>
+
+<style>
+/* 학적 진행률 카드 전체 스타일 */
+.academic-progress-card {
+    background-color: #ffffff;
+    border-radius: .9rem;
+    box-shadow: 0 .125rem .45rem rgba(15, 23, 42, .12);
+    border: 0;
+}
+
+/* 안쪽 body 둥글게 맞추고 그림자 제거 */
+.academic-progress-card .card-body_2 {
+    border-radius: .9rem;
+    box-shadow: none;
+    padding-top: .75rem;
+    padding-bottom: .75rem;
+}
+
+/* 학적 진행률 테이블: 외곽선 제거 + 행 구분선만 */
+.academic-progress-table {
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.academic-progress-table thead th,
+.academic-progress-table tbody td {
+    border-top: none;
+}
+
+.academic-progress-table tbody tr + tr td {
+    border-top: 0.3px solid #e5e7eb !important; /* 행 사이만 얇은 선 */
+}
+
+/* 전체 테두리는 그대로, 행간만 옅게 */
+.progress-summary-table {
+    border-color: #e5e7eb;   /* 카드 외곽선 정도 밝기 */
+}
+
+/* tbody에서 위·아래 행 사이 구분선만 연해지도록 */
+.progress-summary-table tbody tr + tr td {
+    border-top-width: 1px;
+    border-top-style: solid;
+    border-top-color: #f3f4f6;  /* 기존 #dee2e6 보다 훨씬 옅게 */
+}
+
+/* 수강중 강의 큰 카드 안 레이아웃 정리 */
+.lecture-wrapper-card .lecture-grid {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr)); /* 3열 균등 */
+    column-gap: 2.5rem;
+    row-gap: 1.25rem;
+    padding: 1rem 2rem 1.1rem;
+    margin: 0;
+
+    /* 세로 가이드 2줄만 배경으로 (과목 경계) */
+    background:
+        linear-gradient(#edf1f7, #edf1f7) 33.33% 12px / 1px calc(100% - 24px) no-repeat,
+        linear-gradient(#edf1f7, #edf1f7) 66.66% 12px / 1px calc(100% - 24px) no-repeat;
+}
+
+/* 개별 과목 블록은 완전히 평면화 */
+.lecture-wrapper-card .lecture-grid .lecture-card {
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    padding: 0;
+}
+
+/* 수강 카드 과목 타이포 + 줄바꿈/말줄임 제어 */
+.lecture-wrapper-card .lecture-grid .lecture-card h4.card-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin-bottom: 0.2rem;
+ 	border-radius: .9rem;
+    white-space: nowrap;      /* 줄바꿈 금지 */
+    word-break: keep-all;     /* 한글 단위로 쪼개지지 않게 */
+    overflow: visible;        /* 넘치면 그대로 보이게 */
+    text-overflow: clip;      /* 말줄임(...) 사용 안 함 */
+}
+
+.lecture-wrapper-card .lecture-grid .lecture-card p.card-subtitle {
+    font-size: 0.82rem;
+    margin-bottom: 0.1rem;
+}
+
+</style>
 
 <!-- 전체 대시보드 래퍼: 좌우 패딩만, 세로 여백/간격 최소화 -->
 <div class="row dashboard-row pb-4 g-0 align-items-start">
 
-    <!-- 좌측 전체: 수강 카드 + 학적 진행 + 캠퍼스 소식 -->
-    <div class="col-xxl-6 col-lg-6 dashboard-main-col">
+	<!-- 좌측 전체: 수강 카드 + 학적 진행 + 캠퍼스 소식 -->
+	<div class="col-xxl-6 col-lg-6 dashboard-main-col">
 
-        <!-- ================================================================== -->
-        <!-- [code-intent] 상단 수강중 강의 카드 영역 -->
-        <!-- [data-flow] lectureList(Model) → 카드 반복 렌더 → 클릭 시 추후 상세 연결 가능 -->
-        <!-- ================================================================== -->
-  		<!-- 수강중 과목이 없을 때 안내 -->
-        <div class="lecture-row">
-            <c:choose>
-                <c:when test="${not empty lectureList}">
-                    <div
-                        class="row row-cols-xxl-2 row-cols-lg-2 row-cols-md-2 row-cols-1 g-1 lecture-grid">
-                        <c:forEach items="${lectureList}" var="lecture">
-                            <div class="col">
-                                <div class="card card-body rounded-3 shadow-sm lecture-card"
-                                    data-lec-no="${lecture.estbllctreCode}">
-                                    <h4 class="card-title" data-key="${lecture.lctreNm}">
-                                        ${lecture.lctreNm}</h4>
-                                    <p class="card-subtitle" data-key="${lecture.lctrum}">
-                                        ${lecture.lctrum}</p>
-                                    <p class="card-subtitle" data-key="${lecture.sklstfNm}">
-                                        ${lecture.sklstfNm}</p>
-                                </div>
-                            </div>
-                        </c:forEach>
-                    </div>
-                </c:when>
+		<!-- ================================================================== -->
+		<!-- [code-intent] 상단 수강중 강의 카드 영역 -->
+		<!-- [data-flow] lectureList(Model) → 카드 반복 렌더 → 클릭 시 추후 상세 연결 가능 -->
+		<!-- ================================================================== -->
+		<!-- 수강중 과목이 없을 때 안내 + 수강 카드 전체 래퍼 -->
+		<div class="card lecture-wrapper-card mb-2">
+			<div class="card-body py-2 px-3">
 
-                <c:otherwise>
-                    <div class="card card-body rounded-2 shadow-sm lecture-empty-card">
-                        <div class="mb-0 lecture-empty-text text-center">
-                            <h5>수강중인 과목이 없습니다.</h5>
-                        </div>
-                    </div>
-                </c:otherwise>
-            </c:choose>
-        </div>
+				<div class="lecture-row">
+					<c:choose>
+						<c:when test="${not empty lectureList}">
+							<div
+								class="row row-cols-xxl-2 row-cols-lg-2 row-cols-md-2 row-cols-1 g-1 lecture-grid">
+								<c:forEach items="${lectureList}" var="lecture">
+									<div class="col">
+										<!-- 내부 카드에서 card / shadow 제거 -->
+										<div class="lecture-card"
+											data-lec-no="${lecture.estbllctreCode}">
+											<h4 class="card-title" data-key="${lecture.lctreNm}">
+												${lecture.lctreNm}</h4>
+											<p class="card-subtitle" data-key="${lecture.lctrum}">
+												${lecture.lctrum}</p>
+											<p class="card-subtitle" data-key="${lecture.sklstfNm}">
+												${lecture.sklstfNm}</p>
+										</div>
+									</div>
+								</c:forEach>
+							</div>
+						</c:when>
 
-        <!-- ================================================================== -->
-        <!-- [code-intent] 학적 이행(이수학점/전공/교양/외국어) 진행률 테이블 -->
-        <!-- [data-flow] Model 에서 전달된 이수/필요 학점 + rate/met 플래그 → 진행률 바 + Pill 텍스트 -->
-        <!-- [rationale] "충족/미충족"을 서버에서 Boolean 으로 넘겨 UI 로직을 단순화 -->
-        <!-- ================================================================== -->
-        
-		<table class="table table-bordered align-middle text-center">
-			<thead class="table-light">
-				<tr>
-					<th>항목</th>
-					<th>진행률</th>
-					<th>상태</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr>
-					<td>총 이수학점</td>
-					<td>
-						<div class="progress" style="height:22px;">
-							<c:set var="pntPct"
-								   value="${(requirements.totalPnt >= requirements.MIN_TOTAL_PNT)
+						<c:otherwise>
+							<!-- 빈 상태도 큰 카드 안에서만 표시 -->
+							<div class="lecture-empty-card">
+								<div class="mb-0 lecture-empty-text text-center">
+									<h5>수강중인 과목이 없습니다.</h5>
+								</div>
+							</div>
+						</c:otherwise>
+					</c:choose>
+				</div>
+
+			</div>
+		</div>
+
+
+		<!-- ================================================================== -->
+		<!-- [code-intent] 학적 이행(이수학점/전공/교양/외국어) 진행률 테이블 -->
+		<!-- [data-flow] Model 에서 전달된 이수/필요 학점 + rate/met 플래그 → 진행률 바 + Pill 텍스트 -->
+		<!-- [rationale] "충족/미충족"을 서버에서 Boolean 으로 넘겨 UI 로직을 단순화 -->
+		<!-- ================================================================== -->
+		<!-- 학적 이행 진행률 카드 -->
+		<div class="card academic-progress-card mt-2">
+			<div class="card-body_2">
+				<table
+					class="table table-sm align-middle text-center mb-0 academic-progress-table">
+					<thead class="table-light">
+						<tr>
+							<th>항목</th>
+							<th>진행률</th>
+							<th>상태</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>총 이수학점</td>
+							<td>
+								<div class="progress" style="height: 22px;">
+									<c:set var="pntPct"
+										value="${(requirements.totalPnt >= requirements.MIN_TOTAL_PNT)
 											 ? 100
 											 : (requirements.totalPnt * 100.0 / requirements.MIN_TOTAL_PNT)}" />
-							<div class="progress-bar ${(requirements.totalPnt >= requirements.MIN_TOTAL_PNT) ? 'bg-primary' : 'bg-danger'}"
-								 style="width:${pntPct}%; min-width:24%;">
-								${requirements.totalPnt}/${requirements.MIN_TOTAL_PNT} 학점
-							</div>
-						</div>
-					</td>
-					<td>
-						<c:choose>
-							<c:when test="${requirements.totalPnt >= requirements.MIN_TOTAL_PNT}">
-								<span class="text-primary fw-semibold">충족</span>
-							</c:when>
-							<c:otherwise>
-								<span class="text-danger fw-semibold">미충족</span>
-							</c:otherwise>
-						</c:choose>
-					</td>
-				</tr>
+									<div
+										class="progress-bar ${(requirements.totalPnt >= requirements.MIN_TOTAL_PNT) ? 'bg-primary' : 'bg-danger'}"
+										style="width:${pntPct}%; min-width:24%;">
+										${requirements.totalPnt}/${requirements.MIN_TOTAL_PNT} 학점</div>
+								</div>
+							</td>
+							<td><c:choose>
+									<c:when
+										test="${requirements.totalPnt >= requirements.MIN_TOTAL_PNT}">
+										<span class="text-primary fw-semibold">충족</span>
+									</c:when>
+									<c:otherwise>
+										<span class="text-danger fw-semibold">미충족</span>
+									</c:otherwise>
+								</c:choose></td>
+						</tr>
 
-				<tr>
-					<td>전공필수 이수학점</td>
-					<td>
-						<div class="progress" style="height:22px;">
-							<c:set var="majorPct"
-								   value="${(requirements.majorPnt >= requirements.MIN_MAJOR_PNT)
+						<tr>
+							<td>전공필수 이수학점</td>
+							<td>
+								<div class="progress" style="height: 22px;">
+									<c:set var="majorPct"
+										value="${(requirements.majorPnt >= requirements.MIN_MAJOR_PNT)
 											 ? 100
 											 : (requirements.majorPnt * 100.0 / requirements.MIN_MAJOR_PNT)}" />
-							<div class="progress-bar ${(requirements.majorPnt >= requirements.MIN_MAJOR_PNT) ? 'bg-primary' : 'bg-danger'}"
-								 style="width:${majorPct}%; min-width:24%;">
-								${requirements.majorPnt}/${requirements.MIN_MAJOR_PNT} 학점
-							</div>
-						</div>
-					</td>
-					<td>
-						<c:choose>
-							<c:when test="${requirements.majorPnt >= requirements.MIN_MAJOR_PNT}">
-								<span class="text-primary fw-semibold">충족</span>
-							</c:when>
-							<c:otherwise>
-								<span class="text-danger fw-semibold">미충족</span>
-							</c:otherwise>
-						</c:choose>
-					</td>
-				</tr>
+									<div
+										class="progress-bar ${(requirements.majorPnt >= requirements.MIN_MAJOR_PNT) ? 'bg-primary' : 'bg-danger'}"
+										style="width:${majorPct}%; min-width:24%;">
+										${requirements.majorPnt}/${requirements.MIN_MAJOR_PNT} 학점</div>
+								</div>
+							</td>
+							<td><c:choose>
+									<c:when
+										test="${requirements.majorPnt >= requirements.MIN_MAJOR_PNT}">
+										<span class="text-primary fw-semibold">충족</span>
+									</c:when>
+									<c:otherwise>
+										<span class="text-danger fw-semibold">미충족</span>
+									</c:otherwise>
+								</c:choose></td>
+						</tr>
 
-				<tr>
-					<td>교양필수 이수학점</td>
-					<td>
-						<div class="progress" style="height:22px;">
-							<c:set var="libPct"
-								   value="${(requirements.liberalPnt >= requirements.MIN_LIBERAL_PNT)
+						<tr>
+							<td>교양필수 이수학점</td>
+							<td>
+								<div class="progress" style="height: 22px;">
+									<c:set var="libPct"
+										value="${(requirements.liberalPnt >= requirements.MIN_LIBERAL_PNT)
 											 ? 100
 											 : (requirements.liberalPnt * 100.0 / requirements.MIN_LIBERAL_PNT)}" />
-							<div class="progress-bar ${(requirements.liberalPnt >= requirements.MIN_LIBERAL_PNT) ? 'bg-primary' : 'bg-danger'}"
-								 style="width:${libPct}%; min-width:24%;">
-								${requirements.liberalPnt}/${requirements.MIN_LIBERAL_PNT} 학점
-							</div>
-						</div>
-					</td>
-					<td>
-						<c:choose>
-							<c:when test="${requirements.liberalPnt >= requirements.MIN_LIBERAL_PNT}">
-								<span class="text-primary fw-semibold">충족</span>
-							</c:when>
-							<c:otherwise>
-								<span class="text-danger fw-semibold">미충족</span>
-							</c:otherwise>
-						</c:choose>
-					</td>
-				</tr>
+									<div
+										class="progress-bar ${(requirements.liberalPnt >= requirements.MIN_LIBERAL_PNT) ? 'bg-primary' : 'bg-danger'}"
+										style="width:${libPct}%; min-width:24%;">
+										${requirements.liberalPnt}/${requirements.MIN_LIBERAL_PNT} 학점
+									</div>
+								</div>
+							</td>
+							<td><c:choose>
+									<c:when
+										test="${requirements.liberalPnt >= requirements.MIN_LIBERAL_PNT}">
+										<span class="text-primary fw-semibold">충족</span>
+									</c:when>
+									<c:otherwise>
+										<span class="text-danger fw-semibold">미충족</span>
+									</c:otherwise>
+								</c:choose></td>
+						</tr>
 
-				<tr>
-					<td>외국어 이수</td>
-					<td>
-						<div class="progress" style="height:22px;">
-							<c:set var="flPct"
-								   value="${(requirements.foreignLangCount >= requirements.MIN_FOREIGN_LANG)
+						<tr>
+							<td>외국어 이수</td>
+							<td>
+								<div class="progress" style="height: 22px;">
+									<c:set var="flPct"
+										value="${(requirements.foreignLangCount >= requirements.MIN_FOREIGN_LANG)
 											 ? 100
 											 : (requirements.foreignLangCount * 100.0 / requirements.MIN_FOREIGN_LANG)}" />
-							<div class="progress-bar ${(requirements.foreignLangCount >= requirements.MIN_FOREIGN_LANG) ? 'bg-primary' : 'bg-danger'}"
-								 style="width:${flPct}%; min-width:24%;">
-								${requirements.foreignLangCount}/${requirements.MIN_FOREIGN_LANG} 과목
-							</div>
-						</div>
-					</td>
-					<td>
-						<c:choose>
-							<c:when test="${requirements.foreignLangCount >= requirements.MIN_FOREIGN_LANG}">
-								<span class="text-primary fw-semibold">충족</span>
-							</c:when>
-							<c:otherwise>
-								<span class="text-danger fw-semibold">미충족</span>
-							</c:otherwise>
-						</c:choose>
-					</td>
-				</tr>
+									<div
+										class="progress-bar ${(requirements.foreignLangCount >= requirements.MIN_FOREIGN_LANG) ? 'bg-primary' : 'bg-danger'}"
+										style="width:${flPct}%; min-width:24%;">
+										${requirements.foreignLangCount}/${requirements.MIN_FOREIGN_LANG}
+										과목</div>
+								</div>
+							</td>
+							<td><c:choose>
+									<c:when
+										test="${requirements.foreignLangCount >= requirements.MIN_FOREIGN_LANG}">
+										<span class="text-primary fw-semibold">충족</span>
+									</c:when>
+									<c:otherwise>
+										<span class="text-danger fw-semibold">미충족</span>
+									</c:otherwise>
+								</c:choose></td>
+						</tr>
 
-				<tr>
-					<td>총 평점(GPA)</td>
-					<td>
-						<div class="progress" style="height:22px;">
-							<c:set var="gpaPct"
-								   value="${(requirements.totalGpa >= requirements.MIN_TOTAL_GPA)
+						<tr>
+							<td>총 평점(GPA)</td>
+							<td>
+								<div class="progress" style="height: 22px;">
+									<c:set var="gpaPct"
+										value="${(requirements.totalGpa >= requirements.MIN_TOTAL_GPA)
 											 ? 100
 											 : (requirements.totalGpa * 100.0 / requirements.MIN_TOTAL_GPA)}" />
-							<div class="progress-bar ${(requirements.totalGpa >= requirements.MIN_TOTAL_GPA) ? 'bg-primary' : 'bg-danger'}"
-								 style="width:${gpaPct}%; min-width:24%;">
-								${requirements.totalGpa}/${requirements.MIN_TOTAL_GPA}
-							</div>
-						</div>
-					</td>
-					<td>
-						<c:choose>
-							<c:when test="${requirements.totalGpa >= requirements.MIN_TOTAL_GPA}">
-								<span class="text-primary fw-semibold">충족</span>
-							</c:when>
-							<c:otherwise>
-								<span class="text-danger fw-semibold">미충족</span>
-							</c:otherwise>
-						</c:choose>
-					</td>
-				</tr>
-			</tbody>
-		</table>
+									<div
+										class="progress-bar ${(requirements.totalGpa >= requirements.MIN_TOTAL_GPA) ? 'bg-primary' : 'bg-danger'}"
+										style="width:${gpaPct}%; min-width:24%;">
+										${requirements.totalGpa}/${requirements.MIN_TOTAL_GPA}</div>
+								</div>
+							</td>
+							<td><c:choose>
+									<c:when
+										test="${requirements.totalGpa >= requirements.MIN_TOTAL_GPA}">
+										<span class="text-primary fw-semibold">충족</span>
+									</c:when>
+									<c:otherwise>
+										<span class="text-danger fw-semibold">미충족</span>
+									</c:otherwise>
+								</c:choose></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+		<!-- ================================================================== -->
+		<!-- [code-intent] 캠퍼스 소식 카드 (공지/뉴스/학사일정 탭) -->
+		<!-- [data-flow] 탭 클릭 → /api/dashboard/* endpoint fetch → 상위 5건 테이블 렌더 -->
+		<!-- ================================================================== -->
+		<div class="card campus-news-card mt-2">
+			<div
+				class="card-header d-flex align-items-center justify-content-between">
+				<h5 class="mb-0">캠퍼스 소식</h5>
+				<span class="badge bg-light text-muted"> ${currentYear}년
+					${currentMonth}월 </span>
+			</div>
 
-        <!-- ================================================================== -->
-        <!-- [code-intent] 캠퍼스 소식 카드 (공지/뉴스/학사일정 탭) -->
-        <!-- [data-flow] 탭 클릭 → /api/dashboard/* endpoint fetch → 상위 5건 테이블 렌더 -->
-        <!-- ================================================================== -->
-        <div class="card campus-news-card mt-2">
-            <div
-                class="card-header d-flex align-items-center justify-content-between">
-                <h5 class="mb-0">캠퍼스 소식</h5>
-                <span class="badge bg-light text-muted"> ${currentYear}년
-                    ${currentMonth}월 </span>
-            </div>
+			<div class="card-body_2 pt-3">
+				<ul class="nav nav-pills campus-news-tabs" id="campus-news-tabs"
+					role="tablist">
+					<li class="nav-item" role="presentation">
+						<button class="nav-link campus-news-tab active"
+							id="campus-news-notice-tab" data-bs-toggle="tab" type="button"
+							role="tab" aria-selected="true" data-type="notice"
+							data-endpoint="/api/dashboard/notices">공지사항</button>
+					</li>
+					<li class="nav-item" role="presentation">
+						<button class="nav-link campus-news-tab" id="campus-news-news-tab"
+							data-bs-toggle="tab" type="button" role="tab"
+							aria-selected="false" data-type="news"
+							data-endpoint="/api/dashboard/news">대덕 뉴스</button>
+					</li>
+					<li class="nav-item" role="presentation">
+						<button class="nav-link campus-news-tab"
+							id="campus-news-academic-tab" data-bs-toggle="tab" type="button"
+							role="tab" aria-selected="false" data-type="academic"
+							data-endpoint="/api/dashboard/academic">학사일정</button>
+					</li>
+				</ul>
 
-            <div class="card-body_2 pt-3">
-                <ul class="nav nav-pills campus-news-tabs" id="campus-news-tabs"
-                    role="tablist">
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link campus-news-tab active"
-                            id="campus-news-notice-tab" data-bs-toggle="tab" type="button"
-                            role="tab" aria-selected="true" data-type="notice"
-                            data-endpoint="/api/dashboard/notices">공지사항</button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link campus-news-tab" id="campus-news-news-tab"
-                            data-bs-toggle="tab" type="button" role="tab"
-                            aria-selected="false" data-type="news"
-                            data-endpoint="/api/dashboard/news">대덕 뉴스</button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link campus-news-tab"
-                            id="campus-news-academic-tab" data-bs-toggle="tab" type="button"
-                            role="tab" aria-selected="false" data-type="academic"
-                            data-endpoint="/api/dashboard/academic">학사일정</button>
-                    </li>
-                </ul>
+				<!-- Ajax 결과 렌더링 영역 -->
+				<div id="campus-news-list" class="mt-3"></div>
+			</div>
+		</div>
+	</div>
 
-                <!-- Ajax 결과 렌더링 영역 -->
-                <div id="campus-news-list" class="mt-3"></div>
-            </div>
-        </div>
-    </div>
+	<!-- 우측: 학사 캘린더 카드 -->
+	<!-- [code-intent] 학사 일정 미니 캘린더 + 하단 리스트로 오늘/선택일 일정 요약 -->
+	<div class="col-xxl-6 col-lg-6 dashboard-side-col">
+		<div class="card academic-card">
+			<div class="card-body_1">
+				<div class="calendar-container">
+					<div id="calendar"></div>
 
-    <!-- 우측: 학사 캘린더 카드 -->
-    <!-- [code-intent] 학사 일정 미니 캘린더 + 하단 리스트로 오늘/선택일 일정 요약 -->
-    <div class="col-xxl-6 col-lg-6 dashboard-side-col">
-        <div class="card academic-card">
-            <div class="card-body_1">
-                <div class="calendar-container">
-                    <div id="calendar"></div>
+					<!-- 아래 일정 리스트 영역 -->
+					<div id="calendar-event-list" class="calendar-event-list mt-3"></div>
+					<div id="calendar-loading" class="calendar-loading">일정을 불러오는
+						중...</div>
+				</div>
 
-                    <!-- 아래 일정 리스트 영역 -->
-                    <div id="calendar-event-list" class="calendar-event-list mt-3"></div>
-                    <div id="calendar-loading" class="calendar-loading">일정을 불러오는
-                        중...</div>
-                </div>
-
-                <!-- 공용 툴팁 (위치 이동 가능, ID 유지) -->
-                <div id="event-tooltip" class="event-tooltip"></div>
-            </div>
-        </div>
-    </div>
+				<!-- 공용 툴팁 (위치 이동 가능, ID 유지) -->
+				<div id="event-tooltip" class="event-tooltip"></div>
+			</div>
+		</div>
+	</div>
 
 </div>
 
@@ -282,488 +380,479 @@
    ======================================================================= */
 
 /* 내부 중첩 카드/컨테이너는 전부 평면화 (중복 그림자 제거) */
-.academic-card .card,
-.academic-card .calendar-container,
-.academic-card .fc-theme-standard .fc-scrollgrid {
-    background: transparent !important;
-    box-shadow: none !important;
-    border-radius: 0 !important;
-    border: 0 !important;
+.academic-card .card, .academic-card .calendar-container, .academic-card .fc-theme-standard .fc-scrollgrid
+	{
+	background: transparent !important;
+	box-shadow: none !important;
+	border-radius: 0 !important;
+	border: 0 !important;
 }
 
 /* 최상단 수강 카드 row: 위/아래 여백 최소화 */
 .lecture-row {
-    margin-top: .25rem;
-    margin-bottom: .25rem;
+	margin-top: .25rem;
+	margin-bottom: .25rem;
 }
 
 /* 메인 컨테이너: 헤더/푸터와 충돌 없게 뷰포트 기준 높이 */
 #main-container.container-fluid {
-    height: auto;
-    min-height: calc(100vh - 120px);
-    padding-top: 12px;
-    padding-bottom: 12px;
+	height: auto;
+	min-height: calc(100vh - 120px);
+	padding-top: 12px;
+	padding-bottom: 12px;
 }
 
 /* 좌측 시간표 카드 (다른 페이지 공용 스타일 보존용) */
 .timetable-container {
-    background-color: #fff;
-    border-radius: .75rem;
-    box-shadow: 0 .125rem .25rem rgba(15, 23, 42, .09);
-    margin-top: 0 !important;
-    margin-bottom: 10px !important;
-    padding: 0.5rem 1.28rem 0.25rem;
-    overflow: hidden;
-    height: 380px !important;
+	background-color: #fff;
+	border-radius: .75rem;
+	box-shadow: 0 .125rem .25rem rgba(15, 23, 42, .09);
+	margin-top: 0 !important;
+	margin-bottom: 10px !important;
+	padding: 0.5rem 1.28rem 0.25rem;
+	overflow: hidden;
+	height: 380px !important;
 }
 
 .timetable-container #timetable {
-    height: 100%;
+	height: 100%;
 }
 
 .timetable-container .fc-header-toolbar {
-    margin: 0 0 2px 0;
-    padding: 0;
-    border-radius: .75rem;
-    min-height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+	margin: 0 0 2px 0;
+	padding: 0;
+	border-radius: .75rem;
+	min-height: 32px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 
 .timetable-container .fc-toolbar-title {
-    font-size: 1rem;
-    font-weight: 500;
+	font-size: 1rem;
+	font-weight: 500;
 }
 
 .timetable-container .fc-col-header-cell {
-    padding-top: 0;
-    padding-bottom: 0;
+	padding-top: 0;
+	padding-bottom: 0;
 }
 
 #timetable .fc-timegrid-slot {
-    height: 1.4rem;
-    min-height: 1.4rem;
-    line-height: 1.4rem;
+	height: 1.4rem;
+	min-height: 1.4rem;
+	line-height: 1.4rem;
 }
 
 #timetable .fc-timegrid-slot-label-cushion {
-    padding: 0 4px;
-    font-size: 0.8rem;
+	padding: 0 4px;
+	font-size: 0.8rem;
 }
 
 #timetable .fc-timegrid-event {
-    font-size: 0.8rem;
-    line-height: 1.2;
+	font-size: 0.8rem;
+	line-height: 1.2;
 }
 
 .fc-event {
-    position: relative;
-    display: block;
-    font-size: 10.2px;
-    line-height: 1.0;
-    border-radius: 3px;
-    border: 0.8px solid #3a87ad;
+	position: relative;
+	display: block;
+	font-size: 10.2px;
+	line-height: 1.0;
+	border-radius: 3px;
+	border: 0.8px solid #3a87ad;
 }
 
 .lecture-cards-row {
-    max-height: 260px;
-    overflow-y: auto;
-    padding-bottom: 0 !important;
+	max-height: 260px;
+	overflow-y: auto;
+	padding-bottom: 0 !important;
 }
 
 .card-header .fc-toolbar-chunk {
-    font-size: 10.2px;
+	font-size: 10.2px;
 }
 
 /* 우측: 학사 캘린더 래퍼 */
 .academic-card {
-    background-color: #fff;
-    border-radius: 1rem;
-    box-shadow: 0 .5rem 1.5rem rgba(15, 23, 42, .08);
-    margin-top: 0 !important;
-    margin-bottom: 10px !important;
-    padding: 2px 8px 4px;
-    height: auto !important;
-    max-height: none !important;
-    overflow: visible !important;
-    display: flex;
-    flex-direction: column;
+	background-color: #fff;
+	border-radius: 1rem;
+	box-shadow: 0 .5rem 1.5rem rgba(15, 23, 42, .08);
+	margin-top: 0 !important;
+	margin-bottom: 10px !important;
+	padding: 2px 8px 4px;
+	height: auto !important;
+	max-height: none !important;
+	overflow: visible !important;
+	display: flex;
+	flex-direction: column;
 }
 
 /* 상단/하단 카드 바디 공통 */
-.card-body_1,
-.card-body_2 {
-    background-color: #fff;
-    border-radius: .75rem;
-    box-shadow: 0 .125rem .25rem rgba(15, 23, 42, .09);
-    margin-top: 0 !important;
-    margin-bottom: 4px !important;
-    height: auto !important;
-    padding-left: 1.28rem;
-    padding-right: 1.28rem;
+.card-body_1, .card-body_2 {
+	background-color: #fff;
+	border-radius: .75rem;
+	box-shadow: 0 .125rem .25rem rgba(15, 23, 42, .09);
+	margin-top: 0 !important;
+	margin-bottom: 4px !important;
+	height: auto !important;
+	padding-left: 1.28rem;
+	padding-right: 1.28rem;
 }
 
 /* 대시보드 카드 내부 좌우 패딩 공통 */
 .timetable-container {
-    padding-left: 1.28rem;
-    padding-right: 1.28rem;
+	padding-left: 1.28rem;
+	padding-right: 1.28rem;
 }
 
-.timetable-container .card-header,
-.card-body_1 .card-header,
-.card-body_2 .card-header {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.75rem;
+.timetable-container .card-header, .card-body_1 .card-header,
+	.card-body_2 .card-header {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.75rem;
 }
 
-.timetable-container .card-title,
-.card-body_1 .card-title,
-.card-body_2 .card-title {
-    padding-top: 3px;
-    font-size: 1.3rem;
-    text-align: center;
+.timetable-container .card-title, .card-body_1 .card-title, .card-body_2 .card-title
+	{
+	padding-top: 3px;
+	font-size: 1.3rem;
+	text-align: center;
 }
 
-.academic-card .card-body,
-.card-body_2 {
-    font-size: 0.86rem;
+.academic-card .card-body, .card-body_2 {
+	font-size: 0.86rem;
 }
 
 .campus-item-index {
-    display: inline-block;
-    min-width: 1.7rem;
-    margin-right: 0.6rem;
-    font-weight: 500;
-    font-size: 0.8rem;
-    color: #64748b;
+	display: inline-block;
+	min-width: 1.7rem;
+	margin-right: 0.6rem;
+	font-weight: 500;
+	font-size: 0.8rem;
+	color: #64748b;
 }
 
 .campus-item-title {
-    font-size: 0.86rem;
+	font-size: 0.86rem;
 }
 
 .campus-item-date {
-    font-size: 0.8rem;
+	font-size: 0.8rem;
 }
 
 /* 캘린더 공통 */
 .calendar-containers {
-    position: relative;
-    margin: -2px auto;
-    padding: 2px 12px;
-    background-color: #ffffff;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    max-height: 360px;
+	position: relative;
+	margin: -2px auto;
+	padding: 2px 12px;
+	background-color: #ffffff;
+	border-radius: 12px;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+	max-height: 360px;
 }
 
 /* 미니 캘린더 컨테이너: 위쪽 여백만 살짝 줄임 */
 .calendar-container {
-    margin: 0;
-    padding: 0.5rem 1rem 0.75rem 1rem;
-    background-color: #ffffff;
+	margin: 0;
+	padding: 0.5rem 1rem 0.75rem 1rem;
+	background-color: #ffffff;
 }
 
 /* 캘린더 범례 여백 */
 .calendar-container .legend {
-    margin-top: 4px;
+	margin-top: 4px;
 }
 
-
 /* 캘린더/시간표 폰트 */
-.timetable-container .fc,
-.calendar-container .fc {
-    font-size: 0.78rem;
+.timetable-container .fc, .calendar-container .fc {
+	font-size: 0.78rem;
 }
 
 .fc .fc-daygrid-day-number {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    white-space: nowrap !important;
-    word-break: keep-all !important;
-    border-radius: 50%;
-    margin: 3px;
-    font-size: 10px;
-    font-weight: 500;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	white-space: nowrap !important;
+	word-break: keep-all !important;
+	border-radius: 50%;
+	margin: 3px;
+	font-size: 10px;
+	font-weight: 500;
 }
 
 .fc-daygrid-day.fc-day-today .fc-daygrid-day-frame {
-    background-color: rgba(88, 101, 242, 0.05);
+	background-color: rgba(88, 101, 242, 0.05);
 }
 
 .fc-daygrid-day.fc-day-today .fc-daygrid-day-number {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 26px;
-    height: 26px;
-    padding: 0 6px;
-    border-radius: 999px;
-    background-color: rgba(88, 101, 242, 0.9);
-    color: #ffffff;
-    font-weight: 500;
-    font-size: 0.69rem;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 26px;
+	height: 26px;
+	padding: 0 6px;
+	border-radius: 999px;
+	background-color: rgba(88, 101, 242, 0.9);
+	color: #ffffff;
+	font-weight: 500;
+	font-size: 0.69rem;
 }
 
 .fc-daygrid-day-top {
-    overflow: visible;
-    padding-top: 4px;
+	overflow: visible;
+	padding-top: 4px;
 }
 
 .fc .fc-toolbar.fc-header-toolbar {
-    margin-bottom: 0.5em;
+	margin-bottom: 0.5em;
 }
 
 .fc .fc-toolbar>*>:first-child {
-    margin-left: 3px;
+	margin-left: 3px;
 }
 
 .fc-button-group {
-    margin-left: -3px;
+	margin-left: -3px;
 }
 
 /* 캠퍼스 소식 카드 */
 .campus-news-card {
-    background-color: #ffffff;
-    border-radius: .9rem;
-    box-shadow: 0 .125rem .45rem rgba(15, 23, 42, .12);
-    border: 0;
+	background-color: #ffffff;
+	border-radius: .9rem;
+	box-shadow: 0 .125rem .45rem rgba(15, 23, 42, .12);
+	border: 0;
 }
 
 .campus-news-card .card-body_2 {
-    box-shadow: none;
-    border-radius: 0 0 .9rem .9rem;
-    padding-top: 0;
-    padding-bottom: 0.75rem;
+	box-shadow: none;
+	border-radius: 0 0 .9rem .9rem;
+	padding-top: 0;
+	padding-bottom: 0.75rem;
 }
 
 .campus-news-card .campus-news-tabs {
-    margin: 0;
-    border-radius: .9rem .9rem 0 0;
-    overflow: hidden;
-    background-color: #eef2ff;
-    border-bottom: 1px solid #e5e7eb;
+	margin: 0;
+	border-radius: .9rem .9rem 0 0;
+	overflow: hidden;
+	background-color: #eef2ff;
+	border-bottom: 1px solid #e5e7eb;
 }
 
 .campus-news-card .campus-news-tab {
-    flex: 1 1 0;
-    border-radius: 0;
-    border: 0;
-    padding: 0.75rem 1rem;
-    text-align: center;
-    font-size: 0.9rem;
-    font-weight: 500;
-    color: #64748b;
-    background: transparent;
+	flex: 1 1 0;
+	border-radius: 0;
+	border: 0;
+	padding: 0.75rem 1rem;
+	text-align: center;
+	font-size: 0.9rem;
+	font-weight: 500;
+	color: #64748b;
+	background: transparent;
 }
 
 .campus-news-card .campus-news-tab.active {
-    background-color: #4f46e5;
-    color: #ffffff;
-    box-shadow: 0 0 0 1px rgba(79, 70, 229, 0.3);
+	background-color: #4f46e5;
+	color: #ffffff;
+	box-shadow: 0 0 0 1px rgba(79, 70, 229, 0.3);
 }
 
 .campus-news-table-wrapper {
-    padding: 0.75rem 1.25rem 0.75rem;
+	padding: 0.75rem 1.25rem 0.75rem;
 }
 
 .campus-news-table {
-    width: 95%;
-    border-collapse: collapse;
-    margin: 0;
-    font-size: 0.86rem;
+	width: 95%;
+	border-collapse: collapse;
+	margin: 0;
+	font-size: 0.86rem;
 }
 
 .campus-news-table thead th {
-    padding: 0.6rem 0.4rem;
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: #94a3b8;
-    border-bottom: 1px solid #e5e7eb;
-    border-top: 1px solid #e5e7eb;
-    background-color: #f9fafb;
+	padding: 0.6rem 0.4rem;
+	font-size: 0.8rem;
+	font-weight: 600;
+	color: #94a3b8;
+	border-bottom: 1px solid #e5e7eb;
+	border-top: 1px solid #e5e7eb;
+	background-color: #f9fafb;
 }
 
 .campus-news-table tbody td {
-    padding: 0.55rem 0.4rem;
-    border-bottom: 1px solid #f1f5f9;
-    color: #1f2933;
-    vertical-align: middle;
+	padding: 0.55rem 0.4rem;
+	border-bottom: 1px solid #f1f5f9;
+	color: #1f2933;
+	vertical-align: middle;
 }
 
 .campus-news-table tbody tr:last-child td {
-    border-bottom: none;
+	border-bottom: none;
 }
 
 .campus-news-table .campus-title-cell {
-    max-width: 0;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+	max-width: 0;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
 .campus-news-table .col-no {
-    width: 48px;
-    text-align: center;
+	width: 48px;
+	text-align: center;
 }
 
 .campus-news-table .col-writer {
-    width: 120px;
-    text-align: center;
+	width: 120px;
+	text-align: center;
 }
 
 .campus-news-table .col-date {
-    width: 120px;
-    text-align: center;
+	width: 120px;
+	text-align: center;
 }
 
 .campus-news-table .col-hit {
-    width: 80px;
-    text-align: center;
-    white-space: nowrap;
+	width: 80px;
+	text-align: center;
+	white-space: nowrap;
 }
 
 .campus-news-table tbody tr:hover td {
-    background-color: #f3f4ff;
+	background-color: #f3f4ff;
 }
 
 .campus-news-table-wrapper {
-    padding: 0.75rem 1.25rem 0.75rem;
-    border-radius: 0 0 .9rem .9rem;
+	padding: 0.75rem 1.25rem 0.75rem;
+	border-radius: 0 0 .9rem .9rem;
 }
 
 .campus-news-table {
-    border-radius: .6rem;
-    overflow: hidden;
+	border-radius: .6rem;
+	overflow: hidden;
 }
 
 .card-title {
-    font-size: 14px;
-    margin: -8px 0px 2px -8px;
+	font-size: 14px;
+	margin: -8px 0px 2px -8px;
 }
 
 /* 학사 캘린더 하단 리스트 */
 .calendar-event-list {
-    border-top: 1px solid #e5e7eb;
-    margin-top: .5rem;
-    padding-top: .25rem;
-    font-size: 0.75rem;
-    line-height: 1.35;
-    max-height: 300px;
-    overflow-y: auto;
+	border-top: 1px solid #e5e7eb;
+	margin-top: .5rem;
+	padding-top: .25rem;
+	font-size: 0.75rem;
+	line-height: 1.35;
+	max-height: 300px;
+	overflow-y: auto;
 }
 
 .calendar-event-list-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: .25rem;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: .25rem;
 }
 
 .calendar-event-list-item {
-    display: flex;
-    align-items: flex-start;
-    padding: .22rem .5rem;
-    margin-bottom: .18rem;
-    border-radius: .45rem;
-    border: 1px solid #e5e7eb;
-    background-color: #ffffff;
+	display: flex;
+	align-items: flex-start;
+	padding: .22rem .5rem;
+	margin-bottom: .18rem;
+	border-radius: .45rem;
+	border: 1px solid #e5e7eb;
+	background-color: #ffffff;
 }
 
 .calendar-event-list-item:last-child {
-    margin-bottom: 0;
+	margin-bottom: 0;
 }
 
 .calendar-event-list-item .type-strip {
-    width: 4px;
-    border-radius: 999px;
-    margin-right: .6rem;
-    flex-shrink: 0;
+	width: 4px;
+	border-radius: 999px;
+	margin-right: .6rem;
+	flex-shrink: 0;
 }
 
 .calendar-event-list-item-body {
-    flex: 1;
+	flex: 1;
 }
 
 .calendar-event-time {
-    font-size: 0.75rem;
-    min-width: 38px;
-    font-weight: 600;
-    margin-right: .35rem;
+	font-size: 0.75rem;
+	min-width: 38px;
+	font-weight: 600;
+	margin-right: .35rem;
 }
 
 .calendar-event-title {
-    font-size: 0.78rem;
-    font-weight: 500;
+	font-size: 0.78rem;
+	font-weight: 500;
 }
 
 .calendar-event-meta {
-    color: #6b7280;
-    font-size: 0.7rem;
-    margin-top: 1px;
+	color: #6b7280;
+	font-size: 0.7rem;
+	margin-top: 1px;
 }
 
 .calendar-event-list-header .badge {
-    font-size: 0.70rem;
-    padding: .25rem .55rem;
+	font-size: 0.70rem;
+	padding: .25rem .55rem;
 }
 
 /* 카테고리별 색상 (리스트) */
 .calendar-event-list-item.type-TASK .type-strip {
-    background-color: #22c55e;
+	background-color: #22c55e;
 }
 
 .calendar-event-list-item.type-PROJECT .type-strip {
-    background-color: #f97316;
+	background-color: #f97316;
 }
 
 .calendar-event-list-item.type-COUNSEL .type-strip {
-    background-color: #0ea5e9;
+	background-color: #0ea5e9;
 }
 
 .calendar-event-list-item.type-COUNSEL_SLOT .type-strip {
-    background-color: #38bdf8;
+	background-color: #38bdf8;
 }
 
 .calendar-event-list-item.type-ENROLL_REQ .type-strip {
-    background-color: #6366f1;
+	background-color: #6366f1;
 }
 
 .calendar-event-list-item.type-ADMIN_REGIST .type-strip {
-    background-color: #a855f7;
+	background-color: #a855f7;
 }
 
 .calendar-event-list-item.type-HOLIDAY .type-strip {
-    background-color: #ef4444;
+	background-color: #ef4444;
 }
 
 /* 메인/사이드 비율 */
-@media (min-width: 1400px) {
-    .dashboard-main-col {
-        flex: 0 0 70%;
-        max-width: 70%;
-    }
-
-    .dashboard-side-col {
-        flex: 0 0 30%;
-        max-width: 30%;
-    }
+@media ( min-width : 1400px) {
+	.dashboard-main-col {
+		flex: 0 0 70%;
+		max-width: 70%;
+	}
+	.dashboard-side-col {
+		flex: 0 0 30%;
+		max-width: 30%;
+	}
 }
 
 /* 메인/사이드 컬럼 위 여백 최소화해서 캘린더를 위로 끌어올림 */
-.dashboard-main-col,
-.dashboard-side-col {
-    margin-top: 0;
-    padding-top: 0.25rem;
+.dashboard-main-col, .dashboard-side-col {
+	margin-top: 0;
+	padding-top: 0.25rem;
 }
 
 /* 달력 높이 */
 .academic-card #calendar {
-    height: 350px;
+	height: 350px;
 }
 
 /* FullCalendar daygrid 이벤트 숨김(+more 제거) - 필요 시 활성화용 보관 */
@@ -779,207 +868,205 @@
 
 /* 대시보드 루트 row 좌우 패딩 (header 의 .px-5 유틸에는 영향 없음) */
 .dashboard-row {
-    padding-right: 1rem !important;
-    padding-left: 1rem !important;
+	padding-right: 1rem !important;
+	padding-left: 1rem !important;
 }
 
 /* 학적 이행 테이블 전용 스타일 */
 .academic-progress-table .progress-metric-label {
-    font-weight: 600;
-    text-align: left;
-    white-space: nowrap;
+	font-weight: 600;
+	text-align: left;
+	white-space: nowrap;
 }
 
 .academic-progress-table tbody tr>td {
-    padding-top: .55rem;
-    padding-bottom: .55rem;
+	padding-top: .55rem;
+	padding-bottom: .55rem;
 }
 
 /* 진행률 바: 얇고, 배경은 연한 회색 */
 .academic-progress-table .progress {
-    height: 0.6rem;
-    border-radius: 999px;
-    background-color: #edf1f7;
+	height: 0.6rem;
+	border-radius: 999px;
+	background-color: #edf1f7;
 }
 
 /* 진행률 숫자 라벨 */
 .academic-progress-table .progress-meta {
-    font-size: .75rem;
-    color: #6c757d;
+	font-size: .75rem;
+	color: #6c757d;
 }
 
 /* 충족/미충족 Pill */
 .academic-progress-table .status-pill {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0.15rem 0.6rem;
-    border-radius: 999px;
-    font-size: .75rem;
-    font-weight: 600;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0.15rem 0.6rem;
+	border-radius: 999px;
+	font-size: .75rem;
+	font-weight: 600;
 }
 
 .academic-progress-table .status-pill.met {
-    background-color: #e6f4ff;
-    color: #0d6efd;
+	background-color: #e6f4ff;
+	color: #0d6efd;
 }
 
 .academic-progress-table .status-pill.not-met {
-    background-color: #ffe5e7;
-    color: #dc3545;
+	background-color: #ffe5e7;
+	color: #dc3545;
 }
 
 /* dayGrid 이벤트 기본 스타일 (캘린더 셀 안) */
 .fc-daygrid-event {
-    border-radius: 4px;
-    padding: 1px 4px;
-    border: 0;
-    font-size: 0.72rem;
-    line-height: 1.2;
-    font-weight: 500;
+	border-radius: 4px;
+	padding: 1px 4px;
+	border: 0;
+	font-size: 0.72rem;
+	line-height: 1.2;
+	font-weight: 500;
 }
 
 /* 타입별 색상: 범례/리스트와 매칭 (캘린더 셀) */
 .fc-daygrid-event.type-TASK {
-    background-color: rgba(34, 197, 94, 0.12);
-    border-left: 3px solid #22c55e;
-    color: #166534;
+	background-color: rgba(34, 197, 94, 0.12);
+	border-left: 3px solid #22c55e;
+	color: #166534;
 }
 
 .fc-daygrid-event.type-PROJECT {
-    background-color: rgba(249, 115, 22, 0.12);
-    border-left: 3px solid #f97316;
-    color: #9a3412;
+	background-color: rgba(249, 115, 22, 0.12);
+	border-left: 3px solid #f97316;
+	color: #9a3412;
 }
 
 .fc-daygrid-event.type-COUNSEL {
-    background-color: rgba(14, 165, 233, 0.12);
-    border-left: 3px solid #0ea5e9;
-    color: #075985;
+	background-color: rgba(14, 165, 233, 0.12);
+	border-left: 3px solid #0ea5e9;
+	color: #075985;
 }
 
 .fc-daygrid-event.type-COUNSEL_SLOT {
-    background-color: rgba(56, 189, 248, 0.12);
-    border-left: 3px solid #38bdf8;
-    color: #0369a1;
+	background-color: rgba(56, 189, 248, 0.12);
+	border-left: 3px solid #38bdf8;
+	color: #0369a1;
 }
 
 .fc-daygrid-event.type-ENROLL_REQ {
-    background-color: rgba(99, 102, 241, 0.12);
-    border-left: 3px solid #6366f1;
-    color: #3730a3;
+	background-color: rgba(99, 102, 241, 0.12);
+	border-left: 3px solid #6366f1;
+	color: #3730a3;
 }
 
 .fc-daygrid-event.type-ADMIN_REGIST {
-    background-color: rgba(168, 85, 247, 0.12);
-    border-left: 3px solid #a855f7;
-    color: #6b21a8;
+	background-color: rgba(168, 85, 247, 0.12);
+	border-left: 3px solid #a855f7;
+	color: #6b21a8;
 }
 
 .fc-daygrid-event.type-HOLIDAY {
-    background-color: rgba(239, 68, 68, 0.12);
-    border-left: 3px solid #ef4444;
-    color: #b91c1c;
+	background-color: rgba(239, 68, 68, 0.12);
+	border-left: 3px solid #ef4444;
+	color: #b91c1c;
 }
 
 /* 선택한 날짜 하이라이트 (클릭한 셀) */
 .fc-daygrid-day.fc-day-selected .fc-daygrid-day-frame {
-    background-color: rgba(30, 90, 255, 0.09);
+	background-color: rgba(30, 90, 255, 0.09);
 }
 
 .fc-daygrid-day.fc-day-selected .fc-daygrid-day-number {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 24px;
-    height: 24px;
-    padding: 0 6px;
-    border-radius: 999px;
-    background-color: #2563eb;
-    color: #ffffff;
-    font-weight: 600;
-    font-size: 0.7rem;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 24px;
+	height: 24px;
+	padding: 0 6px;
+	border-radius: 999px;
+	background-color: #2563eb;
+	color: #ffffff;
+	font-weight: 600;
+	font-size: 0.7rem;
 }
 
 /* 리스트형 이벤트: 카드 테두리 제거 + 상단 구분선만 */
-.calendar-event-list-item.type-TASK,
-.calendar-event-list-item.type-PROJECT,
-.calendar-event-list-item.type-COUNSEL,
-.calendar-event-list-item.type-COUNSEL_SLOT,
-.calendar-event-list-item.type-ENROLL_REQ,
-.calendar-event-list-item.type-ADMIN_REGIST,
-.calendar-event-list-item.type-HOLIDAY {
-    border: none !important;
-    box-shadow: none !important;
-    border-radius: 0;
-    padding: 6px 10px;
-    border-top: 2px solid #e5e7eb;
-    padding-bottom: 0.1rem;
+.calendar-event-list-item.type-TASK, .calendar-event-list-item.type-PROJECT,
+	.calendar-event-list-item.type-COUNSEL, .calendar-event-list-item.type-COUNSEL_SLOT,
+	.calendar-event-list-item.type-ENROLL_REQ, .calendar-event-list-item.type-ADMIN_REGIST,
+	.calendar-event-list-item.type-HOLIDAY {
+	border: none !important;
+	box-shadow: none !important;
+	border-radius: 0;
+	padding: 6px 10px;
+	border-top: 2px solid #e5e7eb;
+	padding-bottom: 0.1rem;
 }
 
 /* 수강 카드 가로 폭 + 간격 조정 */
 .lecture-card {
-    max-width: 260px;
-    width: 100%;
-    margin-left: 0;
-    margin-right: 0;
-    padding: 0.6rem 1rem;
+	max-width: 260px;
+	width: 100%;
+	margin-left: 0;
+	margin-right: 0;
+	padding: 0.6rem 1rem;
 }
 
 /* 수강 카드 grid 간격 더 압축 */
 .lecture-grid {
-    --bs-gutter-x: 0.25rem;
-    --bs-gutter-y: 0.25rem;
+	--bs-gutter-x: 0.25rem;
+	--bs-gutter-y: 0.25rem;
 }
 
 /* 학사 캘린더 툴바 버튼 숨김 (뷰 전환/prev/next) */
 .academic-card .calendar-container .fc-button-group {
-    display: none;
+	display: none;
 }
 
-.academic-card .calendar-container .fc-header-toolbar .fc-toolbar-chunk:first-child {
-    display: none;
+.academic-card .calendar-container .fc-header-toolbar .fc-toolbar-chunk:first-child
+	{
+	display: none;
 }
 
 .academic-card .calendar-container .fc-header-toolbar {
-    justify-content: center;
+	justify-content: center;
 }
 
 /* xxl 구간 카드 폭 조정 (이 페이지 한정 Bootstrap row-cols override) */
 .row-cols-xxl-3>* {
-    -webkit-box-flex: 0;
-    -ms-flex: 0 0 auto;
-    flex: 0 0 auto;
-    width: 22.33%;
+	-webkit-box-flex: 0;
+	-ms-flex: 0 0 auto;
+	flex: 0 0 auto;
+	width: 22.33%;
 }
 
 .row-cols-xxl-2>* {
-    -webkit-box-flex: 0;
-    -ms-flex: 0 0 auto;
-    flex: 0 0 auto;
-    width: 28%;
+	-webkit-box-flex: 0;
+	-ms-flex: 0 0 auto;
+	flex: 0 0 auto;
+	width: 28%;
 }
 
 /* 메인/사이드 컬럼 위 여백 최소화 + 우측 캘린더 좌측 패딩 */
 .dashboard-main-col {
-    margin-top: 0;
-    padding-top: 0.25rem;
+	margin-top: 0;
+	padding-top: 0.25rem;
 }
 
 .dashboard-side-col {
-    margin-top: 0;
-    padding-top: 0.25rem;
-    padding-left: 1.5rem;
+	margin-top: 0;
+	padding-top: 0.25rem;
+	padding-left: 1.5rem;
 }
 
 /* 캠퍼스 소식 제목 링크 스타일: 색상 상속 + hover 시 밑줄만 */
 .campus-news-table .campus-title-cell a {
-    color: inherit;
-    text-decoration: none;
+	color: inherit;
+	text-decoration: none;
 }
 
 .campus-news-table .campus-title-cell a:hover {
-    text-decoration: underline;
+	text-decoration: underline;
 }
 </style>
 
