@@ -27,7 +27,7 @@ public class StdntVO {
 	private String fileNm;	//파일 이름
 
 	private SubjctVO subjctVO;	 //학과
-	private SubjctVO subjctNm;	 //이름
+	private String subjctNm;	 //이름
 
 	private String univCode; //대학코드
 

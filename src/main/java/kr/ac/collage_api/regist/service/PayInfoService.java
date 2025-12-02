@@ -8,27 +8,17 @@ import kr.ac.collage_api.vo.PayInfoVO;
 
 public interface PayInfoService {
 
-	int insertPayInfo(PayInfoVO payInfoVO);
+	Map<String, Object> selectPayInfoList(String stdntNo);
 
-    List<PayInfoVO> selectPayInfoListByStudent(String stdntNo);
+	String kakaoPayReady(String stdntNo, int registCtNo, int amount);
 
-    Map<String, Object> selectPayInfoList(String stdntNo);
+	void kakaoPayApprove(String pgToken, String stdntNo, int registCtNo);
 
-	void updatePayStatus(int registCtNo, String stdntNo, String payMthd);
+	List<PayHistoryVO> getHistory(Map<String, Object> param, String stdntNo);
 
-	PayInfoVO selectPayInfo(String stdntNo, int registCtNo);
+	void updatePayStatus(int registCtNo, String stdntNo, String type);
 
-	int updateVirtualAccount(String stdntNo, int registCtNo, String accountNo);
+	PayInfoVO getPayInfoOne(String stdntNo);
 
-	int selectPayAmount(String stdntNo, int registCtNo);
-
-	int existsPayInfo(String stdntNo, int registCtNo);
-
-	/* 가상계좌 발급 + 계좌이체로 즉시 완납 처리 */
-	void issueAccountAndConfirm(String stdntNo, int registCtNo, String bank);
-
-	// 관리자용 납부내역 조회
-	List<PayInfoVO> selectAdminPayList(Map<String, Object> params);
-
-    List<PayHistoryVO> getHistory(Map<String, Object> paramMap, String name);
+    List<PayInfoVO> selectAdminPayList(Map<String, Object> params);
 }

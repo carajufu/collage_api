@@ -54,6 +54,7 @@
 		
 	<resultMap type="profsrVO" id="profsrMap">
 		<result property="labrumLc" column="LABRUM_LC"/>
+		<result property="emailAdres" column="EMAIL_ADRES"/>
 	</resultMap>
 
 	<resultMap type="fileDetailVO" id="fileMap">
@@ -103,7 +104,8 @@
 		       E.EVL_MTHD, E.ESTBL_SEMSTR, E.LCTRE_CODE, E.PROFSR_NO, E.LCTRUM,
 		       A.LCTRE_CODE, A.OPER_AT,
 		       L.TIMETABLE_NO, L.ESTBLLCTRE_CODE, L.LCTRE_DFK, L.BEGIN_TM, L.END_TM
-		       ,S.SKLSTF_NM, (
+		       ,S.SKLSTF_NM, P.EMAIL_ADRES,
+		       (
 		            case substr(e.lctrum,0,1)
 		                when 'A' then '공학관' when 'B' then '인문관' when 'C' then '경영관'
 		            end

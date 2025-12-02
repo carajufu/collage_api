@@ -4,8 +4,9 @@
 
 <mapper namespace="kr.ac.collage_api.competency.mapper.CompetencyMapper">
 
-	<select id="getNextFormNo" resultType="int">
-        SELECT NVL(MAX(FORM_ID), 0) + 1 FROM COMPETENCY
+    <select id="getNextFormNo" resultType="int">
+        SELECT NVL(MAX(TO_NUMBER(FORM_ID)), 0) + 1
+        FROM COMPETENCY
     </select>
 
 

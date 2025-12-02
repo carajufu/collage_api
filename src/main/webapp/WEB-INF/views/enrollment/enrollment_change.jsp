@@ -9,7 +9,7 @@
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="/dashboard/student"><i class="las la-home"></i></a></li>
             <li class="breadcrumb-item"><a href="#">학사 정보</a></li>
-            <li class="breadcrumb-item"><a href="#">학적관리</a></li>
+            <li class="breadcrumb-item"><a href="/enrollment/status">학적관리</a></li>
             <li class="breadcrumb-item active" aria-current="page">휴학/복학 신청</li>
         </ol>
     </nav>

@@ -13,22 +13,23 @@ import kr.ac.collage_api.vo.RegistCtVO;
 @Mapper
 public interface PayInfoMapper {
 
-	int insertPayInfo(PayInfoVO payInfoVO);
+	int insertPayInfo(PayInfoVO vo);
 
-	List<PayInfoVO> selectPayInfoListByStudent(@Param("stdntNo") String stdntNo);
+	List<PayInfoVO> selectPayInfoListByStudent(String stdntNo);
 
-    List<PayInfoVO> selectPayInfoList(@Param("stdntNo") String stdntNo);
+	List<PayInfoVO> selectPayInfoList(String stdntNo);
+
+	List<PayHistoryVO> getHistory(Map<String, Object> param);
 
 	int updatePayStatus(Map<String, Object> param);
 
-	PayInfoVO selectPayInfo(@Param("stdntNo") String stdntNo, @Param("registCtNo") int registCtNo);
+	PayInfoVO selectPayInfo(Map<String, Object> param);
 
-	int updateVirtualAccount(@Param("stdntNo") String stdntNo, @Param("registCtNo") int registCtNo,
-			@Param("accountNo") String accountNo);
+	int updateVirtualAccount(Map<String, Object> param);
 
-	int selectPayAmount(@Param("stdntNo") String stdntNo, @Param("registCtNo") int registCtNo);
+	int selectPayAmount(Map<String, Object> param);
 
-	int existsPayInfo(@Param("stdntNo") String stdntNo, @Param("registCtNo") int registCtNo);
+	int existsPayInfo(Map<String, Object> param);
 
 	List<PayInfoVO> selectAdminPayList(Map<String, Object> params);
 
@@ -36,6 +37,9 @@ public interface PayInfoMapper {
 
 	void deleteByRegistCtNo(int registCtNo);
 
-    List<PayHistoryVO> getHistory(@Param("paramMap") Map<String, Object> paramMap,
-                                @Param("name") String name);
+	String selectKakaoTid(Map<String, Object> param);
+
+	void updateKakaoTid(Map<String, Object> tidParam);
+
+	PayInfoVO getPayInfoOne(String stdntNo);
 }

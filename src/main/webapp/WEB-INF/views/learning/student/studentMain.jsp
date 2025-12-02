@@ -98,11 +98,14 @@
                         .then(resp => resp.json())
                         .then(rslt => {
                             console.log("chkng rslt > ", rslt);
-                            renderList(modalId, rslt.result, {
-                                headerTitle: "과제 목록",
-                                getTitle: task => task.taskSj,
-                                onClick: ( { modalId, items, idx } ) => renderTaskDetail(modalId, items, idx)
-                            });
+                            const tasks = rslt.result || [];
+                            if(!tasks.length) return;
+
+                            const clickedTaskNo = item.dataset.taskNo;
+                            const idx = tasks.findIndex(task => String(task.taskNo) === String(clickedTaskNo));
+                            const startIdx = idx === -1 ? 0 : idx;
+
+                            renderTaskDetail(modalId, tasks, startIdx);
                       })
                       .catch(err => console.error(err));
               });
@@ -190,6 +193,13 @@
             const chkRoot = document.querySelector("#taskBodyRoot");
             if(chkRoot) { chkRoot.remove(); }
 
+            if (!Array.isArray(tasks) || !tasks.length) {
+                changeModalBody(modalId, "과제 상세", document.createElement("div"));
+                return;
+            }
+
+            const startIdx = idx >= 0 && idx < tasks.length ? idx : 0;
+
             const root = document.createElement("div");
             root.className = "container mt-4";
             root.id = "taskBodyRoot";
@@ -207,10 +217,7 @@
             group.className = "list-group shadow-sm rounded-3";
             side.appendChild(group);
 
-
-            let titles = [];            // 선택한 주차의 과제 목록 제목을 담은 배열
-            const listGroup = document.querySelector("#listGroup");
-            titles = listGroup.querySelectorAll(".list-group-item-action");
+            const titles = tasks.map(task => task.taskSj);            // 선택한 주차의 과제 목록 제목을 담은 배열
 
             let body = document.createElement("div");
             body.className = "col d-flex flex-column border shadow-sm rounded-3 me-2";
@@ -221,9 +228,9 @@
             for(let i = 0; i < titles.length; i++) {
                 let element = document.createElement("button");
                 element.className = "list-group-item list-group-item-action";
-                element.textContent = titles[i].textContent;
+                element.textContent = titles[i] || `과제 ${i + 1}`;
 
-                if(i == idx) { element.classList.add("active"); }
+                if(i == startIdx) { element.classList.add("active"); }
 
                 element.addEventListener("click", () => {
                     side.querySelectorAll(".list-group-item").forEach(el => el.classList.remove("active"));
@@ -238,8 +245,8 @@
             console.log("chkng before change body >  ", root);
             changeModalBody(modalId, "과제 상세", root);
 
-            if (Array.isArray(tasks) && tasks.length && idx >= 0 && idx < tasks.length) {
-                taskDetail(body, tasks[idx]);
+            if (Array.isArray(tasks) && tasks.length && startIdx >= 0 && startIdx < tasks.length) {
+                taskDetail(body, tasks[startIdx]);
             }
         }
 
@@ -301,15 +308,31 @@
 
             article.appendChild(document.createElement("hr"));
 
-            const content = detail.taskCn;
-            const pContent = document.createElement("p");
-            pContent.className = "my-4";
-            pContent.textContent = content;
-            article.appendChild(pContent);
+            const taskContent = document.createElement("div");
+            taskContent.className = "my-4 task-content";
+            taskContent.innerHTML = sanitizeHtml(detail.taskCn || "");
+            article.appendChild(taskContent);
 
             article.appendChild( await renderSubmitBtn(detail.taskNo) );
 
             body.appendChild(article);
+        }
+
+        // Remove obvious dangerous tags/attributes before injecting CKEditor HTML
+        function sanitizeHtml(html) {
+            const tpl = document.createElement("template");
+            tpl.innerHTML = html;
+
+            tpl.content.querySelectorAll("script, iframe, object, embed").forEach(el => el.remove());
+            tpl.content.querySelectorAll("*").forEach(node => {
+                [...node.attributes].forEach(attr => {
+                    if (attr.name.toLowerCase().startsWith("on")) {
+                        node.removeAttribute(attr.name);
+                    }
+                });
+            });
+
+            return tpl.innerHTML;
         }
 
         /**
@@ -509,10 +532,19 @@
             return data;
         }
 
-         async function renderSubmitBtn(taskNo) {
+        async function renderSubmitBtn(taskNo) {
+            const section = document.createElement("div");
+            section.id = "submitSection";
+            section.className = "mt-4";
+
+            const separator = document.createElement("hr");
+            separator.className = "my-4";
+            section.appendChild(separator);
+
             const container = document.createElement("div");
             container.className = "container d-flex justify-content-end gap-3 my-3";
             container.id = "btnContainer";
+            section.appendChild(container);
 
             const submit = await isSubmit(taskNo);
 
@@ -687,7 +719,7 @@
                 container.appendChild(updateBtn);
             }
 
-            return container;
+            return section;
         }
 
         // todo: 수정 버튼 클릭 시 dropzone 레이아웃 화면에 출력 및 Dropzone.displayExistingFile() 이용해 업로드 되었떤 파일 목록 출력
@@ -942,9 +974,6 @@
                             <li class="nav-item waves-effect waves-light" role="presentation">
                                 <a href="#quiz" class="nav-link" role="tab" data-bs-toggle="tab" aria-selected="false"><h6>퀴즈</h6></a>
                             </li>
-                            <li class="nav-item waves-effect waves-light" role="presentation">
-                                <a href="#info" class="nav-link" role="tab" data-bs-toggle="tab" aria-selected="false"><h6>학습 정보</h6></a>
-                            </li>
                         </ul>
                     </div>
                     <div class="card-body p-0" style="min-height: 330px;">
@@ -961,14 +990,8 @@
                                                                 <span class="fw-bold fs-5 mx-1">[${week.WEEK}주차]</span><span class="fs-5">${week.LRN_THEMA}</span>
                                                             </div>
                                                             <div class="d-flex align-items-center gap-1 ms-auto badge-group">
-                                                                <c:if test="${week.TASK_AT eq '0'}">
-                                                                    <span class="badge rounded-pill border boder-light text-body text-center lh-sm">과제</span>
-                                                                </c:if>
                                                                 <c:if test="${week.TASK_AT eq '1'}">
-                                                                    <span class="badge rounded-pill bg-primary text-center lh-sm">과제</span>
-                                                                </c:if>
-                                                                <c:if test="${week.QUIZ_AT eq '0'}">
-                                                                    <span class="badge rounded-pill border boder-light text-center text-body lh-sm me-3">퀴즈</span>
+                                                                    <span class="badge rounded-pill bg-primary text-center lh-sm me-3">과제</span>
                                                                 </c:if>
                                                                 <c:if test="${week.QUIZ_AT eq '1'}">
                                                                     <span class="badge rounded-pill bg-primary text-center lh-sm me-3">퀴즈</span>
@@ -1190,86 +1213,6 @@
                     </div>
                 </div>
             </div>
-            <div class="col-xxl-5 col-5">
-                <div class="card card-height-100 border border-1 shadow rounded-3">
-                    <div class="card-title">
-                        <ul class="nav nav-tabs" role="tablist">
-                            <li class="nav-item waves-effect waves-light" role="presentation">
-                                <a href="#progress" class="nav-link active" role="tab" data-bs-toggle="tab" aria-selected="true"><h6>학습 진척도</h6></a>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="card-body p-0" style="min-height: 330px;">
-                        <div class="tab-content">
-                            <div class="tab-pane active show" id="progress" role="tabpanel">
-                                <div class="card h-100">
-                                    <div data-simplebar style="max-height: 330px;">
-                                        <div class="card-body">
-                                            <div class="mb-3">
-                                                <div class="d-flex align-items-center mb-2">
-                                                    <h6 class="mb-0 fw-semibold">이번 주 할 일</h6>
-                                                </div>
-                                                <div class="list-group list-group-flush">
-                                                    <div class="list-group-item d-flex align-items-center justify-content-between px-0">
-                                                        <span>[2주차] 과제 제출</span>
-                                                        <span class="badge bg-danger rounded-pill px-3">D-1</span>
-                                                    </div>
-                                                    <div class="list-group-item d-flex align-items-center justify-content-between px-0">
-                                                        <span>[2주차] 퀴즈 응시</span>
-                                                        <span class="badge bg-warning text-dark rounded-pill px-3">D-2</span>
-                                                    </div>
-                                                    <div class="list-group-item d-flex align-items-center justify-content-between px-0">
-                                                        <span>질문게시판 답변 확인</span>
-                                                        <span class="text-muted small">읽지않음 2</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <hr class="my-3">
-
-                                            <div>
-                                                <div class="d-flex align-items-center mb-2">
-                                                    <h6 class="mb-0 fw-semibold">나의 학습 진척도</h6>
-                                                </div>
-
-                                                <div class="mb-3">
-                                                    <div class="d-flex justify-content-between align-items-center mb-1">
-                                                        <span class="fw-medium">영상 시청</span>
-                                                        <span class="text-muted">70%</span>
-                                                    </div>
-                                                    <div class="progress" style="height:10px;">
-                                                        <div class="progress-bar bg-primary" style="width:70%;" role="progressbar" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100"></div>
-                                                    </div>
-                                                </div>
-
-                                                <div class="mb-3">
-                                                    <div class="d-flex justify-content-between align-items-center mb-1">
-                                                        <span class="fw-medium">과제</span>
-                                                        <span class="text-muted">5 / 7</span>
-                                                    </div>
-                                                    <div class="progress" style="height:10px;">
-                                                        <div class="progress-bar bg-primary" style="width:71.4%;" role="progressbar" aria-valuenow="71.4" aria-valuemin="0" aria-valuemax="100"></div>
-                                                    </div>
-                                                </div>
-
-                                                <div>
-                                                    <div class="d-flex justify-content-between align-items-center mb-1">
-                                                        <span class="fw-medium">퀴즈</span>
-                                                        <span class="text-muted">4 / 5</span>
-                                                    </div>
-                                                    <div class="progress" style="height:10px;">
-                                                        <div class="progress-bar bg-primary" style="width:80%;" role="progressbar" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
 
     <script type="text/javascript">
@@ -1296,14 +1239,14 @@
             </c:forEach>
         ]
 
-        gridInit({ columns: noticeColumns, data: noticeData }, notice);
+        gridInit({ columns: noticeColumns, data: noticeData, search: false }, notice);
 
         let resourceInited = false;
         let questionInited = false;
 
         const resourceColumns = ["글번호", "제목", "등록일자"];
         const resourceData = [
-            <c:forEach var="row" items="${learnInfo.notice.lectureBbsCttVOList}" varStatus="st">
+            <c:forEach var="row" items="${learnInfo.resource.lectureBbsCttVOList}" varStatus="st">
             [
                 "${row.bbscttNo}",
                 gridjs.html(
@@ -1316,11 +1259,11 @@
 
         const questionColumns = ["글번호", "제목", "등록일자"];
         const questionData = [
-            <c:forEach var="row" items="${learnInfo.notice.lectureBbsCttVOList}" varStatus="st">
+            <c:forEach var="row" items="${learnInfo.question.lectureBbsCttVOList}" varStatus="st">
             [
                 "${row.bbscttNo}",
                 gridjs.html(
-                    "<a href='/learning/student/board?no=${row.bbscttNo}'>${row.bbscttSj}</a>"
+                    "<a href='/learning/student/board?no=${row.bbscttNo}&code=${row.bbsCode}'>${row.bbscttSj}</a>"
                 ),
                 dtFmt(${row.bbscttWritngDe.time})
             ] ,
@@ -1333,13 +1276,13 @@
 
                 if (targetId === '#resource' && !resourceInited) {
                     const node = document.querySelector("#resourceTable");
-                    gridInit({ columns: resourceColumns, data: resourceData }, node);
+                    gridInit({ columns: resourceColumns, data: resourceData, search: false}, node);
                     resourceInited = true;
                 }
 
                 if (targetId === '#question' && !questionInited) {
                     const node = document.querySelector("#questionTable");
-                    gridInit({ columns: questionColumns, data: questionData }, node);
+                    gridInit({ columns: questionColumns, data: questionData, search: false }, node);
                     questionInited = true;
                 }
             });

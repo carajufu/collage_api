@@ -38,7 +38,7 @@
 	<!-- 좌측: 학적 이행 시각화 + 캠퍼스 소식   -->
 	<!-- ============================= -->
 	<div class="col-xxl-6 col-lg-6 dashboard-main-col">
-		<table class="table table-bordered align-middle text-center mb-3">
+		<table class="table table-bordered align-middle text-center">
 			<thead class="table-light">
 				<tr>
 					<th>항목</th>
@@ -47,65 +47,134 @@
 				</tr>
 			</thead>
 			<tbody>
-				<!-- 현시점 하드코딩-251128, 쿼리 찾아서 주입예정 -->
-				<!-- 총 이수학점 -->
 				<tr>
 					<td>총 이수학점</td>
 					<td>
-						<div class="progress progress-compact" aria-label="총 이수학점 진행률">
-							<div class="progress-bar bg-danger" role="progressbar"
-								style="width:${empty totalCreditRate ? 0 : totalCreditRate}%;"
-								aria-valuenow="${empty totalCreditRate ? 0 : totalCreditRate}"
-								aria-valuemin="0" aria-valuemax="100">
-								${totalCompletedCredits}/${totalRequiredCredits} 학점</div>
+						<div class="progress" style="height:22px;">
+							<c:set var="pntPct"
+								   value="${(requirements.totalPnt >= requirements.MIN_TOTAL_PNT)
+											 ? 100
+											 : (requirements.totalPnt * 100.0 / requirements.MIN_TOTAL_PNT)}" />
+							<div class="progress-bar ${(requirements.totalPnt >= requirements.MIN_TOTAL_PNT) ? 'bg-primary' : 'bg-danger'}"
+								 style="width:${pntPct}%; min-width:24%;">
+								${requirements.totalPnt}/${requirements.MIN_TOTAL_PNT} 학점
+							</div>
 						</div>
 					</td>
-					<td><span class="text-danger fw-semibold">미충족</span></td>
+					<td>
+						<c:choose>
+							<c:when test="${requirements.totalPnt >= requirements.MIN_TOTAL_PNT}">
+								<span class="text-primary fw-semibold">충족</span>
+							</c:when>
+							<c:otherwise>
+								<span class="text-danger fw-semibold">미충족</span>
+							</c:otherwise>
+						</c:choose>
+					</td>
 				</tr>
 
-				<!-- 전공필수 -->
 				<tr>
 					<td>전공필수 이수학점</td>
 					<td>
-						<div class="progress progress-compact" aria-label="전공필수 이수학점 진행률">
-							<div class="progress-bar bg-primary" role="progressbar"
-								style="width:${empty majorRequiredRate ? 0 : majorRequiredRate}%;"
-								aria-valuenow="${empty majorRequiredRate ? 0 : majorRequiredRate}"
-								aria-valuemin="0" aria-valuemax="100">
-								${majorCompletedCredits}/${majorRequiredCredits} 학점</div>
+						<div class="progress" style="height:22px;">
+							<c:set var="majorPct"
+								   value="${(requirements.majorPnt >= requirements.MIN_MAJOR_PNT)
+											 ? 100
+											 : (requirements.majorPnt * 100.0 / requirements.MIN_MAJOR_PNT)}" />
+							<div class="progress-bar ${(requirements.majorPnt >= requirements.MIN_MAJOR_PNT) ? 'bg-primary' : 'bg-danger'}"
+								 style="width:${majorPct}%; min-width:24%;">
+								${requirements.majorPnt}/${requirements.MIN_MAJOR_PNT} 학점
+							</div>
 						</div>
 					</td>
-					<td><span class="text-primary fw-semibold">충족</span></td>
+					<td>
+						<c:choose>
+							<c:when test="${requirements.majorPnt >= requirements.MIN_MAJOR_PNT}">
+								<span class="text-primary fw-semibold">충족</span>
+							</c:when>
+							<c:otherwise>
+								<span class="text-danger fw-semibold">미충족</span>
+							</c:otherwise>
+						</c:choose>
+					</td>
 				</tr>
 
-				<!-- 교양필수 -->
 				<tr>
 					<td>교양필수 이수학점</td>
 					<td>
-						<div class="progress progress-compact" aria-label="교양필수 이수학점 진행률">
-							<div class="progress-bar bg-primary" role="progressbar"
-								style="width:${empty liberalRequiredRate ? 0 : liberalRequiredRate}%;"
-								aria-valuenow="${empty liberalRequiredRate ? 0 : liberalRequiredRate}"
-								aria-valuemin="0" aria-valuemax="100">
-								${liberalCompletedCredits}/${liberalRequiredCredits} 학점</div>
+						<div class="progress" style="height:22px;">
+							<c:set var="libPct"
+								   value="${(requirements.liberalPnt >= requirements.MIN_LIBERAL_PNT)
+											 ? 100
+											 : (requirements.liberalPnt * 100.0 / requirements.MIN_LIBERAL_PNT)}" />
+							<div class="progress-bar ${(requirements.liberalPnt >= requirements.MIN_LIBERAL_PNT) ? 'bg-primary' : 'bg-danger'}"
+								 style="width:${libPct}%; min-width:24%;">
+								${requirements.liberalPnt}/${requirements.MIN_LIBERAL_PNT} 학점
+							</div>
 						</div>
 					</td>
-					<td><span class="text-primary fw-semibold">충족</span></td>
+					<td>
+						<c:choose>
+							<c:when test="${requirements.liberalPnt >= requirements.MIN_LIBERAL_PNT}">
+								<span class="text-primary fw-semibold">충족</span>
+							</c:when>
+							<c:otherwise>
+								<span class="text-danger fw-semibold">미충족</span>
+							</c:otherwise>
+						</c:choose>
+					</td>
 				</tr>
 
-				<!-- 외국어 -->
 				<tr>
 					<td>외국어 이수</td>
 					<td>
-						<div class="progress progress-compact" aria-label="외국어 이수 진행률">
-							<div class="progress-bar bg-danger" role="progressbar"
-								style="width:${empty foreignRate ? 0 : foreignRate}%;"
-								aria-valuenow="${empty foreignRate ? 0 : foreignRate}"
-								aria-valuemin="0" aria-valuemax="100">
-								${foreignCompletedSubjects}/${foreignRequiredSubjects} 과목</div>
+						<div class="progress" style="height:22px;">
+							<c:set var="flPct"
+								   value="${(requirements.foreignLangCount >= requirements.MIN_FOREIGN_LANG)
+											 ? 100
+											 : (requirements.foreignLangCount * 100.0 / requirements.MIN_FOREIGN_LANG)}" />
+							<div class="progress-bar ${(requirements.foreignLangCount >= requirements.MIN_FOREIGN_LANG) ? 'bg-primary' : 'bg-danger'}"
+								 style="width:${flPct}%; min-width:24%;">
+								${requirements.foreignLangCount}/${requirements.MIN_FOREIGN_LANG} 과목
+							</div>
 						</div>
 					</td>
-					<td><span class="text-danger fw-semibold">미충족</span></td>
+					<td>
+						<c:choose>
+							<c:when test="${requirements.foreignLangCount >= requirements.MIN_FOREIGN_LANG}">
+								<span class="text-primary fw-semibold">충족</span>
+							</c:when>
+							<c:otherwise>
+								<span class="text-danger fw-semibold">미충족</span>
+							</c:otherwise>
+						</c:choose>
+					</td>
+				</tr>
+
+				<tr>
+					<td>총 평점(GPA)</td>
+					<td>
+						<div class="progress" style="height:22px;">
+							<c:set var="gpaPct"
+								   value="${(requirements.totalGpa >= requirements.MIN_TOTAL_GPA)
+											 ? 100
+											 : (requirements.totalGpa * 100.0 / requirements.MIN_TOTAL_GPA)}" />
+							<div class="progress-bar ${(requirements.totalGpa >= requirements.MIN_TOTAL_GPA) ? 'bg-primary' : 'bg-danger'}"
+								 style="width:${gpaPct}%; min-width:24%;">
+								${requirements.totalGpa}/${requirements.MIN_TOTAL_GPA}
+							</div>
+						</div>
+					</td>
+					<td>
+						<c:choose>
+							<c:when test="${requirements.totalGpa >= requirements.MIN_TOTAL_GPA}">
+								<span class="text-primary fw-semibold">충족</span>
+							</c:when>
+							<c:otherwise>
+								<span class="text-danger fw-semibold">미충족</span>
+							</c:otherwise>
+						</c:choose>
+					</td>
 				</tr>
 			</tbody>
 		</table>

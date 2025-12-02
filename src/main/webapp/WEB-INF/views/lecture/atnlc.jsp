@@ -125,7 +125,7 @@ const courseTbody = document.getElementById("courseTbody");
 
 			list.forEach(l=>{
 
-				const timeInfo = `\${l.timetable.lctreDfk} \${l.timetable.beginTm},\${l.timetable.endTm}`;
+				const timeInfo = `\${l.timetable.lctreDfk} \${l.timetable.beginTm} - \${l.timetable.endTm}`;
 				html += `
 						<tr>
 							<td><input type="checkbox" name="listCheck" value="\${l.estbllctreCode}"></td>
