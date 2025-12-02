@@ -19,4 +19,6 @@ public interface PayInfoService {
 	void updatePayStatus(int registCtNo, String stdntNo, String type);
 
 	PayInfoVO getPayInfoOne(String stdntNo);
+
+    List<PayInfoVO> selectAdminPayList(Map<String, Object> params);
 }

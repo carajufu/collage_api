@@ -286,4 +286,8 @@ public class LearningPageProfServiceImpl {
                 .contentLength(file.length())
                 .body(resource);
     }
+
+    public Map<String, Object> getBoard(Map<String, Object> paramMap) {
+        return learningPageProfMapper.getBoard(paramMap);
+    }
 }

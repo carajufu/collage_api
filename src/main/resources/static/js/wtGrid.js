@@ -8,6 +8,9 @@ const DEFAULT_GRID_OPTIONS= {
         prevButton: true
     },
     style: {
+        th: {
+            'text-align': 'center'
+        },
         tr: {
             borderBottom: "1px solid #e9ebec"
         }

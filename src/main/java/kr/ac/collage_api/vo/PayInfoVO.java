@@ -26,4 +26,5 @@ public class PayInfoVO {
     private String stdntNm;       // STDNT_NM
     private String subjctName;    // SUBJCT_NAME
     private String univName;      // UNIV_NAME
+    private String subjctCode;
 }

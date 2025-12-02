@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -114,5 +115,21 @@ public class PayInfoController {
         model.addAttribute("info", data);
 
         return "regist/receipt-popup";
+    }
+
+    @GetMapping("/admin/list")
+    public ResponseEntity<List<PayInfoVO>> adminPayList(@RequestParam(required = false) String univCode,
+                                                        @RequestParam(required = false) String subjctCode, @RequestParam(required = false) String grade,
+                                                        @RequestParam(required = false) String paySttus) {
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("univCode", univCode);
+        params.put("subjctCode", subjctCode);
+        params.put("grade", grade);
+        params.put("paySttus", paySttus);
+
+        List<PayInfoVO> list = payInfoService.selectAdminPayList(params);
+
+        return ResponseEntity.ok(list);
     }
 }

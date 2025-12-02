@@ -5,6 +5,7 @@
 <!-- girdJs -->
 <link href="/assets/libs/gridjs/theme/mermaid.min.css" rel="stylesheet" type="text/css" />
 <script type="text/javascript" src="/assets/libs/gridjs/gridjs.umd.js"></script>
+<script type="text/javascript" src="/assets/libs/chart.js/chart.umd.js"></script>
 
 <!-- ckEditor -->
 <script src="/assets/libs/@ckeditor/ckeditor5-build-classic/build/ckeditor.js"></script>
@@ -415,25 +416,51 @@
         </div>
     </div>
 </div>
+<!-- 출석률 모달 -->
+<div class="modal fade" id="attendanceStatsModal" tabindex="-1" aria-labelledby="attendanceStatsLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="attendanceStatsLabel">출석률</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <canvas id="attendanceStatsChart" height="220"></canvas>
+                <div class="text-center text-muted small mt-3" id="attendanceStatsMeta"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script type="text/javascript">
     window.__INIT_TASKS = [
         <c:forEach var="t" items="${body.tasks}" varStatus="st">
+        <%
+            kr.ac.collage_api.learning.vo.TaskVO tv = (kr.ac.collage_api.learning.vo.TaskVO) pageContext.findAttribute("t");
+            String encodedCn = "";
+            if (tv != null && tv.getTaskCn() != null) {
+                encodedCn = java.util.Base64.getEncoder().encodeToString(tv.getTaskCn().getBytes(java.nio.charset.StandardCharsets.UTF_8));
+            }
+        %>
         {
-            taskNo: '${t.taskNo}',
-            taskSj: '${t.taskSj}',
-            taskCn: '${fn:escapeXml(t.taskCn)}',
-            weekAcctoLrnNo: '${t.weekAcctoLrnNo}',
-            taskBeginDe: '${t.taskBeginDe}',
-            taskClosDe: '${t.taskClosDe}',
-            week: '${t.week}'
+            taskNo: '<c:out value="${t.taskNo}"/>',
+            taskSj: '<c:out value="${t.taskSj}"/>',
+            taskCn: '<%= encodedCn %>',
+            weekAcctoLrnNo: '<c:out value="${t.weekAcctoLrnNo}"/>',
+            taskBeginDe: '<c:out value="${t.taskBeginDe}"/>',
+            taskClosDe: '<c:out value="${t.taskClosDe}"/>',
+            week: '<c:out value="${t.week}"/>'
         }${st.last ? '' : ','}
         </c:forEach>
     ];
     window.__INIT_TASK_PRESENTN = [
         <c:forEach var="p" items="${body.taskPresentn}" varStatus="sp">
         {
-            taskNo: '${p.taskNo}',
-            presentnAt: '${p.presentnAt}'
+            taskNo: '<c:out value="${p.taskNo}"/>',
+            presentnAt: '<c:out value="${p.presentnAt}"/>'
         }${sp.last ? '' : ','}
         </c:forEach>
     ];
@@ -441,26 +468,26 @@
     window.__INIT_QUIZZES = [
         <c:forEach var="q" items="${body.quizzes}" varStatus="sq">
         {
-            quizCode: '${q.quizCode}',
-            quesCn: '${fn:escapeXml(q.quesCn)}',
-            weekAcctoLrnNo: '${q.weekAcctoLrnNo}',
-            quizBeginDe: '${q.quizBeginDe}',
-            quizClosDe: '${q.quizClosDe}',
-            week: '${q.week}'
+            quizCode: '<c:out value="${q.quizCode}"/>',
+            quesCn: '<c:out value="${q.quesCn}"/>',
+            weekAcctoLrnNo: '<c:out value="${q.weekAcctoLrnNo}"/>',
+            quizBeginDe: '<c:out value="${q.quizBeginDe}"/>',
+            quizClosDe: '<c:out value="${q.quizClosDe}"/>',
+            week: '<c:out value="${q.week}"/>'
         }${sq.last ? '' : ','}
         </c:forEach>
     ];
     window.__INIT_QUIZ_PRESENTN = [
         <c:forEach var="qp" items="${body.quizPresentn}" varStatus="sp">
         {
-            quizPresentnNo: '${qp.quizPresentnNo}',
-            stdntNo: '${qp.stdntNo}',
-            stdntNm: '${fn:escapeXml(qp.stdntNm)}',
-            quizCode: '${qp.quizCode}',
-            quizExCode: '${qp.quizExCode}',
-            quizPresentnDe: '${qp.quizPresentnDe}',
-            presentnAt: '${qp.presentnAt}',
-            week: '${qp.week}'
+            quizPresentnNo: '<c:out value="${qp.quizPresentnNo}"/>',
+            stdntNo: '<c:out value="${qp.stdntNo}"/>',
+            stdntNm: '<c:out value="${qp.stdntNm}"/>',
+            quizCode: '<c:out value="${qp.quizCode}"/>',
+            quizExCode: '<c:out value="${qp.quizExCode}"/>',
+            quizPresentnDe: '<c:out value="${qp.quizPresentnDe}"/>',
+            presentnAt: '<c:out value="${qp.presentnAt}"/>',
+            week: '<c:out value="${qp.week}"/>'
         }${sp.last ? '' : ','}
         </c:forEach>
     ];

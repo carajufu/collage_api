@@ -98,11 +98,14 @@
                         .then(resp => resp.json())
                         .then(rslt => {
                             console.log("chkng rslt > ", rslt);
-                            renderList(modalId, rslt.result, {
-                                headerTitle: "과제 목록",
-                                getTitle: task => task.taskSj,
-                                onClick: ( { modalId, items, idx } ) => renderTaskDetail(modalId, items, idx)
-                            });
+                            const tasks = rslt.result || [];
+                            if(!tasks.length) return;
+
+                            const clickedTaskNo = item.dataset.taskNo;
+                            const idx = tasks.findIndex(task => String(task.taskNo) === String(clickedTaskNo));
+                            const startIdx = idx === -1 ? 0 : idx;
+
+                            renderTaskDetail(modalId, tasks, startIdx);
                       })
                       .catch(err => console.error(err));
               });
@@ -190,6 +193,13 @@
             const chkRoot = document.querySelector("#taskBodyRoot");
             if(chkRoot) { chkRoot.remove(); }
 
+            if (!Array.isArray(tasks) || !tasks.length) {
+                changeModalBody(modalId, "과제 상세", document.createElement("div"));
+                return;
+            }
+
+            const startIdx = idx >= 0 && idx < tasks.length ? idx : 0;
+
             const root = document.createElement("div");
             root.className = "container mt-4";
             root.id = "taskBodyRoot";
@@ -207,10 +217,7 @@
             group.className = "list-group shadow-sm rounded-3";
             side.appendChild(group);
 
-
-            let titles = [];            // 선택한 주차의 과제 목록 제목을 담은 배열
-            const listGroup = document.querySelector("#listGroup");
-            titles = listGroup.querySelectorAll(".list-group-item-action");
+            const titles = tasks.map(task => task.taskSj);            // 선택한 주차의 과제 목록 제목을 담은 배열
 
             let body = document.createElement("div");
             body.className = "col d-flex flex-column border shadow-sm rounded-3 me-2";
@@ -221,9 +228,9 @@
             for(let i = 0; i < titles.length; i++) {
                 let element = document.createElement("button");
                 element.className = "list-group-item list-group-item-action";
-                element.textContent = titles[i].textContent;
+                element.textContent = titles[i] || `과제 ${i + 1}`;
 
-                if(i == idx) { element.classList.add("active"); }
+                if(i == startIdx) { element.classList.add("active"); }
 
                 element.addEventListener("click", () => {
                     side.querySelectorAll(".list-group-item").forEach(el => el.classList.remove("active"));
@@ -238,8 +245,8 @@
             console.log("chkng before change body >  ", root);
             changeModalBody(modalId, "과제 상세", root);
 
-            if (Array.isArray(tasks) && tasks.length && idx >= 0 && idx < tasks.length) {
-                taskDetail(body, tasks[idx]);
+            if (Array.isArray(tasks) && tasks.length && startIdx >= 0 && startIdx < tasks.length) {
+                taskDetail(body, tasks[startIdx]);
             }
         }
 
@@ -525,10 +532,19 @@
             return data;
         }
 
-         async function renderSubmitBtn(taskNo) {
+        async function renderSubmitBtn(taskNo) {
+            const section = document.createElement("div");
+            section.id = "submitSection";
+            section.className = "mt-4";
+
+            const separator = document.createElement("hr");
+            separator.className = "my-4";
+            section.appendChild(separator);
+
             const container = document.createElement("div");
             container.className = "container d-flex justify-content-end gap-3 my-3";
             container.id = "btnContainer";
+            section.appendChild(container);
 
             const submit = await isSubmit(taskNo);
 
@@ -703,7 +719,7 @@
                 container.appendChild(updateBtn);
             }
 
-            return container;
+            return section;
         }
 
         // todo: 수정 버튼 클릭 시 dropzone 레이아웃 화면에 출력 및 Dropzone.displayExistingFile() 이용해 업로드 되었떤 파일 목록 출력

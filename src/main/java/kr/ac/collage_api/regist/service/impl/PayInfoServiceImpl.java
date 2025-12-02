@@ -120,10 +120,17 @@ public class PayInfoServiceImpl implements PayInfoService {
                 stdntNo, registCtNo, payMthd, updated);
     }
 
-
     @Override
     public PayInfoVO getPayInfoOne(String stdntNo){
         return payInfoMapper.getPayInfoOne(stdntNo);
+    }
+
+    @Override
+    public List<PayInfoVO> selectAdminPayList(Map<String, Object> params) {
+
+        log.info("📄 관리자 납부내역 조회 요청 필터: {}", params);
+
+        return payInfoMapper.selectAdminPayList(params);
     }
 
 }

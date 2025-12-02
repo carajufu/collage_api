@@ -74,6 +74,14 @@
     const boardState = { list: [], meta: [], loaded: false };
     let currentBoard = null;
     const toArray = val => Array.isArray(val) ? val : (Array.isArray(val?.data) ? val.data : []);
+    const decodeBase64Utf8 = (val) => {
+        if (!val) return "";
+        try {
+            return decodeURIComponent(escape(window.atob(val)));
+        } catch (e) {
+            return val;
+        }
+    };
 
     const tabEl = document.querySelector(`#profTabs a[href="#${initialTab}"]`);
     if (tabEl) new bootstrap.Tab(tabEl).show();
@@ -313,14 +321,13 @@
             return acc;
         }, {});
 
-        const rows = taskList.map(t => {
+        const rows = taskList.map((t, idx) => {
             const stat = byTask[t.taskNo] || { total: 0, submitted: 0 };
             const taskTitle = t.taskSj || '';
             const taskDue = t.taskClosDe || '';
-            const taskContent = t.taskCn || '';
-            const taskNoNum = parseInt(t.taskNo) || 0; // 숫자로 변환해 정렬 가능하도록
+            const taskContent = decodeBase64Utf8(t.taskCn) || '';
             return [
-                taskNoNum,
+                idx + 1,
                 t.taskSj,
                 t.week,
                 `${t.taskBeginDe}`,
@@ -762,7 +769,7 @@
                           </svg>
                         </button>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#">출석률 보기</a></li>
+                            <li><a class="dropdown-item" href="#" data-action="attend-stats" data-stdnt-no="${stdntNo}" data-stdnt-nm="${stdntNm}">출석률 보기</a></li>
                         </ul>
                       </div>
                     `)
@@ -837,11 +844,8 @@
                 state.allRows = toArray(json);
                 state.loaded = true;
 
-                if (state.allRows.length) {
-                    state.attendDate = normalizeDate(state.allRows[0].lctreDe);
-                } else {
-                    state.attendDate = todayStr();
-                }
+                // 기본 날짜는 항상 오늘로 설정
+                state.attendDate = todayStr();
 
                 updateDateLabel();
                 renderFiltered();
@@ -883,8 +887,68 @@
         // 초기 라벨만 세팅 (실제 데이터 로드는 탭 전환 시)
         updateDateLabel();
 
-        return { load };
+        return { load, getState: () => state };
     })();
+
+    // 출석률 모달/차트
+    const statsModalEl = document.getElementById('attendanceStatsModal');
+    const statsModal = statsModalEl ? new bootstrap.Modal(statsModalEl) : null;
+    const statsCanvas = document.getElementById('attendanceStatsChart');
+    const statsMeta = document.getElementById('attendanceStatsMeta');
+    let statsChart = null;
+
+    const renderAttendanceChart = (stdntNo, stdntNm) => {
+        if (!statsCanvas) return;
+        const state = attendanceModule?.getState ? attendanceModule.getState() : null;
+        const rows = state?.allRows || [];
+        const filtered = rows.filter(r => {
+            const no = r.stdntVO?.stdntNo || r.stdntNo;
+            return String(no) === String(stdntNo);
+        });
+
+        const counts = { att: 0, late: 0, early: 0, abs: 0 };
+        filtered.forEach(r => {
+            switch (String(r.atendSttusCode)) {
+                case "1": counts.att += 1; break; // 출석
+                case "2": counts.late += 1; break; // 지각
+                case "3": counts.early += 1; break; // 조퇴
+                default: counts.abs += 1; // 결석
+            }
+        });
+
+        const labels = ["출석", "지각", "조퇴", "결석"];
+        const data = [counts.att, counts.late, counts.early, counts.abs];
+        const colors = ["#0d6efd", "#ffc107", "#dc3545", "#dc3545"];
+
+        if (statsChart) {
+            statsChart.destroy();
+            statsChart = null;
+        }
+
+        statsChart = new Chart(statsCanvas, {
+            type: "doughnut",
+            data: {
+                labels,
+                datasets: [{
+                    data,
+                    backgroundColor: colors,
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                plugins: {
+                    legend: { position: "bottom" }
+                }
+            }
+        });
+
+        if (statsMeta) {
+            const total = data.reduce((a, b) => a + b, 0);
+            statsMeta.textContent = `${stdntNm || stdntNo || ""} · 총 ${total}회`;
+        }
+
+        statsModal?.show();
+    };
 
 
     const boardNameByCode = (code) => {
@@ -911,15 +975,16 @@
             ? boardState.list.filter(item => String(item.bbsCode) === String(boardFilter.value))
             : boardState.list;
 
-        const rows = filtered.map(item => {
+        const rows = filtered.map((item, idx) => {
             const typeName = boardNameByCode(item.bbsCode);
             const writer = item.sklstfNm || item.stdntNm || item.stdntNo || item.acntId || '-';
             const date = normalizeDate(item.bbscttWritngDe);
             const title = escapeAttr(item.bbscttSj || '(제목 없음)');
+            const viewUrl = `/learning/prof/board?code=${encodeURIComponent(item.bbsCode || '')}&no=${encodeURIComponent(item.bbscttNo || '')}`;
             return [
-                item.bbscttNo,
+                idx + 1,
                 typeName || '-',
-                gridjs.html(`<a href=\"#\" data-action=\"open-board\" data-board-no=\"${item.bbscttNo}\">${title}</a>`),
+                gridjs.html(`<a href="${viewUrl}" class="text-decoration-none">${title}</a>`),
                 writer,
                 date,
                 item.bbscttRdcnt ?? 0
@@ -1071,13 +1136,7 @@
         });
     };
 
-    boardGrid?.addEventListener('click', (e) => {
-        const link = e.target.closest('[data-action=\"open-board\"]');
-        if (link) {
-            e.preventDefault();
-            openBoardDetail(link.getAttribute('data-board-no'));
-        }
-    });
+    // 게시글 제목은 직접 링크로 이동하므로 별도 클릭 핸들러 없음
     boardFilter?.addEventListener('change', () => {
         renderBoardList();
         boardDetail?.classList.add('d-none');
@@ -1159,12 +1218,13 @@
             return acc;
         }, {});
 
-        const rows = toArray(quizList).map(q => {
+        const rows = toArray(quizList).map((q, idx) => {
             const stat = byQuiz[q.quizCode] || { total: 0, submitted: 0 };
-            const title = q.quesCn || '';
+            const fullTitle = q.quesCn || '';
+            const shortTitle = fullTitle.length > 50 ? `${fullTitle.slice(0, 30)}...` : fullTitle;
             return [
-                q.quizCode,
-                title.length > 50 ? `${title.slice(0, 50)}...` : title,
+                idx + 1,
+                gridjs.html(`<span data-full-title="${escapeAttr(fullTitle)}">${escapeAttr(shortTitle)}</span>`),
                 q.week || '',
                 q.quizBeginDe || '',
                 q.quizClosDe || '',
@@ -1203,7 +1263,7 @@
         const options = {
             columns: [
                 { id: 'code', name: '퀴즈코드', search: true, sort: true },
-                { id: 'title', name: '문항 요약', search: true, sort: false },
+                { id: 'title', name: '문항', search: true, sort: false },
                 { id: 'week', name: '주차', search: false, sort: true },
                 { id: 'begin', name: '시작일자', search: false, sort: true },
                 { id: 'close', name: '마감일자', search: false, sort: true },
@@ -1227,7 +1287,8 @@
         if (viewLink) {
             e.preventDefault();
             const quizCode = viewLink.getAttribute('data-quiz-code');
-            const quizTitle = viewLink.closest('tr')?.querySelector('td:nth-child(2)')?.textContent?.trim();
+            const titleCell = viewLink.closest('tr')?.querySelector('td:nth-child(2) span[data-full-title]');
+            const quizTitle = titleCell?.getAttribute('data-full-title') || titleCell?.textContent?.trim();
             if (quizCode) loadQuizSubmissions(quizCode, quizTitle);
             return;
         }
@@ -1289,6 +1350,14 @@
     if (initialTab === 'quiz') loadQuiz();
     if (initialTab === 'board') loadBoard();
     if (initialTab === 'attend') attendanceModule.load();
+    attendGrid?.addEventListener('click', (e) => {
+        const link = e.target.closest('[data-action="attend-stats"]');
+        if (!link) return;
+        e.preventDefault();
+        const stdntNo = link.getAttribute('data-stdnt-no');
+        const stdntNm = link.getAttribute('data-stdnt-nm');
+        renderAttendanceChart(stdntNo, stdntNm);
+    });
 
     const updateTask = e => {
         const editForm = document.querySelector("editTaskForm");

@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface LearningPageProfMapper {
@@ -81,4 +82,6 @@ public interface LearningPageProfMapper {
 
     int deleteBoard(@Param("estbllctreCode") String estbllctreCode,
                     @Param("bbscttNo") Integer bbscttNo);
+
+    Map<String, Object> getBoard(Map<String, Object> paramMap);
 }

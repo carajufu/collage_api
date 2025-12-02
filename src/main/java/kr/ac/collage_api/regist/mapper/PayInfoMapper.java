@@ -42,6 +42,4 @@ public interface PayInfoMapper {
 	void updateKakaoTid(Map<String, Object> tidParam);
 
 	PayInfoVO getPayInfoOne(String stdntNo);
-	
-	
 }

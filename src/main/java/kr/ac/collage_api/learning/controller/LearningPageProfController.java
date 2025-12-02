@@ -39,6 +39,7 @@ public class LearningPageProfController {
         body.put("taskPresentn", submissions);
 
         model.addAttribute("body", body);
+        model.addAttribute("estbllctreCode", estbllctreCode);
         return "learning/prof/profMain";
     }
 
@@ -292,5 +293,14 @@ public class LearningPageProfController {
                     .body(Map.of("status", "error", "message", "삭제할 게시글이 없습니다."));
         }
         return ResponseEntity.ok(Map.of("status", "success", "deleted", deleted));
+    }
+
+    @GetMapping("/boardDetail")
+    public String getBoard(@RequestParam  Map<String, Object> paramMap,
+                           Model model) {
+        Map<String, Object> respMap = learningPageProfService.getBoard(paramMap);
+
+        model.addAttribute("result", respMap);
+        return "learning/student/learnBoard";
     }
 }

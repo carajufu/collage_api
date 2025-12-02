@@ -142,7 +142,7 @@
             , t.updt_dt
             , w.week
         FROM task t
-            JOIN week_accto_lrn w
+            INNER JOIN week_accto_lrn w
               ON t.week_accto_lrn_no = w.week_accto_lrn_no
         WHERE W.estbllctre_code = #{estbllctreCode}
         ORDER BY TO_NUMBER(t.task_no)
@@ -581,5 +581,32 @@
         FROM file_detail
         WHERE file_group_no = #{fileGroupNo}
             AND file_no = #{fileNo}
+    </select>
+
+    <select id="getBoard" parameterType="hashMap">
+        SELECT
+            bc.bbsctt_no
+             , bc.bbs_code
+             , bc.parnts_bbsctt_no
+             , bc.file_group_no
+             , bc.bbsctt_sj
+             , bc.bbsctt_cn
+             , bc.bbsctt_writng_de
+             , bc.bbsctt_rdcnt
+             , b.bbs_nm
+             , ac.lctre_nm
+             , skl.sklstf_nm
+        FROM bbs_ctt bc
+                 INNER JOIN bbs b
+                            ON b.bbs_code = #{code}
+                 INNER JOIN estbl_course e
+                            ON b.estbllctre_code = e.estbllctre_code
+                 INNER JOIN all_course ac
+                            ON e.lctre_code = ac.lctre_code
+                 LEFT OUTER JOIN sklstf skl
+                                 ON bc.acnt_id = skl.acnt_id
+                 LEFT OUTER JOIN stdnt std
+                                 ON bc.acnt_id = std.acnt_id
+        WHERE  bc.bbsctt_no = #{no}
     </select>
 </mapper>

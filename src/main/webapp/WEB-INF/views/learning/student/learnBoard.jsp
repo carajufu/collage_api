@@ -27,7 +27,13 @@
                     </div>
                     <div class="text-end text-muted small">
                         <div>
-                            <strong>${result.SKLSTF_NM}</strong>
+                            <strong>
+                                <c:choose>
+                                    <c:when test="${not empty result.SKLSTF_NM}">${result.SKLSTF_NM}</c:when>
+                                    <c:when test="${not empty result.STDNT_NM}">${result.STDNT_NM}</c:when>
+                                    <c:otherwise>-</c:otherwise>
+                                </c:choose>
+                            </strong>
                         </div>
                         <div class="mt-1">
                             <i class="bi bi-clock-history"></i>
