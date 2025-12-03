@@ -3,7 +3,6 @@
 
 <mapper namespace="kr.ac.collage_api.chatbot.mapper.ChatBotMapper">
 
-    <!-- 사용자 기본정보 조회 -->
     <select id="getUserDt" parameterType="string" resultType="kr.ac.collage_api.vo.AcntVO">
         SELECT 
             ACNT_ID 
@@ -12,7 +11,6 @@
         WHERE ACNT_ID = #{acntId}
     </select>
     
-    <!-- 학생: 성적 -->
     <select id="getStudentSbjScore" resultType="kr.ac.collage_api.chatbot.vo.ChatBotVO">
         SELECT
             A.SBJECT_SCRE_INNB
@@ -27,13 +25,14 @@
             ,A.SBJECT_TOTPOINT
             ,A.AVRG_SCORE
             ,B.STDNT_NO
-        FROM SBJECT_SCRE A
-        JOIN SEMSTR_SCRE B
-          ON A.SEMSTR_SCRE_INNB = B.SEMSTR_SCRE_INNB
+            ,D.LCTRE_NM AS SUBJCT_NM FROM SBJECT_SCRE A
+        JOIN SEMSTR_SCRE B ON A.SEMSTR_SCRE_INNB = B.SEMSTR_SCRE_INNB
+        JOIN ATNLC_REQST C ON A.ATNLC_REQST_NO = C.ATNLC_REQST_NO
+        JOIN ESTBL_COURSE E ON C.ESTBLLCTRE_CODE = E.ESTBLLCTRE_CODE
+        JOIN ALL_COURSE D ON E.LCTRE_CODE = D.LCTRE_CODE
        WHERE B.STDNT_NO = #{stdntNo}
     </select>
     
-    <!-- 학생: 수강내역 -->
     <select id="getStudentAtnlc" resultType="kr.ac.collage_api.chatbot.vo.ChatBotVO">
         SELECT
             A.ATNLC_REQST_NO
@@ -63,14 +62,12 @@
        WHERE A.STDNT_NO = #{stdntNo}
     </select>
 
-    <!-- 학생: 누적 총이수학점 -->
     <select id="getAllPnt" resultType="int">
         SELECT NVL(SUM(TOT_ACQS_PNT), 0)
         FROM SEMSTR_SCRE
         WHERE STDNT_NO = #{stdntNo}             
     </select>
     
-    <!-- 학생: 기본 정보 -->
     <select id="getStudentInfo" resultType="kr.ac.collage_api.chatbot.vo.ChatBotVO">
         SELECT 
             A.STDNT_NO
@@ -96,7 +93,6 @@
         WHERE A.STDNT_NO = #{stdntNo}
     </select>
     
-    <!-- 학생: 상담 내역 -->
     <select id="getConsult" resultType="map">
         SELECT 
            A.CNSLT_REQST_INNB
@@ -115,7 +111,6 @@
         ORDER BY A.REQST_DE DESC
     </select>
     
-    <!-- 학생: 이수과목 -->
     <select id="getSubjectCompletions" resultType="map">
         SELECT
              C.COMPL_SE
@@ -130,7 +125,6 @@
           AND A.PNT_GRAD != 'F'
     </select>
 
-    <!-- 학생: 누적 GPA -->
     <select id="getCumulativeGpa" resultType="double">
         SELECT 
             NVL(
@@ -142,8 +136,61 @@
         FROM SEMSTR_SCRE
         WHERE STDNT_NO = #{stdntNo}
     </select>
+
+    <select id="getStudentTimetable" resultType="kr.ac.collage_api.chatbot.vo.ChatBotVO">
+        SELECT 
+            C.LCTRE_NM
+            ,B.LCTRUM
+            ,D.LCTRE_DFK
+            ,D.BEGIN_TM
+            ,D.END_TM
+        FROM ATNLC_REQST A
+        JOIN ESTBL_COURSE B ON A.ESTBLLCTRE_CODE = B.ESTBLLCTRE_CODE
+        JOIN ALL_COURSE C ON B.LCTRE_CODE = C.LCTRE_CODE
+        JOIN LCTRE_TIMETABLE D ON B.ESTBLLCTRE_CODE = D.ESTBLLCTRE_CODE
+        WHERE A.STDNT_NO = #{stdntNo}
+        ORDER BY 
+            CASE D.LCTRE_DFK 
+                WHEN '월' THEN 1 WHEN '화' THEN 2 WHEN '수' THEN 3 
+                WHEN '목' THEN 4 WHEN '금' THEN 5 ELSE 6 
+            END, 
+            D.BEGIN_TM
+    </select>
+
+    <select id="getStudentPayInfo" resultType="map">
+        SELECT 
+            PAY_GLD
+            ,SCHLSHIP
+            ,PAY_STTUS
+            ,PAY_DE
+        FROM PAY_INFO
+        WHERE STDNT_NO = #{stdntNo}
+        ORDER BY PAY_DE DESC
+    </select>
+
+    <select id="getStudentAttendance" resultType="map">
+        SELECT 
+            D.LCTRE_NM
+            ,A.ATEND_STTUS_CODE
+            ,B.WEEK
+        FROM ATEND_ABSNC A
+        JOIN WEEK_ACCTO_LRN B ON A.WEEK_ACCTO_LRN_NO = B.WEEK_ACCTO_LRN_NO
+        JOIN ESTBL_COURSE C ON B.ESTBLLCTRE_CODE = C.ESTBLLCTRE_CODE
+        JOIN ALL_COURSE D ON C.LCTRE_CODE = D.LCTRE_CODE
+        WHERE A.STDNT_NO = #{stdntNo}
+        ORDER BY B.WEEK DESC
+    </select>
+
+    <select id="getStudentChangeHistory" resultType="map">
+        SELECT 
+            CHANGE_TY
+            ,REQST_STTUS
+            ,CHANGE_REQST_DT
+        FROM SKNRGS_CHANGE_REQST
+        WHERE STDNT_NO = #{stdntNo}
+        ORDER BY CHANGE_REQST_DT DESC
+    </select>
     
-    <!-- 교수: 개설과목 -->
     <select id="getProfessorLectureList" resultType="kr.ac.collage_api.chatbot.vo.ChatBotVO">
         SELECT
             A.LCTRE_NM
@@ -158,7 +205,6 @@
         WHERE B.PROFSR_NO = #{profsrNo}
     </select>
     
-    <!-- 교수: 상담 요청 확인 -->
     <select id="getProfessorCounselList" resultType="kr.ac.collage_api.chatbot.vo.ChatBotVO">
         SELECT
             A.CNSLT_INNB
@@ -180,7 +226,6 @@
           AND A.STTUS = '2'
     </select>
 
-    <!-- 교수: 주별학습 / 과제 확인 → ★ 오류 해결 버전 -->
     <select id="getProfWeekAcctoLrn" resultType="kr.ac.collage_api.chatbot.vo.ChatBotVO">
         SELECT
             A.WEEK_ACCTO_LRN_NO
@@ -208,7 +253,6 @@
         WHERE EC.PROFSR_NO = #{profsrNo}
     </select>
 
-    <!-- 교수: 강의시간표 -->
     <select id="getProfLctreTime" resultType="kr.ac.collage_api.chatbot.vo.ChatBotVO">
         SELECT
             A.ESTBLLCTRE_CODE
@@ -233,6 +277,12 @@
         JOIN LCTRE_TIMETABLE C
           ON A.ESTBLLCTRE_CODE = C.ESTBLLCTRE_CODE
         WHERE A.PROFSR_NO = #{profsrNo}
+        ORDER BY 
+            CASE C.LCTRE_DFK 
+                WHEN '월' THEN 1 WHEN '화' THEN 2 WHEN '수' THEN 3 
+                WHEN '목' THEN 4 WHEN '금' THEN 5 ELSE 6 
+            END, 
+            C.BEGIN_TM
     </select>
 
 </mapper>

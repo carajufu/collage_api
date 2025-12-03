@@ -82,7 +82,7 @@ public class StdntInfoServiceImpl implements StdntInfoService {
     }
 
     /* ------------------------------------------
-       비밀번호 확인 (모달)
+       비밀번호 확인
     ------------------------------------------- */
     @Override
     public boolean checkPassword(String stdntNo, String rawPassword) {
@@ -95,7 +95,6 @@ public class StdntInfoServiceImpl implements StdntInfoService {
 
         return passwordEncoder.matches(rawPassword, encodedPw);
     }
-
     /* ------------------------------------------
        프로필 이미지 경로 조회
        (fileGroupNo → FILE_DETAIL 경로 조회)
