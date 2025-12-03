@@ -400,9 +400,10 @@
 	
 	<!-- 주차별 학습 목표 조회 -->
 	<select id="getWeekList" parameterType="String" resultType="weekAcctoLrnVO">
-		select week, lrn_thema, lrn_cn
-		from   week_accto_lrn
-		where  estbllctre_code = #{estbllctreCode}
+		select  week_accto_lrn_no, week, lrn_thema, lrn_cn
+		from    week_accto_lrn
+		where   estbllctre_code = #{estbllctreCode}
+		order by week_accto_lrn_no
 	</select>
 	
 	<!-- 전체 학과 목록 가져오기 -->
