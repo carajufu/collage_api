@@ -934,7 +934,7 @@
 	            <div class="col-xl-6 col-lg-6 col-md-6">
 	                <div class="d-flex justify-content-between align-items-center mb-0">
 	                    <h2 class="research-section-title mb-0">&nbsp;&nbsp;&nbsp;공지사항</h2>
-	                    <a href="${cPath}/bbs/notice" class="section-link-more">View More</a>
+	                    <a href="${cPath}/bbs/list" class="section-link-more">View More</a>
 	                </div>
 	
 	                <!-- 공지사항 메인 카드 래퍼 -->

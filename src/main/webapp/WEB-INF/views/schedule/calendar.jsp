@@ -21,10 +21,9 @@
    FullCalendar 전용 버튼 컬러 오버라이드 – 학사일정 전용
    - 기본: 연회색
    - 활성: 흰색 + 파랑 라인
-   (Velzon 전체 primary=주황 이더라도 여기만 파랑 강제)
    ========================================= */
 .academic-calendar-page {
-    --calendar-primary: #2563eb;             /* 포인트 블루 */
+    --calendar-primary: #2563eb;             /* 기본 포인트 블루 */
     --calendar-primary-soft: #eef2ff;        /* 아주 연한 블루 */
     --calendar-neutral-bg: #f5f5f7;          /* 비활성 기본 배경 */
     --calendar-neutral-border: #e5e7eb;      /* 비활성 테두리 */
@@ -65,10 +64,10 @@
 .fc-theme-standard .fc-button-primary.fc-button-active,
 .academic-calendar-page
 .fc .fc-today-button:not(.fc-button-disabled) {
-    background-color: #ffffff !important;                          /* 흰색 바탕 */
-    border-color: rgba(37, 99, 235, 0.7) !important;              /* 파랑 테두리 */
-    color: #1d4ed8 !important;                                    /* 파랑 텍스트 */
-    box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.10) !important;     /* 옅은 블루 링 */
+    background-color: #ffffff !important;
+    border-color: rgba(37, 99, 235, 0.7) !important;
+    color: #1d4ed8 !important;
+    box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.10) !important;
 }
 
 /* 활성 hover: 아주 연한 블루 */
@@ -90,9 +89,8 @@
 }
 
 /* =========================================================
-   학사일정 전용 레이아웃/시인성 튜닝 (정리·중복 제거 버전)
+   학사일정 전용 레이아웃/시인성 튜닝
    ========================================================= */
-/* 페이지 기본 폰트 스케일 */
 .academic-calendar-page.main-content-with-header-calendar {
     font-size: 0.85rem;
 }
@@ -104,7 +102,7 @@
 
 /* ================= 캘린더 카드 래퍼 ================= */
 .academic-calendar-page .calendar-container {
-    position: relative;                 /* 로딩/툴팁 기준 */
+    position: relative;
     max-width: 1120px;
     margin: -5px 137px 40px;
     padding: 20px;
@@ -113,8 +111,6 @@
     box-shadow: 0 .125rem .25rem rgba(15, 23, 42, .08);
     display: flex;
     flex-direction: column;
-
-    /* 내부 스크롤 금지, 페이지 전체 스크롤 사용 */
     max-height: none;
     height: auto;
     overflow: visible;
@@ -186,58 +182,64 @@
     display: flex;
     align-items: center;
     justify-content: center;
-
     white-space: nowrap;
     word-break: keep-all;
-
     font-size: 0.85rem;
     font-weight: 500;
     color: var(--vz-body-color);
 }
 
-/* 오늘 날짜 하이라이트: 셀 배경 + 숫자 뱃지 강조 */
+/* 오늘 날짜 하이라이트 (배경) */
 .academic-calendar-page .fc-day-today {
-    background-color: rgba(255, 152, 120, 0.18);
+    background-color: rgba(37, 99, 235, 0.03) !important;
 }
 
+/* 오늘 날짜 하이라이트 (숫자 뱃지) */
 .academic-calendar-page .fc-day-today .fc-daygrid-day-number {
-    background-color: #ff7b66;
-    color: #ffffff;
-    font-weight: 700;
-    box-shadow: 0 0 0 2px #ffffff;
+    background-color: #2563eb;
+    color: white;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 4px;
 }
 
 /* ================= 이벤트 박스 / day 셀 ================= */
 
-/* day 셀 높이 고정 (이벤트 개수와 무관) */
+/* day 셀 높이 고정 */
 .academic-calendar-page .fc-daygrid-day-frame {
-    height: 100px;                      /* 필요시 90~130px 사이 조정 */
+    height: 150px;
 }
 
 /* 셀 내부 이벤트 영역 높이 제한 */
 .academic-calendar-page .fc-daygrid-day-events {
-    max-height: 80px;
-    overflow: hidden;
+    max-height: 150px;
 }
 
-/* 월 뷰 이벤트 박스: 세로 폭 축소 */
+/* 월 뷰 이벤트 박스 */
 .academic-calendar-page .fc-daygrid-event {
-    margin: 0;
+    margin-top: 1px !important;
+    margin-bottom: 2px !important;
     padding: 0 2px;
-    border-radius: 3px;
-    border: none;
+    border-radius: 4px;
+    border: none !important;
     font-size: 0.80rem;
     line-height: 1.2;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    opacity: 0.95;
 }
 
-/* 이벤트 텍스트: 한 줄 + 말줄임 → 옆 칸으로 안 밀리게 */
+/* 이벤트 텍스트: 한 줄 + 말줄임 */
 .academic-calendar-page .fc-daygrid-event .fc-event-main {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
-/* "+ n개" 링크(압축 표시) */
+/* "+ n개" 링크(압축 표시) 기본 */
 .academic-calendar-page .fc-daygrid-more-link {
     margin-top: 1px;
     font-size: 0.7rem;
@@ -269,7 +271,7 @@
 /* ================= 툴팁 ================= */
 .academic-calendar-page .event-tooltip {
     position: absolute;
-    z-index: 9999;
+    z-index: 99999;
     background: #ffffff;
     border-radius: 0.5rem;
     box-shadow: 0 .35rem .9rem rgba(15, 23, 42, .18);
@@ -296,6 +298,174 @@
     border: 1px solid rgba(148, 163, 184, 0.45);
 }
 
+/* =========================================================
+   FullCalendar 가독성 및 멀티데이 렌더링 최적화
+   ========================================================= */
+
+/* 1. 날짜 셀 내부 오버플로우 허용 */
+.academic-calendar-page .fc-daygrid-day-frame,
+.academic-calendar-page .fc-daygrid-day-events,
+.academic-calendar-page .fc-daygrid-event-harness {
+    overflow: visible !important;
+}
+
+/* 2. 이벤트 공통 베이스 */
+.academic-calendar-page .fc-event {
+    background-color: var(--calendar-primary, #2563eb);
+    border-color: var(--calendar-primary, #2563eb);
+    color: #ffffff;
+}
+
+/* 3. 이벤트 내부 텍스트 */
+.academic-calendar-page .fc-event-main {
+    padding: 3px 6px;
+    font-size: 0.78rem;
+    font-weight: 500;
+    line-height: 1.3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: left;
+}
+
+/* 4. "+ n개" 더보기 링크 재정의 */
+.academic-calendar-page .fc-daygrid-more-link {
+    display: block;
+    text-align: right;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #6b7280 !important;
+    text-decoration: none;
+    margin-top: 2px;
+    padding-right: 4px;
+}
+.academic-calendar-page .fc-daygrid-more-link:hover {
+    color: #111827 !important;
+    background-color: transparent;
+    text-decoration: underline;
+}
+
+/* 5. 이벤트 타입별 컬러 정의
+   요구사항:
+   - 과제 · 시험 · 평가         | 주황색
+   - 학사공지                  | 보라색
+   - 상담(예약건)              | 연녹색
+   - 상담가능(교수시간)        | 청녹색
+   - 수강신청 · 정정/철회      | 하늘색
+   - 등록 · 휴학 · 복학 · 계절학기 | 분홍색
+   - 공휴일 · 임시공휴일       | 빨간색
+*/
+
+/* 과제 · 시험 · 평가(+팀프로젝트) = 주황색 */
+.academic-calendar-page .fc-event.type-TASK,
+.academic-calendar-page .fc-event.type-PROJECT {
+    background-color: #f97316;   /* orange-500 */
+    border-color: #f97316;
+}
+.academic-calendar-page .legend-color.type-TASK,
+.academic-calendar-page .legend-color.type-PROJECT {
+    background-color: #f97316;
+}
+
+/* 학사공지 = 보라색 (SYSTEM) */
+.academic-calendar-page .fc-event.type-SYSTEM {
+    background-color: #8b5cf6;   /* violet-500 */
+    border-color: #8b5cf6;
+}
+.academic-calendar-page .legend-color.type-SYSTEM {
+    background-color: #8b5cf6;
+}
+
+/* 상담(예약건) = 연녹색 */
+.academic-calendar-page .fc-event.type-COUNSEL {
+    background-color: #4ade80;   /* emerald-400 */
+    border-color: #4ade80;
+}
+.academic-calendar-page .legend-color.type-COUNSEL {
+    background-color: #4ade80;
+}
+
+/* 상담가능(교수시간) = 청녹색(티얼) */
+.academic-calendar-page .fc-event.type-COUNSEL_SLOT {
+    background-color: #14b8a6;   /* teal-500 */
+    border-color: #14b8a6;
+}
+.academic-calendar-page .legend-color.type-COUNSEL_SLOT {
+    background-color: #14b8a6;
+}
+
+/* 수강신청 · 정정/철회 = 하늘색 */
+.academic-calendar-page .fc-event.type-ENROLL_REQ {
+    background-color: #38bdf8;   /* sky-400 */
+    border-color: #38bdf8;
+}
+.academic-calendar-page .legend-color.type-ENROLL_REQ {
+    background-color: #38bdf8;
+}
+
+/* 등록 · 휴학 · 복학 · 계절학기 = 분홍색 */
+.academic-calendar-page .fc-event.type-ADMIN_REGIST {
+    background-color: #f472b6;   /* pink-400 */
+    border-color: #f472b6;
+}
+.academic-calendar-page .legend-color.type-ADMIN_REGIST {
+    background-color: #f472b6;
+}
+
+/* 공휴일 · 임시공휴일 = 빨간색 톤 */
+.academic-calendar-page .fc-event.type-HOLIDAY {
+    background-color: #fecaca;   /* red-200 */
+    border-color: #fca5a5;       /* red-300 */
+}
+.academic-calendar-page .fc-event.type-HOLIDAY .fc-event-title,
+.academic-calendar-page .fc-event.type-HOLIDAY .fc-event-main,
+.academic-calendar-page .fc-event.type-HOLIDAY .fc-time {
+    color: #b91c1c !important;   /* red-700 */
+}
+.academic-calendar-page .legend-color.type-HOLIDAY {
+    background-color: #dc2626;   /* red-600 */
+}
+
+/* 시간 뱃지 */
+.academic-calendar-page .fc-time {
+    display: inline-block;
+    padding: 2px 5px;
+    margin-right: 4px;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 0.75rem;
+    line-height: 1;
+    background-color: rgba(255, 255, 255, 0.2);
+    color: inherit;
+}
+.academic-calendar-page .fc-event.type-HOLIDAY .fc-time {
+    background-color: rgba(0, 0, 0, 0.1);
+    color: #b91c1c !important;
+}
+
+/* 하루짜리 점 이벤트: 텍스트 박스 정리 */
+.academic-calendar-page .fc-daygrid-dot-event.fc-event {
+    width: 100%;
+    box-sizing: border-box;
+}
+.academic-calendar-page .fc-daygrid-dot-event .fc-event-main {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    overflow: hidden;
+}
+.academic-calendar-page .fc-daygrid-dot-event .fc-time {
+    flex: 0 0 auto;
+    margin-right: 4px;
+    white-space: nowrap;
+}
+.academic-calendar-page .fc-daygrid-dot-event .fc-title,
+.academic-calendar-page .fc-daygrid-dot-event .fc-event-title {
+    flex: 1 1 auto;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
 </style>
 
 <div class="academic-calendar-page main-content-with-header-calendar">
@@ -309,37 +479,62 @@
                 <li class="breadcrumb-item active" aria-current="page">학사일정</li>
             </ol>
         </nav>
-	    <div class="col-12 page-title mt-2">
-	        <h2 class="fw-semibold">학사일정</h2>
-	        <div class="my-4 p-0 bg-primary" style="width: 100px; height:5px;"></div>
-	    </div>
+        <div class="col-12 page-title mt-2">
+            <h2 class="fw-semibold">학사일정</h2>
+            <div class="my-4 p-0 bg-primary" style="width: 100px; height:5px;"></div>
+        </div>
     </div>
 
     <div class="row">
         <div class="col-12 col-xxl-12">
             <div class="calendar-container position-relative">
-                <!-- [범례] 타입별 필터링 트리거 -->
+                <!-- 범례 -->
                 <div class="legend">
+                    <!-- 과제 · 시험 · 평가 (주황색) -->
                     <div class="legend-item" data-type="TASK">
-                        <div class="legend-color type-TASK"></div><span>과제</span>
-                    </div>
+                        <div class="legend-color type-TASK"></div>
+                        <span>과제·시험·평가</span>
+                    </div><!-- 
+                    팀프로젝트 (과제 그룹과 동일색)
                     <div class="legend-item" data-type="PROJECT">
-                        <div class="legend-color type-PROJECT"></div><span>팀프로젝트</span>
-                    </div>
+                        <div class="legend-color type-PROJECT"></div>
+                        <span>팀프로젝트</span>
+                    </div> -->
+
+                    <!-- 상담(예약건) = 연녹색 -->
                     <div class="legend-item" data-type="COUNSEL">
-                        <div class="legend-color type-COUNSEL"></div><span>상담</span>
+                        <div class="legend-color type-COUNSEL"></div>
+                        <span>상담(예약건)</span>
                     </div>
+
+                    <!-- 상담가능(교수시간) = 청녹색 -->
                     <div class="legend-item" data-type="COUNSEL_SLOT">
-                        <div class="legend-color type-COUNSEL_SLOT"></div><span>상담가능</span>
+                        <div class="legend-color type-COUNSEL_SLOT"></div>
+                        <span>상담가능(교수시간)</span>
                     </div>
+
+                    <!-- 수강신청 · 정정/철회 = 하늘색 -->
                     <div class="legend-item" data-type="ENROLL_REQ">
-                        <div class="legend-color type-ENROLL_REQ"></div><span>수강신청</span>
+                        <div class="legend-color type-ENROLL_REQ"></div>
+                        <span>수강신청·정정/철회</span>
                     </div>
+
+                    <!-- 등록 · 휴학 · 복학 · 계절학기 = 분홍색 -->
                     <div class="legend-item" data-type="ADMIN_REGIST">
-                        <div class="legend-color type-ADMIN_REGIST"></div><span>등록/행정</span>
+                        <div class="legend-color type-ADMIN_REGIST"></div>
+                        <span>등록·휴학·복학·계절학기</span>
                     </div>
+
+                    <!-- 학사공지 = 보라색 -->
+                    <div class="legend-item" data-type="SYSTEM">
+                        <div class="legend-color type-SYSTEM"></div>
+                        <span>학사공지·학사일정</span>
+                    </div>
+
+                    <!-- 공휴일 · 임시공휴일 = 빨간색 -->
                     <div class="legend-item" data-type="HOLIDAY">
-                        <div class="legend-color type-HOLIDAY"></div><span>공휴일</span>
+                        <div class="legend-color type-HOLIDAY"></div>
+                        <span>공휴일 · 임시공휴일</span>
                     </div>
                 </div>
 
@@ -364,114 +559,61 @@ document.addEventListener("DOMContentLoaded", function () {
     var loadingEl = document.getElementById("calendar-loading");
     var tooltipEl = document.getElementById("event-tooltip");
 
-    // [상태] 캐시/필터/툴팁
-    var eventCache = {};           // 기간별 응답 캐시
-    var typeVisibility = {};       // 타입별 ON/OFF
-    var sticky = false;            // 툴팁 고정 여부
-    var stickyEventId = null;      // 고정된 이벤트 ID
-    var syncQueued = false;        // dayGrid 셀 높이 rAF 중복 방지
+    // 상태
+    var eventCache = {};
+    var typeVisibility = {};
+    var sticky = false;
+    var stickyEventId = null;
 
-    // 캘린더 카드 컨테이너 경계(페이지 좌표 기준) 계산
     var calendarContainer = calendarEl.closest(".calendar-container");
 
-    function getContainerBounds() {
-        if (!calendarContainer) return null;
-        var r = calendarContainer.getBoundingClientRect();
-        var scrollX = window.scrollX || document.documentElement.scrollLeft;
-        var scrollY = window.scrollY || document.documentElement.scrollTop;
-        return {
-            left:   r.left + scrollX + 8,   // 안쪽 여백 8px
-            top:    r.top + scrollY + 8,
-            right:  r.right + scrollX - 8,
-            bottom: r.bottom + scrollY - 8
-        };
-    }
-    /* 로딩 오버레이 */
     function setLoading(visible) {
         if (!loadingEl) return;
         loadingEl.classList.toggle("visible", !!visible);
     }
 
-    /* =====================================================================
-       FullCalendar 초기화
-       - 이 화면: "학사 일정 종합" 용도
-       - 월/주/일/리스트 전환 허용
-       - PC 기준 한 화면 안에 들어오도록:
-         * calendar-container에 max-height 설정
-         * 캘린더는 height: '100%'로 flex 영역 채움
-       - LECTURE 타입은 별도 시간표 화면이 있으므로 여기서는 숨김
-       - 시간 표기는 전역 정책:
-           "오전/오후 + 24시간제"
-           예) 오전 09:00, 오후 13:00, 오후 16:00
-       - 월 뷰 이벤트 과다 시 "+ n개 더보기" 형태로 압축(dayMaxEvents)
-       ===================================================================== */
     var calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: "dayGridMonth",
         locale: "ko",
-
-        // flex 컨테이너 안에서 100% 높이로만 운용 → 페이지 한 화면에 수렴
-
-	   height: "auto",
-	   contentHeight: "auto",
+        height: "auto",
+        contentHeight: "auto",
         headerToolbar: {
             left: "prev,next today",
             center: "title",
             right: "dayGridMonth,timeGridWeek,timeGridDay,listWeek"
         },
-
-        // 월 뷰에서 하루에 표시할 최대 이벤트 수 제한 → 나머지는 "+ n개" 링크로 압축
-        dayMaxEvents: 3,          // 필요시 2~4 사이에서 숫자만 조정
-        // dayMaxEventRows: true, // (구버전 호환용, 있으면 무시됨)
-
-        // "+ n개" 텍스트 한글화
+        dayMaxEvents: 4,
         moreLinkContent: function (args) {
             return "+" + args.num + "more";
         },
-
-        // 내부 timeText 포맷: 24시간제
         eventTimeFormat: {
             hour: "2-digit",
             minute: "2-digit",
             hour12: false
         },
-
-        // [이벤트 셀 표시 형식 통일]
-        //  - allDay: 제목만
-        //  - timed: "오전/오후 HH:MM 제목"
         eventContent: function (arg) {
             var e = arg.event;
             var html = "";
-
             if (!e.allDay && e.start) {
                 html += "<span class='fc-time'>" +
                     formatAmPm24Time(e.start) + "</span> ";
             }
             html += "<span class='fc-title'>" +
                 escapeHtml(e.title || "") + "</span>";
-
             return { html: html };
         },
-
-        // [timeGrid 주/일 뷰 좌측 라벨 포맷]
         slotLabelContent: function (arg) {
             return formatAmPm24Time(arg.date);
         },
 
-        /* =================================================================
-           이벤트 로딩
-           - FullCalendar: [start, end) 전달
-           - 백엔드 API: start~end 포함 조회 설계
-           - 그대로 전달해도 되도록 서버 단에서 end-1일 처리 또는 BETWEEN < end 구현
-           ================================================================= */
+        // 이벤트 로딩
         events: function (info, successCallback, failureCallback) {
             var startDate = info.startStr.substring(0, 10);
             var endDate = info.endStr.substring(0, 10);
             var cacheKey = startDate + "|" + endDate;
 
-            // 캐시 히트 시 서버 콜 회피
             if (eventCache[cacheKey]) {
                 successCallback(eventCache[cacheKey].map(applyTypeToEventDisplay));
-                queueSyncDayCellHeights();
                 return;
             }
 
@@ -497,28 +639,38 @@ document.addEventListener("DOMContentLoaded", function () {
                     }
 
                     var events = data.map(function (e) {
-                        var type = e.type || "";
+                        var type = inferTypeFromContent(e.type, e.title, e.memo);
+
                         if (!(type in typeVisibility)) {
-                            // 첫 등장 타입은 기본 ON
                             typeVisibility[type] = true;
                         }
 
                         var baseTitle = e.title || "";
                         var title = buildTitle(type, baseTitle);
 
+                        var correctedEndDate = e.endDate;
+                        if (!!e.allDay && e.endDate && e.endDate.length === 10) {
+                            var d = new Date(e.endDate + "T00:00:00");
+                            d.setDate(d.getDate() + 1);
+                            correctedEndDate =
+                                d.getFullYear() + "-" + pad2(d.getMonth() + 1) + "-" + pad2(d.getDate());
+                        }
+
                         var fcEvent = {
                             id: e.id,
                             title: title,
                             start: e.startDate,
-                            end: e.endDate,
+                            end: correctedEndDate,
                             allDay: !!e.allDay,
                             extendedProps: {
+                                rawType: e.type || "",
                                 rawTitle: baseTitle,
                                 displayTitle: title,
                                 type: type,
                                 place: e.place,
                                 target: e.target,
-                                memo: e.memo || ""
+                                memo: e.memo || "",
+                                originalEndDate: e.endDate
                             },
                             classNames: type ? ["type-" + type] : []
                         };
@@ -535,15 +687,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 })
                 .finally(function () {
                     setLoading(false);
-                    queueSyncDayCellHeights();
                 });
         },
 
-       
-        /* =================================================================
-           클릭: 상세 툴팁 고정 모드
-           - hover 정보 + 닫기 버튼
-           ================================================================= */
         eventClick: function (info) {
             var e = info.event;
             var html = buildDetailHtml(e);
@@ -553,34 +699,31 @@ document.addEventListener("DOMContentLoaded", function () {
             tooltipEl.style.display = "block";
             tooltipEl.classList.add("sticky");
 
-            var rect           = info.el.getBoundingClientRect();
-            var containerRect  = calendarContainer.getBoundingClientRect();
-            var tooltipRect    = tooltipEl.getBoundingClientRect();
-            var gap = 90; // 이벤트 박스와의 간격 최소
+            var rect = info.el.getBoundingClientRect();
+            var containerRect = calendarContainer.getBoundingClientRect();
+            var tooltipRect = tooltipEl.getBoundingClientRect();
+            var gap = 90;
 
-            // 카드 내부 좌표계로 변환
             var left = (rect.right - containerRect.left) + gap;
-            var top  = (rect.top  - containerRect.top)
-                     + (rect.height - tooltipRect.height) / 2;
+            var top = (rect.top - containerRect.top)
+                + (rect.height - tooltipRect.height) / 2;
 
-            // 카드 안에서만 보이도록 clamp
             var minLeft = 0;
-            var maxLeft = containerRect.width  - tooltipRect.width;
-            var minTop  = 0;
-            var maxTop  = containerRect.height - tooltipRect.height;
+            var maxLeft = containerRect.width - tooltipRect.width;
+            var minTop = 0;
+            var maxTop = containerRect.height - tooltipRect.height;
 
             if (left > maxLeft) {
-                // 오른쪽이 넘치면 왼쪽으로 붙임
                 left = (rect.left - containerRect.left) - tooltipRect.width - gap;
             }
 
             if (left < minLeft) left = minLeft;
             if (left > maxLeft) left = maxLeft;
-            if (top  < minTop)  top  = minTop;
-            if (top  > maxTop)  top  = maxTop;
+            if (top < minTop) top = minTop;
+            if (top > maxTop) top = maxTop;
 
             tooltipEl.style.left = left + "px";
-            tooltipEl.style.top  = top  + "px";
+            tooltipEl.style.top = top + "px";
 
             sticky = true;
             stickyEventId = e.id;
@@ -596,10 +739,6 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         },
 
-        /* =================================================================
-           hover: 요약 툴팁
-           - sticky 모드일 때는 무시 (사용자 명시 선택 우선)
-           ================================================================= */
         eventMouseEnter: function (info) {
             if (sticky) return;
             tooltipEl.innerHTML = buildTooltipHtml(info.event);
@@ -619,11 +758,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     calendar.render();
 
-  
-    /* =====================================================================
-       범례 클릭: 타입별 토글
-       - typeVisibility 갱신 + 렌더된 이벤트 display 반영
-       ===================================================================== */
+    // 범례 토글
     document.querySelectorAll(".legend-item[data-type]").forEach(function (item) {
         var type = item.getAttribute("data-type");
         if (!(type in typeVisibility)) {
@@ -636,21 +771,15 @@ document.addEventListener("DOMContentLoaded", function () {
             typeVisibility[type] = next;
             item.classList.toggle("disabled", !next);
             applyTypeFilterToRenderedEvents();
-            queueSyncDayCellHeights();
         });
     });
 
-    function queueSyncDayCellHeights() {}
-    /* =====================================================================
-       타입 필터링: LECTURE 제외 / legend 기반 on/off
-       ===================================================================== */
     function applyTypeToEventDisplay(evt) {
-        // 방어적으로 extendedProps 보장
         evt.extendedProps = evt.extendedProps || {};
         var t = evt.extendedProps.type;
 
         if (t === "LECTURE") {
-            evt.display = "none";           // 강의는 전용 시간표 화면에서 처리
+            evt.display = "none";
         } else if (!t || typeVisibility[t] !== false) {
             evt.display = "auto";
         } else {
@@ -662,7 +791,6 @@ document.addEventListener("DOMContentLoaded", function () {
     function applyTypeFilterToRenderedEvents() {
         calendar.getEvents().forEach(function (e) {
             var t = e.extendedProps && e.extendedProps.type;
-
             if (t === "LECTURE") {
                 e.setProp("display", "none");
             } else if (!t || typeVisibility[t] !== false) {
@@ -673,9 +801,72 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    /* =====================================================================
-       타이틀 prefix: 타입별 시각적 분류
-       ===================================================================== */
+    // ====== 헬퍼 ======
+
+    // 시연용 학사일정: 제목/메모 키워드로 타입 재분류
+    function inferTypeFromContent(rawType, title, memo) {
+        var baseType = rawType || "";
+        var text = ((title || "") + " " + (memo || "")).toLowerCase();
+
+        // 백엔드에서 이미 LECTURE/TASK/COUNSEL 등으로 온 건 그대로 사용
+        if (baseType && baseType !== "SCHAFS") {
+            return baseType;
+        }
+
+        // 공휴일
+        if (text.indexOf("공휴일") >= 0 ||
+            text.indexOf("기독탄신일") >= 0 ||
+            text.indexOf("1월1일") >= 0) {
+            return "HOLIDAY";
+        }
+
+        // 상담 관련
+        if (text.indexOf("상담") >= 0) {
+            return "COUNSEL";
+        }
+
+        // 수강신청/계절학기/수강료/등록/휴학·복학 등 = 행정
+        if (
+            text.indexOf("수강료") >= 0 ||
+            text.indexOf("등록") >= 0 ||
+            text.indexOf("납부") >= 0 ||
+            text.indexOf("휴학") >= 0 ||
+            text.indexOf("복학") >= 0 ||
+            text.indexOf("수강신청") >= 0 ||
+            text.indexOf("계절학기") >= 0
+        ) {
+            return "ADMIN_REGIST";
+        }
+
+        // 전공/부전공/교환학생/신청 기간 등: 학사 공지 성격
+        if (
+            text.indexOf("복수전공") >= 0 ||
+            text.indexOf("부전공") >= 0 ||
+            text.indexOf("교환학생") >= 0 ||
+            text.indexOf("신청기간") >= 0 ||
+            text.indexOf("신청 기간") >= 0
+        ) {
+            return "SYSTEM"; // 학사공지
+        }
+
+        // 수업평가/시험 관련은 과제 느낌으로 묶기
+        if (text.indexOf("수업평가") >= 0 
+        		|| text.indexOf("시험") >= 0
+        		|| text.indexOf("팀프로젝트") >= 0
+        		|| text.indexOf("프로젝트") >= 0
+        		|| text.indexOf("팀") >= 0) {
+            
+        	return "TASK";
+        }
+
+        // 기타 시연용 학사일정(SCHAFS)은 기본값을 학사공지로
+        if (baseType === "SCHAFS" || !baseType) {
+            return "SYSTEM";
+        }
+
+        return baseType || "SYSTEM";
+    }
+
     function buildTitle(type, rawTitle) {
         if (!rawTitle) rawTitle = "";
         if (rawTitle.startsWith("[")) return rawTitle;
@@ -715,10 +906,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    /* =====================================================================
-       메모 파싱 유틸: "키 : 값 | 키=값" 패턴을 구조화
-       - 서버 포맷이 제멋대로여도 최소한 읽히게 정규화
-       ===================================================================== */
     function parseLabeledPairs(memo) {
         if (!memo || typeof memo !== "string") return [];
         return memo.split("|").map(function (part) {
@@ -747,11 +934,6 @@ document.addEventListener("DOMContentLoaded", function () {
         return map;
     }
 
-    /* =====================================================================
-       상세 툴팁 (click)
-       - 타입별로 핵심 정보만 재구성
-       - 정책: 의미 없는 null/빈값은 렌더하지 않음
-       ===================================================================== */
     function buildDetailHtml(e) {
         var p = e.extendedProps || {};
         var type = p.type || "";
@@ -785,7 +967,6 @@ document.addEventListener("DOMContentLoaded", function () {
         if (type === "COUNSEL") {
             var cTitle = p.displayTitle || p.rawTitle || e.title || "";
             html += "<h4>" + escapeHtml(cTitle) + "</h4>";
-
             if (map["성명"] || map["학번"]) {
                 if (map["성명"])  html += row("학생", map["성명"]);
                 if (map["학번"])  html += row("학번", map["학번"]);
@@ -800,30 +981,23 @@ document.addEventListener("DOMContentLoaded", function () {
             } else if (memo) {
                 html += row("메모", memo);
             }
-
             html += row("기간", formatRange(e.start, e.end, e.allDay, type));
             return html;
         }
 
-        // 기타 타입: 공통 템플릿
         var gTitle = p.displayTitle || p.rawTitle || e.title || "";
         html += "<h4>" + escapeHtml(gTitle) + "</h4>";
         html += row("유형", mapTypeLabel(type));
         html += row("기간", formatRange(e.start, e.end, e.allDay, type));
         if (p.place) html += row("장소", p.place);
-
         if (pairs.length > 0) {
             pairs.forEach(function (kv) { html += row(kv.key, kv.value); });
         } else if (memo) {
             html += row("메모", memo);
         }
-
         return html;
     }
 
-    /* =====================================================================
-       hover 툴팁 (요약)
-       ===================================================================== */
     function buildTooltipHtml(event) {
         var p = event.extendedProps || {};
         var type = p.type || "";
@@ -880,51 +1054,36 @@ document.addEventListener("DOMContentLoaded", function () {
         html += "<div>" +
             escapeHtml(p.displayTitle || p.rawTitle || event.title || "") + "</div>";
         html += row("기간", formatRange(event.start, event.end, event.allDay, type));
-
         if (pairs.length > 0) {
             pairs.forEach(function (kv) { html += row(kv.key, kv.value); });
         } else if (memo) {
             html += row("메모", memo);
         }
         if (p.place) html += row("장소", p.place);
-
         return html;
     }
 
-    /* =====================================================================
-       툴팁 위치 제어 (hover 모드)
-       ===================================================================== */
-       function updateTooltipPosition(ev) {
-           if (!ev || !tooltipEl || tooltipEl.style.display === "none") return;
-           if (sticky) return;
+    function updateTooltipPosition(ev) {
+        if (!ev || !tooltipEl || tooltipEl.style.display === "none") return;
+        if (sticky) return;
 
-           var offset = -230;
-           var x = ev.clientX + offset;
-           var y = ev.clientY + offset;
+        var offset = -230;
+        var x = ev.clientX + offset;
+        var y = ev.clientY + offset;
+        var rect = tooltipEl.getBoundingClientRect();
+        var vw = window.innerWidth;
+        var vh = window.innerHeight;
 
-           var rect = tooltipEl.getBoundingClientRect();
-           var vw = window.innerWidth;
-           var vh = window.innerHeight;
+        if (x + rect.width > vw - 10) {
+            x = ev.clientX - rect.width - offset;
+        }
+        if (y + rect.height > vh - 10) {
+            y = ev.clientY - rect.height - offset;
+        }
+        tooltipEl.style.left = x + "px";
+        tooltipEl.style.top = y + "px";
+    }
 
-           if (x + rect.width > vw - 10) {
-               x = ev.clientX - rect.width - offset;
-           }
-           if (y + rect.height > vh - 10) {
-               y = ev.clientY - rect.height - offset;
-           }
-
-           tooltipEl.style.left = x + "px";
-           tooltipEl.style.top = y + "px";
-       }
-
-
-
-
-    /* =====================================================================
-       공통 출력 유틸
-       ===================================================================== */
-
-    // label/value 한 줄. value 없으면 렌더 스킵.
     function row(label, value) {
         if (value === undefined || value === null || value === "") return "";
         return "<div><span class='label'>" +
@@ -932,13 +1091,11 @@ document.addEventListener("DOMContentLoaded", function () {
             escapeHtml(value) + "</div>";
     }
 
-    // allDay/시간 혼합에 대한 기간 문자열
     function formatRange(start, end, allDay, type) {
         if (!start) return "-";
         var s = toDate(start);
         var e = end ? toDate(end) : null;
 
-        // 종일 일정: FullCalendar end는 다음날 00시 기준, -1일 보정
         if (allDay) {
             if (!e) return formatDate(s);
             var eAdj = new Date(e.getTime() - 24 * 60 * 60 * 1000);
@@ -948,24 +1105,20 @@ document.addEventListener("DOMContentLoaded", function () {
 
         var sLabel = formatAmPm24Time(s);
         if (!e) return sLabel;
-
         var eLabel = formatAmPm24Time(e);
         if (sameDate(s, e)) {
             return sLabel + " ~ " + eLabel;
         }
-
         return formatDate(s) + " " + sLabel + " ~ " +
                formatDate(e) + " " + eLabel;
     }
 
-    // YYYY-MM-DD
     function formatDate(d) {
         return d.getFullYear() + "-" +
             pad2(d.getMonth() + 1) + "-" +
             pad2(d.getDate());
     }
 
-    // "오전/오후 HH:MM" (HH는 24시간제)
     function formatAmPm24Time(v) {
         var d = toDate(v);
         var h = d.getHours();
