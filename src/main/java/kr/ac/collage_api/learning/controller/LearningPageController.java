@@ -197,6 +197,8 @@ public class LearningPageController {
         Map<String, Object> respMap = learningPageService.getBoard(paramMap);
 
         model.addAttribute("result", respMap);
+        model.addAttribute("prevCtt", respMap.get("prevCtt"));
+        model.addAttribute("nextCtt", respMap.get("nextCtt"));
         return "learning/student/learnBoard";
     }
 

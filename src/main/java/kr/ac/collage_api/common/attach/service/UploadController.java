@@ -7,11 +7,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Slf4j
@@ -162,6 +166,24 @@ public class UploadController {
     @Transactional
 	public List<FileDetailVO> getFileDetailList(Long fileGroupNo) {
 		return this.uploadMapper.getFileDetailList(fileGroupNo);
+	}
+
+	/**
+	 * CKEditor 이미지 업로드용 간단 핸들러.
+	 * 파일 그룹/디테일에 저장하고, 에디터가 바로 쓸 수 있는 URL을 반환한다.
+	 */
+	@PostMapping("/common/ck-upload")
+	@ResponseBody
+	public Map<String, Object> ckUpload(@RequestParam("upload") MultipartFile upload) {
+		if (upload == null || upload.isEmpty()) {
+			return Map.of("error", Map.of("message", "파일이 없습니다."));
+		}
+		long fileGroupNo = fileUpload(new MultipartFile[]{upload});
+		List<FileDetailVO> files = getFileDetailList(fileGroupNo);
+		String url = files != null && !files.isEmpty()
+				? files.get(files.size() - 1).getFileStreplace()
+				: "";
+		return Map.of("url", url, "fileGroupNo", fileGroupNo);
 	}
 	}
 	

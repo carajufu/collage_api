@@ -57,7 +57,7 @@
     </select>
 
     <resultMap id="taskPresentnMap" type="taskPresentnVO">
-        <result property="taskPresentnNo" column="TASK_PRESENTN_NO"/>
+        <id property="taskPresentnNo" column="TASK_PRESENTN_NO"/>
         <result property="stdntNo" column="STDNT_NO"/>
         <result property="taskNo" column="TASK_NO"/>
         <result property="fileGroupNo" column="FILE_GROUP_NO"/>
@@ -96,11 +96,33 @@
              , fd.file_stre_de
              , fd.file_dwld_co
         FROM task_presentn tp
-                 INNER JOIN file_detail fd
+                 LEFT OUTER JOIN file_detail fd
                             ON tp.file_group_no = fd.file_group_no
         WHERE tp.task_no = #{taskNo}
           AND tp.stdnt_no = #{studentNo}
     </select>
+
+    <select id="nextTaskPresentnNo" resultType="string">
+        SELECT TO_CHAR(NVL(MAX(TO_NUMBER(task_presentn_no)), 0) + 1) FROM task_presentn
+    </select>
+
+    <insert id="insertTaskPresentn" parameterType="taskPresentnVO">
+        INSERT INTO task_presentn (
+            task_presentn_no,
+            stdnt_no,
+            task_no,
+            file_group_no,
+            task_presentn_de,
+            presentn_at
+        ) VALUES (
+                 #{taskPresentnNo},
+                 #{stdntNo},
+                 #{taskNo},
+                 NULL,
+                 NULL,
+                 NVL(#{presentnAt}, '0')
+        )
+    </insert>
 
     <select id="getSubmitQuiz" resultType="quizPresentnVO">
         SELECT
@@ -114,6 +136,28 @@
         WHERE quiz_code = #{quizCode}
             AND stdnt_no = #{name}
     </select>
+
+    <select id="nextQuizPresentnNo" resultType="string">
+        SELECT TO_CHAR(NVL(MAX(TO_NUMBER(quiz_presentn_no)), 0) + 1) FROM quiz_presentn
+    </select>
+
+    <insert id="insertQuizPresentn" parameterType="quizPresentnVO">
+        INSERT INTO quiz_presentn (
+            quiz_presentn_no,
+            stdnt_no,
+            quiz_code,
+            quiz_ex_code,
+            quiz_presentn_de,
+            presentn_at
+        ) VALUES (
+                 #{quizPresentnNo},
+                 #{stdntNo},
+                 #{quizCode},
+                 NULL,
+                 NULL,
+                 NVL(#{presentnAt}, '0')
+        )
+    </insert>
 
     <update id="taskFileUpload">
         UPDATE task_presentn                                        /* kr.ac.collage_api.learning.mapper.LearningPageMapper.taskFileUpload */
@@ -227,6 +271,7 @@
             , b.bbs_nm
             , ac.lctre_nm
             , skl.sklstf_nm
+            , std.stdnt_nm
         FROM bbs_ctt bc
         INNER JOIN bbs b
             ON b.bbs_code = #{code}
@@ -239,6 +284,40 @@
         LEFT OUTER JOIN stdnt std
             ON bc.acnt_id = std.acnt_id
         WHERE  bc.bbsctt_no = #{no}
+    </select>
+
+    <update id="updateBoardReadCount" parameterType="int">
+        UPDATE bbs_ctt
+        SET bbsctt_rdcnt = NVL(bbsctt_rdcnt,0) + 1
+        WHERE bbsctt_no = #{bbscttNo}
+    </update>
+
+    <select id="selectPrevBoard" parameterType="map" resultType="hashMap">
+        <![CDATA[
+        SELECT *
+        FROM (
+            SELECT bbsctt_no AS bbscttNo, bbsctt_sj AS bbscttSj
+            FROM bbs_ctt
+            WHERE bbs_code = #{code}
+              AND bbsctt_no < #{no}
+            ORDER BY bbsctt_no DESC
+        )
+        WHERE ROWNUM = 1
+        ]]>
+    </select>
+
+    <select id="selectNextBoard" parameterType="map" resultType="hashMap">
+        <![CDATA[
+        SELECT *
+        FROM (
+            SELECT bbsctt_no AS bbscttNo, bbsctt_sj AS bbscttSj
+            FROM bbs_ctt
+            WHERE bbs_code = #{code}
+              AND bbsctt_no > #{no}
+            ORDER BY bbsctt_no ASC
+        )
+        WHERE ROWNUM = 1
+        ]]>
     </select>
 
     <resultMap id="attendDetailMap" type="atendAbsncVO">
