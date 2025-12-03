@@ -58,4 +58,20 @@ public interface ChatBotMapper {
     // 교수 - 강의시간표
     List<ChatBotVO> getProfLctreTime(String profsrNo);
 
+
+
+	List<ChatBotVO> getStudentTimetable(String stdntNo);
+
+
+
+	List<Map<String, Object>> getStudentPayInfo(String stdntNo);
+
+
+
+	List<Map<String, Object>> getStudentAttendance(String stdntNo);
+
+
+
+	List<Map<String, Object>> getStudentChangeHistory(String stdntNo);
+
 }

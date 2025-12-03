@@ -13,6 +13,7 @@
     const editModalEl = document.getElementById('editTaskModal');
     const editTaskForm = document.getElementById('editTaskForm');
     const editTaskTitleInput = document.getElementById('edit-task-title');
+    const editTaskWeekSelect = document.getElementById('edit-task-week');
     const editTaskContentInput = document.getElementById('edit-task-content');
     const editTaskStartInput = document.getElementById('edit-task-start');
     const editTaskDueInput = document.getElementById('edit-task-due');
@@ -24,6 +25,27 @@
     const quizSubmissionTitleEl = document.getElementById('quiz-submission-title');
     const quizSubmissionBackRow = document.getElementById('quizSubmissionBackRow');
     const quizSubmissionBackBtn = document.getElementById('quiz-submission-back-btn');
+    const quizCreateBtn = document.getElementById('quiz-create-btn');
+    const createQuizModal = document.getElementById('createQuizModal');
+    const createQuizForm = document.getElementById('createQuizForm');
+    const createQuizQuestion = document.getElementById('create-quiz-question');
+    const createQuizWeek = document.getElementById('create-quiz-week');
+    const createQuizBegin = document.getElementById('create-quiz-begin');
+    const createQuizClose = document.getElementById('create-quiz-close');
+    const quizExList = document.getElementById('quiz-ex-list');
+    const quizExAddBtn = document.getElementById('quiz-ex-add');
+    const quizExDelBtn = document.getElementById('quiz-ex-del');
+    const editQuizModal = document.getElementById('editQuizModal');
+    const editQuizForm = document.getElementById('editQuizForm');
+    const editQuizCode = document.getElementById('edit-quiz-code');
+    const editQuizQuestion = document.getElementById('edit-quiz-question');
+    const editQuizWeek = document.getElementById('edit-quiz-week');
+    const editQuizBegin = document.getElementById('edit-quiz-begin');
+    const editQuizClose = document.getElementById('edit-quiz-close');
+    const editQuizExList = document.getElementById('edit-quiz-ex-list');
+    const editQuizExAddBtn = document.getElementById('edit-quiz-ex-add');
+    const editQuizExDelBtn = document.getElementById('edit-quiz-ex-del');
+    const quizCodeHidden = document.getElementById('edit-quiz-code');
     let editTaskEditor = null;
     const createModalEl = document.getElementById('createTaskModal');
     const createTaskForm = document.getElementById('createTaskForm');
@@ -32,7 +54,36 @@
     const createTaskStart = document.getElementById('create-task-start');
     const createTaskDue = document.getElementById('create-task-due');
     let createTaskEditor = null;
+    const boardGrid = document.getElementById('boardGrid');
+    const boardDetail = document.getElementById('boardDetail');
+    const boardDetailTitle = document.getElementById('board-detail-title');
+    const boardDetailType = document.getElementById('board-detail-type');
+    const boardDetailMeta = document.getElementById('board-detail-meta');
+    const boardDetailBody = document.getElementById('board-detail-body');
+    const boardBackBtn = document.getElementById('board-back-btn');
+    const boardDeleteBtn = document.getElementById('board-delete-btn');
+    const boardEditBtn = document.getElementById('board-edit-btn');
+    const boardFilter = document.getElementById('board-type-filter');
+    const boardCreateBtn = document.getElementById('board-create-btn');
+    const boardModalEl = document.getElementById('boardModal');
+    const boardTitleInput = document.getElementById('board-title');
+    const boardContentInput = document.getElementById('board-content');
+    const boardBbsCodeSelect = document.getElementById('board-bbs-code');
+    const boardCttNoInput = document.getElementById('board-ctt-no');
+    const boardSaveBtn = document.getElementById('board-save-btn');
+    const boardModalInstance = boardModalEl ? new bootstrap.Modal(boardModalEl) : null;
+    const boardState = { list: [], meta: [], loaded: false };
+    let boardEditor = null;
+    let currentBoard = null;
     const toArray = val => Array.isArray(val) ? val : (Array.isArray(val?.data) ? val.data : []);
+    const decodeBase64Utf8 = (val) => {
+        if (!val) return "";
+        try {
+            return decodeURIComponent(escape(window.atob(val)));
+        } catch (e) {
+            return val;
+        }
+    };
 
     const tabEl = document.querySelector(`#profTabs a[href="#${initialTab}"]`);
     if (tabEl) new bootstrap.Tab(tabEl).show();
@@ -106,13 +157,38 @@
             submissionTitleEl.textContent = title ? `${title}` : '제출 목록';
         }
 
-        const rows = toArray(list).map(item => [
-            item.stdntNo,
-            item.stdntNm,
-            item.presentnAt === '1' ? '제출' : '미제출',
-            item.taskPresentnDe || '-',
-            item.fileGroupNo || '-'
-        ]);
+        const rows = toArray(list).map(item => {
+            const files = toArray(item.fileDetailVOList);
+            const fileCell = !files.length
+                ? '-'
+                : gridjs.html(`
+                      <div class="dropend">
+                        <button class="btn btn-ghost-primary btn-sm dropdown-toggle" type="button"
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                          제출파일 (${files.length})
+                        </button>
+                        <ul class="dropdown-menu">
+                          ${files.map(fd => `
+                            <li>
+                              <a class="dropdown-item d-flex align-items-center gap-2"
+                                 href="/learning/prof/downloadFile?fileGroupNo=${encodeURIComponent(item.fileGroupNo)}${fd.fileNo ? `&fileNo=${encodeURIComponent(fd.fileNo)}` : ''}">
+                                <i class="las la-paperclip text-muted"></i>
+                                <span>${escapeAttr(fd.fileNm || '(무제)')}</span>
+                              </a>
+                            </li>
+                          `).join('')}
+                        </ul>
+                      </div>
+                     `);
+
+            return [
+                item.stdntNo,
+                item.stdntNm,
+                item.presentnAt === '1' ? '제출' : '미제출',
+                item.taskPresentnDe || '-',
+                fileCell || '-'
+            ];
+        });
 
         gridTarget.innerHTML = '';
 
@@ -185,7 +261,8 @@
                 title: editLink.getAttribute('data-task-title') || editLink.closest('tr')?.querySelector('td:nth-child(2)')?.textContent?.trim() || '',
                 content: editLink.getAttribute('data-task-cn') || '',
                 startDate: editLink.getAttribute('data-task-start') || editLink.closest('tr')?.querySelector('td:nth-child(3)')?.textContent?.trim() || '',
-                dueDate: editLink.getAttribute('data-task-due') || editLink.closest('tr')?.querySelector('td:nth-child(4)')?.textContent?.trim() || ''
+                dueDate: editLink.getAttribute('data-task-due') || editLink.closest('tr')?.querySelector('td:nth-child(4)')?.textContent?.trim() || '',
+                week: editLink.getAttribute('data-task-week') || editLink.closest('tr')?.querySelector('td:nth-child(3)')?.textContent?.trim() || ''
             };
             openEditModal(task);
             return;
@@ -247,14 +324,13 @@
             return acc;
         }, {});
 
-        const rows = taskList.map(t => {
+        const rows = taskList.map((t, idx) => {
             const stat = byTask[t.taskNo] || { total: 0, submitted: 0 };
             const taskTitle = t.taskSj || '';
             const taskDue = t.taskClosDe || '';
-            const taskContent = t.taskCn || '';
-            const taskNoNum = parseInt(t.taskNo) || 0; // 숫자로 변환해 정렬 가능하도록
+            const taskContent = decodeBase64Utf8(t.taskCn) || '';
             return [
-                taskNoNum,
+                idx + 1,
                 t.taskSj,
                 t.week,
                 `${t.taskBeginDe}`,
@@ -273,7 +349,7 @@
                           </svg>
                         </button>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#" data-action="edit-task" data-task-no="${t.taskNo}" data-task-title="${escapeAttr(taskTitle)}" data-task-start="${escapeAttr(t.taskBeginDe || '')}" data-task-due="${escapeAttr(taskDue)}" data-task-cn="${escapeAttr(taskContent)}">과제 수정</a></li>
+                            <li><a class="dropdown-item" href="#" data-action="edit-task" data-task-no="${t.taskNo}" data-task-title="${escapeAttr(taskTitle)}" data-task-week="${escapeAttr(t.week || '')}" data-task-start="${escapeAttr(t.taskBeginDe || '')}" data-task-due="${escapeAttr(taskDue)}" data-task-cn="${escapeAttr(taskContent)}">과제 수정</a></li>
                             <li><a class="dropdown-item" href="#" data-action="view-submissions" data-task-no="${t.taskNo}">제출 확인</a></li>
                             <li><div class="dropdown-divider"></div></li>
                             <li><a class="dropdown-item text-danger" href="#" data-action="delete-task" data-task-no="${t.taskNo}">삭제</a></li>
@@ -375,16 +451,124 @@
 
     const escapeAttr = v => String(v ?? '').replace(/"/g, '&quot;');
 
+    const createUploadAdapterPlugin = (uploadUrl) => {
+        function CustomUploadAdapterPlugin(editor) {
+            editor.plugins.get('FileRepository').createUploadAdapter = (loader) => ({
+                upload: () => loader.file.then(file => {
+                    const data = new FormData();
+                    data.append('upload', file);
+                    return fetch(uploadUrl, { method: 'POST', body: data })
+                        .then(res => res.json())
+                        .then(resp => ({ default: resp.url || '' }));
+                }),
+                abort: () => { /* no-op */ }
+            });
+        }
+        CustomUploadAdapterPlugin.pluginName = 'CustomUploadAdapterPlugin';
+        return CustomUploadAdapterPlugin;
+    };
+
+    const createCkEditor = (el) => {
+        if (!window.ClassicEditor || !el) return Promise.reject(new Error('CKEditor 로더를 찾을 수 없습니다.'));
+        const uploadPlugin = createUploadAdapterPlugin('/common/ck-upload');
+        return ClassicEditor.create(el, {
+            extraPlugins: [uploadPlugin]
+        });
+    };
+
     const ensureEditEditor = () => {
         if (editTaskEditor) return Promise.resolve(editTaskEditor);
-        if (!window.ClassicEditor || !editTaskContentInput) return Promise.reject(new Error('CKEditor 로더를 찾을 수 없습니다.'));
-        return ClassicEditor
-            .create(editTaskContentInput)
-            .then(editor => {
-                editTaskEditor = editor;
-                return editor;
-            });
+        return createCkEditor(editTaskContentInput).then(editor => {
+            editTaskEditor = editor;
+            return editor;
+        });
     };
+
+    const addExRow = (listEl, data = {}) => {
+        const idx = listEl.children.length + 1;
+        const row = document.createElement('div');
+        row.className = 'd-flex align-items-center gap-2 quiz-ex-row';
+        row.innerHTML = `
+          <div class="d-flex align-items-center gap-2 mb-2">
+             <input type="text" class="form-control form-control-sm" style="width:30px" value="${idx}" data-field="exNo" readonly>
+            <input type="text" class="form-control form-control-sm" style="width:850px" placeholder="보기 내용" value="${data.exCn || ''}" data-field="exCn" required>
+             <div class="form-check d-flex align-items-center ms-1" style="white-space: nowrap;">
+                <input class="form-check-input"
+                       type="checkbox"
+                       ${data.cnslAt === '1' ? 'checked' : ''}
+                       data-field="cnslAt">
+                <label class="form-check-label small ms-1">정답</label>
+              </div>
+          </div>
+    `;
+        listEl.appendChild(row);
+    };
+    const renumberEx = (listEl) => [...listEl.querySelectorAll('[data-field="exNo"]')].forEach((el, i) => el.value = i + 1);
+    const fillExList = (listEl, arr = []) => { listEl.innerHTML = ''; (arr.length ? arr : [{}]).forEach(d => addExRow(listEl, d)); renumberEx(listEl); };
+    const collectExList = (listEl) => [...listEl.querySelectorAll('.quiz-ex-row')].map((row, i) => ({
+        exNo: i + 1,
+        exCn: row.querySelector('[data-field="exCn"]').value.trim(),
+        cnslAt: row.querySelector('[data-field="cnslAt"]').checked ? '1' : '0'
+    })).filter(ex => ex.exCn);
+
+    quizExAddBtn?.addEventListener('click', () => { addExRow(quizExList); renumberEx(quizExList); });
+    quizExDelBtn?.addEventListener('click', () => { if (quizExList.lastElementChild) quizExList.removeChild(quizExList.lastElementChild); renumberEx(quizExList); });
+
+    const openCreateQuizModal = () => {
+        if (!createQuizForm) return;
+        createQuizForm.reset();
+        createQuizBegin.value = todayStr();
+        createQuizClose.value = todayStr();
+        fillExList(quizExList, [{},{},{},{}]); // 기본 4지선다
+        bootstrap.Modal.getOrCreateInstance(createQuizModal).show();
+    };
+
+    quizCreateBtn?.addEventListener('click', openCreateQuizModal);
+
+    document.getElementById('create-quiz-submit-btn')?.addEventListener('click', async () => {
+        if (!createQuizForm?.checkValidity()) { createQuizForm.reportValidity(); return; }
+        const payload = {
+            estbllctreCode,
+            quesCn: createQuizQuestion.value.trim(),
+            week: createQuizWeek?.value,
+            quizBeginDe: createQuizBegin.value.replace(/-/g, ''),
+            quizClosDe: createQuizClose.value.replace(/-/g, ''),
+            quizExVOList: collectExList(quizExList)
+        };
+
+        try {
+            const res = await fetch('/learning/prof/quiz', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json;charset=utf-8' },
+                body: JSON.stringify(payload)
+            });
+
+            if (!res.ok) throw new Error(`등록 실패 (${res.status})`);
+            const saved = (await res.json().catch(() => ({})))?.data || payload;
+            let quizPresentn = window.__INIT_QUIZ_PRESENTN;
+            if (saved?.quizCode) {
+                try {
+                    const presentnRes = await fetch(`/learning/prof/quiz-presentn?estbllctreCode=${encodeURIComponent(estbllctreCode)}&quizCode=${encodeURIComponent(saved.quizCode)}`);
+                    if (presentnRes.ok) {
+                        const createdPresentn = await presentnRes.json();
+                        quizPresentn = toArray(quizPresentn)
+                            .filter(p => String(p.quizCode) !== String(saved.quizCode))
+                            .concat(toArray(createdPresentn));
+                        window.__INIT_QUIZ_PRESENTN = quizPresentn;
+                    }
+                } catch (err) {
+                    console.warn('퀴즈 제출 기본 데이터 조회 실패', err);
+                }
+            }
+
+            window.__INIT_QUIZZES = toArray(window.__INIT_QUIZZES).concat(saved);
+            renderQuizGrid(window.__INIT_QUIZZES, quizPresentn);
+            Swal.fire({ icon: 'success', title: '등록되었습니다.', timer: 1200, showConfirmButton: false });
+            bootstrap.Modal.getOrCreateInstance(createQuizModal).hide();
+        } catch (err) {
+            Swal.fire({ icon: 'error', title: '등록 실패', text: err.message || '잠시 후 다시 시도하세요.' });
+        }
+    });
 
     const openEditModal = (task) => {
         if (!editModalEl || !editTaskForm) return;
@@ -393,6 +577,7 @@
         if (editTaskNoInput) editTaskNoInput.value = task.taskNo || '';
         if (editTaskTitleInput) editTaskTitleInput.value = task.title || '';
         if (editTaskContentInput) editTaskContentInput.value = task.content || '';
+        if (editTaskWeekSelect) editTaskWeekSelect.value = task.week || '';
         if (editTaskStartInput) editTaskStartInput.value = toISODate(task.startDate || todayStr());
         if (editTaskDueInput) editTaskDueInput.value = toISODate(task.dueDate || todayStr());
 
@@ -403,10 +588,81 @@
         modal.show();
     };
 
+    const handleDeleteQuiz = async (quizCode) => {
+        const confirm = await Swal.fire({
+            icon: 'warning',
+            title: '퀴즈를 삭제하시겠습니까?',
+            text: '제출 데이터가 함께 삭제될 수 있습니다.',
+            showCancelButton: true,
+            confirmButtonText: '삭제',
+            cancelButtonText: '취소'
+        });
+        if (!confirm.isConfirmed) return;
+
+        try {
+            const res = await fetch(`/learning/prof/quiz?estbllctreCode=${encodeURIComponent(estbllctreCode)}&quizCode=${encodeURIComponent(quizCode)}`, {
+                method: 'DELETE'
+            });
+            if (!res.ok) throw new Error(`삭제 실패 (${res.status})`);
+
+            window.__INIT_QUIZZES = toArray(window.__INIT_QUIZZES).filter(q => String(q.quizCode) !== String(quizCode));
+            renderQuizGrid(window.__INIT_QUIZZES, window.__INIT_QUIZ_PRESENTN);
+            Swal.fire({ icon: 'success', title: '삭제되었습니다.', timer: 1200, showConfirmButton: false });
+        } catch (err) {
+            console.error(err);
+            Swal.fire({ icon: 'error', title: '삭제 실패', text: err.message || '잠시 후 다시 시도하세요.' });
+        }
+    };
+
+    const openEditQuizModal = (quiz) => {
+        if (!editQuizForm) return;
+        editQuizForm.reset();
+        editQuizCode.value = quiz.quizCode || '';
+        editQuizQuestion.value = quiz.quesCn || '';
+        if (editQuizWeek) editQuizWeek.value = quiz.week || '';
+        if (editQuizBegin) editQuizBegin.value = normalizeDate(quiz.quizBeginDe);
+        if (editQuizClose) editQuizClose.value = normalizeDate(quiz.quizClosDe);
+        fillExList(editQuizExList, quiz.quizeExVOList || quiz.quizExVOList || []);
+        bootstrap.Modal.getOrCreateInstance(editQuizModal).show();
+    };
+
+    editQuizExAddBtn?.addEventListener('click', () => { addExRow(editQuizExList); renumberEx(editQuizExList); });
+    editQuizExDelBtn?.addEventListener('click', () => { if (editQuizExList.lastElementChild) editQuizExList.removeChild(editQuizExList.lastElementChild); renumberEx(editQuizExList); });
+
+    document.getElementById('edit-quiz-submit-btn')?.addEventListener('click', async () => {
+        if (!editQuizForm?.checkValidity()) { editQuizForm.reportValidity(); return; }
+        const payload = {
+            quizCode: editQuizCode.value,
+            estbllctreCode,
+            quesCn: editQuizQuestion.value.trim(),
+            week: editQuizWeek?.value,
+            quizBeginDe: editQuizBegin.value.replace(/-/g, ''),
+            quizClosDe: editQuizClose.value.replace(/-/g, ''),
+            quizExVOList: collectExList(editQuizExList)
+        };
+        try {
+            const res = await fetch('/learning/prof/quiz', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json;charset=utf-8' },
+                body: JSON.stringify(payload)
+            });
+            if (!res.ok) throw new Error(`수정 실패 (${res.status})`);
+            const saved = (await res.json().catch(() => ({})))?.data || payload;
+            window.__INIT_QUIZZES = toArray(window.__INIT_QUIZZES).map(q =>
+                String(q.quizCode) === String(saved.quizCode) ? { ...q, ...saved } : q
+            );
+            renderQuizGrid(window.__INIT_QUIZZES, window.__INIT_QUIZ_PRESENTN);
+            Swal.fire({ icon: 'success', title: '수정되었습니다.', timer: 1200, showConfirmButton: false });
+            bootstrap.Modal.getOrCreateInstance(editQuizModal).hide();
+        } catch (err) {
+            Swal.fire({ icon: 'error', title: '수정 실패', text: err.message || '잠시 후 다시 시도하세요.' });
+        }
+    });
+
     const ensureCreateEditor = () => {
         if (createTaskEditor) return Promise.resolve(createTaskEditor);
         if (!window.ClassicEditor || !createTaskContent) return Promise.reject(new Error('CKEditor 로더가 없습니다.'));
-        return ClassicEditor.create(createTaskContent).then(editor => {
+        return createCkEditor(createTaskContent).then(editor => {
             createTaskEditor = editor;
             return editor;
         });
@@ -449,9 +705,25 @@
             const json = await res.json().catch(() => ({}));
             const created = json?.data || {};
 
+            let taskPresentn = window.__INIT_TASK_PRESENTN;
+            if (created?.taskNo) {
+                try {
+                    const presentnRes = await fetch(`/learning/prof/task-presentn?estbllctreCode=${encodeURIComponent(estbllctreCode)}&taskNo=${encodeURIComponent(created.taskNo)}`);
+                    if (presentnRes.ok) {
+                        const createdPresentn = await presentnRes.json();
+                        taskPresentn = toArray(taskPresentn)
+                            .filter(p => String(p.taskNo) !== String(created.taskNo))
+                            .concat(toArray(createdPresentn));
+                        window.__INIT_TASK_PRESENTN = taskPresentn;
+                    }
+                } catch (err) {
+                    console.warn('과제 제출 기본 데이터 조회 실패', err);
+                }
+            }
+
             const nextTasks = toArray(window.__INIT_TASKS).concat(created);
             window.__INIT_TASKS = nextTasks;
-            renderTasksWithGrid(nextTasks, window.__INIT_TASK_PRESENTN);
+            renderTasksWithGrid(nextTasks, taskPresentn);
             Swal.fire({ icon: 'success', title: '과제가 등록되었습니다.', timer: 1200, showConfirmButton: false });
             bootstrap.Modal.getOrCreateInstance(createModalEl).hide();
         } catch (err) {
@@ -555,7 +827,7 @@
                           </svg>
                         </button>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#">출석률 보기</a></li>
+                            <li><a class="dropdown-item" href="#" data-action="attend-stats" data-stdnt-no="${stdntNo}" data-stdnt-nm="${stdntNm}">출석률 보기</a></li>
                         </ul>
                       </div>
                     `)
@@ -630,11 +902,8 @@
                 state.allRows = toArray(json);
                 state.loaded = true;
 
-                if (state.allRows.length) {
-                    state.attendDate = normalizeDate(state.allRows[0].lctreDe);
-                } else {
-                    state.attendDate = todayStr();
-                }
+                // 기본 날짜는 항상 오늘로 설정
+                state.attendDate = todayStr();
 
                 updateDateLabel();
                 renderFiltered();
@@ -676,17 +945,286 @@
         // 초기 라벨만 세팅 (실제 데이터 로드는 탭 전환 시)
         updateDateLabel();
 
-        return { load };
+        return { load, getState: () => state };
     })();
 
+    // 출석률 모달/차트
+    const statsModalEl = document.getElementById('attendanceStatsModal');
+    const statsModal = statsModalEl ? new bootstrap.Modal(statsModalEl) : null;
+    const statsCanvas = document.getElementById('attendanceStatsChart');
+    const statsMeta = document.getElementById('attendanceStatsMeta');
+    let statsChart = null;
 
-    const loadBoard = () => {
-        const target = document.getElementById('boardTable');
-        fetch(`/learning/prof/board?estbllctreCode=${encodeURIComponent(estbllctreCode)}`)
-            .then(res => res.ok ? res.json() : Promise.reject(new Error('게시판 로드 실패')))
-            .then(data => target.innerHTML = JSON.stringify(data))
-            .catch(err => target.innerHTML = `<div class="text-danger">${err.message}</div>`);
+    const renderAttendanceChart = (stdntNo, stdntNm) => {
+        if (!statsCanvas) return;
+        const state = attendanceModule?.getState ? attendanceModule.getState() : null;
+        const rows = state?.allRows || [];
+        const filtered = rows.filter(r => {
+            const no = r.stdntVO?.stdntNo || r.stdntNo;
+            return String(no) === String(stdntNo);
+        });
+
+        const counts = { att: 0, late: 0, early: 0, abs: 0 };
+        filtered.forEach(r => {
+            switch (String(r.atendSttusCode)) {
+                case "1": counts.att += 1; break; // 출석
+                case "2": counts.late += 1; break; // 지각
+                case "3": counts.early += 1; break; // 조퇴
+                default: counts.abs += 1; // 결석
+            }
+        });
+
+        const labels = ["출석", "지각", "조퇴", "결석"];
+        const data = [counts.att, counts.late, counts.early, counts.abs];
+        const colors = ["#0d6efd", "#ffc107", "#dc3545", "#dc3545"];
+
+        if (statsChart) {
+            statsChart.destroy();
+            statsChart = null;
+        }
+
+        statsChart = new Chart(statsCanvas, {
+            type: "doughnut",
+            data: {
+                labels,
+                datasets: [{
+                    data,
+                    backgroundColor: colors,
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                plugins: {
+                    legend: { position: "bottom" }
+                }
+            }
+        });
+
+        if (statsMeta) {
+            const total = data.reduce((a, b) => a + b, 0);
+            statsMeta.textContent = `${stdntNm || stdntNo || ""} · 총 ${total}회`;
+        }
+
+        statsModal?.show();
     };
+
+
+    const boardNameByCode = (code) => {
+        const found = boardState.meta.find(b => String(b.bbsCode) === String(code));
+        return found?.bbsNm || '';
+    };
+
+    const renderBoardFilter = () => {
+        if (!boardFilter) return;
+        const selected = boardFilter.value;
+        boardFilter.innerHTML = '<option value=\"\">전체</option>';
+        boardState.meta.forEach(b => {
+            const opt = document.createElement('option');
+            opt.value = b.bbsCode;
+            opt.textContent = b.bbsNm || `분류 ${b.bbsCode}`;
+            if (selected && String(selected) === String(b.bbsCode)) opt.selected = true;
+            boardFilter.appendChild(opt);
+        });
+    };
+
+    const renderBoardList = () => {
+        if (!boardGrid) return;
+        const filtered = boardFilter?.value
+            ? boardState.list.filter(item => String(item.bbsCode) === String(boardFilter.value))
+            : boardState.list;
+
+        const rows = filtered.map((item, idx) => {
+            const typeName = boardNameByCode(item.bbsCode);
+            const writer = item.sklstfNm || item.stdntNm || item.stdntNo || item.acntId || '-';
+            const date = normalizeDate(item.bbscttWritngDe);
+            const title = escapeAttr(item.bbscttSj || '(제목 없음)');
+            const viewUrl = `/learning/prof/boardDetail?code=${encodeURIComponent(item.bbsCode || '')}&no=${encodeURIComponent(item.bbscttNo || '')}`;
+            return [
+                idx + 1,
+                typeName || '-',
+                gridjs.html(`<a href="${viewUrl}" class="text-decoration-none">${title}</a>`),
+                writer,
+                date,
+                item.bbscttRdcnt ?? 0
+            ];
+        });
+
+        boardGrid.innerHTML = '';
+        const options = {
+            columns: [
+                { id: 'no', name: '번호', sort: true, search: false },
+                { id: 'type', name: '분류', sort: false, search: true },
+                { id: 'title', name: '제목', sort: false, search: true },
+                { id: 'writer', name: '작성자', sort: false, search: true },
+                { id: 'date', name: '작성일', sort: true, search: false },
+                { id: 'view', name: '조회수', sort: true, search: false }
+            ],
+            data: rows,
+            pagination: { ...DEFAULT_GRID_OPTIONS.pagination, limit: 15 },
+            language: { noRecordsFound: '게시글이 없습니다.', search: '제목, 작성자로 검색' }
+        };
+        gridInit(options, boardGrid);
+        requestAnimationFrame(() => injectTotal(boardGrid, rows.length));
+    };
+
+    const renderBoardDetail = (board) => {
+        if (!boardDetail) return;
+        currentBoard = board;
+        boardDetail.classList.remove('d-none');
+        if (boardDetailTitle) boardDetailTitle.textContent = board?.bbscttSj || '(제목 없음)';
+        if (boardDetailType) boardDetailType.textContent = boardNameByCode(board?.bbsCode) || '분류 없음';
+        const writer = board?.sklstfNm || board?.stdntNm || board?.stdntNo || board?.acntId || '-';
+        const date = normalizeDate(board?.bbscttWritngDe);
+        if (boardDetailMeta) boardDetailMeta.textContent = `${writer}${date ? ` · ${date}` : ''}`;
+        if (boardDetailBody) {
+            const body = board?.bbscttCn || '';
+            boardDetailBody.innerHTML = body.replace(/\n/g, '<br/>');
+        }
+    };
+
+    const openBoardDetail = (bbscttNo) => {
+        if (!bbscttNo) return;
+        let bbsCode = null;
+        const found = toArray(boardState.list).find(b => String(b.bbscttNo) === String(bbscttNo));
+        if (found?.bbsCode) bbsCode = found.bbsCode;
+        const code = bbsCode || boardFilter?.value || '';
+        const url = `/learning/prof/boardDetail?code=${encodeURIComponent(code)}&no=${encodeURIComponent(bbscttNo)}`;
+        window.location.href = url;
+    };
+
+    const resetBoardForm = (board = null) => {
+        if (!boardModalEl) return;
+        boardModalEl.querySelector('#boardForm')?.reset();
+        if (boardCttNoInput) boardCttNoInput.value = board?.bbscttNo || '';
+        if (boardTitleInput) boardTitleInput.value = board?.bbscttSj || '';
+        if (boardContentInput) boardContentInput.value = board?.bbscttCn || '';
+
+        if (boardBbsCodeSelect) {
+            boardBbsCodeSelect.innerHTML = '';
+            const targetCode = board?.bbsCode ? String(board.bbsCode) : (boardFilter?.value || '');
+            boardState.meta.forEach(b => {
+                const opt = document.createElement('option');
+                opt.value = b.bbsCode;
+                opt.textContent = b.bbsNm || `분류 ${b.bbsCode}`;
+                if (String(targetCode) === String(b.bbsCode)) opt.selected = true;
+                boardBbsCodeSelect.appendChild(opt);
+            });
+        }
+
+        // CKEditor로 내용 설정
+        if (window.ClassicEditor && boardContentInput) {
+            const ensure = boardEditor
+                ? Promise.resolve(boardEditor)
+                : createCkEditor(boardContentInput).then(ed => {
+                    boardEditor = ed;
+                    return ed;
+                });
+            ensure.then(ed => ed.setData(board?.bbscttCn || '')).catch(console.warn);
+        }
+
+        const modalTitle = boardModalEl.querySelector('#boardModalLabel');
+        if (modalTitle) modalTitle.textContent = board ? '게시글 수정' : '게시글 작성';
+        if (boardModalInstance) boardModalInstance.show();
+    };
+
+    const loadBoard = async (force = false) => {
+        if (!boardGrid) return;
+        if (boardState.loaded && !force) {
+            renderBoardFilter();
+            renderBoardList();
+            return;
+        }
+        boardGrid.innerHTML = '<div class=\"text-muted\">게시판을 불러오는 중...</div>';
+        try {
+            const res = await fetch(`/learning/prof/board?estbllctreCode=${encodeURIComponent(estbllctreCode)}`);
+            if (!res.ok) throw new Error('게시판 로드 실패');
+            const data = await res.json();
+            boardState.meta = toArray(data?.bbsList);
+            boardState.list = toArray(data?.data);
+            boardState.loaded = true;
+            renderBoardFilter();
+            renderBoardList();
+        } catch (err) {
+            console.error(err);
+            boardGrid.innerHTML = `<div class=\"text-danger\">${err.message}</div>`;
+        }
+    };
+
+    const saveBoard = () => {
+        if (!boardTitleInput || !boardBbsCodeSelect) return;
+        const payload = {
+            estbllctreCode,
+            bbscttSj: boardTitleInput.value.trim(),
+            bbscttCn: boardEditor ? boardEditor.getData() : (boardContentInput?.value?.trim() || ''),
+            bbsCode: boardBbsCodeSelect.value
+        };
+        const isEdit = !!(boardCttNoInput?.value);
+        if (isEdit) payload.bbscttNo = boardCttNoInput.value;
+
+        const method = isEdit ? 'PUT' : 'POST';
+        fetch('/learning/prof/board', {
+            method,
+            headers: { 'Content-Type': 'application/json; charset=utf-8' },
+            body: JSON.stringify(payload)
+        })
+            .then(res => res.ok ? res.json() : res.json().catch(() => ({})).then(body => Promise.reject(new Error(body.message || '저장 실패'))))
+            .then(data => {
+                boardState.loaded = false;
+                boardModalInstance?.hide();
+                return loadBoard(true).then(() => {
+                    const createdNo = data?.data?.bbscttNo;
+                    const createdCode = payload.bbsCode;
+                    if (createdNo) {
+                        const url = `/learning/prof/boardDetail?code=${encodeURIComponent(createdCode || '')}&no=${encodeURIComponent(createdNo)}`;
+                        window.location.href = url;
+                        return;
+                    }
+                    Swal.fire({ icon: 'success', title: '등록되었습니다.', timer: 1200, showConfirmButton: false });
+                });
+            })
+            .catch(err => Swal.fire({ icon: 'error', title: '저장 실패', text: err.message || '잠시 후 다시 시도하세요.' }));
+    };
+
+    const deleteBoard = () => {
+        if (!currentBoard?.bbscttNo) return;
+        Swal.fire({
+            icon: 'warning',
+            title: '게시글을 삭제할까요?',
+            text: '삭제 후 되돌릴 수 없습니다.',
+            showCancelButton: true,
+            confirmButtonText: '삭제',
+            cancelButtonText: '취소'
+        }).then(res => {
+            if (!res.isConfirmed) return;
+            fetch(`/learning/prof/board?estbllctreCode=${encodeURIComponent(estbllctreCode)}&bbscttNo=${encodeURIComponent(currentBoard.bbscttNo)}`, {
+                method: 'DELETE'
+            })
+                .then(resp => resp.ok ? resp.json() : Promise.reject(new Error('삭제에 실패했습니다.')))
+                .then(() => {
+                    Swal.fire({ icon: 'success', title: '삭제되었습니다.', timer: 1200, showConfirmButton: false });
+                    currentBoard = null;
+                    boardDetail?.classList.add('d-none');
+                    boardState.loaded = false;
+                    return loadBoard(true);
+                })
+                .catch(err => Swal.fire({ icon: 'error', title: '삭제 실패', text: err.message || '잠시 후 다시 시도하세요.' }));
+        });
+    };
+
+    // 게시글 제목은 직접 링크로 이동하므로 별도 클릭 핸들러 없음
+    boardFilter?.addEventListener('change', () => {
+        renderBoardList();
+        boardDetail?.classList.add('d-none');
+    });
+    boardBackBtn?.addEventListener('click', () => {
+        boardDetail?.classList.add('d-none');
+    });
+    boardCreateBtn?.addEventListener('click', () => resetBoardForm(null));
+    boardEditBtn?.addEventListener('click', () => {
+        if (currentBoard) resetBoardForm(currentBoard);
+    });
+    boardDeleteBtn?.addEventListener('click', deleteBoard);
+    boardSaveBtn?.addEventListener('click', saveBoard);
 
     const showQuizList = () => {
         quizSection?.classList.remove('d-none');
@@ -705,16 +1243,22 @@
         quizSubmissionGrid.innerHTML = '';
 
         if (quizSubmissionTitleEl) {
-            quizSubmissionTitleEl.textContent = title ? `${title} 제출 목록` : '제출 목록';
+            quizSubmissionTitleEl.textContent = title ? `${title}` : '제출 목록';
         }
 
-        const rows = toArray(list).map(item => [
-            item.stdntNo,
-            item.stdntNm || '',
-            item.presentnAt === '1' ? '제출' : '미제출',
-            item.quizPresentnDe || '-',
-            item.quizExCode || '-'
-        ]);
+        const rows = toArray(list).map(item => {
+            const status = item.presentnAt === '1' ? '제출' : '미제출';
+            const answer = item.presentnAt === '1'
+                ? (item.cnslAt === '1' ? '정답' : '오답')
+                : '-';
+            return [
+                item.stdntNo,
+                item.stdntNm || '',
+                status,
+                item.quizPresentnDe || '-',
+                answer
+            ];
+        });
 
         const options = {
             columns: [
@@ -722,7 +1266,7 @@
                 { id: 'stdntNm', name: '이름', search: true, sort: true },
                 { id: 'status', name: '제출상태', search: false, sort: true },
                 { id: 'submitDe', name: '제출일', search: false, sort: true },
-                { id: 'answer', name: '선택한 보기', search: false, sort: false }
+                { id: 'answer', name: '정답 여부', search: false, sort: false }
             ],
             data: rows,
             pagination: { ...DEFAULT_GRID_OPTIONS.pagination, limit: 20 },
@@ -755,12 +1299,13 @@
             return acc;
         }, {});
 
-        const rows = toArray(quizList).map(q => {
+        const rows = toArray(quizList).map((q, idx) => {
             const stat = byQuiz[q.quizCode] || { total: 0, submitted: 0 };
-            const title = q.quesCn || '';
+            const fullTitle = q.quesCn || '';
+            const shortTitle = fullTitle.length > 50 ? `${fullTitle.slice(0, 30)}...` : fullTitle;
             return [
-                q.quizCode,
-                title.length > 50 ? `${title.slice(0, 50)}...` : title,
+                idx + 1,
+                gridjs.html(`<span data-full-title="${escapeAttr(fullTitle)}">${escapeAttr(shortTitle)}</span>`),
                 q.week || '',
                 q.quizBeginDe || '',
                 q.quizClosDe || '',
@@ -777,7 +1322,18 @@
                             </svg>
                           </button>
                           <ul class="dropdown-menu">
+                              <li>
+                                <a class="dropdown-item" href="#" data-action="edit-quiz"
+                                   data-quiz-code="${q.quizCode}"
+                                   data-quiz-week="${escapeAttr(q.week || '')}"
+                                   data-quiz-begin="${escapeAttr(q.quizBeginDe || '')}"
+                                   data-quiz-close="${escapeAttr(q.quizClosDe || '')}"
+                                   data-quiz-question="${escapeAttr(q.quesCn || '')}">퀴즈 수정
+                                </a>
+                              </li>
                               <li><a class="dropdown-item" href="#" data-action="view-quiz-submissions" data-quiz-code="${q.quizCode}">제출 확인</a></li>
+                              <li><div class="dropdown-divider"></div></li>
+                              <li><a class="dropdown-item text-danger" href="#" data-action="delete-quiz" data-quiz-code="${q.quizCode}">삭제</a></li>
                           </ul>
                       </div>
                   `)
@@ -787,8 +1343,8 @@
         quizGrid.innerHTML = '';
         const options = {
             columns: [
-                { id: 'code', name: '퀴즈코드', search: true, sort: true },
-                { id: 'title', name: '문항 요약', search: true, sort: false },
+                { id: 'code', name: '퀴즈코드', search: true, sort: true, width: '130px' },
+                { id: 'title', name: '문항', search: true, sort: false },
                 { id: 'week', name: '주차', search: false, sort: true },
                 { id: 'begin', name: '시작일자', search: false, sort: true },
                 { id: 'close', name: '마감일자', search: false, sort: true },
@@ -805,12 +1361,40 @@
     };
 
     quizGrid?.addEventListener('click', (e) => {
-        const link = e.target.closest('[data-action="view-quiz-submissions"]');
-        if (!link) return;
-        e.preventDefault();
-        const quizCode = link.getAttribute('data-quiz-code');
-        const quizTitle = link.closest('tr')?.querySelector('td:nth-child(2)')?.textContent?.trim();
-        if (quizCode) loadQuizSubmissions(quizCode, quizTitle);
+        const viewLink = e.target.closest('[data-action="view-quiz-submissions"]');
+        const editLink = e.target.closest('[data-action="edit-quiz"]');
+        const delLink = e.target.closest('[data-action="delete-quiz"]');
+
+        if (viewLink) {
+            e.preventDefault();
+            const quizCode = viewLink.getAttribute('data-quiz-code');
+            const titleCell = viewLink.closest('tr')?.querySelector('td:nth-child(2) span[data-full-title]');
+            const quizTitle = titleCell?.getAttribute('data-full-title') || titleCell?.textContent?.trim();
+            if (quizCode) loadQuizSubmissions(quizCode, quizTitle);
+            return;
+        }
+
+        if (editLink) {
+            e.preventDefault();
+            const quizCode = editLink.getAttribute('data-quiz-code');
+            const fromState = toArray(window.__INIT_QUIZZES).find(q => String(q.quizCode) === String(quizCode)) || {};
+            const quiz = {
+                quizCode,
+                week: editLink.getAttribute('data-quiz-week') || fromState.week,
+                quizBeginDe: editLink.getAttribute('data-quiz-begin') || fromState.quizBeginDe,
+                quizClosDe: editLink.getAttribute('data-quiz-close') || fromState.quizClosDe,
+                quesCn: editLink.getAttribute('data-quiz-question') || fromState.quesCn,
+                quizeExVOList: fromState.quizeExVOList || fromState.quizExVOList || []
+            };
+            openEditQuizModal(quiz);
+            return;
+        }
+
+        if (delLink) {
+            e.preventDefault();
+            const quizCode = delLink.getAttribute('data-quiz-code');
+            if (quizCode) handleDeleteQuiz(quizCode);
+        }
     });
 
     const loadQuiz = () => {
@@ -819,7 +1403,11 @@
 
         fetch(`/learning/prof/quiz?estbllctreCode=${encodeURIComponent(estbllctreCode)}`)
             .then(res => res.ok ? res.json() : Promise.reject(new Error('퀴즈 로드 실패')))
-            .then(data => renderQuizGrid(toArray(data?.quizzes), toArray(data?.submissions)))
+            .then(data => {
+                const quizzes = toArray(data?.quizzes);
+                window.__INIT_QUIZZES = quizzes; // 편집 시 보기까지 포함된 최신 데이터 유지
+                renderQuizGrid(quizzes, toArray(data?.submissions));
+            })
             .catch(err => {
                 quizGrid.innerHTML = '';
                 // 서버 호출 실패 시 초기 서버 렌더 데이터로 대체
@@ -840,36 +1428,81 @@
             if (id === 'attend') attendanceModule.load();
         });
     });
+    if (initialTab === 'quiz') loadQuiz();
+    if (initialTab === 'board') loadBoard();
+    if (initialTab === 'attend') attendanceModule.load();
+    attendGrid?.addEventListener('click', (e) => {
+        const link = e.target.closest('[data-action="attend-stats"]');
+        if (!link) return;
+        e.preventDefault();
+        const stdntNo = link.getAttribute('data-stdnt-no');
+        const stdntNm = link.getAttribute('data-stdnt-nm');
+        renderAttendanceChart(stdntNo, stdntNm);
+    });
 
-    const updateTask = e => {
-        const editFrom = document.querySelector("editTaskForm");
+    const updateTask = async (e) => {
+        e?.preventDefault();
+        if (!editTaskForm) return;
+        if (!editTaskForm.checkValidity()) {
+            editTaskForm.reportValidity();
+            return;
+        }
 
-        fetch("/learning/prof/updTask", {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json; charset=utf-8"
-            },
-            data: JSON.stringify(editForm)
-        })
-            .then(resp => {
-                if(resp.ok) {
-                    Swal.fire({
-                        icon: "success",
-                        title: "과제 내용을 수정 했어요.",
-                        timer:1000,
-                        timerProgressBar: !0,
-                        showConfirmButton: 0
-                    });
-                }
-            })
-            .catch(err => {
-                Swal.fire({
-                    icon: "error",
-                    title: "과제 내용 수정이 실패 했어요",
-                    timer: 1000,
-                    timerProgressBar: !0,
-                    showConfirmButton: 0
-                });
-            })
-    }
+        const payload = {
+            taskNo: editTaskNoInput?.value,
+            taskSj: editTaskTitleInput?.value.trim(),
+            taskCn: editTaskEditor ? editTaskEditor.getData() : (editTaskContentInput?.value || ''),
+            week: editTaskWeekSelect?.value,
+            taskBeginDe: toDbDate(editTaskStartInput?.value),
+            taskClosDe: toDbDate(editTaskDueInput?.value),
+            estbllctreCode
+        };
+
+        try {
+            const resp = await fetch("/learning/prof/updTask", {
+                method: "PUT",
+                headers: { "Content-Type": "application/json; charset=utf-8" },
+                body: JSON.stringify(payload)
+            });
+
+            if (!resp.ok) throw new Error(`수정 실패 (${resp.status})`);
+            const updated = (await resp.json().catch(() => ({})))?.data || payload;
+
+            window.__INIT_TASKS = toArray(window.__INIT_TASKS).map(t =>
+                String(t.taskNo) === String(payload.taskNo)
+                    ? {
+                        ...t,
+                        ...updated,
+                        taskSj: payload.taskSj,
+                        taskCn: payload.taskCn,
+                        taskBeginDe: payload.taskBeginDe,
+                        taskClosDe: payload.taskClosDe,
+                        week: payload.week
+                    }
+                    : t
+            );
+            renderTasksWithGrid(window.__INIT_TASKS, window.__INIT_TASK_PRESENTN);
+
+            Swal.fire({
+                icon: "success",
+                title: "과제 내용을 수정했어요.",
+                timer: 1200,
+                timerProgressBar: !0,
+                showConfirmButton: 0
+            });
+            bootstrap.Modal.getOrCreateInstance(editModalEl)?.hide();
+        } catch (err) {
+            console.error(err);
+            Swal.fire({
+                icon: "error",
+                title: "과제 내용 수정이 실패했어요",
+                text: err.message || '잠시 후 다시 시도하세요.',
+                timer: 1200,
+                timerProgressBar: !0,
+                showConfirmButton: 0
+            });
+        }
+    };
+
+    window.updateTask = updateTask;
 })();

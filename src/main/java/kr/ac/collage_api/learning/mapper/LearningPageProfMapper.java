@@ -25,11 +25,24 @@ public interface LearningPageProfMapper {
 
     TaskVO getTaskByNo(String taskNo);
 
+    int updateTask(@Param("estbllctreCode") String estbllctreCode,
+                   @Param("task") TaskVO taskVO);
+
     int deleteTask(@Param("estbllctreCode") String estbllctreCode, @Param("taskNo") String taskNo);
 
     int deleteTaskPresentnByTask(@Param("taskNo") String taskNo);
 
     List<AtendAbsncVO> getAttendList(@Param("estbllctreCode") String estbllctreCode);
+
+    List<String> selectLectureStudents(@Param("estbllctreCode") String estbllctreCode);
+
+    String nextTaskPresentnNo();
+
+    String nextQuizPresentnNo();
+
+    void insertTaskPresentn(TaskPresentnVO vo);
+
+    void insertQuizPresentn(QuizPresentnVO vo);
 
     String getLctreNm(String estbllctreCode);
 
@@ -53,6 +66,8 @@ public interface LearningPageProfMapper {
     int deleteQuiz(@Param("estbllctreCode") String estbllctreCode, @Param("quizCode") String quizCode);
 
     int deleteQuizPresentnByQuiz(@Param("quizCode") String quizCode);
+
+    int clearQuizPresentnExByQuiz(@Param("quizCode") String quizCode);
 
     String nextQuizExCode();
 
@@ -84,4 +99,10 @@ public interface LearningPageProfMapper {
                     @Param("bbscttNo") Integer bbscttNo);
 
     Map<String, Object> getBoard(Map<String, Object> paramMap);
+
+    int updateBoardReadCount(@Param("bbscttNo") int bbscttNo);
+
+    Map<String, Object> selectPrevBoard(@Param("code") int bbsCode, @Param("no") int bbscttNo);
+
+    Map<String, Object> selectNextBoard(@Param("code") int bbsCode, @Param("no") int bbscttNo);
 }

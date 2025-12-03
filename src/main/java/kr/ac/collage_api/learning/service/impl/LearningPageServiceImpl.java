@@ -55,7 +55,20 @@ public class LearningPageServiceImpl {
     }
 
     public TaskPresentnVO getSubmitTask(String taskNo, String studentNo) {
-        return learningPageMapper.getSubmitTask(taskNo, studentNo);
+        List<TaskPresentnVO> existingList = learningPageMapper.getSubmitTask(taskNo, studentNo);
+        TaskPresentnVO existing = (existingList != null && !existingList.isEmpty()) ? existingList.get(0) : null;
+        if (existing != null) return existing;
+
+        String nextNo = learningPageMapper.nextTaskPresentnNo();
+        TaskPresentnVO vo = new TaskPresentnVO();
+        vo.setTaskPresentnNo(nextNo);
+        vo.setTaskNo(taskNo);
+        vo.setStdntNo(studentNo);
+        vo.setPresentnAt("0");
+        learningPageMapper.insertTaskPresentn(vo);
+
+        List<TaskPresentnVO> createdList = learningPageMapper.getSubmitTask(taskNo, studentNo);
+        return (createdList != null && !createdList.isEmpty()) ? createdList.get(0) : null;
     }
 
     @Transactional
@@ -84,7 +97,21 @@ public class LearningPageServiceImpl {
     }
 
     public QuizPresentnVO getSubmitQuiz(String quizCode, String name) {
-        return learningPageMapper.getSubmitQuiz(quizCode, name);
+        QuizPresentnVO existing = learningPageMapper.getSubmitQuiz(quizCode, name);
+        if (existing != null) return existing;
+
+        try {
+            String nextNo = learningPageMapper.nextQuizPresentnNo();
+            QuizPresentnVO vo = new QuizPresentnVO();
+            vo.setQuizPresentnNo(nextNo);
+            vo.setQuizCode(quizCode);
+            vo.setStdntNo(name);
+            vo.setPresentnAt("0");
+            learningPageMapper.insertQuizPresentn(vo);
+            return learningPageMapper.getSubmitQuiz(quizCode, name);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     public Map<String, Object> quizSubmit(String quizCode, String quizExCode, String stdntNo) {
@@ -130,7 +157,24 @@ public class LearningPageServiceImpl {
     }
 
     public Map<String, Object> getBoard(Map<String, Object> paramMap) {
-        return learningPageMapper.getBoard(paramMap);
+        Map<String, Object> resp = learningPageMapper.getBoard(paramMap);
+        Object codeObj = paramMap.get("code");
+        Object noObj = paramMap.get("no");
+        Integer bbsCode = codeObj != null ? Integer.parseInt(String.valueOf(codeObj)) : null;
+        Integer bbscttNo = noObj != null ? Integer.parseInt(String.valueOf(noObj)) : null;
+        if (bbscttNo != null) {
+            learningPageMapper.updateBoardReadCount(bbscttNo);
+        }
+        if (bbsCode == null && resp != null && resp.get("BBS_CODE") != null) {
+            bbsCode = Integer.parseInt(String.valueOf(resp.get("BBS_CODE")));
+        }
+        if (bbsCode != null && bbscttNo != null) {
+            Map<String, Object> prev = learningPageMapper.selectPrevBoard(bbsCode, bbscttNo);
+            Map<String, Object> next = learningPageMapper.selectNextBoard(bbsCode, bbscttNo);
+            resp.put("prevCtt", prev);
+            resp.put("nextCtt", next);
+        }
+        return resp;
     }
 
     public Map<String, Object> getAttend(String estbllctreCode, String stdntNo) {

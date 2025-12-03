@@ -99,6 +99,9 @@ public class Prof_LectureEvlController {
         String lectureName = (estblCourseInfo != null) ? estblCourseInfo.getLctreNm() : "N/A";
         String profsrNm = (estblCourseInfo != null) ? estblCourseInfo.getProfsrNm() : "N/A";
 
+        // 추가 학생 강의평가 상세 내용
+        List<LectureEvlVO> evalSubmitList = lectureService.getLectureEvalSummary(estbllctreCode);
+        
         // 7. 모델 전달
         model.addAttribute("estblCourseInfo", estblCourseInfo); // 기본정보
         model.addAttribute("evalSummaryList", evalSummaryList); // 객관식 요약
@@ -111,4 +114,5 @@ public class Prof_LectureEvlController {
 
         return "lecture/profLctreEvlDetail";
     }
+    
 }

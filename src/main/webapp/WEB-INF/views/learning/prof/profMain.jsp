@@ -1,4 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+﻿<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
 <%@ include file="../../header.jsp" %>
 
@@ -126,9 +126,11 @@
                                         <option value="">전체</option>
                                     </select>
                                 </div>
-                                <button type="button" class="btn btn-primary btn-sm" id="board-create-btn" data-bs-toggle="modal" data-bs-target="#boardModal">새 글 작성</button>
                             </div>
                             <div id="boardGrid"></div>
+                            <div class="d-flex justify-content-end gap-2 mt-3">
+                                <button type="button" class="btn btn-primary" id="board-create-btn" data-bs-toggle="modal" data-bs-target="#boardModal">등록</button>
+                            </div>
                             <div id="boardDetail" class="mt-4 d-none">
                                 <div class="d-flex justify-content-between align-items-start mb-2">
                                     <div>
@@ -143,7 +145,7 @@
                                 </div>
                                 <div class="border rounded p-3" id="board-detail-body" style="min-height: 180px;"></div>
                                 <div class="mt-3">
-                                    <button type="button" class="btn btn-link px-0" id="board-back-btn">목록으로</button>
+                                    <button type="button" class="btn btn-link px-0" id="board-back-btn">목록</button>
                                 </div>
                             </div>
                         </div>
@@ -156,7 +158,7 @@
 
 <!-- 과제 수정 모달 -->
 <div class="modal fade" id="editTaskModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="editTaskModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="editTaskModalLabel">과제 수정</h5>
@@ -166,9 +168,31 @@
                 <form id="editTaskForm">
                     <input type="hidden" id="edit-task-no" name="taskNo" />
                     <div class="row">
-                        <div class="col-12 mb-3">
+                        <div class="col-8 mb-3">
                             <label for="edit-task-title" class="form-label">과제 제목</label>
                             <input type="text" class="form-control" id="edit-task-title" name="taskSj" placeholder="과제 제목을 입력하세요" />
+                        </div>
+                        <div class="col-4 mb-3">
+                            <label for="edit-task-week" class="form-label">주차</label>
+                            <select class="form-select" id="edit-task-week" name="week" required>
+                                <option value="" disabled selected>주차 선택</option>
+                                <%-- 1~15 기본 옵션 --%>
+                                <option value="1">1주차</option>
+                                <option value="2">2주차</option>
+                                <option value="3">3주차</option>
+                                <option value="4">4주차</option>
+                                <option value="5">5주차</option>
+                                <option value="6">6주차</option>
+                                <option value="7">7주차</option>
+                                <option value="8">8주차</option>
+                                <option value="9">9주차</option>
+                                <option value="10">10주차</option>
+                                <option value="11">11주차</option>
+                                <option value="12">12주차</option>
+                                <option value="13">13주차</option>
+                                <option value="14">14주차</option>
+                                <option value="15">15주차</option>
+                            </select>
                         </div>
                         <div class="col-12 mb-3">
                             <label for="edit-task-content" class="form-label">과제 내용</label>
@@ -188,7 +212,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">닫기</button>
-                <button type="button" class="btn btn-primary" form="editTaskForm" onclick="updateTask">저장</button>
+                <button type="button" class="btn btn-primary" form="editTaskForm" onclick="updateTask()">등록</button>
             </div>
         </div>
     </div>
@@ -196,7 +220,7 @@
 
 <div class="modal fade" id="createTaskModal" data-bs-backdrop="static" data-bs-keyboard="false"
      tabindex="-1" aria-labelledby="createTaskModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="createTaskModalLabel">과제 목록</h5>
@@ -259,7 +283,7 @@
 
 <div class="modal fade" id="createQuizModal" data-bs-backdrop="static" data-bs-keyboard="false"
      tabindex="-1" aria-labelledby="createQuizModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="createQuizModalLabel">퀴즈 등록</h5>
@@ -313,7 +337,7 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">취소</button>
+                <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">닫기</button>
                 <button type="button" class="btn btn-primary" id="create-quiz-submit-btn">등록</button>
             </div>
         </div>
@@ -321,7 +345,7 @@
 </div>
 
 <div class="modal fade" id="editQuizModal">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header"><h5 class="modal-title">퀴즈 수정</h5></div>
             <div class="modal-body">
@@ -373,8 +397,8 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">취소</button>
-                <button type="button" class="btn btn-primary" id="edit-quiz-submit-btn">저장</button>
+                <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">닫기</button>
+                <button type="button" class="btn btn-primary" id="edit-quiz-submit-btn">등록</button>
             </div>
         </div>
     </div>
@@ -382,7 +406,7 @@
 
 
 <div class="modal fade" id="boardModal" tabindex="-1" aria-labelledby="boardModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="boardModalLabel">게시글 작성</h5>
@@ -410,8 +434,8 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">취소</button>
-                <button type="button" class="btn btn-primary" id="board-save-btn">저장</button>
+                <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">닫기</button>
+                <button type="button" class="btn btn-primary" id="board-save-btn">등록</button>
             </div>
         </div>
     </div>
@@ -429,7 +453,7 @@
                 <div class="text-center text-muted small mt-3" id="attendanceStatsMeta"></div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">닫기</button>
             </div>
         </div>
     </div>
@@ -525,5 +549,6 @@
 </style>
 
 <%@ include file="../../footer.jsp" %>
+
 
 

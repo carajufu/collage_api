@@ -15,7 +15,11 @@ public interface LearningPageMapper {
 
     List<TaskVO> taskList(String lecNo, String weekNo);
 
-    TaskPresentnVO getSubmitTask(String taskNo, String studentNo);
+    List<TaskPresentnVO> getSubmitTask(String taskNo, String studentNo);
+
+    String nextTaskPresentnNo();
+
+    int insertTaskPresentn(TaskPresentnVO vo);
 
     int taskFileUpload(@Param("taskpresentnNo") String taskpresentnNo,
                           @Param("fileGroupNo") Long fileGroupNo);
@@ -25,6 +29,10 @@ public interface LearningPageMapper {
     List<QuizExVO> quizExList(String quizCode);
 
     QuizPresentnVO getSubmitQuiz(String quizCode, String name);
+
+    String nextQuizPresentnNo();
+
+    int insertQuizPresentn(QuizPresentnVO vo);
 
     void quizSubmit(String quizCode, String quizExCode, String stdntNo);
 
@@ -36,4 +44,10 @@ public interface LearningPageMapper {
 
     List<AtendAbsncVO> getAttend(@Param("estbllctreCode") String estbllctreCode,
                                  @Param("stdntNo") String stdntNo);
+
+    int updateBoardReadCount(@Param("bbscttNo") int bbscttNo);
+
+    Map<String, Object> selectPrevBoard(@Param("code") int bbsCode, @Param("no") int bbscttNo);
+
+    Map<String, Object> selectNextBoard(@Param("code") int bbsCode, @Param("no") int bbscttNo);
 }
