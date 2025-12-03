@@ -72,16 +72,16 @@
             </div>
 
             <div class="card-body border-top">
-                <div class="d-flex flex-wrap gap-2">
-                    <a href="javascript:history.back();" class="btn btn-outline-secondary">목록</a>
-                    <c:if test="${canEdit}">
+                <div class="d-flex flex-wrap gap-2 justify-content-end">
+                    <a href="javascript:history.back();" class="btn btn-outline-primary">목록</a>
+                    <sec:authorize access="hasRole('ROLE_PROF')">
                         <a href="/learning/student/board/edit?no=${lectureBbsCtt.bbscttNo}" class="btn btn-primary">수정</a>
                         <form action="/learning/student/board/delete" method="post" class="d-inline"
                               onsubmit="return confirm('삭제하시겠습니까?');">
                             <input type="hidden" name="no" value="${lectureBbsCtt.bbscttNo}">
                             <button type="submit" class="btn btn-danger">삭제</button>
                         </form>
-                    </c:if>
+                    </sec:authorize>
                 </div>
             </div>
 
