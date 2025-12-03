@@ -183,7 +183,44 @@ document.addEventListener("DOMContentLoaded", function() {
                 </c:if>
             </div>
         </section>
-
+		 <!-- 강의평가 제출 의견 리스트 -->
+			<section class="card shadow-sm mb-4">
+			    <div class="card-header bg-light">
+			        <h5 class="card-title mb-0">
+			            <i class="bi bi-chat-left-text"></i> 학생 제출 의견(서술형)
+			        </h5>
+			    </div>
+			
+			    <div class="card-body" style="max-height: 320px; overflow-y: auto;">
+			
+			        <c:if test="${empty narrativeList}">
+			            <div class="text-muted text-center py-4">
+			                등록된 의견이 없습니다.
+			            </div>
+			        </c:if>
+			
+			        <c:if test="${not empty narrativeList}">
+			            <div class="list-group">
+			                <c:forEach var="item" items="${narrativeList}">
+			                    <div class="list-group-item list-group-item-action mb-2 rounded-3 shadow-sm">
+			
+			                        <!-- 평가 문항 명 -->
+			                        <div class="fw-bold">
+			                            ${item.lctreNm}
+			                        </div>
+			
+			                        <!-- 학생 주관식 제출 내용 -->
+			                        <div class="mt-1">
+			                            ${item.submitCn}
+			                        </div>
+			
+			                    </div>
+			                </c:forEach>
+			            </div>
+			        </c:if>
+			
+			    </div>
+			</section>
         <div class="mt-4 d-flex justify-content-end">
             <a href="/prof/lecture/main/All" class="btn btn-primary">
                 <i class="bi bi-arrow-left"></i> 목록으로

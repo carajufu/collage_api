@@ -272,12 +272,12 @@
 										            <div class="accordion-body">
 										                <div class="d-flex mb-2 align-items-center">
 										            		<p class="form-label me-2 mb-0" style="width:30px;">주제</p>
-											                <input type="text" class="form-control lrnThema" id="lrnThema\${newWeek}" required>
+											                <input type="text" class="form-control lrnThema" id="lrnThema\${newWeek}">
 											            </div>
 										                <div class="invalid-feedback">학습 주제를 입력해 주세요.</div>
 											            <div class="d-flex mb-2 align-items-center">
 											            	<p class="form-label me-2 mb-0" style="width:30px;">내용</p>
-											                <input type="text" class="form-control lrnCn" id="firstNameinput" required>
+											                <input type="text" class="form-control lrnCn" id="firstNameinput">
 											            </div>
 										            	<div class="invalid-feedback">학습 내용을 입력해 주세요.</div>
 										            </div>
@@ -293,12 +293,12 @@
 										            <div class="accordion-body">
 										                <div class="d-flex mb-2 align-items-center">
 										            		<p class="form-label me-2 mb-0" style="width:30px;">주제</p>
-											                <input type="text" class="form-control lrnThema" id="lrnThema\${newWeek}" required>
+											                <input type="text" class="form-control lrnThema" id="lrnThema\${newWeek}">
 											            </div>
 										                <div class="invalid-feedback">학습 주제를 입력해 주세요.</div>
 											            <div class="d-flex mb-2 align-items-center">
 											            	<p class="form-label me-2 mb-0" style="width:30px;">내용</p>
-											                <input type="text" class="form-control lrnCn" id="firstNameinput" required>
+											                <input type="text" class="form-control lrnCn" id="firstNameinput">
 											            </div>
 										            	<div class="invalid-feedback">학습 내용을 입력해 주세요.</div>
 										            </div>
@@ -314,12 +314,12 @@
 										            <div class="accordion-body">
 										                <div class="d-flex mb-2 align-items-center">
 										            		<p class="form-label me-2 mb-0" style="width:30px;">주제</p>
-											                <input type="text" class="form-control lrnThema" id="lrnThema\${newWeek}" required>
+											                <input type="text" class="form-control lrnThema" id="lrnThema\${newWeek}">
 											            </div>
 										                <div class="invalid-feedback">학습 주제를 입력해 주세요.</div>
 											            <div class="d-flex mb-2 align-items-center">
 											            	<p class="form-label me-2 mb-0" style="width:30px;">내용</p>
-											                <input type="text" class="form-control lrnCn" id="firstNameinput" required>
+											                <input type="text" class="form-control lrnCn" id="firstNameinput">
 											            </div>
 										            	<div class="invalid-feedback">학습 내용을 입력해 주세요.</div>
 										            </div>
@@ -335,12 +335,12 @@
 										            <div class="accordion-body">
 										                <div class="d-flex mb-2 align-items-center">
 										            		<p class="form-label me-2 mb-0" style="width:30px;">주제</p>
-											                <input type="text" class="form-control lrnThema" id="lrnThema\${newWeek}" required>
+											                <input type="text" class="form-control lrnThema" id="lrnThema\${newWeek}">
 											            </div>
 										                <div class="invalid-feedback">학습 주제를 입력해 주세요.</div>
 											            <div class="d-flex mb-2 align-items-center">
 											            	<p class="form-label me-2 mb-0" style="width:30px;">내용</p>
-											                <input type="text" class="form-control lrnCn" id="firstNameinput" required>
+											                <input type="text" class="form-control lrnCn" id="firstNameinput">
 											            </div>
 										            	<div class="invalid-feedback">학습 내용을 입력해 주세요.</div>
 										            </div>
@@ -356,12 +356,12 @@
 										            <div class="accordion-body">
 										                <div class="d-flex mb-2 align-items-center">
 										            		<p class="form-label me-2 mb-0" style="width:30px;">주제</p>
-											                <input type="text" class="form-control lrnThema" id="lrnThema\${newWeek}" required>
+											                <input type="text" class="form-control lrnThema" id="lrnThema\${newWeek}">
 											            </div>
 										                <div class="invalid-feedback">학습 주제를 입력해 주세요.</div>
 											            <div class="d-flex mb-2 align-items-center">
 											            	<p class="form-label me-2 mb-0" style="width:30px;">내용</p>
-											                <input type="text" class="form-control lrnCn" id="firstNameinput" required>
+											                <input type="text" class="form-control lrnCn" id="firstNameinput">
 											            </div>
 										            	<div class="invalid-feedback">학습 내용을 입력해 주세요.</div>
 										            </div>
@@ -377,12 +377,12 @@
 										            <div class="accordion-body">
 										                <div class="d-flex mb-2 align-items-center">
 										            		<p class="form-label me-2 mb-0" style="width:30px;">주제</p>
-											                <input type="text" class="form-control lrnThema" id="lrnThema\${newWeek}" required>
+											                <input type="text" class="form-control lrnThema" id="lrnThema\${newWeek}">
 											            </div>
 										                <div class="invalid-feedback">학습 주제를 입력해 주세요.</div>
 											            <div class="d-flex mb-2 align-items-center">
 											            	<p class="form-label me-2 mb-0" style="width:30px;">내용</p>
-											                <input type="text" class="form-control lrnCn" id="firstNameinput" required>
+											                <input type="text" class="form-control lrnCn" id="firstNameinput">
 											            </div>
 										            	<div class="invalid-feedback">학습 내용을 입력해 주세요.</div>
 										            </div>
@@ -398,12 +398,12 @@
 										            <div class="accordion-body">
 										                <div class="d-flex mb-2 align-items-center">
 										            		<p class="form-label me-2 mb-0" style="width:30px;">주제</p>
-											                <input type="text" class="form-control lrnThema" id="lrnThema\${newWeek}" required>
+											                <input type="text" class="form-control lrnThema" id="lrnThema\${newWeek}">
 											            </div>
 										                <div class="invalid-feedback">학습 주제를 입력해 주세요.</div>
 											            <div class="d-flex mb-2 align-items-center">
 											            	<p class="form-label me-2 mb-0" style="width:30px;">내용</p>
-											                <input type="text" class="form-control lrnCn" id="firstNameinput" required>
+											                <input type="text" class="form-control lrnCn" id="firstNameinput">
 											            </div>
 										            	<div class="invalid-feedback">학습 내용을 입력해 주세요.</div>
 										            </div>

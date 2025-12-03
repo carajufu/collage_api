@@ -18,18 +18,18 @@
         <div class="my-4 p-0 bg-primary" style="width: 100px; height:5px;"></div>
     </div>
     <div class="col-xxl-12 col-12">
-            <div class="card-body-text-end">
-				<div class="d-flex justify-content-end mb-2">
+        <div class="card-body-text-end">
+            <div class="d-flex justify-content-end mb-2">
                 <a href="${pageContext.request.contextPath}/compe/manage"
                    class="btn btn-primary me-2">내 이력 관리</a>
-				    <button type="button" class="btn btn-outline-primary btn-sm" id="fillSampleBtn">
-				        샘플 데이터 입력
-				    </button>
-				</div>
-				
-                <form id="generateForm"
-                      action="${pageContext.request.contextPath}/compe/generate"
-                      method="post">
+                <button type="button" class="btn btn-outline-primary btn-sm" id="fillSampleBtn">
+                    샘플 데이터 입력
+                </button>
+            </div>
+
+            <form id="generateForm"
+                  action="${pageContext.request.contextPath}/compe/generate"
+                  method="post">
 
                 <table class="table table-bordered table-sm align-middle mb-3">
                     <tbody>
@@ -281,7 +281,7 @@
                     </tbody>
                 </table>
 
-                    <h6 style="color: LightSalmon;">AI가 작성하는 내용은 실수를 할 수 있습니다. 중요한 정보는 재차 확인하세요</h6>
+                <h6 style="color: LightSalmon;">AI가 작성하는 내용은 실수를 할 수 있습니다. 중요한 정보는 재차 확인하세요</h6>
                 <div class="d-flex justify-content-end mb-5">
                     <a href="/compe/detail" class="btn btn-primary btn-sm me-2">생성된 자기소개서 확인하기</a>
                     <button type="submit" class="btn btn-primary btn-sm" id="generateBtn">자기소개서 생성</button>
@@ -292,176 +292,175 @@
         </div>
     </div>
 
-<!-- 로딩 오버레이 -->
-<div id="loadingOverlay"
-     style="display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+    <!-- 로딩 오버레이 -->
+    <div id="loadingOverlay"
+         style="display:none; position:fixed; top:0; left:0; width:100%; height:100%;
             background:rgba(0,0,0,0.45); z-index:3000;">
-    <div class="d-flex justify-content-center align-items-center" style="height:100%;">
-        <div class="spinner-border text-light" role="status" style="width:4rem; height:4rem;"></div>
-    </div>
-</div>
-
-<!-- 모달 -->
-<div class="modal fade" id="essayModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-xl modal-dialog-scrollable">
-        <div class="modal-content">
-
-            <div class="modal-header">
-                <h5 class="modal-title">생성된 자기소개서</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-
-            <div class="modal-body">
-                <textarea id="modalEssayArea" class="form-control" rows="20"></textarea>
-            </div>
-
-            <div class="modal-footer">
-
-                <form id="nextPageForm">
-                    <textarea name="essay" id="nextEssayField" class="d-none"></textarea>
-                    <a href="/compe/detail" class="btn btn-primary btn-sm">다음 단계로 이동</a>
-                </form>
-
-                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">닫기</button>
-
-            </div>
-
+        <div class="d-flex justify-content-center align-items-center" style="height:100%;">
+            <div class="spinner-border text-light" role="status" style="width:4rem; height:4rem;"></div>
         </div>
     </div>
-</div>
 
-<script>
-document.addEventListener("DOMContentLoaded", function () {
+    <!-- 모달 -->
+    <div class="modal fade" id="essayModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+            <div class="modal-content">
 
-    const category = document.getElementById("jobCategory");
-    const details = document.querySelectorAll(".job-detail");
-    const selectedJob = "${empty form.desireJob ? '' : fn:escapeXml(form.desireJob)}";
-    const ctxPath = "${pageContext.request.contextPath}";
+                <div class="modal-header">
+                    <h5 class="modal-title">생성된 자기소개서</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
 
-    const map = {
-        plan: ["기획자","마케팅기획자","사업기획자","전략기획자","상품기획자","프로덕트매니저","경영기획자",
-               "서비스기획자","광고기획자","브랜드기획자","웹기획자","리서처","데이터분석가"],
-        marketing: ["마케터","온라인마케터","브랜드마케터","광고마케터","콘텐츠마케터","콘텐츠기획자",
+                <div class="modal-body">
+                    <textarea id="modalEssayArea" class="form-control" rows="20"></textarea>
+                </div>
+
+                <div class="modal-footer">
+
+                    <form id="nextPageForm">
+                        <textarea name="essay" id="nextEssayField" class="d-none"></textarea>
+                        <a href="/compe/detail" class="btn btn-primary btn-sm">다음 단계로 이동</a>
+                    </form>
+
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">닫기</button>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const category = document.getElementById("jobCategory");
+            const details = document.querySelectorAll(".job-detail");
+            const selectedJob = "${empty form.desireJob ? '' : fn:escapeXml(form.desireJob)}";
+            const ctxPath = "${pageContext.request.contextPath}";
+
+            const map = {
+                plan: ["기획자","마케팅기획자","사업기획자","전략기획자","상품기획자","프로덕트매니저","경영기획자",
+                    "서비스기획자","광고기획자","브랜드기획자","웹기획자","리서처","데이터분석가"],
+                marketing: ["마케터","온라인마케터","브랜드마케터","광고마케터","콘텐츠마케터","콘텐츠기획자",
                     "광고운영자","채널매니저","프로모션매니저"],
-        office: ["사무원","총무담당","비서","사무보조","행정담당","경영지원","자료입력원"],
-        it: ["백엔드개발자","프론트엔드개발자","웹개발자","보안엔지니어","네트워크엔지니어",
-             "AI엔지니어","자바개발자","파이썬개발자","자바스크립트개발자"],
-        sales: ["영업사원","영업지원담당","영업관리자","기술영업사원","상담영업원","해외영업사원"],
-        logistics: ["물류담당자","재고담당자","창고관리자","자재관리자","구매담당자"],
-        production: ["생산직사원","생산관리자","품질관리자","기계조작원"],
-        construction: ["전기기사","현장관리자","토목기사","건축설계사"],
-        medical: ["간호사","간호조무사","병원행정직원","환자안내직원"],
-        education: ["학원강사","교육운영담당","학생지도교사","학습상담사","보육교사"]
-    };
+                office: ["사무원","총무담당","비서","사무보조","행정담당","경영지원","자료입력원"],
+                it: ["백엔드개발자","프론트엔드개발자","웹개발자","보안엔지니어","네트워크엔지니어",
+                    "AI엔지니어","자바개발자","파이썬개발자","자바스크립트개발자"],
+                sales: ["영업사원","영업지원담당","영업관리자","기술영업사원","상담영업원","해외영업사원"],
+                logistics: ["물류담당자","재고담당자","창고관리자","자재관리자","구매담당자"],
+                production: ["생산직사원","생산관리자","품질관리자","기계조작원"],
+                construction: ["전기기사","현장관리자","토목기사","건축설계사"],
+                medical: ["간호사","간호조무사","병원행정직원","환자안내직원"],
+                education: ["학원강사","교육운영담당","학생지도교사","학습상담사","보육교사"]
+            };
 
-    // 기존 선택값으로 대분류/세부직무 세팅
-    if (selectedJob !== "") {
-        for (let key in map) {
-            if (map[key].includes(selectedJob)) {
-                category.value = key;
-                const detailSelect = document.getElementById(key + "Jobs");
-                if (detailSelect) {
-                    detailSelect.style.display = "block";
-                    detailSelect.disabled = false;
-                    detailSelect.value = selectedJob;
+            // 기존 선택값으로 대분류/세부직무 세팅
+            if (selectedJob !== "") {
+                for (let key in map) {
+                    if (map[key].includes(selectedJob)) {
+                        category.value = key;
+                        const detailSelect = document.getElementById(key + "Jobs");
+                        if (detailSelect) {
+                            detailSelect.style.display = "block";
+                            detailSelect.disabled = false;
+                            detailSelect.value = selectedJob;
+                        }
+                    }
                 }
             }
-        }
-    }
 
-    function showDetail() {
-        details.forEach(el => {
-            el.style.display = "none";
-            el.disabled = true;
-        });
-        if (category.value) {
-            const target = document.getElementById(category.value + "Jobs");
-            if (target) {
-                target.style.display = "block";
-                target.disabled = false;
-            }
-        }
-    }
-
-    category.addEventListener("change", showDetail);
-    showDetail();
-
-    // AI 생성 요청
-    const form = document.getElementById("generateForm");
-
-    form.addEventListener("submit", function (e) {
-        e.preventDefault();
-
-        document.getElementById("loadingOverlay").style.display = "block";
-
-        const formData = new FormData(form);
-        formData.append("extraGuide", document.getElementById("aiGuide").value.trim());
-
-        fetch(ctxPath + "/compe/generateAjax", {
-            method: "POST",
-            body: formData
-        })
-            .then(res => {
-                if (!res.ok) {
-                    throw new Error("HTTP 상태코드: " + res.status);
+            function showDetail() {
+                details.forEach(el => {
+                    el.style.display = "none";
+                    el.disabled = true;
+                });
+                if (category.value) {
+                    const target = document.getElementById(category.value + "Jobs");
+                    if (target) {
+                        target.style.display = "block";
+                        target.disabled = false;
+                    }
                 }
-                return res.json();
-            })
-            .then(data => {
-                document.getElementById("loadingOverlay").style.display = "none";
+            }
 
-                document.getElementById("modalEssayArea").value = data.generatedEssay;
-                document.getElementById("nextEssayField").value = data.generatedEssay;
+            category.addEventListener("change", showDetail);
+            showDetail();
 
-                const modal = new bootstrap.Modal(document.getElementById("essayModal"));
-                modal.show();
-            })
-            .catch(err => {
-                console.error(err);
-                alert("자기소개서 생성 중 오류가 발생했습니다.");
-                document.getElementById("loadingOverlay").style.display = "none";
+            // AI 생성 요청
+            const form = document.getElementById("generateForm");
+
+            form.addEventListener("submit", function (e) {
+                e.preventDefault();
+
+                document.getElementById("loadingOverlay").style.display = "block";
+
+                const formData = new FormData(form);
+                formData.append("extraGuide", document.getElementById("aiGuide").value.trim());
+
+                fetch(ctxPath + "/compe/generateAjax", {
+                    method: "POST",
+                    body: formData
+                })
+                    .then(res => {
+                        if (!res.ok) {
+                            throw new Error("HTTP 상태코드: " + res.status);
+                        }
+                        return res.json();
+                    })
+                    .then(data => {
+                        document.getElementById("loadingOverlay").style.display = "none";
+
+                        document.getElementById("modalEssayArea").value = data.generatedEssay;
+                        document.getElementById("nextEssayField").value = data.generatedEssay;
+
+                        const modal = new bootstrap.Modal(document.getElementById("essayModal"));
+                        modal.show();
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        alert("자기소개서 생성 중 오류가 발생했습니다.");
+                        document.getElementById("loadingOverlay").style.display = "none";
+                    });
             });
-    });
 
-});
+        });
 
-//샘플 데이터 자동 입력
-document.getElementById("fillSampleBtn").addEventListener("click", function () {
+        //샘플 데이터 자동 입력
+        document.getElementById("fillSampleBtn").addEventListener("click", function () {
 
-    document.querySelector("input[name='stdntNm']").value = "정태민";
-    document.querySelector("input[name='birthYear']").value = "19991231";
+            document.querySelector("input[name='stdntNm']").value = "한지민";
+            document.querySelector("input[name='birthYear']").value = "20040922";
 
-    document.querySelector("input[name='lastAcdmcr']").value =
-        "대덕대학교 컴퓨터정보학과 졸업 예정(2025년 2월)";
+            document.querySelector("input[name='lastAcdmcr']").value =
+                "대덕대학교 컴퓨터정보학과 졸업 예정(2026년 1월)";
 
-    document.querySelector("select[name='miltrAt']").value = "군필";
 
-    document.getElementById("jobCategory").value = "it";
-    document.querySelectorAll(".job-detail").forEach(e => {
-        e.style.display = "none";
-        e.disabled = true;
-    });
-    const itSel = document.getElementById("itJobs");
-    itSel.style.display = "block";
-    itSel.disabled = false;
-    itSel.value = "백엔드개발자";
+            document.getElementById("jobCategory").value = "it";
+            document.querySelectorAll(".job-detail").forEach(e => {
+                e.style.display = "none";
+                e.disabled = true;
+            });
+            const itSel = document.getElementById("itJobs");
+            itSel.style.display = "block";
+            itSel.disabled = false;
+            itSel.value = "백엔드개발자";
 
-    document.querySelector("textarea[name='crqfc']").value =
-        "정보처리산업기사 합격(2024)\nSQLD 자격증 취득(2023)";
+            document.querySelector("textarea[name='crqfc']").value =
+                "정보처리산업기사 합격(2024)\nSQLD 자격증 취득(2023)";
 
-    document.querySelector("textarea[name='edcHistory']").value =
-        "Spring Boot, MyBatis 기반 웹 개발 프로젝트 수행\nJava 백엔드 심화 과정 수료";
+            document.querySelector("textarea[name='edcHistory']").value =
+                "Spring Boot, MyBatis 기반 웹 개발 프로젝트 수행\nJava 백엔드 심화 과정 수료";
 
-    document.querySelector("textarea[name='mainProject']").value =
-        "대학 LMS 통합 시스템 개발\n- MYBATIS ORM 적용\n- 강의평가, 성적처리, 상담 모듈 개발\n- UI 리뉴얼 및 배포";
+            document.querySelector("textarea[name='mainProject']").value =
+                "대학 LMS 통합 시스템 개발\n- MYBATIS ORM 적용\n- 강의평가, 성적처리, 상담 모듈 개발\n- UI 리뉴얼 및 배포";
 
-    document.querySelector("textarea[name='character']").value =
-        "문제 해결 능력이 뛰어나며 협업 과정에서 의사소통이 원활합니다.\n새 기술 학습 속도가 빠르고 책임감이 강합니다.";
+            document.querySelector("textarea[name='character']").value =
+                "문제 해결 능력이 뛰어나며 협업 과정에서 의사소통이 원활합니다.\n새 기술 학습 속도가 빠르고 책임감이 강합니다.";
 
-    document.getElementById("aiGuide").value =
-        "실무 백엔드 개발자로 지원한다는 느낌을 강조하고, 협업 경험을 중심으로 자연스럽게 작성해주세요.";
-});
+            document.getElementById("aiGuide").value =
+                "실무 백엔드 개발자로 지원한다는 느낌을 강조하고, 협업 경험을 중심으로 자연스럽게 작성해주세요.";
+        });
 
-</script>
+    </script>
 
 <%@ include file="../footer.jsp" %>
