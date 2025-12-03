@@ -36,7 +36,7 @@ import org.springframework.web.server.ResponseStatusException;
 public class DashboardApiController {
 
     // 서비스 의존성: 생성자 주입 (불변성 유지)
-    private final DitAccountService ditAccountService;          // 향후 계정 정보 확장용
+    private final DitAccountMapper ditAccountMapper;          // 향후 계정 정보 확장용
     private final IndexBbsService indexBbsService;               // 메인 공지/뉴스/행사/학술
     private final IndexScheduleEventService indexScheduleEventService; // 학사 일정 조회
 
@@ -118,7 +118,7 @@ public class DashboardApiController {
 
         log.debug("acntId : {}", acntId);
 
-        acntVO = ditAccountService.findById(acntId);
+        acntVO = ditAccountMapper.findById(acntId);
 
         // 권한은 HttpServletRequest 에서 직접 판별
         if (request.isUserInRole("ROLE_STUDENT")) {
