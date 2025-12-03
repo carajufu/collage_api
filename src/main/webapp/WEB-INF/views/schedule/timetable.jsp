@@ -2,12 +2,21 @@
 
 <%@ include file="../header.jsp" %>
 
-    <!-- 전역 스케줄러 css -->
-    <link rel="stylesheet"
-          href="${pageContext.request.contextPath}/css/schedule.css" />
+<!-- 전역 스케줄러 css -->
+<link rel="stylesheet"
+      href="${pageContext.request.contextPath}/css/schedule.css" />
 
-    <!-- FullCalendar 정적 리소스 -->
-    <script src="${pageContext.request.contextPath}/assets/libs/fullcalendar/index.global.min.js"></script>
+<!-- FullCalendar 정적 리소스 -->
+<script src="${pageContext.request.contextPath}/assets/libs/fullcalendar/index.global.min.js"></script>
+
+<style>
+.fc .fc-toolbar h2 {
+    font-size: 20px;
+    line-height: 30px;
+    text-transform: uppercase;
+}
+
+</style>
 
 <div class="row pt-3 px-5">
     <nav aria-label="breadcrumb">
@@ -25,16 +34,14 @@
 <div class="row">
     <div class="col-xxl-12 col-12">
         <div class="timetable-container">
-        <!-- FullCalendar 마운트 타겟 -->
-        <div id="timetable"></div>
+            <!-- FullCalendar 마운트 타겟 -->
+            <div id="timetable"></div>
         </div>
     </div>
 </div>
 <!-- 공용 툴팁: 인스턴스 1개 재사용 -->
 <div id="event-tooltip" class="event-tooltip"></div>
 
-
-<%-- <%@ include file="../footer.jsp" %> --%>
 <script>
 document.addEventListener("DOMContentLoaded", function () {
     var el = document.getElementById("timetable");
@@ -76,12 +83,13 @@ document.addEventListener("DOMContentLoaded", function () {
        [FullCalendar 초기화]
        - timeGridWeek 고정: "강의 시간표" 목적이므로 월/리스트 뷰 불필요
        - slotMin/Max: 운용 정책에 맞게 08~22시
+       - weekends: false -> 주말(토/일) 컬럼 제거
        ===================================================================== */
     var calendar = new FullCalendar.Calendar(el, {
         locale: "ko",
         initialView: "timeGridWeek",
         firstDay: 1,
-        weekends: true,
+        weekends: false,          // << 주말 숨김
         allDaySlot: false,
         slotMinTime: "08:00:00",
         slotMaxTime: "22:00:00",
@@ -237,8 +245,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
         /* =================================================================
            [이벤트 클릭: 툴팁 고정 모드]
-           - 교수/학생 모두 동일 로직
-           - 내용 구성은 buildDetailHtml에서 역할에 따라 분기
            ================================================================= */
         eventClick: function(info) {
             var e = info.event;
@@ -284,8 +290,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
         /* =================================================================
            [이벤트 호버: 요약 툴팁]
-           - sticky 상태일 때는 무시 (사용자 의도 우선)
-           - 내용은 동일 buildDetailHtml 사용 (중복 제거)
            ================================================================= */
         eventMouseEnter: function(info) {
             if (sticky) return;
@@ -308,9 +312,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     /* =====================================================================
        [헤더 타이틀 규칙]
-       1순위: 이벤트에 year+semstr 존재 → "YYYY년 N학기 강의 시간표"
-       2순위: 뷰 시작일 기준 월 N주차 → "YYYY년 M월 N주차, 강의 시간표"
-       - 학기 정보를 서버에서 신뢰할 수 있을 때는 그걸 우선 사용
        ===================================================================== */
     function updateHeaderTitle() {
         var titleEl = el.querySelector(".fc-toolbar-title");
@@ -347,10 +348,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     /* =====================================================================
        [툴팁 내용 생성]
-       - 요구사항:
-         * 교수(또는 관리 뷰): 출력 가능한 정보 최대한 노출 (운영/진단용)
-         * 학생: 최소 정보 (강의명, 강의실, 시간, 담당교수)만 노출
-       - type 필드로 분기
        ===================================================================== */
     function buildDetailHtml(event) {
         var p = event.extendedProps || {};
@@ -358,7 +355,6 @@ document.addEventListener("DOMContentLoaded", function () {
         var html = "";
 
         if (type === "STUDENT") {
-            // 학생 뷰: 일정 안내 목적. 과도한 메타 정보 숨김.
             html += line("강의명", p.lectureName || event.title);
             html += line("강의실", p.room);
             html += line("시간", formatTimeRangeWithAmPm24(event.start, event.end));
@@ -366,7 +362,6 @@ document.addEventListener("DOMContentLoaded", function () {
             return html;
         }
 
-        // 교수 및 기타 권한: 모니터링/운영용 정보 풀 노출.
         var typeLabel = "";
         if (type === "PROF") typeLabel = "교수 시간표";
         else if (type === "STUDENT") typeLabel = "학생 시간표";
@@ -396,8 +391,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     /* =====================================================================
        [툴팁 위치 제어]
-       - hover: 마우스 기준, 뷰포트 밖으로 나가지 않도록 보정
-       - sticky: 여기서는 건드리지 않음 (eventClick에서 좌표 설정)
        ===================================================================== */
     function updateTooltipPosition(ev) {
         if (!ev || !tooltipEl || tooltipEl.style.display === "none") return;
@@ -424,11 +417,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     /* =====================================================================
        [시간/포맷 유틸]
-       - 전역 정책: "오전/오후 + 24시간제"
-       - 예: 오전 09:00, 오후 13:00, 오후 16:00
        ===================================================================== */
-
-    // 단일 시각 포맷
     function formatAmPm24(date) {
         var d = toDate(date);
         var h = d.getHours();
@@ -437,7 +426,6 @@ document.addEventListener("DOMContentLoaded", function () {
         return ampm + " " + pad2(h) + ":" + pad2(m);
     }
 
-    // 범위 포맷: "오전/오후 HH:MM ~ 오전/오후 HH:MM"
     function formatTimeRangeWithAmPm24(start, end) {
         if (!start) return "";
         var s = formatAmPm24(start);
@@ -446,14 +434,12 @@ document.addEventListener("DOMContentLoaded", function () {
         return s + " ~ " + e;
     }
 
-    // label/value 한 줄 생성. value 없으면 스킵.
     function line(label, value) {
         if (value === undefined || value === null || value === "") return "";
         return "<div><span class='label'>" + escapeHtml(label)
             + " : </span>" + escapeHtml(value) + "</div>";
     }
 
-    // Date -> YYYY-MM-DD
     function dateToYmd(d) {
         return d.getFullYear() + "-" + pad2(d.getMonth() + 1) + "-" + pad2(d.getDate());
     }
@@ -477,4 +463,5 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 </script>
+
 <%@ include file="../footer.jsp" %>

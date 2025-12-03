@@ -414,16 +414,18 @@
 
 /* 공휴일 · 임시공휴일 = 빨간색 톤 */
 .academic-calendar-page .fc-event.type-HOLIDAY {
-    background-color: #fecaca;   /* red-200 */
-    border-color: #fca5a5;       /* red-300 */
+    background-color: #dc2626;   /* 진한 빨강으로 변경 (흰 글자 대비) */
+    border-color: #b91c1c;
 }
+
 .academic-calendar-page .fc-event.type-HOLIDAY .fc-event-title,
 .academic-calendar-page .fc-event.type-HOLIDAY .fc-event-main,
 .academic-calendar-page .fc-event.type-HOLIDAY .fc-time {
-    color: #b91c1c !important;   /* red-700 */
+    color: #ffffff !important;   /* 글꼴 색상 흰색 */
 }
-.academic-calendar-page .legend-color.type-HOLIDAY {
-    background-color: #dc2626;   /* red-600 */
+
+.academic-calendar-page .fc-event.type-HOLIDAY .fc-time {
+    background-color: rgba(0, 0, 0, 0.18); /* 흰 글자용 살짝 어두운 배경 */
 }
 
 /* 시간 뱃지 */
@@ -451,8 +453,8 @@
 .academic-calendar-page .fc-daygrid-dot-event .fc-event-main {
     display: flex;
     align-items: center;
-    width: 100%;
-    overflow: hidden;
+    width: 100%;/* 
+    overflow: hidden; */
 }
 .academic-calendar-page .fc-daygrid-dot-event .fc-time {
     flex: 0 0 auto;

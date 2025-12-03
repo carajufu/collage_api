@@ -3,7 +3,7 @@
 
 <!-- ================================================================== -->
 <!-- [code-intent] 학생 대시보드: 수강 카드 + 학적 진행률 + 캠퍼스 소식 + 학사 일정 캘린더 -->
-<!-- [data-flow] 서버(Model) → 카드/테이블/캘린더 UI → 학생이 현재 학사 상태·일정 한눈에 파악 -->
+<!-- [data-flow] 서버(Model) -> 카드/테이블/캘린더 UI -> 학생이 현재 학사 상태·일정 한눈에 파악 -->
 <!-- ================================================================== -->
 
 <!-- Pretendard + Bootstrap -->
@@ -21,16 +21,28 @@
 
 <style>
 /* =====================================================================
- * 공통 레이아웃 / 카드 스킨
+ * 0. 공통 설정 / 레이아웃
  * =================================================================== */
+:root {
+    --primary-color: #0d6efd;   /* Bootstrap Primary Blue */
+    --secondary-bg: #f8f9fa;
+}
 
-/* 대시보드 루트 row 좌우 패딩 (header 의 .px-5 와 충돌 없음) */
+/* 메인 컨테이너 높이 */
+#main-container.container-fluid {
+    height: auto;
+    min-height: calc(100vh - 120px);
+    padding-top: 12px;
+    padding-bottom: 12px;
+}
+
+/* 대시보드 루트 row 좌우 패딩 */
 .dashboard-row {
     padding-right: 1rem !important;
     padding-left: 1rem !important;
 }
 
-/* 메인/사이드 컬럼 비율 및 상단 여백 최소화 */
+/* 메인/사이드 컬럼 비율 */
 .dashboard-main-col,
 .dashboard-side-col {
     margin-top: 0;
@@ -45,62 +57,66 @@
     .dashboard-side-col {
         flex: 0 0 30%;
         max-width: 30%;
-    }
-    .dashboard-side-col {
         padding-left: 1.5rem;
     }
 }
 
-/* 대시보드 공용 내부 카드 (body_1/body_2) */
+/* 공용 카드 */
+.card {
+    border: none;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.08);
+    border-radius: 12px;
+}
+
+/* 내부 body 카드 */
 .card-body_1,
 .card-body_2 {
     background-color: #fff;
     border-radius: .75rem;
     box-shadow: 0 .125rem .25rem rgba(15, 23, 42, .09);
-    margin-top: 0 !important;
-    margin-bottom: 4px !important;
+    margin-top: -10px !important;
+    margin-bottom: -6px !important;
     height: auto !important;
-    padding-left: 1.28rem;
-    padding-right: 1.28rem;
+    padding-left: 0.28rem !important;
+    padding-right: 0.28rem !important;
 }
 
-/* 메인 컨테이너 높이 */
-#main-container.container-fluid {
-    height: auto;
-    min-height: calc(100vh - 120px);
-    padding-top: 12px;
-    padding-bottom: 12px;
+/* 공통 card-title 미세 튜닝 */
+.card-title {
+    font-size: 14px;
+    margin: -8px 0 2px -8px;
+}
+
+/* 헤더 px-5 강제 축소 */
+.px-5 {
+    padding-right: 0rem !important;
+    padding-left: 0rem !important;
 }
 
 /* =====================================================================
- * 수강 중인 강의 카드 영역
+ * 1. 수강 중인 강의 카드 영역
  * =================================================================== */
-
-/* 상단 수강 카드 row 여백 */
 .lecture-row {
     margin-top: .25rem;
     margin-bottom: .25rem;
 }
 
-/* 래퍼 카드: 그림자만, 외곽 라인 제거 */
 .lecture-card-wrapper {
     border: 0;
     box-shadow: 0 .5rem 1.5rem rgba(15, 23, 42, .08);
     border-radius: 1rem;
 }
 
-/* 개별 수강 카드: 평면 + 연한 보더 */
 .lecture-card-item {
     box-shadow: none !important;
     border: 1px solid #e5e7eb;
-    border-radius: .9rem;
+    border-radius: 0.3rem;
     max-width: 260px;
     width: 100%;
-    padding: 0.6rem 1rem;
+    padding: .8rem .8rem;
     cursor: pointer;
 }
 
-/* 카드 텍스트 */
 .lecture-card-item .card-title {
     font-size: 0.95rem;
     font-weight: 600;
@@ -116,10 +132,21 @@
     margin-bottom: 0.1rem;
 }
 
-/* =====================================================================
- * 학적 진행률 카드
- * =================================================================== */
+/* 수강 카드 그리드 간격 */
+.lecture-card-wrapper .row.g-3 {
+    --bs-gutter-x: 1.5rem;
+    --bs-gutter-y: 0.1rem;
+}
 
+/* Velzon gutter 튜닝 */
+.g-3, .gy-3 {
+    --vz-gutter-y: 0rem !important;
+    --vz-gutter-x: 1.9rem !important;
+}
+
+/* =====================================================================
+ * 2. 학적 진행률 카드
+ * =================================================================== */
 .academic-progress-card {
     background-color: #ffffff;
     border-radius: .9rem;
@@ -134,7 +161,6 @@
     padding-bottom: .75rem;
 }
 
-/* 테이블 외곽은 유지, 행 사이만 옅게 */
 .academic-progress-table {
     border-collapse: separate;
     border-spacing: 0;
@@ -153,7 +179,6 @@
     border-color: #e5e7eb;
 }
 
-/* 학적 이행 테이블 행/폰트 */
 .academic-progress-table .progress-metric-label {
     font-weight: 600;
     text-align: left;
@@ -165,7 +190,6 @@
     padding-bottom: .55rem;
 }
 
-/* 진행률 바 + 메타 텍스트 */
 .academic-progress-table .progress {
     height: 0.6rem;
     border-radius: 999px;
@@ -177,7 +201,6 @@
     color: #6c757d;
 }
 
-/* 충족/미충족 Pill */
 .academic-progress-table .status-pill {
     display: inline-flex;
     align-items: center;
@@ -199,9 +222,8 @@
 }
 
 /* =====================================================================
- * 캠퍼스 소식 카드
+ * 3. 캠퍼스 소식 카드
  * =================================================================== */
-
 .campus-news-card {
     background-color: #ffffff;
     border-radius: .9rem;
@@ -219,7 +241,6 @@
 .campus-news-card .campus-news-tabs {
     margin: 0;
     border-radius: .9rem .9rem 0 0;
-    overflow: hidden;
     background-color: #eef2ff;
     border-bottom: 1px solid #e5e7eb;
 }
@@ -242,7 +263,6 @@
     box-shadow: 0 0 0 1px rgba(79, 70, 229, 0.3);
 }
 
-/* 테이블 스킨 */
 .campus-news-table-wrapper {
     padding: 0.75rem 1.25rem 0.75rem;
     border-radius: 0 0 .9rem .9rem;
@@ -279,7 +299,6 @@
 .campus-news-table .campus-title-cell {
     max-width: 0;
     white-space: nowrap;
-    overflow: hidden;
     text-overflow: ellipsis;
 }
 
@@ -287,17 +306,14 @@
     width: 48px;
     text-align: center;
 }
-
 .campus-news-table .col-writer {
     width: 120px;
     text-align: center;
 }
-
 .campus-news-table .col-date {
     width: 120px;
     text-align: center;
 }
-
 .campus-news-table .col-hit {
     width: 80px;
     text-align: center;
@@ -312,22 +328,20 @@
     color: inherit;
     text-decoration: none;
 }
-
 .campus-news-table .campus-title-cell a:hover {
     text-decoration: underline;
 }
 
 /* =====================================================================
- * 학사 일정 미니 캘린더 카드
+ * 4. 학사 일정 미니 캘린더 카드 + 로딩 레이어
  * =================================================================== */
-
 .academic-card {
     background-color: #fff;
     border-radius: 1rem;
     box-shadow: 0 .5rem 1.5rem rgba(15, 23, 42, .08);
     margin-top: 0 !important;
     margin-bottom: 10px !important;
-    padding: 2px 8px 4px;
+    padding: 0 !important;
     height: auto !important;
     max-height: none !important;
     overflow: visible !important;
@@ -337,18 +351,57 @@
 
 /* 미니 캘린더 컨테이너 */
 .calendar-container {
+    position: relative;
     margin: 0;
-    padding: 0.5rem 1rem 0.75rem 1rem;
+    padding: 1.8rem 1.8rem 1.8rem 1.8rem !important;
     background-color: #ffffff;
 }
 
-/* FullCalendar 기본 폰트 축소 */
+/* 로딩 오버레이 */
+.loading-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.75);
+    z-index: 10;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    border-radius: 1rem;
+}
+.loading-overlay.visible {
+    display: flex;
+}
+
+/* FullCalendar 전체 폰트 스케일 */
 .timetable-container .fc,
 .calendar-container .fc {
     font-size: 0.78rem;
 }
 
-/* 오늘 날짜 스타일 */
+/* 헤더/요일 영역 */
+.fc .fc-toolbar.fc-header-toolbar {
+    margin-bottom: 0.5em;
+}
+.fc .fc-toolbar-title {
+    font-weight: 800;
+    color: #1e3a8a;
+    font-size: 1.05rem;
+}
+.fc .fc-button-primary {
+    background-color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+    box-shadow: none !important;
+}
+.fc .fc-daygrid-day {
+    border: 1px solid #f0f0f0;
+}
+.fc .fc-col-header-cell {
+    background-color: #eef2ff;
+    font-weight: 700;
+    color: #1e3a8a;
+}
+
+/* 날짜 번호 스타일 */
 .fc .fc-daygrid-day-number {
     display: flex;
     align-items: center;
@@ -361,10 +414,10 @@
     font-weight: 500;
 }
 
+/* 오늘 날짜 */
 .fc-daygrid-day.fc-day-today .fc-daygrid-day-frame {
     background-color: rgba(88, 101, 242, 0.05);
 }
-
 .fc-daygrid-day.fc-day-today .fc-daygrid-day-number {
     display: inline-flex;
     align-items: center;
@@ -379,11 +432,10 @@
     font-size: 0.69rem;
 }
 
-/* 날짜 선택 하이라이트 */
+/* 선택 날짜 */
 .fc-daygrid-day.fc-day-selected .fc-daygrid-day-frame {
     background-color: rgba(30, 90, 255, 0.09);
 }
-
 .fc-daygrid-day.fc-day-selected .fc-daygrid-day-number {
     display: inline-flex;
     align-items: center;
@@ -403,126 +455,173 @@
     padding-top: 4px;
 }
 
-.fc .fc-toolbar.fc-header-toolbar {
-    margin-bottom: 0.5em;
+/* 달력 높이 */
+.academic-card #calendar {
+    height: 350px;
 }
 
-/* 미니 캘린더에서 prev/next 등 버튼 숨김 (헤더만 중앙 타이틀용) */
-.academic-card .calendar-container .fc-button-group,
-.academic-card .calendar-container .fc-header-toolbar .fc-toolbar-chunk:first-child {
-    display: none;
+/* ===== FullCalendar prev/next 버튼: 심플 꺾쇠 텍스트만 ===== */
+.academic-card .calendar-container .fc-button-primary {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    min-width: 0 !important;
+    height: auto !important;
 }
 
+/* 기존 아이콘 숨김 */
+.academic-card .calendar-container .fc-prev-button .fc-icon,
+.academic-card .calendar-container .fc-next-button .fc-icon {
+    display: none !important;
+}
+
+/* FullCalendar prev/next 버튼: 항상 투명 배경 */
+.academic-card .calendar-container .fc-button-primary,
+.academic-card .calendar-container .fc-button-primary:hover,
+.academic-card .calendar-container .fc-button-primary:focus,
+.academic-card .calendar-container .fc-button-primary:active,
+.academic-card .calendar-container .fc-button-primary.fc-button-active {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+/* 아이콘은 그대로 꺾쇠 텍스트 */
+.academic-card .calendar-container .fc-prev-button .fc-icon,
+.academic-card .calendar-container .fc-next-button .fc-icon {
+    display: none !important;
+}
+.academic-card .calendar-container .fc-prev-button::after,
+.academic-card .calendar-container .fc-next-button::after {
+    display: inline-block;
+    font-size: 3.1rem;
+    line-height: 1;
+    font-weight: 100;
+    color: #000000;
+    padding: 0.2rem;
+}
+.academic-card .calendar-container .fc-prev-button::after { content: "<"; }
+.academic-card .calendar-container .fc-next-button::after { content: ">"; }
 .academic-card .calendar-container .fc-header-toolbar {
     justify-content: center;
 }
+/* 선택된 이벤트 박스 아이템 하이라이트 */
+.calendar-event-list-item.is-selected {
+    background-color: #e0edff;
+    box-shadow: 0 0 0 1px #2563eb inset;
+}
 
-/* dayGrid 이벤트 스타일 */
+.calendar-event-list-item.is-selected .calendar-event-title,
+.calendar-event-list-item.is-selected .calendar-event-time {
+    color: #1d4ed8;
+    font-weight: 700;
+}
+
+/* =====================================================================
+ * 5. dayGrid 이벤트(상단 캘린더) – 얇은 띠 모드
+ * =================================================================== */
+
+/* dayGrid 의 "+ n more" 를 단순 텍스트처럼 보이게 */
+.fc-daygrid-more-link {
+    pointer-events: none;   /* 클릭/hover 이벤트 막기 */
+    cursor: default;        /* 손가락 커서 -> 기본 커서 */
+    text-decoration: none;  /* 밑줄 제거 (있는 경우) */
+}
 .fc-daygrid-event {
-    border-radius: 4px;
-    padding: 1px 4px;
+    border-radius: 999px;
+    padding: 0;
+    margin: 1px 1px;
     border: 0;
-    font-size: 0.72rem;
-    line-height: 1.2;
+    height: 4px;
+    font-size: 0;
+    line-height: 1;
     font-weight: 500;
+    opacity: 0.9;
+}
+.fc-daygrid-event .fc-event-title,
+.fc-daygrid-event .fc-event-time {
+    display: none !important;
 }
 
-/* 타입별 색상 (셀 안) */
-.fc-daygrid-event.type-TASK {
-    background-color: rgba(34, 197, 94, 0.12);
-    border-left: 3px solid #22c55e;
-    color: #166534;
-}
+/* 타입별 색상 (캘린더 띠) */
+.fc-daygrid-event.type-TASK,
 .fc-daygrid-event.type-PROJECT {
-    background-color: rgba(249, 115, 22, 0.12);
-    border-left: 3px solid #f97316;
-    color: #9a3412;
+    background-color: #f97316;  /* 주황: 과제/시험/평가/프로젝트 */
+}
+.fc-daygrid-event.type-SYSTEM {
+    background-color: #6366f1;  /* 보라: 학사공지 */
 }
 .fc-daygrid-event.type-COUNSEL {
-    background-color: rgba(14, 165, 233, 0.12);
-    border-left: 3px solid #0ea5e9;
-    color: #075985;
+    background-color: #22c55e;  /* 연녹: 상담(예약) */
 }
 .fc-daygrid-event.type-COUNSEL_SLOT {
-    background-color: rgba(56, 189, 248, 0.12);
-    border-left: 3px solid #38bdf8;
-    color: #0369a1;
+    background-color: #0ea5e9;  /* 청녹: 상담가능 */
 }
 .fc-daygrid-event.type-ENROLL_REQ {
-    background-color: rgba(99, 102, 241, 0.12);
-    border-left: 3px solid #6366f1;
-    color: #3730a3;
+    background-color: #38bdf8;  /* 하늘: 수강신청/정정/철회 */
 }
 .fc-daygrid-event.type-ADMIN_REGIST {
-    background-color: rgba(168, 85, 247, 0.12);
-    border-left: 3px solid #a855f7;
-    color: #6b21a8;
+    background-color: #ec4899;  /* 분홍: 등록/휴학/복학/계절 */
 }
 .fc-daygrid-event.type-HOLIDAY {
-    background-color: rgba(239, 68, 68, 0.12);
-    border-left: 3px solid #ef4444;
-    color: #b91c1c;
+    background-color: #ef4444;  /* 빨강: 공휴일 */
 }
 
-/* 캘린더 하단 리스트 */
+/* "+ n more" 를 이벤트 막대 박스 안으로 정렬 */
+.fc-daygrid-day-events .fc-daygrid-more-link {
+    display: block;
+    margin: 0 2px;          /* 좌우 여백: 이벤트랑 맞춤 */
+    padding: 0 4px;         /* 필요하면 값 조절 */
+    box-sizing: border-box;
+    text-align: left;       /* 가운데 말고 왼쪽 정렬하고 싶을 때 */
+
+    pointer-events: none;   /* 클릭 막기(이전 요구사항 유지) */
+    cursor: default;
+    text-decoration: none;
+}
+.fc .fc-daygrid-day-events {
+    margin-top: -6px;
+}
+.fc .fc-daygrid-day-number {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap !important;
+    word-break: keep-all !important;
+    border-radius: 48%;
+    margin: 2px;
+    font-size: 10px;
+    font-weight: 380;
+}
+.fc-daygrid-day-top {
+    overflow: visible;
+    padding-top: 1px;
+}
+/* =====================================================================
+ * 6. 하단 일정 리스트 – 카드형 + 시간 들여쓰기 정렬
+ * =================================================================== */
 .calendar-event-list {
-    border-top: 1px solid #e5e7eb;
-    margin-top: .5rem;
-    padding-top: .25rem;
-    font-size: 0.75rem;
-    line-height: 1.35;
-    max-height: 300px;
-    overflow-y: auto;
+    margin-top: 20px;
+}
+
+/* 리스트 전체 카드 */
+.calendar-event-list-inner {
+    background-color: #ffffff;
+    border-radius: 0.85rem;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 .1rem .25rem rgba(15,23,42,.06);
+    overflow: hidden;
 }
 
 .calendar-event-list-header {
     display: flex;
-    align-items: center;
     justify-content: space-between;
-    margin-bottom: .25rem;
-}
-
-.calendar-event-list-item {
-    display: flex;
-    align-items: flex-start;
-    padding: .22rem .5rem;
-    margin-bottom: .18rem;
-    border-radius: .45rem;
-    border: 1px solid #e5e7eb;
-    background-color: #ffffff;
-}
-
-.calendar-event-list-item:last-child {
-    margin-bottom: 0;
-}
-
-.calendar-event-list-item .type-strip {
-    width: 4px;
-    border-radius: 999px;
-    margin-right: .6rem;
-    flex-shrink: 0;
-}
-
-.calendar-event-list-item-body {
-    flex: 1;
-}
-
-.calendar-event-time {
-    font-size: 0.75rem;
-    min-width: 38px;
+    align-items: center;
+    padding: 10px 14px;
+    background-color: var(--secondary-bg);
+    border-bottom: 1px solid #e5e7eb;
     font-weight: 600;
-    margin-right: .35rem;
-}
-
-.calendar-event-title {
-    font-size: 0.78rem;
-    font-weight: 500;
-}
-
-.calendar-event-meta {
-    color: #6b7280;
-    font-size: 0.7rem;
-    margin-top: 1px;
 }
 
 .calendar-event-list-header .badge {
@@ -530,89 +629,100 @@
     padding: .25rem .55rem;
 }
 
-/* 리스트형 이벤트: 카드 테두리 제거 + 상단 구분선만 */
-.calendar-event-list-item.type-TASK,
-.calendar-event-list-item.type-PROJECT,
-.calendar-event-list-item.type-COUNSEL,
-.calendar-event-list-item.type-COUNSEL_SLOT,
-.calendar-event-list-item.type-ENROLL_REQ,
-.calendar-event-list-item.type-ADMIN_REGIST,
-.calendar-event-list-item.type-HOLIDAY {
-    border: none !important;
-    box-shadow: none !important;
-    border-radius: 0;
-    padding: 6px 10px;
-    border-top: 2px solid #e5e7eb;
-    padding-bottom: 0.1rem;
-}
-
-/* 타입별 색상 (리스트) */
-.calendar-event-list-item.type-TASK .type-strip { background-color: #22c55e; }
-.calendar-event-list-item.type-PROJECT .type-strip { background-color: #f97316; }
-.calendar-event-list-item.type-COUNSEL .type-strip { background-color: #0ea5e9; }
-.calendar-event-list-item.type-COUNSEL_SLOT .type-strip { background-color: #38bdf8; }
-.calendar-event-list-item.type-ENROLL_REQ .type-strip { background-color: #6366f1; }
-.calendar-event-list-item.type-ADMIN_REGIST .type-strip { background-color: #a855f7; }
-.calendar-event-list-item.type-HOLIDAY .type-strip { background-color: #ef4444; }
-
-/* 달력 자체 높이 */
-.academic-card #calendar {
-    height: 350px;
-}
-
-/* 공통 card-title 미세 튜닝 */
-.card-title {
-    font-size: 14px;
-    margin: -8px 0px 2px -8px;
-}
-.px-5 {
-    padding-right: 0rem!important;
-    padding-left: 0rem!important;
-}
-.lecture-card-item {
-    box-shadow: none !important;
-    border: 1px solid #e5e7eb;
-    border-radius: 0.3rem;
-    max-width: 260px;
-    width: 100%;
-    padding: .8rem .8rem;
-    cursor: pointer;
-}
-/* 수강 카드 그리드: 상하/좌우 간격 동일하게 */
-.lecture-card-wrapper .row.g-3 {
-    --bs-gutter-x: 1.5rem;   /* 좌우 카드 간격 */
-    --bs-gutter-y: 0.1rem;   /* 상하 카드 간격 */
-}
-.g-3, .gy-3 {
-    --vz-gutter-y: 0rem !important;
-    --vz-gutter-x: 1.9rem !important;
-}
-.card-body_1, .card-body_2 {
-    background-color: #fff;
-    border-radius: .75rem;
-    box-shadow: 0 .125rem .25rem rgba(15, 23, 42, .09);
-    margin-top: -10px !important;
-    margin-bottom: -6px !important;
-    height: auto !important;
-    padding-left: 0.28rem !important;
-    padding-right: 0.28rem !important;
-}
-.calendar-container {
-    padding: 1.8rem 1.8rem 1.8rem 1.8rem !important;
-    background-color: #ffffff;
-}
-.academic-card {
-    background-color: #fff;
-    border-radius: 1rem;
-    box-shadow: 0 .5rem 1.5rem rgba(15, 23, 42, .08);
-    margin-top: 0 !important;
-    margin-bottom: 10px !important;
-    padding: -1px 0px 0px !important;
-    height: auto !important;
-    max-height: none !important;
-    overflow: visible !important;
+/* 개별 일정 행 */
+.calendar-event-list-item {
+    position: relative;
     display: flex;
-    flex-direction: column;
+    padding: 10px 14px;
+    padding-left: 1.75rem;   /* 왼쪽 색 띠 공간 */
+    border-bottom: 1px solid #f3f4f6;
+    transition: background-color 0.15s;
+}
+
+.calendar-event-list-item:last-child {
+    border-bottom: none;
+}
+
+.calendar-event-list-item:hover {
+    background-color: #f0f3f7;
+}
+
+/* 왼쪽 타입 띠 */
+.calendar-event-list-item .type-strip {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 6px;
+    border-radius: 0;
+}
+
+/* 시간 칼럼: 고정폭 -> "종일" 포함 정렬 기준 */
+.calendar-event-time {
+    display: inline-block;
+    font-size: 0.9em;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-right: 12px;
+    width: 64px;       /* 들여쓰기 기준 폭 */
+    flex-shrink: 0;
+}
+
+.calendar-event-title {
+    font-size: 0.95em;
+    font-weight: 500;
+    color: #212529;
+}
+
+/* 메모: 시간 칼럼 폭만큼 들여쓰기 -> 타이틀와 수직 정렬 */
+.calendar-event-meta {
+    font-size: 0.8em;
+    color: #6c757d;
+    margin-top: 2px;
+    margin-left: 64px;   /* calendar-event-time width 와 동일 */
+    padding-left: 0;
+}
+
+/* 리스트 타입별 띠 색상 (상단 캘린더와 동일 팔레트) */
+.calendar-event-list-item.type-TASK .type-strip,
+.calendar-event-list-item.type-PROJECT .type-strip {
+    background-color: #f97316;
+}
+.calendar-event-list-item.type-SYSTEM .type-strip {
+    background-color: #6366f1;
+}
+.calendar-event-list-item.type-COUNSEL .type-strip {
+    background-color: #22c55e;
+}
+.calendar-event-list-item.type-COUNSEL_SLOT .type-strip {
+    background-color: #0ea5e9;
+}
+.calendar-event-list-item.type-ENROLL_REQ .type-strip {
+    background-color: #38bdf8;
+}
+.calendar-event-list-item.type-ADMIN_REGIST .type-strip {
+    background-color: #ec4899;
+}
+.calendar-event-list-item.type-HOLIDAY .type-strip {
+    background-color: #ef4444;
+}
+
+/* 공휴일 리스트 행: 전체 카드도 빨간 배경 + 흰 글씨 */
+.calendar-event-list-item.type-HOLIDAY {
+    background-color: #ef4444;
+}
+.calendar-event-list-item.type-HOLIDAY .calendar-event-title,
+.calendar-event-list-item.type-HOLIDAY .calendar-event-time,
+.calendar-event-list-item.type-HOLIDAY .calendar-event-meta {
+    color: #ffffff;
+}
+.academic-card .calendar-container .fc-prev-button::after, .academic-card .calendar-container .fc-next-button::after {
+    display: inline-block;
+    font-size: 40px !important;
+    line-height: 1 !important;
+    font-weight: 100 !important;
+    color: #000000 !important;
+    padding: 0.1rem !important;
 }
 </style>
 
@@ -651,7 +761,9 @@
                                 </div>
                             </c:when>
                             <c:otherwise>
-                                <p class="text-muted mb-0">현재 수강 중인 강의가 없습니다.</p>
+                               <h5 class="text-muted mb-0 text-center">
+						            현재 수강 중인 강의가 없습니다.
+						        </h5>
                             </c:otherwise>
                         </c:choose>
                     </div>
@@ -861,31 +973,35 @@
     </div>
 
     <!-- 우측: 학사 캘린더 카드 -->
-	<div class="col-xxl-6 col-lg-6 dashboard-side-col">
+    <div class="col-xxl-6 col-lg-6 dashboard-side-col">
         <div class="card academic-card">
             <div class="calendar-container">
                 <div id="calendar"></div>
 
-                    <!-- 아래 일정 리스트 영역 -->
-                    <div id="calendar-event-list" class="calendar-event-list mt-3"></div>
-                    <div id="calendar-loading" class="calendar-loading">일정을 불러오는 중...</div>
+                <!-- 로딩 오버레이 -->
+                <div id="calendar-loading" class="loading-overlay">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
                 </div>
 
-                <!-- 공용 툴팁 (위치 이동 가능, ID 유지) -->
-                <div id="event-tooltip" class="event-tooltip"></div>
+                <!-- 아래 일정 리스트 영역 -->
+                <div id="calendar-event-list" class="calendar-event-list mt-3"></div>
             </div>
-        <!-- </div> -->
+
+            <!-- 공용 툴팁 (필요 시 사용) -->
+            <div id="event-tooltip" class="event-tooltip"></div>
+        </div>
     </div>
 </div>
 
 <%@ include file="../../footer.jsp"%>
-
 <script>
 /* ======================================================================
  * 학생 대시보드 전용 JS
- * - initLectureCards  : 수강 카드 클릭 → 상세 학습 페이지 이동
- * - initCalendar      : FullCalendar + 일자별 리스트 싱크
- * - initCampusNews    : 캠퍼스 소식 탭 → AJAX 테이블 렌더
+ * - initLectureCards  : 수강 카드 클릭 -> 상세 학습 페이지 이동
+ * - initCalendar      : FullCalendar + 일자별 리스트 싱크 (미니 캘린더)
+ * - initCampusNews    : 캠퍼스 소식 탭 -> AJAX 테이블 렌더
  * [정책] 전부 IIFE + DOMContentLoaded 안에서만 동작, 전역 오염 최소화
  * ==================================================================== */
 (function () {
@@ -932,6 +1048,51 @@
         return ampm + " " + pad2(h) + ":" + pad2(m);
     }
 
+    // 날짜 비교용 유틸 (멀티데이 이벤트 포함)
+    function toDateOnly(date) {
+        return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    }
+
+    function parseDateStr(dateStr) {
+        const parts = (dateStr || "").split("-");
+        if (parts.length !== 3) return null;
+        const y = parseInt(parts[0], 10);
+        const m = parseInt(parts[1], 10) - 1;
+        const d = parseInt(parts[2], 10);
+        return new Date(y, m, d);
+    }
+
+    // 선택한 날짜가 이벤트 기간 안에 포함되는지 판단
+    function isEventOnDate(ev, dateStr) {
+        if (!ev.start) return false;
+
+        let target = parseDateStr(dateStr);
+        if (!target) return false;
+
+        target = toDateOnly(target);
+        const start = toDateOnly(ev.start);
+        const hasEnd = !!ev.end;
+        const endDate = hasEnd ? toDateOnly(ev.end) : null;
+
+        // allDay 이벤트
+        if (ev.allDay) {
+            if (hasEnd) {
+                // FullCalendar allDay: [start, end) exclusive
+                return target >= start && target < endDate;
+            }
+            // end 없으면 하루짜리
+            return target.getTime() === start.getTime();
+        }
+
+        // 시간 이벤트 + end 존재 -> [start, end] 구간
+        if (hasEnd) {
+            return target >= start && target <= endDate;
+        }
+
+        // 시간 이벤트 + end 없음 -> start 날짜만
+        return target.getTime() === start.getTime();
+    }
+
     /* ---------- 1) 수강 카드 클릭 핸들러 ---------- */
 
     function initLectureCards() {
@@ -952,15 +1113,13 @@
     function initCalendar() {
         const calendarEl = document.getElementById("calendar");
         const loadingEl = document.getElementById("calendar-loading");
-        const tooltipEl = document.getElementById("event-tooltip");
         const eventListEl = document.getElementById("calendar-event-list");
+        const tooltipEl = document.getElementById("event-tooltip"); // 현재는 미사용, 확장 여지
 
-        if (!calendarEl) return;
+        if (!calendarEl || !eventListEl) return;
 
-        const eventCache = {};       // 기간별 이벤트 캐시
-        const typeVisibility = {};   // 타입별 on/off (legend 에서 사용, 없으면 전부 on)
-        let selectedDateStr = null;  // YYYY-MM-DD
-        let syncQueued = false;      // dayCell 높이 동기화 예약 플래그
+        // const todayStr = formatDate(new Date());
+        let selectedDateStr = null;
 
         function setLoading(visible) {
             if (!loadingEl) return;
@@ -970,49 +1129,42 @@
         const calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: "dayGridMonth",
             locale: "ko",
-            height: 400,
-            contentHeight: 360,
+            height: 460,
+            contentHeight: 460,
             expandRows: true,
             headerToolbar: {
-                left: "prev,next today",
+                left: "prev",
                 center: "title",
-                right: "dayGridMonth,timeGridWeek,timeGridDay,listWeek"
+                right: "next"
             },
-            dayMaxEvents: true,
+            dayMaxEvents: 4,
             dayMaxEventRows: true,
-            eventTimeFormat: { hour: "2-digit", minute: "2-digit", hour12: false },
 
-            eventContent: function (arg) {
-                const e = arg.event;
-                let html = "";
-
-                if (!e.allDay && e.start) {
-                    html += "<span class='fc-time'>" + formatAmPm24Time(e.start) + "</span> ";
-                }
-                html += "<span class='fc-title'>" + escapeHtml(e.title || "") + "</span>";
-                return { html: html };
+            // 셀 내부는 CSS 스트립만 쓰므로 여기서는 비워서 넘김
+            eventContent: function () {
+                return { html: "" };
             },
 
-            slotLabelContent: function (arg) {
-                return formatAmPm24Time(arg.date);
-            },
+            /* 5. 이벤트 타입별 컬러 정의
+               요구사항:
+               - 과제 · 시험 · 평가         | 주황색        -> TASK
+               - 학사공지                  | 보라색        -> SYSTEM
+               - 상담(예약건)              | 연녹색        -> COUNSEL
+               - 상담가능(교수시간)        | 청녹색        -> COUNSEL_SLOT
+               - 수강신청 · 정정/철회      | 하늘색        -> ENROLL_REQ
+               - 등록 · 휴학 · 복학 · 계절학기 | 분홍색  -> ADMIN_REGIST
+               - 공휴일 · 임시공휴일       | 빨간색        -> HOLIDAY
+            */
 
             events: function (info, successCallback, failureCallback) {
-                const startDate = info.startStr.substring(0, 10);
-                const endDate = info.endStr.substring(0, 10);
-                const cacheKey = startDate + "|" + endDate;
-
-                if (eventCache[cacheKey]) {
-                    successCallback(eventCache[cacheKey].map(applyTypeToEventDisplay));
-                    queueSyncDayCellHeights();
-                    return;
-                }
-
-                const url = "/api/schedule/events"
-                    + "?start=" + encodeURIComponent(startDate)
-                    + "&end=" + encodeURIComponent(endDate);
+                const start = info.startStr.slice(0, 10);
+                const end = info.endStr.slice(0, 10);
 
                 setLoading(true);
+
+                const url = "/api/schedule/events"
+                    + "?start=" + encodeURIComponent(start)
+                    + "&end=" + encodeURIComponent(end);
 
                 fetch(url, { method: "GET", credentials: "include" })
                     .then(function (response) {
@@ -1024,100 +1176,80 @@
                     .then(function (data) {
                         if (!Array.isArray(data)) {
                             console.error("[MiniCalendar] invalid response", data);
-                            eventCache[cacheKey] = [];
                             successCallback([]);
                             return;
                         }
 
-                        const events = data.map(function (e) {
-                            const type = e.type || "";
-                            if (!(type in typeVisibility)) {
-                                typeVisibility[type] = true; // 처음 보는 타입은 기본 ON
-                            }
+                        const events = data
+                            .map(function (e) {
+                                const rawType = e.type || "";
+                                const rawTitle = e.title || "";
+                                const rawMemo  = e.memo || e.content || "";
 
-                            const baseTitle = e.title || "";
-                            const title = buildTitle(type, baseTitle);
+                                // 시간표(LECTURE)는 미니 캘린더에서 제외
+                                if (rawType === "LECTURE") return null;
 
-                            const fcEvent = {
-                                id: e.id,
-                                title: title,
-                                start: e.startDate,
-                                end: e.endDate,
-                                allDay: !!e.allDay,
-                                extendedProps: {
-                                    rawTitle: baseTitle,
-                                    displayTitle: title,
-                                    type: type,
-                                    place: e.place,
-                                    target: e.target,
-                                    memo: e.memo || ""
-                                },
-                                classNames: type ? ["type-" + type] : []
-                            };
+                                // 내용 기반 타입 재분류
+                                const type = inferTypeFromContent(rawType, rawTitle, rawMemo);
 
-                            return applyTypeToEventDisplay(fcEvent);
-                        });
+                                const title = buildTitle(type, rawTitle);
 
-                        eventCache[cacheKey] = events;
+                                // 백엔드 필드명 방어적 매핑
+                                const startVal = e.startDate || e.startDt || e.start || e.START_DT;
+                                const endVal   = e.endDate   || e.endDt   || e.end   || e.END_DT;
+
+                                return {
+                                    id: e.id,
+                                    title: title,
+                                    start: startVal,
+                                    end: endVal,
+                                    allDay: !!e.allDay,
+                                    extendedProps: {
+                                        rawTitle: rawTitle,
+                                        displayTitle: title,
+                                        type: type,
+                                        place: e.place,
+                                        target: e.target,
+                                        memo: rawMemo
+                                    },
+                                    classNames: type ? ["type-" + type] : []
+                                };
+                            })
+                            .filter(Boolean);
+
                         successCallback(events);
                     })
                     .catch(function (error) {
-                        console.error("[Calendar] events load error", error);
+                        console.error("[MiniCalendar] events load error", error);
                         failureCallback(error);
                     })
                     .finally(function () {
                         setLoading(false);
-                        queueSyncDayCellHeights();
                     });
-            },
-
-            datesSet: function () {
-                queueSyncDayCellHeights();
-            },
-
-            eventDidMount: function () {
-                queueSyncDayCellHeights();
             },
 
             dateClick: function (info) {
                 setSelectedDate(info.dateStr);
             },
 
+            eventClick: function (info) {
+                const dateStr = info.event.startStr.slice(0, 10);
+                setSelectedDate(dateStr);
+            },
+
             eventsSet: function () {
                 if (!selectedDateStr) {
-                    const today = calendar.getDate();
+                    //selectedDateStr = todayStr;
+
+                    var today = calendar.getDate();
                     selectedDateStr = today.toISOString().slice(0, 10);
                 }
                 highlightSelectedDate();
                 renderEventList(selectedDateStr);
-            },
-
-            eventClick: function (info) {
-                const dateStr = info.event.startStr.slice(0, 10);
-                setSelectedDate(dateStr);
             }
         });
 
         calendar.render();
-
-        window.addEventListener("resize", queueSyncDayCellHeights);
-
-        // legend 가 있으면 타입 필터 토글 (없으면 no-op)
-        document.querySelectorAll(".legend-item[data-type]").forEach(function (item) {
-            const type = item.getAttribute("data-type");
-            if (!(type in typeVisibility)) {
-                typeVisibility[type] = true;
-            }
-
-            item.addEventListener("click", function () {
-                const enabled = typeVisibility[type] !== false;
-                const next = !enabled;
-                typeVisibility[type] = next;
-                item.classList.toggle("disabled", !next);
-                applyTypeFilterToRenderedEvents();
-                queueSyncDayCellHeights();
-            });
-        });
 
         function setSelectedDate(dateStr) {
             selectedDateStr = dateStr;
@@ -1125,67 +1257,118 @@
             renderEventList(dateStr);
         }
 
-        function queueSyncDayCellHeights() {
-            if (syncQueued) return;
-            syncQueued = true;
-            requestAnimationFrame(function () {
-                syncQueued = false;
-                syncDayCellHeights();
-                killCalendarScroll();
-            });
-        }
+     	// 선택 날짜 배경/라벨 하이라이트
+        function highlightSelectedDate() {
+            if (!selectedDateStr) return;
 
-        function killCalendarScroll() {
-            const scrollers = calendarEl.querySelectorAll(".fc-scroller");
-            scrollers.forEach(function (el) {
-                el.style.overflow = "visible";
-            });
-        }
+            const dayCells = calendarEl.querySelectorAll(".fc-daygrid-day");
+            dayCells.forEach(function (cell) {
+                const cellDate = cell.getAttribute("data-date");
+                if (!cellDate) return;
 
-        // 같은 주의 dayCell 높이를 맞춰 grid 찌그러짐 방지
-        function syncDayCellHeights() {
-            const view = calendar.view;
-            if (!view || view.type.indexOf("dayGrid") !== 0) return;
-
-            const frames = calendarEl.querySelectorAll(".fc-daygrid-day-frame");
-            if (!frames.length) return;
-
-            frames.forEach(f => { f.style.height = "auto"; });
-
-            let max = 0;
-            frames.forEach(f => {
-                if (f.offsetHeight > max) max = f.offsetHeight;
-            });
-            if (!max) return;
-
-            frames.forEach(f => { f.style.height = max + "px"; });
-        }
-
-        function applyTypeToEventDisplay(evt) {
-            const p = evt.extendedProps || {};
-            const t = p.type;
-
-            if (t === "LECTURE") {
-                evt.display = "none"; // 시간표 이벤트는 이 미니 캘린더에서 숨김
-            } else if (!t || typeVisibility[t] !== false) {
-                evt.display = "auto";
-            } else {
-                evt.display = "none";
-            }
-            return evt;
-        }
-
-        function applyTypeFilterToRenderedEvents() {
-            calendar.getEvents().forEach(function (e) {
-                const t = e.extendedProps && e.extendedProps.type;
-                if (t === "LECTURE") {
-                    e.setProp("display", "none");
-                } else if (!t || typeVisibility[t] !== false) {
-                    e.setProp("display", "auto");
+                if (cellDate === selectedDateStr) {
+                    // day 셀 자체에 fc-day-selected 부여
+                    cell.classList.add("fc-day-selected");
                 } else {
-                    e.setProp("display", "none");
+                    cell.classList.remove("fc-day-selected");
                 }
             });
+        }
+
+        function parseLabeledPairs(memo) {
+            if (!memo || typeof memo !== "string") return [];
+            return memo.split("|").map(function (part) {
+                const s = part.trim();
+                if (!s) return null;
+                let key, value;
+                const idx = s.indexOf(" : ");
+                if (idx >= 0) {
+                    key = s.substring(0, idx).trim();
+                    value = s.substring(idx + 3).trim();
+                } else {
+                    const idxEq = s.indexOf("=");
+                    if (idxEq === -1) return null;
+                    key = s.substring(0, idxEq).trim();
+                    value = s.substring(idxEq + 1).trim();
+                }
+                if (!key || !value) return null;
+                return { key: key, value: value };
+            }).filter(Boolean);
+        }
+
+        //  학사일정: 제목/메모 키워드로 타입 재분류
+        function inferTypeFromContent(rawType, title, memo) {
+            var baseType = rawType || "";
+            var text = ((title || "") + " " + (memo || "")).toLowerCase();
+
+            // 백엔드에서 이미 LECTURE/TASK/COUNSEL 등으로 온 건 그대로 사용
+            if (baseType && baseType !== "SCHAFS") {
+                return baseType;
+            }
+
+            // 공휴일
+            if (text.indexOf("공휴일") >= 0 ||
+                text.indexOf("기독탄신일") >= 0 ||
+                text.indexOf("1월1일") >= 0) {
+                return "HOLIDAY";
+            }
+
+            // 상담 관련
+            if (text.indexOf("상담") >= 0) {
+                // 상담가능(교수시간) 키워드가 따로 있다면 여기서 COUNSEL_SLOT 으로 분기 가능
+                if (text.indexOf("상담가능") >= 0 ||
+                    text.indexOf("상담 가능") >= 0 ||
+                    text.indexOf("지도시간") >= 0) {
+                    return "COUNSEL_SLOT";
+                }
+                return "COUNSEL";
+            }
+
+            // 수강신청/계절학기/수강료/등록/휴학·복학 등 = 행정
+            if (
+                text.indexOf("수강료") >= 0 ||
+                text.indexOf("등록") >= 0 ||
+                text.indexOf("납부") >= 0 ||
+                text.indexOf("휴학") >= 0 ||
+                text.indexOf("복학") >= 0 ||
+                text.indexOf("수강신청") >= 0 ||
+                text.indexOf("수강 신청") >= 0 ||
+                text.indexOf("정정") >= 0 ||
+                text.indexOf("철회") >= 0 ||
+                text.indexOf("계절학기") >= 0
+            ) {
+                return "ADMIN_REGIST";
+            }
+
+            // 전공/부전공/교환학생/신청 기간 등: 학사 공지 성격
+            if (
+                text.indexOf("복수전공") >= 0 ||
+                text.indexOf("부전공") >= 0 ||
+                text.indexOf("교환학생") >= 0 ||
+                text.indexOf("신청기간") >= 0 ||
+                text.indexOf("신청 기간") >= 0
+            ) {
+                return "SYSTEM"; // 학사공지
+            }
+
+            // 수업평가/시험/프로젝트/팀 관련은 과제 느낌으로 묶기
+            if (
+                text.indexOf("수업평가") >= 0 ||
+                text.indexOf("시험") >= 0 ||
+                text.indexOf("평가") >= 0 ||
+                text.indexOf("팀프로젝트") >= 0 ||
+                text.indexOf("프로젝트") >= 0 ||
+                text.indexOf("팀") >= 0
+            ) {
+                return "TASK";
+            }
+
+            // 기타 학사일정(SCHAFS)은 기본값을 학사공지로
+            if (baseType === "SCHAFS" || !baseType) {
+                return "SYSTEM";
+            }
+
+            return baseType || "SYSTEM";
         }
 
         function buildTitle(type, rawTitle) {
@@ -1209,85 +1392,18 @@
             }
         }
 
-        function parseLabeledPairs(memo) {
-            if (!memo || typeof memo !== "string") return [];
-            return memo.split("|").map(function (part) {
-                const s = part.trim();
-                if (!s) return null;
-
-                let key, value;
-                const idx = s.indexOf(" : ");
-                if (idx >= 0) {
-                    key = s.substring(0, idx).trim();
-                    value = s.substring(idx + 3).trim();
-                } else {
-                    const idxEq = s.indexOf("=");
-                    if (idxEq === -1) return null;
-                    key = s.substring(0, idxEq).trim();
-                    value = s.substring(idxEq + 1).trim();
-                }
-                if (!key || !value) return null;
-                return { key: key, value: value };
-            }).filter(Boolean);
-        }
-
-        function sameDate(a, b) {
-            return a.getFullYear() === b.getFullYear()
-                && a.getMonth() === b.getMonth()
-                && a.getDate() === b.getDate();
-        }
-
-        function formatRange(start, end, allDay) {
-            if (!start) return "-";
-            const s = toDate(start);
-            const e = end ? toDate(end) : null;
-
-            if (allDay) {
-                if (!e) return formatDate(s);
-                const eAdj = new Date(e.getTime() - 24 * 60 * 60 * 1000);
-                if (sameDate(s, eAdj)) return formatDate(s);
-                return formatDate(s) + " ~ " + formatDate(eAdj);
-            }
-
-            const sLabel = formatAmPm24Time(s);
-            if (!e) return sLabel;
-
-            const eLabel = formatAmPm24Time(e);
-            if (sameDate(s, e)) {
-                return sLabel + " ~ " + eLabel;
-            }
-            return formatDate(s) + " " + sLabel + " ~ " +
-                   formatDate(e) + " " + eLabel;
-        }
-
-        function highlightSelectedDate() {
-            if (!selectedDateStr) return;
-
-            const dayCells = calendarEl.querySelectorAll(".fc-daygrid-day");
-            dayCells.forEach(function (cell) {
-                const cellDate = cell.getAttribute("data-date");
-                if (!cellDate) return;
-
-                if (cellDate === selectedDateStr) {
-                    cell.classList.add("fc-day-selected");
-                } else {
-                    cell.classList.remove("fc-day-selected");
-                }
-            });
-        }
-
         function renderEventList(dateStr) {
             if (!eventListEl) return;
-            selectedDateStr = dateStr;
 
+            // 선택 날짜가 이벤트 기간에 포함된 모든 일정 표시
             const events = calendar.getEvents().filter(function (ev) {
-                return ev.startStr && ev.startStr.slice(0, 10) === dateStr;
+                return isEventOnDate(ev, dateStr);
             });
 
             if (events.length === 0) {
                 eventListEl.innerHTML =
                     "<div class='calendar-event-list-header'>" +
-                    "<span class='badge bg-light text-muted'>" + dateStr + " 일정</span>" +
+                        "<span class='badge bg-light text-muted'>📅 " + escapeHtml(dateStr) + " 일정</span>" +
                     "</div>" +
                     "<div class='text-muted small py-1'>등록된 일정이 없습니다.</div>";
                 return;
@@ -1306,6 +1422,9 @@
                     const h = String(start.getHours()).padStart(2, "0");
                     const m = String(start.getMinutes()).padStart(2, "0");
                     timeLabel = h + ":" + m;
+                } else if (!allDay && typeof ev.startStr === "string") {
+                    const t = ev.startStr.split("T")[1] || "";
+                    timeLabel = t ? t.slice(0, 5) : "시간미정";
                 }
 
                 const title = escapeHtml(ev.title || "");
@@ -1326,7 +1445,7 @@
                         "<div class='type-strip'></div>" +
                         "<div class='calendar-event-list-item-body'>" +
                             "<div class='d-flex align-items-center'>" +
-                                "<span class='calendar-event-time'>" + timeLabel + "</span>" +
+                                "<span class='calendar-event-time'>" + escapeHtml(timeLabel) + "</span>" +
                                 "<span class='calendar-event-title'>" + title + "</span>" +
                             "</div>" +
                             (memo
@@ -1340,8 +1459,8 @@
 
             eventListEl.innerHTML =
                 "<div class='calendar-event-list-header'>" +
-                    "<span class='badge bg-light text-muted'>" + dateStr + " 일정</span>" +
-                    "<span class='text-muted small'>" + events.length + "건</span>" +
+                    "<span class='badge bg-light text-primary fw-semibold'>📅 " + escapeHtml(dateStr) + " 일정</span>" +
+                    "<span class='text-muted small fw-semibold'>" + events.length + "건</span>" +
                 "</div>" +
                 rowsHtml;
         }
@@ -1521,3 +1640,4 @@
     }
 })();
 </script>
+
