@@ -6,7 +6,7 @@ import kr.ac.collage_api.certificates.vo.CrtfIssuRequestVO;
 import kr.ac.collage_api.certificates.vo.StudentDocxVO;
 import kr.ac.collage_api.certificates.vo.TranscriptRowVO;
 import kr.ac.collage_api.certificates.vo.TranscriptSummaryVO;
-import kr.ac.collage_api.vo.CrtfKndVO;
+import kr.ac.collage_api.certificates.vo.CrtfKndVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 

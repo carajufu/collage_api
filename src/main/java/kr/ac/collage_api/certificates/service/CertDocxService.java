@@ -4,7 +4,7 @@ import java.util.List;
 
 import kr.ac.collage_api.certificates.vo.CertRenderVO;
 import kr.ac.collage_api.certificates.vo.CrtfIssuRequestVO;
-import kr.ac.collage_api.vo.CrtfKndVO;
+import kr.ac.collage_api.certificates.vo.CrtfKndVO;
 
 /**
  * CertDocxService

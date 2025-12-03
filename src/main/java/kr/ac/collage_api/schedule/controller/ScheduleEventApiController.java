@@ -111,6 +111,7 @@ public class ScheduleEventApiController {
         // DB 일정 통합 조회
         List<ScheduleEventVO> dbEvents =
                 scheduleEventService.getAllEvents(role, stdntNo, profsrNo, startYmd, endYmd);
+        log.debug("[ScheduleEventApiController] dbEvents : {}", dbEvents);
 
         if (dbEvents != null && !dbEvents.isEmpty()) {
             result.addAll(dbEvents);

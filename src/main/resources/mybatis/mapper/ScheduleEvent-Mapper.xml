@@ -45,7 +45,7 @@
 <mapper namespace="kr.ac.collage_api.schedule.mapper.ScheduleEventMapper">
 
     <!-- 공통 매핑 -->
-    <resultMap id="ScheduleEventMap" type="scheduleEventVO">
+    <resultMap id="ScheduleEventMap" type="kr.ac.collage_api.schedule.vo.ScheduleEventVO">
         <id     property="id"        column="EVENT_ID"/>
         <result property="title"     column="TITLE"/>
         <result property="type"      column="TYPE"/>
@@ -399,83 +399,6 @@
     -->
     <select id="selectAdminEvents" parameterType="map" resultMap="ScheduleEventMap">
 
-        <!-- 6-1. 증명서 발급 -->
-        SELECT
-            'CERT_' || ci.CRTF_ISSU_INNB                                  AS EVENT_ID,
-            '증명서발급(' || ci.ISSU_STTUS || ')'                         AS TITLE,
-            'ADMIN_CERT'                                                  AS TYPE,
-            NULL                                                          AS PLACE,
-            CASE WHEN #{role} = 'ROLE_ADMIN'
-                    THEN '학번 : ' || ci.STDNT_NO
-                 ELSE NULL END                                            AS TARGET,
-            CASE WHEN #{role} = 'ROLE_ADMIN'
-                    THEN '구분 : 증명서발급'
-                         || ' | 증명서종류 : ' || ci.CRTF_KND_NO
-                         || ' | 요청일 : '    || TO_CHAR(ci.REQST_DT,'YYYY-MM-DD')
-                         || ' | 발급일 : '    || TO_CHAR(NVL(ci.ISSU_DT,ci.REQST_DT),'YYYY-MM-DD')
-                 ELSE NULL END                                            AS CONTENT,
-            TO_CHAR(ci.REQST_DT,'YYYY-MM-DD')                             AS START_DT,
-            TO_CHAR(NVL(ci.ISSU_DT,ci.REQST_DT),'YYYY-MM-DD')             AS END_DT,
-            1                                                             AS ALL_DAY_YN
-        FROM CRTF_ISSU_REQUST ci
-        <where>
-            <choose>
-                <when test="role == 'ROLE_ADMIN'">
-                    1 = 1
-                </when>
-                <when test="role == 'ROLE_STUDENT'">
-                    ci.STDNT_NO = #{stdntNo}
-                </when>
-                <otherwise>
-                    1 = 0
-                </otherwise>
-            </choose>
-            AND ci.REQST_DT BETWEEN TO_DATE(#{startDate},'YYYYMMDD')
-                               AND TO_DATE(#{endDate},'YYYYMMDD')
-        </where>
-
-        UNION ALL
-
-        <!-- 6-2. 학적변동 -->
-        SELECT
-            'SKNRG_' || ch.SKNRGS_HIST_INNB                               AS EVENT_ID,
-            '학적변동(' || ch.SKNRGS || ')'                               AS TITLE,
-            'ADMIN_STATUS'                                                AS TYPE,
-            NULL                                                          AS PLACE,
-            CASE WHEN #{role} = 'ROLE_ADMIN'
-                    THEN '학번 : ' || s.STDNT_NO
-                 ELSE NULL END                                            AS TARGET,
-            CASE WHEN #{role} = 'ROLE_ADMIN'
-                    THEN '구분 : 학적변동'
-                         || ' | 사유 : ' || ch.CHANGE_RESN
-                 ELSE NULL END                                            AS CONTENT,
-            TO_CHAR(TO_DATE(ch.CHANGE_DE,'YYYYMMDD'),'YYYY-MM-DD')        AS START_DT,
-            TO_CHAR(TO_DATE(ch.CHANGE_DE,'YYYYMMDD'),'YYYY-MM-DD')        AS END_DT,
-            1                                                             AS ALL_DAY_YN
-        FROM SKNRGS_CHANGE_HIST ch
-        JOIN SKNRGS_CHANGE_REQST cr
-          ON cr.SKNRGS_CHANGE_INNB = ch.SKNRGS_CHANGE_INNB
-        JOIN STDNT s
-          ON s.STDNT_NO = cr.STDNT_NO
-        <where>
-            <choose>
-                <when test="role == 'ROLE_ADMIN'">
-                    1 = 1
-                </when>
-                <when test="role == 'ROLE_STUDENT'">
-                    s.STDNT_NO = #{stdntNo}
-                </when>
-                <otherwise>
-                    1 = 0
-                </otherwise>
-            </choose>
-            AND TO_DATE(ch.CHANGE_DE,'YYYYMMDD')
-                BETWEEN TO_DATE(#{startDate},'YYYYMMDD')
-                    AND TO_DATE(#{endDate},'YYYYMMDD')
-        </where>
-
-        UNION ALL
-
         <!-- 6-3. 졸업요건 등록 -->
         SELECT
             'GRAD_' || gr.GRDTN_RQISIT_ID                                  AS EVENT_ID,
@@ -489,7 +412,7 @@
                     THEN '구분 : 졸업요건등록'
                  ELSE NULL END                                             AS CONTENT,
             TO_CHAR(TO_DATE(gr.REGIST_DE,'YYYYMMDD'),'YYYY-MM-DD')         AS START_DT,
-            TO_CHAR(TO_DATE(gr.REGIST_DE,'YYYYMMDD'),'YYYY-MM-DD')         AS END_DT,
+            TO_CHAR(TO_DATE(gr.REGIST_DE,'YYYYMMDD') + 1,'YYYY-MM-DD')     AS END_DT,
             1                                                              AS ALL_DAY_YN
         FROM GRDTN_RQISIT gr
         <where>
@@ -522,7 +445,7 @@
             || ' | 연도 : '  || rc.RQEST_YEAR
             || ' | 학기 : '  || rc.RQEST_SEMSTR                             AS CONTENT,
             TO_CHAR(TO_DATE(rc.RQEST_DE,'YYYYMMDD'),'YYYY-MM-DD')           AS START_DT,
-            TO_CHAR(TO_DATE(rc.PAY_ENDDE,'YYYYMMDD'),'YYYY-MM-DD')          AS END_DT,
+            TO_CHAR(TO_DATE(rc.PAY_ENDDE,'YYYYMMDD') + 1,'YYYY-MM-DD')      AS END_DT,
             1                                                               AS ALL_DAY_YN
         FROM REGIST_CT rc
         <where>
@@ -542,11 +465,91 @@
                     1 = 0
                 </otherwise>
             </choose>
-            AND TO_DATE(rc.RQEST_DE,'YYYYMMDD')
-                BETWEEN TO_DATE(#{startDate},'YYYYMMDD')
-                    AND TO_DATE(#{endDate},'YYYYMMDD')
+            AND TO_DATE(rc.RQEST_DE,'YYYYMMDD') &lt;= TO_DATE(#{endDate},'YYYYMMDD')
+            AND TO_DATE(rc.PAY_ENDDE,'YYYYMMDD') &gt;= TO_DATE(#{startDate},'YYYYMMDD')
         </where>
 
+        UNION ALL
+
+        <!-- 6-5. 학사행정 일정: SCHAFS_SCHDUL (교무/행정 캘린더) -->
+	    SELECT
+	        'SCHAFS_' || S.SCHDUL_NO             AS EVENT_ID,
+	        S.SCHDUL_NM                          AS TITLE,
+	        'SCHAFS'                             AS TYPE,
+	        NULL                                  AS PLACE,
+	        NULL                                  AS TARGET,
+	        '구분 : 학사일정'
+	        || ' | 코드 : ' || NVL(S.SCHDUL_CODE, '기타')
+	        || ' | 기간 : '
+	        || TO_CHAR(TO_DATE(S.BEGIN_DE,'YYYYMMDD'),'YYYY.MM.DD')
+	        || ' ~ '
+	        || TO_CHAR(TO_DATE(S.END_DE,'YYYYMMDD'),'YYYY.MM.DD')
+	        || CASE
+	             WHEN S.BEGIN_TIME IS NOT NULL AND S.END_TIME IS NOT NULL
+	               THEN ' | 시간 : '
+	                    || SUBSTR(LPAD(S.BEGIN_TIME,4,'0'),1,2) || ':' || SUBSTR(LPAD(S.BEGIN_TIME,4,'0'),3,2)
+	                    || ' ~ '
+	                    || SUBSTR(LPAD(S.END_TIME,4,'0'),1,2)   || ':' || SUBSTR(LPAD(S.END_TIME,4,'0'),3,2)
+	             ELSE ''
+	           END                                AS CONTENT,
+	
+	        /* START_DT */
+	        CASE
+	          -- 멀티데이 or 시간 없음 or ALL_DAY_YN = 'Y' => all-day 멀티데이
+	          WHEN S.ALL_DAY_YN = 'Y'
+	            OR S.BEGIN_TIME IS NULL
+	            OR S.END_TIME   IS NULL
+	            OR S.BEGIN_DE  &lt;&gt; S.END_DE
+	          THEN TO_CHAR(
+	                 TO_DATE(S.BEGIN_DE,'YYYYMMDD'),
+	                 'YYYY-MM-DD'
+	               )
+	          -- 하루짜리 시간 이벤트
+	          ELSE TO_CHAR(
+	                 TO_DATE(
+	                   S.BEGIN_DE || LPAD(S.BEGIN_TIME,4,'0'),
+	                   'YYYYMMDDHH24MI'
+	                 ),
+	                 'YYYY-MM-DD"T"HH24:MI'
+	               )
+	        END                                   AS START_DT,
+	
+	        /* END_DT */
+	        CASE
+	          -- 멀티데이 or 시간 없음 or ALL_DAY_YN = 'Y' => all-day, 종료일+1
+	          WHEN S.ALL_DAY_YN = 'Y'
+	            OR S.BEGIN_TIME IS NULL
+	            OR S.END_TIME   IS NULL
+	            OR S.BEGIN_DE  &lt;&gt; S.END_DE
+	          THEN TO_CHAR(
+	                 TO_DATE(S.END_DE,'YYYYMMDD') + 1,
+	                 'YYYY-MM-DD'
+	               )
+	          -- 하루짜리 시간 이벤트
+	          ELSE TO_CHAR(
+	                 TO_DATE(
+	                   S.END_DE || LPAD(S.END_TIME,4,'0'),
+	                   'YYYYMMDDHH24MI'
+	                 ),
+	                 'YYYY-MM-DD"T"HH24:MI'
+	               )
+	        END                                   AS END_DT,
+	
+	        /* ALL_DAY_YN 플래그 (숫자) */
+	        CASE
+	          WHEN S.ALL_DAY_YN = 'Y'
+	            OR S.BEGIN_TIME IS NULL
+	            OR S.END_TIME   IS NULL
+	            OR S.BEGIN_DE  &lt;&gt; S.END_DE
+	          THEN 1
+	          ELSE 0
+	        END                                   AS ALL_DAY_YN
+	    FROM SCHAFS_SCHDUL S
+	    WHERE TO_DATE(S.BEGIN_DE,'YYYYMMDD') &lt;= TO_DATE(#{endDate},'YYYYMMDD')
+	      AND TO_DATE(S.END_DE  ,'YYYYMMDD') &gt;= TO_DATE(#{startDate},'YYYYMMDD')
+	      AND ( S.VIEW_SCOPE = 'ALL' OR S.VIEW_SCOPE = #{role} )
+
     </select>
+
 
 </mapper>

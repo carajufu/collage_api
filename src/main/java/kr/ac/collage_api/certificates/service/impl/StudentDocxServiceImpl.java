@@ -187,7 +187,7 @@ public class StudentDocxServiceImpl implements StudentDocxService {
         }
 
         // 부분 매칭 fallback
-        if (name.contains("공"))                   return "공학사";
+        if (name.contains("공") || name.contains("기계") || name.contains("전자")|| name.contains("물리")) return "공학사";
         if (name.contains("인문") || name.contains("문과")) return "문학사";
         if (name.contains("사회") || name.contains("정경")) return "사회과학사";
         if (name.contains("경영") || name.contains("상경")) return "경영학사";
@@ -197,6 +197,6 @@ public class StudentDocxServiceImpl implements StudentDocxService {
             return "예술학사";
 
         // 마지막 안전망
-        return "학사";
+        return "공학사";
     }
 }

@@ -55,12 +55,12 @@
                 </c:choose>
             </div>
 
-        </div> <div class="mt-4 d-flex justify-content-between">
-            <div>
-                <a href="/bbs/list" class="btn btn-success">
-                    <i class="bi bi-list-ul"></i> 목록으로
-                </a>
-            </div>
+        </div>     <!-- 버튼 영역: 오른쪽 정렬 -->
+		    <div class="mt-4 d-flex justify-content-end">
+		        <a href="/bbs/list" class="btn btn-success">
+		            <i class="bi bi-list-ul"></i> 목록으로
+		        </a>
+		    </div>
             <%-- <div>
                 <a href="/bbs/detail?bbscttNo=${bbsVO.bbscttNo}" class="btn btn-warning me-2">
                     <i class="bi bi-pencil-square"></i> 수정
@@ -76,8 +76,8 @@
                         <i class="bi bi-trash3-fill"></i> 삭제
                     </button>
                 </form>
-            </div> --%>
-        </div>
+            </div> --%><!-- 
+        </div> -->
 
     </div>
         </div>

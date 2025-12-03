@@ -32,7 +32,7 @@
         JOIN ALL_COURSE D ON E.LCTRE_CODE = D.LCTRE_CODE
        WHERE B.STDNT_NO = #{stdntNo}
     </select>
-    
+
     <select id="getStudentAtnlc" resultType="kr.ac.collage_api.chatbot.vo.ChatBotVO">
         SELECT
             A.ATNLC_REQST_NO
@@ -92,7 +92,7 @@
         LEFT JOIN SUBJCT B ON A.SUBJCT_CODE = B.SUBJCT_CODE
         WHERE A.STDNT_NO = #{stdntNo}
     </select>
-    
+
     <select id="getConsult" resultType="map">
         SELECT 
            A.CNSLT_REQST_INNB
@@ -117,10 +117,10 @@
              ,D.LCTRE_NM
              ,D.SUBJCT_CODE
              ,C.ACQS_PNT
-        FROM SBJECT_SCRE A 
-        JOIN ATNLC_REQST B ON A.ATNLC_REQST_NO = B.ATNLC_REQST_NO 
-        JOIN ESTBL_COURSE C ON B.ESTBLLCTRE_CODE = C.ESTBLLCTRE_CODE 
-        JOIN ALL_COURSE D ON C.LCTRE_CODE = D.LCTRE_CODE 
+        FROM SBJECT_SCRE A
+        JOIN ATNLC_REQST B ON A.ATNLC_REQST_NO = B.ATNLC_REQST_NO
+        JOIN ESTBL_COURSE C ON B.ESTBLLCTRE_CODE = C.ESTBLLCTRE_CODE
+        JOIN ALL_COURSE D ON C.LCTRE_CODE = D.LCTRE_CODE
         WHERE B.STDNT_NO = #{stdntNo}
           AND A.PNT_GRAD != 'F'
     </select>
@@ -138,7 +138,7 @@
     </select>
 
     <select id="getStudentTimetable" resultType="kr.ac.collage_api.chatbot.vo.ChatBotVO">
-        SELECT 
+        SELECT
             C.LCTRE_NM
             ,B.LCTRUM
             ,D.LCTRE_DFK
@@ -149,16 +149,16 @@
         JOIN ALL_COURSE C ON B.LCTRE_CODE = C.LCTRE_CODE
         JOIN LCTRE_TIMETABLE D ON B.ESTBLLCTRE_CODE = D.ESTBLLCTRE_CODE
         WHERE A.STDNT_NO = #{stdntNo}
-        ORDER BY 
-            CASE D.LCTRE_DFK 
-                WHEN '월' THEN 1 WHEN '화' THEN 2 WHEN '수' THEN 3 
-                WHEN '목' THEN 4 WHEN '금' THEN 5 ELSE 6 
-            END, 
+        ORDER BY
+            CASE D.LCTRE_DFK
+                WHEN '월' THEN 1 WHEN '화' THEN 2 WHEN '수' THEN 3
+                WHEN '목' THEN 4 WHEN '금' THEN 5 ELSE 6
+            END,
             D.BEGIN_TM
     </select>
 
     <select id="getStudentPayInfo" resultType="map">
-        SELECT 
+        SELECT
             PAY_GLD
             ,SCHLSHIP
             ,PAY_STTUS
@@ -169,7 +169,7 @@
     </select>
 
     <select id="getStudentAttendance" resultType="map">
-        SELECT 
+        SELECT
             D.LCTRE_NM
             ,A.ATEND_STTUS_CODE
             ,B.WEEK
@@ -182,7 +182,7 @@
     </select>
 
     <select id="getStudentChangeHistory" resultType="map">
-        SELECT 
+        SELECT
             CHANGE_TY
             ,REQST_STTUS
             ,CHANGE_REQST_DT
@@ -190,7 +190,7 @@
         WHERE STDNT_NO = #{stdntNo}
         ORDER BY CHANGE_REQST_DT DESC
     </select>
-    
+
     <select id="getProfessorLectureList" resultType="kr.ac.collage_api.chatbot.vo.ChatBotVO">
         SELECT
             A.LCTRE_NM
@@ -204,7 +204,7 @@
           ON A.LCTRE_CODE = B.LCTRE_CODE
         WHERE B.PROFSR_NO = #{profsrNo}
     </select>
-    
+
     <select id="getProfessorCounselList" resultType="kr.ac.collage_api.chatbot.vo.ChatBotVO">
         SELECT
             A.CNSLT_INNB
@@ -277,11 +277,11 @@
         JOIN LCTRE_TIMETABLE C
           ON A.ESTBLLCTRE_CODE = C.ESTBLLCTRE_CODE
         WHERE A.PROFSR_NO = #{profsrNo}
-        ORDER BY 
-            CASE C.LCTRE_DFK 
-                WHEN '월' THEN 1 WHEN '화' THEN 2 WHEN '수' THEN 3 
-                WHEN '목' THEN 4 WHEN '금' THEN 5 ELSE 6 
-            END, 
+        ORDER BY
+            CASE C.LCTRE_DFK
+                WHEN '월' THEN 1 WHEN '화' THEN 2 WHEN '수' THEN 3
+                WHEN '목' THEN 4 WHEN '금' THEN 5 ELSE 6
+            END,
             C.BEGIN_TM
     </select>
 
