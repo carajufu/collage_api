@@ -803,7 +803,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // ====== 헬퍼 ======
 
-    // 시연용 학사일정: 제목/메모 키워드로 타입 재분류
+    //  학사일정: 제목/메모 키워드로 타입 재분류
     function inferTypeFromContent(rawType, title, memo) {
         var baseType = rawType || "";
         var text = ((title || "") + " " + (memo || "")).toLowerCase();
@@ -859,7 +859,7 @@ document.addEventListener("DOMContentLoaded", function () {
         	return "TASK";
         }
 
-        // 기타 시연용 학사일정(SCHAFS)은 기본값을 학사공지로
+        // 기타  학사일정(SCHAFS)은 기본값을 학사공지로
         if (baseType === "SCHAFS" || !baseType) {
             return "SYSTEM";
         }
