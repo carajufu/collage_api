@@ -9,6 +9,25 @@
 <script type="text/javascript">
 document.addEventListener("DOMContentLoaded", function () {
 
+	document.getElementById("fillRandomScores").addEventListener("click", function () {
+
+		  const rows = document.querySelectorAll("table tbody tr");
+
+		  rows.forEach((row, idx) => {
+
+		    const r = () => Math.floor(75 + Math.random() * 25);
+
+		    row.querySelector("input[name*='.atendScore']").value  = r();
+		    row.querySelector("input[name*='.taskScore']").value   = r();
+		    row.querySelector("input[name*='.middleScore']").value = r();
+		    row.querySelector("input[name*='.trmendScore']").value = r();
+
+		    recalcRowTotal(row);
+		  });
+
+		  updateAverageChart();
+		});
+	
   if (new URL(location.href).searchParams.get("saved") === "Y") {
     Swal.fire({
       icon: 'success',
@@ -134,6 +153,9 @@ document.addEventListener("DOMContentLoaded", function () {
             <li class="breadcrumb-item active" aria-current="page">${selSbject.lctreNm}</li>
         </ol>
     </nav>
+    <div class="container-fluid d-flex flex-column align-items-end">
+    <button type="button" id="fillRandomScores" class="btn btn-secondary-sm">샘플 점수 자동 입력</button>
+    </div>
     <div class="col-12 page-title mt-2">
         <h2 class="fw-semibold">${selSbject.lctreNm}</h2>
         <div class="my-4 p-0 bg-primary" style="width: 100px; height:5px;"></div>

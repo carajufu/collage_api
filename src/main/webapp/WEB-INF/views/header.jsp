@@ -301,7 +301,7 @@
             <!-- Dark Logo-->
             <a href="/student/welcome" class="logo logo-dark">
                     <span class="logo-sm">
-                        <img src="/img/logo/dd-logo-horizontal.png" alt="" height="22">
+                        <img src="/img/logo/dd-logo-horizontal.png" alt="" height="130">
                     </span>
                 <span class="logo-lg">
                         <img src="/img/logo/dd-logo-horizontal.png" alt="" height="130">
@@ -310,10 +310,10 @@
             <!-- Light Logo-->
             <a href="/student/welcome" class="logo logo-light">
                     <span class="logo-sm">
-                        <img src="/img/logo/dd-logo-horizontal.png" alt="" height="22">
+                        <img src="/img/logo/dd-logo-horizontal.png" alt="" height="130">
                     </span>
                 <span class="logo-lg">
-                        <img src="/img/logo/dd-logo-horizontal.png" alt="" height="17">
+                        <img src="/img/logo/dd-logo-horizontal.png" alt="" height="130">
                     </span>
             </a>
             <button type="button" class="btn btn-sm p-0 fs-20 header-item float-end btn-vertical-sm-hover" id="vertical-hover">
@@ -473,19 +473,19 @@
         <sec:authorize access="hasRole('ROLE_PROF')">
     <a href="/prof/welcome" class="logo logo-dark">
                     <span class="logo-sm">
-                        <img src="/img/logo/dd-logo-horizontal.png" alt="" height="22">
+                        <img src="/img/logo/dd-logo-horizontal.png" alt="" height="130">
                     </span>
         <span class="logo-lg">
-                        <img src="/img/logo/dd-logo-horizontal.png" alt="" height="17">
+                        <img src="/img/logo/dd-logo-horizontal.png" alt="" height="130">
                     </span>
     </a>
     <!-- Light Logo-->
     <a href="/prof/welcome" class="logo logo-light">
                     <span class="logo-sm">
-                        <img src="/img/logo/dd-logo-horizontal.png" alt="" height="22">
+                        <img src="/img/logo/dd-logo-horizontal.png" alt="" height="130">
                     </span>
         <span class="logo-lg">
-                        <img src="/img/logo/dd-logo-horizontal.png" alt="" height="17">
+                        <img src="/img/logo/dd-logo-horizontal.png" alt="" height="130">
                     </span>
     </a>
     <button type="button" class="btn btn-sm p-0 fs-20 header-item float-end btn-vertical-sm-hover" id="vertical-hover">
@@ -535,7 +535,7 @@
                         <div class="collapse menu-dropdown" id="sidebarCounsel">
                             <ul class="nav nav-sm flex-column">
                                 <li class="nav-item">
-                                    <a href="/counselprof/prof" class="nav-link" data-key="t-prof-grade-manage">상담 관리</a>
+                                    <a href="/counselprof/prof" class="nav-link" data-key="	">상담 관리</a>
                                 </li>
 
                             </ul>
