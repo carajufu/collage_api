@@ -22,7 +22,7 @@ import kr.ac.collage_api.schedule.service.TimetableService;
 import kr.ac.collage_api.schedule.vo.CalendarEventVO;
 import kr.ac.collage_api.schedule.vo.ScheduleEventVO;
 import kr.ac.collage_api.schedule.vo.TimetableEventVO;
-import kr.ac.collage_api.security.mapper.SecurityMapper;
+import kr.ac.collage_api.security.mapper.DitAccountMapper;
 import kr.ac.collage_api.vo.AcntVO;
 import lombok.extern.slf4j.Slf4j;
 
@@ -59,7 +59,7 @@ public class ProfDashboardController {
     private TimetableService timetableService;
 
     @Autowired
-    private SecurityMapper securityMapper;
+    private DitAccountMapper ditAccountMapper;
 
     @Autowired
     private IndexBbsService indexBbsService;
@@ -98,7 +98,7 @@ public class ProfDashboardController {
 
         // 2. ACNT_ID → PROFSR_NO 매핑
         //    학생판의 stdntNo와 같은 역할. 강의 / 시간표 / 학사일정 where 조건에 사용.
-        String profsrNo = securityMapper.findProfsrNoByAcntId(acntId);
+        String profsrNo = ditAccountMapper.findProfsrNoByAcntId(acntId);
         log.info("profsrNo : " + profsrNo);
         if (profsrNo == null || profsrNo.isBlank()) {
             log.warn("[ProfDashboardController] ROLE_PROF but no PROFSR_NO, acntId={}", acntId);

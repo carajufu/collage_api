@@ -96,7 +96,6 @@
         font-size:.85rem;
         text-align:center;
     }
-
 </style>
 
 <!DOCTYPE html>
@@ -129,13 +128,6 @@
         color: #e5e7eb;
     }
 
-    .btn-opacity {
-        opacity: 0.7;
-        transition: opacity .2s ease;
-    }
-    .btn-opacity:hover {
-        opacity: 1;
-    }
 </style>
 <%--
   [뷰 목적]
@@ -168,10 +160,6 @@
 --%>
 
 <section class="hero-section">
-    <div class="container-fluid d-flex flex-column align-items-end">
-        <button class="btn btn-opacity" id="fillSampleBtn1">학생(발표용)</button>
-        <button class="btn btn-opacity mt-2" id="fillSampleBtn2">교수(발표용)</button>
-    </div>
     <main class="main-content-with-header">
         <!-- 로그인 폼 영역 -->
         <div id="main-container" class="container-fluid">
@@ -281,15 +269,6 @@
 </main>
 
 <script>
-    document.getElementById("fillSampleBtn1").addEventListener("click", function () {
-        document.querySelector("input[name='acntId']").value="231015001";
-        document.querySelector("input[name='password']").value="java";
-    });
-    document.getElementById("fillSampleBtn2").addEventListener("click", function () {
-        document.querySelector("input[name='acntId']").value="P2419";
-        document.querySelector("input[name='password']").value="java";
-    });
-
     /*
       [비밀번호 입력 헬퍼]
       - 보기/숨기기 토글 + Caps/Num Lock 상태 표시를 한 번에 처리.

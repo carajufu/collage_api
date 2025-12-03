@@ -79,7 +79,7 @@
 		LEFT JOIN SUBJCT SB ON P.SUBJCT_CODE = SB.SUBJCT_CODE
 	  WHERE 
 	  	P.SUBJCT_CODE = #{subjctCode}
-	  AND P.CLSF IN ('부교수', '정교수' )
+	  AND P.CLSF = '부교수'
 	</select>
 
 	<!-- 단과대 정보 업데이트 -->

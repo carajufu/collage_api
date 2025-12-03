@@ -8,7 +8,7 @@ import kr.ac.collage_api.certificates.vo.CertRenderVO;
 import kr.ac.collage_api.certificates.vo.CrtfIssuRequestVO;
 import kr.ac.collage_api.certificates.vo.StudentDocxVO;
 import kr.ac.collage_api.security.mapper.SecurityMapper;
-import kr.ac.collage_api.vo.CrtfKndVO;
+import kr.ac.collage_api.certificates.vo.CrtfKndVO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
@@ -208,7 +208,8 @@ public class CertDocxController {
     @GetMapping("/DocxHistory")
     public String certDocxHistory(Principal principal, Model model) {
         if (principal == null || principal.getName() == null) throw new IllegalStateException("인증 필요");
-        final String acntId = principal.getName();
+        
+        String acntId = principal.getName();
 
         StudentDocxVO base = studentDocxMapper.selectStudentBasic(acntId);
         if (base == null) throw new IllegalArgumentException("학생 정보 없음");

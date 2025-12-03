@@ -3,7 +3,6 @@ package kr.ac.collage_api.certificates.vo;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-import kr.ac.collage_api.vo.CrtfKndVO;
 import lombok.Data;
 
 /**

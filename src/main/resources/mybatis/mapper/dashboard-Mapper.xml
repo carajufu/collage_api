@@ -1,24 +1,130 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.ac.collage_api.dashboard.mapper.DashboardMapper">
-    <select id="selectStudent" resultType="DashLectureVO">
-        SELECT                          /* kr.ac.collage_api.dashboard.mapper.DashboardMapper.selectStudent */
-            cour.lctre_nm               /* 강의명 */
-             , est.lctrum               /* 강의실 */
-             , est.estbllctre_code      /* 개설강의코드 */
-             , skl.sklstf_nm            /* 교직원명 */
-        FROM atnlc_reqst at
-                 INNER JOIN estbl_course est
-                            ON  at.estbllctre_code = est.estbllctre_code
-                 INNER JOIN all_course cour
-                            ON est.lctre_code = cour.lctre_code
-                 INNER JOIN profsr prof
-                            ON est.profsr_no = prof.profsr_no
-                 INNER JOIN sklstf skl
-                            ON prof.sklstf_id = skl.sklstf_id
-        WHERE at.stdnt_no = #{stdntNo}
-          AND at.reqst_year = #{year}
-          AND at.reqst_semstr = #{period}
-          AND at.reqst_sttus LIKE '신청완료'
-    </select>
+	  
+	  <!-- 학적 이행(졸업요건) 집계용 -->
+	 <resultMap id="AcademicProgressMap"
+	             type="kr.ac.collage_api.dashboard.vo.AcademicProgressRawVO">
+	    <result property="totalCompletedCredits"    column="TOTAL_COMPLETED_CREDITS"/>
+	    <result property="totalRequiredCredits"     column="TOTAL_REQUIRED_CREDITS"/>
+	
+	    <result property="majorCompletedCredits"    column="MAJOR_COMPLETED_CREDITS"/>
+	    <result property="majorRequiredCredits"     column="MAJOR_REQUIRED_CREDITS"/>
+	
+	    <result property="liberalCompletedCredits"  column="LIBERAL_COMPLETED_CREDITS"/>
+	    <result property="liberalRequiredCredits"   column="LIBERAL_REQUIRED_CREDITS"/>
+	
+	    <result property="foreignCompletedSubjects" column="FOREIGN_COMPLETED_SUBJECTS"/>
+	    <result property="foreignRequiredSubjects"  column="FOREIGN_REQUIRED_SUBJECTS"/>
+	  </resultMap>
+	  <!--
+	    학적 이행(졸업요건) 요약
+	    - 성적 관련 로직은 selectTranscriptSummary 와 동일 베이스 사용
+	    - COMPLETED 계열은 '통과' 과목만 (등급: A+~D0, P)
+	    - REQUIRED 계열은 실제 졸업규정 테이블 기준으로 채워야 함 (여기선 0/NULL placeholder)
+	  -->
+	  <select id="selectAcademicProgress"
+	          parameterType="string"
+	          resultMap="AcademicProgressMap">
+	
+	    SELECT
+	        /* 전체 이수학점: 통과 과목 학점 합 */
+	        SUM(
+	            CASE
+	                WHEN is_pass = 'Y' THEN credits
+	                ELSE 0
+	            END
+	        ) AS TOTAL_COMPLETED_CREDITS,
+	
+	        /* TODO: 전체 필요 학점 (졸업규정 테이블 조인해서 채우기) */
+	        0 AS TOTAL_REQUIRED_CREDITS,
+	
+	        /* 전공필수 이수학점: COMPL_SE 전필 계열 + 통과 */
+	        SUM(
+	            CASE
+	                WHEN compl_se IN ('전필', '전공필수')
+	                     AND is_pass = 'Y'
+	                    THEN credits
+	                ELSE 0
+	            END
+	        ) AS MAJOR_COMPLETED_CREDITS,
+	
+	        /* TODO: 전공필수 필요학점 */
+	        0 AS MAJOR_REQUIRED_CREDITS,
+	
+	        /* 교양필수 이수학점: COMPL_SE 교필 계열 + 통과 */
+	        SUM(
+	            CASE
+	                WHEN compl_se IN ('교필', '교양필수')
+	                     AND is_pass = 'Y'
+	                    THEN credits
+	                ELSE 0
+	            END
+	        ) AS LIBERAL_COMPLETED_CREDITS,
+	
+	        /* TODO: 교양필수 필요학점 */
+	        0 AS LIBERAL_REQUIRED_CREDITS,
+	
+	        /* 외국어 이수 과목 수: COMPL_SE 외국어 계열 + 통과 → 과목수 */
+	        SUM(
+	            CASE
+	                WHEN compl_se IN ('외국어', '교양외국어')
+	                     AND is_pass = 'Y'
+	                    THEN 1
+	                ELSE 0
+	            END
+	        ) AS FOREIGN_COMPLETED_SUBJECTS,
+	
+	        /* TODO: 외국어 필요 과목 수 */
+	        0 AS FOREIGN_REQUIRED_SUBJECTS
+	
+	    FROM (
+	        /* 성적/학점 공통 로직: selectTranscriptSummary 의 내부 쿼리 + COMPL_SE, is_pass 추가 */
+	        SELECT
+	            ss.STDNT_NO,
+	            NVL(sc.ACQS_PNT, ec.ACQS_PNT) AS credits,
+	            sc.PNT_GRAD                   AS grade_raw,
+	            ec.COMPL_SE                   AS compl_se,
+	
+	            /* 통과 여부 (P 포함) */
+	            CASE
+	                WHEN sc.PNT_GRAD IN ('A+','A0','B+','B0','C+','C0','D+','D0','P')
+	                    THEN 'Y'
+	                WHEN sc.PNT_GRAD IN ('F','NP','W','I')
+	                    THEN 'N'
+	                ELSE 'N'
+	            END AS is_pass
+	
+	        FROM SEMSTR_SCRE  ss
+	        JOIN SBJECT_SCRE  sc ON sc.SEMSTR_SCRE_INNB = ss.SEMSTR_SCRE_INNB
+	        JOIN ATNLC_REQST  ar ON ar.ATNLC_REQST_NO   = sc.ATNLC_REQST_NO
+	        JOIN ESTBL_COURSE ec ON ec.ESTBLLCTRE_CODE  = ar.ESTBLLCTRE_CODE
+	        WHERE ss.STDNT_NO = #{stdntNo}
+	    )
+	  </select>
+		
+	
+	
+	<select id="selectStudent" resultType="DashLectureVO">
+	    SELECT                          /* kr.ac.collage_api.dashboard.mapper.DashboardMapper.selectStudent */
+	           cour.lctre_nm            /* 강의명 */
+	         , est.lctrum               /* 강의실 */
+	         , est.estbllctre_code      /* 개설강의코드 */
+	         , skl.sklstf_nm            /* 교직원명 */
+	    FROM atnlc_reqst at
+	         INNER JOIN estbl_course est
+	                 ON  at.estbllctre_code = est.estbllctre_code
+	         INNER JOIN all_course cour
+	                 ON est.lctre_code = cour.lctre_code
+	         INNER JOIN profsr prof
+	                 ON est.profsr_no = prof.profsr_no
+	         INNER JOIN sklstf skl
+	                 ON prof.sklstf_id = skl.sklstf_id
+	    WHERE at.stdnt_no   = #{stdntNo}
+	      AND at.reqst_year = #{year}
+	      AND at.reqst_semstr = #{period}
+	      AND at.reqst_sttus = '신청완료'   <!-- 신청 완료(승인된 것)만 시간표에 노출 -->
+	</select>
+	
+	
 </mapper>

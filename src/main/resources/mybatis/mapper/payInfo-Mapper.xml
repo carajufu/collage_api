@@ -1,182 +1,232 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper
-        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="kr.ac.collage_api.regist.mapper.PayInfoMapper">
 
-    <!-- ============================ 기본 resultMap ============================ -->
-	    <resultMap id="payInfoMap" type="kr.ac.collage_api.vo.PayInfoVO">
-	    <id     property="payNo"        column="PAY_NO"/>
-	    <result property="registCtNo"   column="REGIST_CT_NO"/>
-	    <result property="stdntNo"      column="STDNT_NO"/>
-	    <result property="payDe"        column="PAY_DE"/>
-	    <result property="payGld"       column="PAY_GLD"/>
-	    <result property="payMthd"      column="PAY_MTHD"/>
-	    <result property="paySttus"     column="PAY_STTUS"/>
-	    <result property="schlship"     column="SCHLSHIP"/>
-	    <result property="vrtlAcntno"   column="VRTL_ACNTNO"/>
-	    <result property="rqestYear"    column="RQEST_YEAR"/>
-	    <result property="rqestSemstr"  column="RQEST_SEMSTR"/>
-	    <result property="rqestDe"      column="RQEST_DE"/>
-	    <result property="payEndde"     column="PAY_ENDDE"/>
-	    <result property="rqestUniv"    column="RQEST_UNIV"/>
-	    <result property="rqestGrade"   column="RQEST_GRADE"/>
-	    <result property="rqestGld"     column="RQEST_GLD"/>
-	    <result property="stdntNm"      column="STDNT_NM"/>
-	    <result property="subjctCode"   column="SUBJCT_CODE"/>
-	    <result property="subjctName"   column="SUBJCT_NAME"/>
-	    <result property="univName"     column="UNIV_NAME"/>	
-	</resultMap>
+	<!-- 중복 방지: 같은 (REGIST_CT_NO, STDNT_NO) 존재 여부 -->
+	<select id="existsPayInfo" resultType="int">
+		SELECT COUNT(*)
+		FROM
+		PAY_INFO
+		WHERE REGIST_CT_NO = #{registCtNo}
+		AND STDNT_NO = #{stdntNo}
+	</select>
 
-    <!-- ======================= 학생 본인 납부 목록조회 ======================= -->
-    <select id="selectPayInfoList" parameterType="String" resultMap="payInfoMap">
-        SELECT P.PAY_NO, P.REGIST_CT_NO, P.STDNT_NO, P.PAY_DE, P.PAY_GLD,
-               P.PAY_MTHD, NVL(P.PAY_STTUS,'미납') AS PAY_STTUS,
-               P.SCHLSHIP, P.VRTL_ACNTNO,
-               R.RQEST_YEAR, R.RQEST_SEMSTR, R.RQEST_DE, R.PAY_ENDDE, R.RQEST_UNIV,
-               S.STDNT_NM
-        FROM PAY_INFO P
-        JOIN REGIST_CT R ON P.REGIST_CT_NO = R.REGIST_CT_NO
-        JOIN STDNT S ON P.STDNT_NO = S.STDNT_NO
-        WHERE P.STDNT_NO = #{stdntNo}
-        ORDER BY R.RQEST_YEAR DESC, R.RQEST_SEMSTR DESC
+	<!-- 납부정보 등록 -->
+	<insert id="insertPayInfo"
+		parameterType="kr.ac.collage_api.vo.PayInfoVO">
+		<selectKey keyProperty="payNo" resultType="int"
+			order="BEFORE">
+			SELECT NVL(MAX(PAY_NO), 0) + 1 FROM PAY_INFO
+		</selectKey>
+		INSERT INTO PAY_INFO (
+		PAY_NO, STDNT_NO, REGIST_CT_NO, PAY_GLD,
+		PAY_STTUS
+		) VALUES (
+		PAY_INFO_SEQ.NEXTVAL,
+		#{stdntNo}, #{registCtNo},
+		0,
+		#{paySttus}
+		)
+	</insert>
+
+	<!-- 학생별 납부내역 -->
+	<select id="selectPayInfoListByStudent" parameterType="string"
+		resultType="kr.ac.collage_api.vo.PayInfoVO">
+		SELECT
+		P.REGIST_CT_NO AS registCtNo,
+		P.PAY_NO AS payNo,
+		S.STDNT_NO AS stdntNo,
+		S.STDNT_NM AS stdntNm,
+		S.GRADE AS grade,
+		R.RQEST_YEAR AS rqestYear,
+		R.RQEST_SEMSTR AS rqestSemstr,
+		R.RQEST_GLD AS
+		rqestGld,
+		P.PAY_GLD AS payGld,
+		P.PAY_STTUS AS paySttus,
+		P.PAY_MTHD AS
+		payMthd,
+		P.PAY_DE AS payDe,
+		R.RQEST_DE AS rqestDe,
+		R.PAY_ENDDE AS
+		payEndde,
+		R.RQEST_UNIV AS rqestUniv,
+		R.SUBJCT_CODE AS subjctCode,
+		P.VRTL_ACNTNO AS vrtlAcntno
+		FROM PAY_INFO P
+		JOIN REGIST_CT R ON
+		P.REGIST_CT_NO = R.REGIST_CT_NO
+		JOIN STDNT S ON P.STDNT_NO = S.STDNT_NO
+		WHERE P.STDNT_NO = #{stdntNo}
+		    AND p.pay_sttus LIKE '미납'
+		ORDER BY R.RQEST_YEAR DESC,
+		R.RQEST_SEMSTR DESC
+	</select>
+
+    <select id="selectPayInfoList" parameterType="string"
+		resultType="payInfoVO">
+		SELECT
+		P.REGIST_CT_NO AS registCtNo,
+		P.PAY_NO AS payNo,
+		S.STDNT_NO AS stdntNo,
+		S.STDNT_NM AS stdntNm,
+		S.GRADE AS grade,
+		R.RQEST_YEAR AS rqestYear,
+		R.RQEST_SEMSTR AS rqestSemstr,
+		R.RQEST_GLD AS
+		rqestGld,
+		P.PAY_GLD AS payGld,
+		P.PAY_STTUS AS paySttus,
+		P.PAY_MTHD AS
+		payMthd,
+		P.PAY_DE AS payDe,
+		R.RQEST_DE AS rqestDe,
+		R.PAY_ENDDE AS
+		payEndde,
+		R.RQEST_UNIV AS rqestUniv,
+		R.SUBJCT_CODE AS subjctCode,
+		P.VRTL_ACNTNO AS vrtlAcntno
+		FROM PAY_INFO P
+		JOIN REGIST_CT R ON
+		P.REGIST_CT_NO = R.REGIST_CT_NO
+		JOIN STDNT S ON P.STDNT_NO = S.STDNT_NO
+		WHERE P.STDNT_NO = #{stdntNo}
+		    AND p.pay_sttus LIKE '미납'
+		ORDER BY R.RQEST_YEAR DESC,
+		R.RQEST_SEMSTR DESC
+	</select>
+
+    <select id="getHistory" resultType="payHistoryVO">
+        SELECT
+            p.pay_no
+            , p.regist_ct_no
+            , p.stdnt_no
+            , p.pay_de
+            , p.pay_gld
+            , p.pay_mthd
+            , p.pay_sttus
+            , p.schlship
+            , p.vrtl_acntno
+            , ct.rqest_year
+            , ct.rqest_semstr
+        FROM pay_info p
+        INNER JOIN regist_ct ct
+            ON p.regist_ct_no = ct.regist_ct_no
+        WHERE ct.rqest_year = #{paramMap.year}
+            AND ct.rqest_semstr = #{paramMap.semester}
+            AND p.stdnt_no = #{name}
     </select>
 
+	<!-- 단건 조회 -->
+	<select id="selectPayInfo"
+		resultType="kr.ac.collage_api.vo.PayInfoVO">
+		SELECT *
+		FROM PAY_INFO
+		WHERE REGIST_CT_NO = #{registCtNo}
+		AND
+		STDNT_NO = #{stdntNo}
+	</select>
 
-    <!-- ======================= 단건 조회 ======================= -->
-    <select id="selectPayInfo" parameterType="map" resultMap="payInfoMap">
-        SELECT *
-        FROM PAY_INFO
-        WHERE STDNT_NO = #{stdntNo}
-          AND REGIST_CT_NO = #{registCtNo}
-    </select>
-
-
-    <!-- ======================= 가상계좌 발급 ======================= -->
-    <update id="updateVirtualAccount" parameterType="map">
-        UPDATE PAY_INFO
-        SET VRTL_ACNTNO = #{accountNo}
-        WHERE STDNT_NO = #{stdntNo}
-          AND REGIST_CT_NO = #{registCtNo}
-    </update>
-
-
-    <!-- ======================= 납부 상태 수정(완납) ======================= -->
-    <update id="updatePayStatus" parameterType="map">
-	    UPDATE PAY_INFO
-	    SET
-	        PAY_STTUS  = '완납',
-	        PAY_MTHD   = #{payMthd},
-	        PAY_DE     = TO_CHAR(SYSDATE,'YYYYMMDD')
-	    WHERE REGIST_CT_NO = #{registCtNo}
-	      AND STDNT_NO     = #{stdntNo}
+	<!-- 납부 상태 변경 -->
+	<update id="updatePayStatus" parameterType="map">
+		UPDATE PAY_INFO
+		SET
+		PAY_STTUS = '완납',
+		PAY_MTHD = #{payMthd},
+		PAY_DE = TO_CHAR(SYSDATE,
+		'YYYYMMDD'),
+		PAY_GLD = #{payGld}
+		WHERE REGIST_CT_NO = #{registCtNo}
+		AND
+		STDNT_NO =
+		#{stdntNo}
 	</update>
 
 
-    <!-- ======================= 납부 금액 ======================= -->
-    <select id="selectPayAmount" parameterType="map" resultType="int">
-        SELECT PAY_GLD
-        FROM PAY_INFO
-        WHERE STDNT_NO = #{stdntNo}
-          AND REGIST_CT_NO = #{registCtNo}
-    </select>
+	<!-- 가상계좌 저장 -->
+	<update id="updateVirtualAccount" parameterType="map">
+		UPDATE PAY_INFO
+		SET VRTL_ACNTNO = #{accountNo}
+		WHERE REGIST_CT_NO = #{registCtNo}
+		AND
+		STDNT_NO = #{stdntNo}
+	</update>
 
-
-    <!-- ======================= 납부 History 검색 ======================= -->
-    <select id="getHistory" parameterType="map" resultMap="payInfoMap">
-        SELECT P.PAY_DE, P.PAY_GLD, P.PAY_STTUS, P.PAY_MTHD,
-               R.RQEST_YEAR, R.RQEST_SEMSTR, P.STDNT_NO, S.STDNT_NM
-        FROM PAY_INFO P
-        JOIN REGIST_CT R ON P.REGIST_CT_NO = R.REGIST_CT_NO
-        JOIN STDNT S ON P.STDNT_NO = S.STDNT_NO
-        WHERE P.STDNT_NO = #{stdntNo}
-        <if test="year != null and year != ''">
-            AND R.RQEST_YEAR = #{year}
-        </if>
-        <if test="semester != null and semester != ''">
-            AND R.RQEST_SEMSTR = #{semester}
-        </if>
-        ORDER BY R.RQEST_YEAR DESC, R.RQEST_SEMSTR DESC
-    </select>
-
-
-    <!-- ======================= 납부정보 등록 ======================= -->
-    <insert id="insertPayInfo" parameterType="kr.ac.collage_api.vo.PayInfoVO">
-        INSERT INTO PAY_INFO (PAY_NO,STDNT_NO,REGIST_CT_NO,PAY_GLD,PAY_STTUS)
-        VALUES (PAY_INFO_SEQ.NEXTVAL, #{stdntNo}, #{registCtNo}, #{payGld}, #{paySttus})
-    </insert>
-
-
-    <!-- ======================= 관리자 전체 조회 ======================= -->
-    <select id="selectAdminPayList" parameterType="map" resultMap="payInfoMap">
-        SELECT P.PAY_NO,P.REGIST_CT_NO,P.STDNT_NO,
-               S.STDNT_NM,S.SUBJCT_CODE,S.GRADE,R.RQEST_YEAR,R.RQEST_SEMSTR,R.RQEST_GLD,
-               P.PAY_GLD,P.PAY_STTUS,P.PAY_MTHD,P.PAY_DE,P.VRTL_ACNTNO
-        FROM PAY_INFO P
-        JOIN STDNT S ON P.STDNT_NO = S.STDNT_NO
-        JOIN REGIST_CT R ON P.REGIST_CT_NO = R.REGIST_CT_NO
-        WHERE 1=1
-        <if test="univCode != null and univCode != ''">
-            AND S.SUBJCT_CODE LIKE #{univCode}||'%'
-        </if>
-        <if test="subjctCode != null and subjctCode != ''">
-            AND S.SUBJCT_CODE = #{subjctCode}
-        </if>
-        <if test="grade != null and grade != ''">
-            AND S.GRADE = #{grade}
-        </if>
-        <if test="paySttus != null and paySttus != ''">
-            AND P.PAY_STTUS = #{paySttus}
-        </if>
-        ORDER BY P.PAY_NO DESC
-    </select>
-
-
-    <!-- ======================= 등록금 변경 → 전체 PayInfo 업데이트 ======================= -->
-    <update id="updateByRegistCtNo" parameterType="kr.ac.collage_api.vo.RegistCtVO">
-        UPDATE PAY_INFO
-        SET PAY_GLD = #{rqestGld}
-        WHERE REGIST_CT_NO = #{registCtNo}
-    </update>
-
-
-    <!-- ======================= 등록금 삭제(연계 삭제) ======================= -->
-    <delete id="deleteByRegistCtNo" parameterType="int">
-        DELETE FROM PAY_INFO WHERE REGIST_CT_NO = #{registCtNo}
-    </delete>
-
-	<!-- ======================= 영수증 ======================= -->
-	<select id="getPayInfoOne" resultMap="payInfoMap">
-	    SELECT 
-	         B.STDNT_NO
-	        ,B.STDNT_NM
-	        ,A.PAY_GLD
-	        ,A.SCHLSHIP
-	        ,A.PAY_DE
-	        ,A.PAY_NO
-	        ,C.RQEST_YEAR
-	        ,C.RQEST_SEMSTR
-	        ,C.RQEST_GLD
-	        ,C.RQEST_DE
-	        ,C.PAY_ENDDE
-	        ,C.RQEST_GRADE
-	        ,SB.SUBJCT_NM AS SUBJCT_NAME
-	        ,U.UNIV_NM AS UNIV_NAME
-	    FROM PAY_INFO A
-	    JOIN STDNT B 
-	      ON B.STDNT_NO = A.STDNT_NO
-	    JOIN REGIST_CT C
-	      ON C.REGIST_CT_NO = A.REGIST_CT_NO 
-	    JOIN SUBJCT SB 
-	      ON SB.SUBJCT_CODE = B.SUBJCT_CODE
-	    JOIN UNIV U 
-	      ON SB.UNIV_CODE = U.UNIV_CODE
-	    WHERE A.STDNT_NO = #{stdntNo}
-	      AND A.PAY_STTUS = '완납'
-	    ORDER BY A.PAY_NO DESC
-	    FETCH FIRST 1 ROWS ONLY
+	<!-- 납부 금액 -->
+	<select id="selectPayAmount" resultType="int">
+		SELECT PAY_GLD
+		FROM
+		PAY_INFO
+		WHERE REGIST_CT_NO = #{registCtNo}
+		AND STDNT_NO = #{stdntNo}
 	</select>
 
-	
+	<!-- 관리자 납부내역 전체 / 검색 -->
+	<select id="selectAdminPayList" parameterType="map"
+		resultType="kr.ac.collage_api.vo.PayInfoVO">
+		SELECT
+		P.PAY_NO AS payNo,
+		P.REGIST_CT_NO AS registCtNo,
+		P.STDNT_NO AS
+		stdntNo,
+		S.STDNT_NM AS stdntNm,
+		S.SUBJCT_CODE AS subjctCode,
+		SJ.SUBJCT_NM AS subjctName,
+		SJ.UNIV_CODE AS univCode,
+		U.UNIV_NM AS
+		univName,
+		RC.RQEST_GRADE AS rqestGrade,
+		RC.RQEST_GLD AS rqestGld,
+		P.PAY_STTUS AS paySttus,
+		P.PAY_GLD AS payGld,
+		P.PAY_DE AS payDe,
+		P.PAY_MTHD AS payMthd,
+		P.VRTL_ACNTNO AS vrtlAcntno
+		FROM PAY_INFO P
+		JOIN
+		STDNT S ON P.STDNT_NO = S.STDNT_NO
+		JOIN SUBJCT SJ ON S.SUBJCT_CODE =
+		SJ.SUBJCT_CODE
+		JOIN UNIV U ON SJ.UNIV_CODE = U.UNIV_CODE
+		JOIN REGIST_CT
+		RC ON P.REGIST_CT_NO = RC.REGIST_CT_NO
+		WHERE 1 = 1
+
+		<if test="univCode != null and univCode != ''">
+			AND SJ.UNIV_CODE = #{univCode}
+		</if>
+
+		<if test="subjctCode != null and subjctCode != ''">
+			AND SJ.SUBJCT_CODE = #{subjctCode}
+		</if>
+
+		<if test="grade != null and grade != ''">
+			AND RC.RQEST_GRADE = #{grade}
+		</if>
+
+		<if test="paySttus != null and paySttus != ''">
+			AND P.PAY_STTUS = #{paySttus}
+		</if>
+
+		ORDER BY P.PAY_NO DESC
+	</select>
+
+	<delete id="deleteByRegistCtNo" parameterType="int">
+		DELETE FROM
+		PAY_INFO
+		WHERE REGIST_CT_NO = #{registCtNo}
+	</delete>
+
+	<update id="updateByRegistCtNo" parameterType="registCtVO">
+		UPDATE PAY_INFO
+		SET
+		PAY_GLD = #{rqestGld}
+		WHERE REGIST_CT_NO =
+		#{registCtNo}
+	</update>
+
+
 </mapper>

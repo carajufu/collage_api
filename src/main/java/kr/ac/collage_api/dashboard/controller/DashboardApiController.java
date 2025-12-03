@@ -15,7 +15,9 @@ import kr.ac.collage_api.index.service.IndexScheduleEventService;
 import kr.ac.collage_api.index.vo.IndexBbsVO;
 import kr.ac.collage_api.schedule.service.SpcdeHolidayService;
 import kr.ac.collage_api.schedule.vo.ScheduleEventVO;
+import kr.ac.collage_api.security.mapper.DitAccountMapper;
 import kr.ac.collage_api.security.mapper.SecurityMapper;
+import kr.ac.collage_api.security.service.DitAccountService;
 import kr.ac.collage_api.vo.AcntVO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +36,7 @@ import org.springframework.web.server.ResponseStatusException;
 public class DashboardApiController {
 
     // 서비스 의존성: 생성자 주입 (불변성 유지)
-    private final SecurityMapper ditAccountService;          // 향후 계정 정보 확장용
+    private final DitAccountService ditAccountService;          // 향후 계정 정보 확장용
     private final IndexBbsService indexBbsService;               // 메인 공지/뉴스/행사/학술
     private final IndexScheduleEventService indexScheduleEventService; // 학사 일정 조회
 

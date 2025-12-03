@@ -8,7 +8,7 @@ import kr.ac.collage_api.certificates.vo.CrtfIssuRequestVO;
 import kr.ac.collage_api.certificates.vo.StudentDocxVO;
 import kr.ac.collage_api.certificates.vo.TranscriptRowVO;
 import kr.ac.collage_api.common.util.KorNameTranUtil;
-import kr.ac.collage_api.vo.CrtfKndVO;
+import kr.ac.collage_api.certificates.vo.CrtfKndVO;
 import lombok.extern.slf4j.Slf4j;
 
 import com.openhtmltopdf.pdfboxout.PdfRendererBuilder;
@@ -30,6 +30,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
@@ -47,20 +48,36 @@ public class CertDocxServiceImpl implements CertDocxService {
     StudentDocxServiceImpl studentDocxServiceImpl;
 
     // 고정 문구
-    private static final String UNIV_NAME           = "대한민국대학교";
+    private static final String UNIV_NAME           = "대덕대학교";
     private static final String CHANCELLOR_TITLE    = "총장";
     private static final String CHANCELLOR_NAME     = "고길동";
     private static final String DEFAULT_ISSUER_DEPT = "교무처장";
 
-    private static final String UNIV_VERIFY_URL   = "https://example.university";
-    private static final String VALID_PERIOD_DESC = "90일간 유효";
+    private static final String UNIV_VERIFY_URL     = "https://example.university";
+    private static final String VALID_PERIOD_DESC   = "90일간 유효";
     private static final String DEFAULT_DEGREE_NAME = "공학사";
 
     private static final String TEMPLATE_BASE_CLASSPATH = "/static/cert-templates/";
-    private static final DateTimeFormatter FMT = DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS");
-    private static final String FONT_CLASSPATH = "/static/fonts/NanumGothic.ttf";
-    private static final String FONT_FAMILY    = "NanumGothic";
-    private static final ClassPathResource KR_FONT = new ClassPathResource(FONT_CLASSPATH);
+    private static final DateTimeFormatter FMT          = DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS");
+    private static final String FONT_CLASSPATH          = "static/NanumGothic.ttf";
+    private static final String FONT_FAMILY             = "NanumGothic";
+    private static final ClassPathResource KR_FONT      = new ClassPathResource(FONT_CLASSPATH);
+
+    // 증명서 타입 코드 (DB 기준 코드와 동기화)
+    // D01: 성적, D02: 휴학, D03: 재학, D04: 졸업
+    private static final String CRTF_KIND_SCORE = "D01";
+    private static final String CRTF_KIND_LEAVE = "D02";
+
+    // 성적표 레이아웃 상수 (3열 / 열당 최대 4학기)
+    private static final int SCORE_COLS      = 3;
+    private static final int TERMS_PER_COL   = 4;
+
+    // 증명서 타입 분류 (타입별 전용 필드 치환용)
+    private enum CertType {
+        SCORE,      // 성적증명서 (D01 / SCORE_*)
+        LEAVE,      // 휴학증명서 (D02 / LEAVE_*)
+        OTHER       // 그 외 (재학/졸업 등)
+    }
 
     public CertDocxServiceImpl(CertDocxMapper certDocxMapper) {
         this.certDocxMapper = certDocxMapper;
@@ -78,11 +95,11 @@ public class CertDocxServiceImpl implements CertDocxService {
 
         // 1. 학생 정보
         StudentDocxVO base = studentDocxMapper.selectStudentBasic(acntId);
-        StudentDocxVO st = studentDocxServiceImpl.postProcessDegreeName(base);
+        StudentDocxVO st   = studentDocxServiceImpl.postProcessDegreeName(base);
         normalizeStudentDefaults(st);
 
         // 2. 발급요청 INSERT
-        final String issuInnb = "REQ" + ZonedDateTime.now().format(FMT);
+        final String issuInnb   = "REQ" + ZonedDateTime.now().format(FMT);
         final String reasonNorm = nz(options == null ? null : options.getReason(), null);
 
         CrtfIssuRequestVO req = new CrtfIssuRequestVO();
@@ -90,7 +107,7 @@ public class CertDocxServiceImpl implements CertDocxService {
         req.setCrtfKndNo(crtfKndNo);
         req.setStdntNo(studentNo);
         req.setReqstDt(LocalDateTime.now());
-        req.setIssuSttus("Request");
+        req.setIssuSttus("발급 대기");
         req.setIssuResn(reasonNorm);
         certDocxMapper.insertCrtfIssuRequest(req);
 
@@ -102,25 +119,29 @@ public class CertDocxServiceImpl implements CertDocxService {
 
         // 5. 완료 업데이트
         req.setIssuDt(LocalDateTime.now());
-        req.setIssuSttus("DONE");
+        req.setIssuSttus("발급 완료");
         certDocxMapper.updateCrtfIssuStatus(req);
 
         return pdfBytes;
     }
 
     @Override
-    public CrtfKndVO selectById(String crtfKndNo) { return certDocxMapper.selectCrtfKndById(crtfKndNo); }
+    public CrtfKndVO selectById(String crtfKndNo) {
+        return certDocxMapper.selectCrtfKndById(crtfKndNo);
+    }
 
     @Override
-    public List<CrtfKndVO> selectAll() { return certDocxMapper.selectAllCrtfKnd(); }
+    public List<CrtfKndVO> selectAll() {
+        return certDocxMapper.selectAllCrtfKnd();
+    }
 
     @Override
     public String resolveDownloadFileName(String crtfKndNo) {
         String key = (crtfKndNo == null ? "" : crtfKndNo.trim().toUpperCase());
         if (key.startsWith("D03")) return "재학증명서.pdf";
-        if (key.startsWith("D04"))   return "졸업증명서.pdf";
-        if (key.startsWith("D02"))  return "휴학증명서.pdf";
-        if (key.startsWith("D01"))  return "성적증명서.pdf";
+        if (key.startsWith("D04")) return "졸업증명서.pdf";
+        if (key.startsWith("D02")) return "휴학증명서.pdf";
+        if (key.startsWith("D01")) return "성적증명서.pdf";
         throw new IllegalArgumentException("Unknown crtfKndNo: " + crtfKndNo);
     }
 
@@ -141,19 +162,22 @@ public class CertDocxServiceImpl implements CertDocxService {
             CertRenderVO options,
             String verifyNo
     ) throws IOException {
+
         String templateFile = resolveTemplateFile(crtfKndNo);
-        String rawTemplate = loadTemplateFromClasspath("static/cert-templates/" + templateFile);
+        String rawTemplate  = loadTemplateFromClasspath("static/cert-templates/" + templateFile);
+
         String html = applyCommonPlaceholders(rawTemplate, st, verifyNo);
-        html = applyTypeSpecificPlaceholders(html, crtfKndNo, st, options);
+        html        = applyTypeSpecificPlaceholders(html, crtfKndNo, st, options);
+
         return html;
     }
 
     private String resolveTemplateFile(String crtfKndNo) {
         String key = (crtfKndNo == null ? "" : crtfKndNo.trim().toUpperCase());
-        if (key.startsWith("D03")) return "ENROLL_V1.html";
-        if (key.startsWith("D04"))   return "GRAD_V1.html";
-        if (key.startsWith("D02"))  return "LEAVE_V1.html";
-        if (key.startsWith("D01"))  return "SCORE_V2.html";
+        if (key.startsWith("D03")) return "ENROLL_V1.html"; // 재학
+        if (key.startsWith("D04")) return "GRAD_V1.html";   // 졸업
+        if (key.startsWith("D02")) return "LEAVE_V1.html";  // 휴학
+        if (key.startsWith("D01")) return "SCORE_V2.html";  // 성적
         throw new IllegalArgumentException("Unknown crtfKndNo: " + crtfKndNo);
     }
 
@@ -164,13 +188,13 @@ public class CertDocxServiceImpl implements CertDocxService {
         }
     }
 
-    // 공통 치환. 휴학 기간은 여기서 치환하지 않음(타입별에서 VO 기반 주입).
+    // 공통 치환. 휴학 기간/성적 영역은 여기서 치환하지 않음(타입별에서 VO 기반 주입).
     private String applyCommonPlaceholders(String tpl, StudentDocxVO st, String verifyNo) {
-        // 졸업일 하드코드 산출
+        // 졸업일 하드코드 산출 (입학일 기준 4년 후 2/21)
         DateTimeFormatter inFmt = DateTimeFormatter.ofPattern("yyyy.MM.dd[.]");
-        LocalDate entrance = LocalDate.parse(st.getEntranceDeKor(), inFmt);
-        LocalDate graduation = LocalDate.of(entrance.getYear() + 4, 2, 21); // 02-21 고정
-        String graduationDeKor = graduation.format(DateTimeFormatter.ofPattern("yyyy.MM.dd."));
+        LocalDate entrance      = LocalDate.parse(st.getEntranceDeKor(), inFmt);
+        LocalDate graduation    = LocalDate.of(entrance.getYear() + 4, 2, 21);
+        String graduationDeKor  = graduation.format(DateTimeFormatter.ofPattern("yyyy.MM.dd."));
 
         // 기관·검증
         tpl = rpl(tpl, "{{univName}}", UNIV_NAME);
@@ -205,10 +229,13 @@ public class CertDocxServiceImpl implements CertDocxService {
         tpl = rpl(tpl, "${majorName}",  st.getMajorName());
         tpl = rpl(tpl, "{{status}}", st.getStatus());
         tpl = rpl(tpl, "${status}",  st.getStatus());
+
         tpl = rpl(tpl, "{{collegeName}}", nz(st.getCollegeName(), ""));
+
         String degreeName = nz(st.getDegreeName(), DEFAULT_DEGREE_NAME);
         tpl = rpl(tpl, "{{degreeName}}", degreeName);
         tpl = rpl(tpl, "${degreeName}",  degreeName);
+
         tpl = rpl(tpl, "{{graduationDate}}", graduationDeKor);
         tpl = rpl(tpl, "${graduationDate}",  graduationDeKor);
 
@@ -221,95 +248,139 @@ public class CertDocxServiceImpl implements CertDocxService {
         return tpl;
     }
 
-    // 타입별 치환. 사유(=reason), 휴학기간, 학점 증명 등.
-    private String applyTypeSpecificPlaceholders(String tpl, String crtfKndNo, StudentDocxVO st, CertRenderVO options) {
-        String key = (crtfKndNo == null ? "" : crtfKndNo.trim().toUpperCase());
+    // ===== 타입 분류 및 placeholder 치환 =====
+
+    /**
+     * crtfKndNo → 내부 증명서 타입 매핑
+     * - 코드(D01/D02) + 과거 LEAVE/SCORE prefix 둘 다 허용
+     */
+    private CertType resolveCertType(String crtfKndNo) {
+        if (crtfKndNo == null) return CertType.OTHER;
+
+        String key = crtfKndNo.trim().toUpperCase();
+
+        // 휴학: D02 또는 LEAVE*
+        if (key.startsWith(CRTF_KIND_LEAVE) || key.startsWith("LEAVE")) {
+            return CertType.LEAVE;
+        }
+        // 성적: D01 또는 SCORE*
+        if (key.startsWith(CRTF_KIND_SCORE) || key.startsWith("SCORE")) {
+            return CertType.SCORE;
+        }
+        return CertType.OTHER;
+    }
+
+    /**
+     * 템플릿 placeholder 치환 헬퍼
+     * - {{name}} / ${name} 두 형태를 동시에 처리
+     */
+    private String replaceAllPlaceholders(String tpl, String name, String value) {
+        String v = nz(value, "");
+        tpl = rpl(tpl, "{{" + name + "}}", v);
+        return rpl(tpl, "${" + name + "}", v);
+    }
+
+    /**
+     * 타입별 치환.
+     * - 공통: reason
+     * - 휴학증명서(D02/LEAVE*): 휴학기간, 휴학사유, 발급부서/직책
+     * - 성적증명서(D01/SCORE*): 성적표 HTML + 총이수학점/총평점
+     *
+     * 컨트롤러의 isLeaveCert(D02)와 여기의 타입 판단이 깨지지 않도록
+     * resolveCertType 기반으로만 타입 분기.
+     */
+    private String applyTypeSpecificPlaceholders(String tpl,
+                                                 String crtfKndNo,
+                                                 StudentDocxVO st,
+                                                 CertRenderVO options) {
+
+        CertType type = resolveCertType(crtfKndNo);
 
         // 공통 reason
-        String reason = options == null ? null : options.getReason();
-        tpl = rpl(tpl, "{{reason}}", nz(reason, ""));
-        tpl = rpl(tpl, "${reason}",  nz(reason, ""));
+        String reason = (options == null) ? null : options.getReason();
+        tpl = replaceAllPlaceholders(tpl, "reason", reason);
 
-        // 휴학증명서: 부서/직책 + 기간(VO 우선 주입)
-        if (key.startsWith("LEAVE")) {
-            tpl = rpl(tpl, "{{issuerDeptOrRole}}", DEFAULT_ISSUER_DEPT);
-            tpl = rpl(tpl, "${issuerDeptOrRole}",  DEFAULT_ISSUER_DEPT);
+        // ==== 휴학증명서(D02/LEAVE*) ====
+        if (type == CertType.LEAVE) {
+            tpl = replaceAllPlaceholders(tpl, "issuerDeptOrRole", DEFAULT_ISSUER_DEPT);
 
-            LocalDate s = options == null ? null : options.getLeaveStart();
-            LocalDate e = options == null ? null : options.getLeaveEnd();
+            LocalDate s = (options == null) ? null : options.getLeaveStart();
+            LocalDate e = (options == null) ? null : options.getLeaveEnd();
 
             String sKor = fmtKor(s);
             String eKor = fmtKor(e);
 
-            tpl = rpl(tpl, "{{leaveStartDate}}", nz(sKor, ""));
-            tpl = rpl(tpl, "${leaveStartDate}",  nz(sKor, ""));
-            tpl = rpl(tpl, "{{leaveEndDate}}",   nz(eKor, ""));
-            tpl = rpl(tpl, "${leaveEndDate}",    nz(eKor, ""));
+            tpl = replaceAllPlaceholders(tpl, "leaveStartDate", sKor);
+            tpl = replaceAllPlaceholders(tpl, "leaveEndDate",   eKor);
+            tpl = replaceAllPlaceholders(tpl, "leaveReason",    reason);
 
-            // leaveReason도 동일 값 주입 필요 시
-            tpl = rpl(tpl, "{{leaveReason}}", nz(reason, ""));
-            tpl = rpl(tpl, "${leaveReason}",  nz(reason, ""));
         } else {
-            // 비-휴학생: 빈값 주입
-            tpl = rpl(tpl, "{{leaveStartDate}}", "");
-            tpl = rpl(tpl, "${leaveStartDate}",  "");
-            tpl = rpl(tpl, "{{leaveEndDate}}",   "");
-            tpl = rpl(tpl, "${leaveEndDate}",    "");
-            tpl = rpl(tpl, "{{leaveReason}}",    "");
-            tpl = rpl(tpl, "${leaveReason}",     "");
+            // 비-휴학생: 휴학 관련 필드는 공백
+            tpl = replaceAllPlaceholders(tpl, "leaveStartDate", "");
+            tpl = replaceAllPlaceholders(tpl, "leaveEndDate",   "");
+            tpl = replaceAllPlaceholders(tpl, "leaveReason",    "");
         }
 
-        // 성적증명서: 표 + 합계
-        if (key.startsWith("SCORE")) {
+        // ==== 성적증명서(D01/SCORE*) ====
+        if (type == CertType.SCORE) {
             final String stdntNo = nz(st.getStudentNo(), null);
-            final List<kr.ac.collage_api.certificates.vo.TranscriptRowVO> rows =
-                    (stdntNo != null) ? certDocxMapper.selectTranscriptRows(stdntNo)
-                                      : java.util.Collections.emptyList();
+
+            final List<TranscriptRowVO> rows =
+                    (stdntNo != null)
+                            ? certDocxMapper.selectTranscriptRows(stdntNo)
+                            : java.util.Collections.emptyList();
 
             final String rowsHtml = buildScoreRowsWithCredits(rows);
-            tpl = rpl(tpl, "{{scoreRows}}", rowsHtml);
-            tpl = rpl(tpl, "${scoreRows}",  rowsHtml);
+            tpl = replaceAllPlaceholders(tpl, "scoreRows", rowsHtml);
 
             final kr.ac.collage_api.certificates.vo.TranscriptSummaryVO summary =
-                    (stdntNo != null) ? certDocxMapper.selectTranscriptSummary(stdntNo) : null;
+                    (stdntNo != null)
+                            ? certDocxMapper.selectTranscriptSummary(stdntNo)
+                            : null;
 
             final String totalCredits = (summary != null && summary.getTotalCredits() != null)
-                    ? summary.getTotalCredits().toString() : "";
+                    ? summary.getTotalCredits().toString()
+                    : "";
             final String totalGpa = (summary != null && summary.getTotalGpa() != null)
-                    ? summary.getTotalGpa().toString() : "";
+                    ? summary.getTotalGpa().toString()
+                    : "";
 
-            tpl = rpl(tpl, "{{totalCredits}}", totalCredits);
-            tpl = rpl(tpl, "${totalCredits}",  totalCredits);
-            tpl = rpl(tpl, "{{totalGpa}}",     totalGpa);
-            tpl = rpl(tpl, "${totalGpa}",      totalGpa);
+            tpl = replaceAllPlaceholders(tpl, "totalCredits", totalCredits);
+            tpl = replaceAllPlaceholders(tpl, "totalGpa",     totalGpa);
 
-            log.info("totalCredits={}, totalGpa={}", totalCredits, totalGpa);
+            log.info("[CertDocx] SCORE summary: totalCredits={}, totalGpa={}", totalCredits, totalGpa);
+
         } else {
-            tpl = rpl(tpl, "{{scoreRows}}", "");
-            tpl = rpl(tpl, "${scoreRows}",  "");
+            // 비-성적 증명서: 성적 영역은 비움
+            tpl = replaceAllPlaceholders(tpl, "scoreRows", "");
         }
 
         return tpl;
     }
 
+    // ===== HTML → PDF 렌더 =====
     private byte[] renderHtmlToPdf(String html) throws Exception {
         String baseUrl = Objects.requireNonNull(
                 this.getClass().getResource(TEMPLATE_BASE_CLASSPATH),
-                "cert-template base path not found on classpath").toString();
+                "cert-template base path not found on classpath"
+        ).toString();
 
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        PdfRendererBuilder builder = new PdfRendererBuilder();
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+            PdfRendererBuilder builder = new PdfRendererBuilder();
 
-        // 폰트(File 경로). fat-jar 배포 시 InputStream 방식 전환 검토.
-        File fontFile = new File("src/main/resources/static/fonts/NanumGothic.ttf");
-        builder.useFont(fontFile, FONT_FAMILY);
+            // 폰트(File 경로). fat-jar 배포 시 InputStream 방식 전환 검토.
+            File fontFile = new File("src/main/resources/static/fonts/NanumGothic.ttf");
+            builder.useFont(fontFile, FONT_FAMILY);
 
-        builder.useFastMode();
-        builder.withHtmlContent(html, baseUrl);
-        builder.toStream(baos);
-        builder.run();
-        return baos.toByteArray();
+            builder.useFastMode();
+            builder.withHtmlContent(html, baseUrl);
+            builder.toStream(baos);
+            builder.run();
+
+            return baos.toByteArray();
+        }
     }
+
     /**
      * 성적증명서 성적 영역 HTML 생성기.
      *
@@ -324,20 +395,15 @@ public class CertDocxServiceImpl implements CertDocxService {
      *  - SCORE_V2.html 내 {{scoreRows}} 위치에 삽입할 <tr><td>...</td> 구조의 HTML 문자열.
      *
      * 레이아웃 규칙:
-     *  1) score-table 는 3열 (thead에 3개 th).
+     *  1) score-table 는 3열.
      *  2) 각 열(td) 안에 "학기 블록" 최대 4개까지 쌓는다.
      *  3) 학기 블록:
-     *      - 상단: <div class="term-label">[2024-2학기]</div>  (가운데 정렬용)
-     *      - 하단: 과목별 <div class="course-line">구분 | 과목명 | 학점 | 성적</div> (좌측 정렬용)
+     *      - 상단: <div class="term-label">[2024-2학기]</div>
+     *      - 하단: 과목별 <div class="course-line">구분 | 과목명 | 학점 | 성적</div>
      *  4) 4개 학기 블록을 채우면 다음 열로 넘어감.
      *  5) 3열이 모두 찼으면 </tr> 로 행 닫고 새 행 시작.
      *  6) 마지막 행은 남는 열을 빈 <td>로 채워 그리드 유지.
-     *
-     * 주의:
-     *  - rows 정렬은 SQL에서 yearNo, semNo, subjectName 기준으로 끝내고 여기서는 재정렬하지 않는다.
-     *  - escapeHtml / nz 는 상위 유틸 사용 (XSS 및 null 방어).
      */
- // ===== 학점 증명 표 행 렌더러 (3열 / 학기 블록 / 구분|과목명|학점|성적 + 학기요약) =====
     private String buildScoreRowsWithCredits(List<TranscriptRowVO> rows) {
         if (rows == null || rows.isEmpty()) {
             return "<tr><td colspan=\"3\">성적 데이터 없음</td></tr>";
@@ -352,17 +418,17 @@ public class CertDocxServiceImpl implements CertDocxService {
 
         StringBuilder sb = new StringBuilder(rows.size() * 64);
 
-        int col = 0;            // 0~2 (3열)
-        int termCountInCol = 0; // 현재 열에 들어간 학기 블록 수
-        boolean openTr = false; // <tr> 오픈 여부
+        int colIndex       = 0;    // 0 ~ SCORE_COLS-1
+        int termCountInCol = 0;    // 현재 열에 들어간 학기 블록 수
+        boolean rowOpen    = false;
 
         // 2) 학기별 블록 렌더링
         for (Map.Entry<String, List<TranscriptRowVO>> e : byTerm.entrySet()) {
 
             // 열/행 제어
-            if (!openTr) {
+            if (!rowOpen) {
                 sb.append("<tr>");
-                openTr = true;
+                rowOpen = true;
             }
             if (termCountInCol == 0) {
                 sb.append("<td>");
@@ -375,16 +441,16 @@ public class CertDocxServiceImpl implements CertDocxService {
               .append("학기 ]</div>");
 
             // 2-2) 과목 라인 + 학기 누적 계산
-            int termEarnedCredits = 0;     // 학기 취득 학점
-            double termPointSum = 0.0;     // Σ(gradePoint * 학점)
-            int termPointCredits = 0;      // GPA 분모(포인트 계산 대상 학점)
+            int    termEarnedCredits = 0;   // 학기 취득 학점
+            double termPointSum      = 0.0; // Σ(gradePoint * 학점)
+            int    termPointCredits  = 0;   // GPA 분모(포인트 계산 대상 학점)
 
             for (TranscriptRowVO r : e.getValue()) {
-                String complSe = escapeHtml(nz(r.getComplSe(), ""));       // 전필/전선/교양...
-                String subj    = escapeHtml(nz(r.getSubjectName(), ""));   // 과목명
-                Integer c      = r.getCredits();
-                String gradeRaw= nz(r.getGrade(), "");
-                String grade   = escapeHtml(gradeRaw);
+                String complSe   = escapeHtml(nz(r.getComplSe(), ""));       // 전필/전선/교양...
+                String subj      = escapeHtml(nz(r.getSubjectName(), ""));   // 과목명
+                Integer c        = r.getCredits();
+                String gradeRaw  = nz(r.getGrade(), "");
+                String grade     = escapeHtml(gradeRaw);
 
                 // 2-2-1) 화면 출력
                 sb.append("<div class=\"course-line\">");
@@ -402,10 +468,8 @@ public class CertDocxServiceImpl implements CertDocxService {
                 if (c != null && c > 0) {
                     Double gp = mapGradePoint(gradeRaw);
                     if (gp != null) {
-                        // GPA 계산용 분자/분모
                         termPointSum     += gp * c;
                         termPointCredits += c;
-                        // 취득 학점: F, NP, W 등은 미취득 처리
                         if (isPassGrade(gradeRaw)) {
                             termEarnedCredits += c;
                         }
@@ -420,10 +484,9 @@ public class CertDocxServiceImpl implements CertDocxService {
                   .append("&#160;취득학점: ")
                   .append(termEarnedCredits)
                   .append("&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;평점평균: ")
-                  .append(String.format(java.util.Locale.US, "%.2f", gpa))
+                  .append(String.format(Locale.US, "%.2f", gpa))
                   .append("</div>");
             } else {
-                // 유효한 성적 없는 학기: 취득/평점 표기 생략 또는 0 처리 선택 가능
                 sb.append("<div class=\"course-line term-summary\">")
                   .append("학기 취득학점: 0 | 학기 평점평균: -")
                   .append("</div>");
@@ -433,30 +496,30 @@ public class CertDocxServiceImpl implements CertDocxService {
             termCountInCol++;
 
             // 한 열에 학기 4개 → 열 닫고 다음 열
-            if (termCountInCol >= 4) {
+            if (termCountInCol >= TERMS_PER_COL) {
                 sb.append("</td>");
-                col++;
+                colIndex++;
                 termCountInCol = 0;
             }
 
             // 3열 모두 사용 → 행 닫고 초기화
-            if (col >= 3) {
+            if (colIndex >= SCORE_COLS) {
                 sb.append("</tr>");
-                openTr = false;
-                col = 0;
+                rowOpen       = false;
+                colIndex      = 0;
                 termCountInCol = 0;
             }
         }
 
         // 3) 마지막 행 정리
-        if (openTr) {
+        if (rowOpen) {
             if (termCountInCol > 0) {
                 sb.append("</td>");
-                col++;
+                colIndex++;
             }
-            while (col < 3) {
+            while (colIndex < SCORE_COLS) {
                 sb.append("<td></td>");
-                col++;
+                colIndex++;
             }
             sb.append("</tr>");
         }
@@ -464,61 +527,63 @@ public class CertDocxServiceImpl implements CertDocxService {
         return sb.toString();
     }
 
-
     //=========학점 관련 보조 유틸=========
-	/**
-	 * 학점등급 → 평점 변환
-	 * - 기본 4.5 만점 체계 가정
-	 * - P: GPA 계산 제외
-	 * - F/NP/W/I: 0.0 처리 (Pass 실패/포기 과목)
-	 * - 필요 시 학교 규정에 따라 수정
-	 */
-	private Double mapGradePoint(String gradeRaw) {
-	    if (gradeRaw == null) return null;
-	    String g = gradeRaw.trim().toUpperCase();
-	
-	    switch (g) {
-	        case "A+": return 4.5;
-	        case "A0": return 4.0;
-	        case "B+": return 3.5;
-	        case "B0": return 3.0;
-	        case "C+": return 2.5;
-	        case "C0": return 2.0;
-	        case "D+": return 1.5;
-	        case "D0": return 1.0;
-	        case "F":
-	        case "NP":
-	        case "W":
-	        case "I":
-	            return 0.0;
-	        case "P":
-	            // Pass 과목: 취득학점은 인정할 수 있으나 GPA에는 미반영
-	            return null;
-	        default:
-	            // 정의되지 않은 등급: GPA 미반영
-	            return null;
-	    }
-	}
-	
-	/**
-	 * 취득학점으로 인정할 등급 여부
-	 * - F/NP/W/I는 미취득
-	 * - P는 취득으로 볼지 여부는 제도에 따라 갈리므로 여기서는 취득 인정(true)로 처리.
-	 *   (학교 규정 다르면 여기만 수정)
-	 */
-	private boolean isPassGrade(String gradeRaw) {
-	    if (gradeRaw == null) return false;
-	    String g = gradeRaw.trim().toUpperCase();
-	    switch (g) {
-	        case "F":
-	        case "NP":
-	        case "W":
-	        case "I":
-	            return false;
-	        default:
-	            return true;
-	    }
-	}
+    /**
+     * 학점등급 → 평점 변환
+     * - 기본 4.5 만점 체계 가정
+     * - P: GPA 계산 제외
+     * - F/NP/W/I: 0.0 처리 (Pass 실패/포기 과목)
+     */
+    private Double mapGradePoint(String gradeRaw) {
+        if (gradeRaw == null) return null;
+        String g = gradeRaw.trim().toUpperCase();
+
+        switch (g) {
+            case "A+": return 4.5;
+            case "A0": return 4.0;
+            case "B+": return 3.5;
+            case "B0": return 3.0;
+            case "C+": return 2.5;
+            case "C0": return 2.0;
+            case "D+": return 1.5;
+            case "D0": return 1.0;
+
+            case "F":
+            case "NP":
+            case "W":
+            case "I":
+                return 0.0;
+
+            case "P":
+                // Pass 과목: 취득학점은 인정, GPA에는 미반영
+                return null;
+
+            default:
+                // 정의되지 않은 등급: GPA 미반영
+                return null;
+        }
+    }
+
+    /**
+     * 취득학점으로 인정할 등급 여부
+     * - F/NP/W/I는 미취득
+     * - P는 취득으로 간주 (학교 규정 다르면 이 함수만 수정)
+     */
+    private boolean isPassGrade(String gradeRaw) {
+        if (gradeRaw == null) return false;
+        String g = gradeRaw.trim().toUpperCase();
+
+        switch (g) {
+            case "F":
+            case "NP":
+            case "W":
+            case "I":
+                return false;
+            default:
+                return true;
+        }
+    }
+
     // ===== HTML 이스케이프 유틸 =====
     private static String escapeHtml(String s) {
         if (s == null) return "";

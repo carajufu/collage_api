@@ -55,107 +55,92 @@
     </select>
 
  	<update id="saveGrades" parameterType="java.util.List">
-		    DECLARE 
-		        v_semstr_scre_innb NUMBER;
-		        v_stdnt_no VARCHAR2(9);
-		        v_year VARCHAR2(4);
-		        v_semstr VARCHAR2(20);
-		        v_acqs NUMBER;
-		    BEGIN
-		
-		    <foreach collection="list" item="g">
-		        SELECT STDNT_NO, REQST_YEAR, REQST_SEMSTR
-		        INTO v_stdnt_no, v_year, v_semstr
-		        FROM ATNLC_REQST
-		        WHERE ATNLC_REQST_NO = #{g.atnlcReqstNo};
-		        BEGIN
-		            SELECT SEMSTR_SCRE_INNB INTO v_semstr_scre_innb
-		            FROM SEMSTR_SCRE
-		            WHERE STDNT_NO = v_stdnt_no
-		              AND YEAR = v_year
-		              AND SEMSTR = v_semstr;
-		        EXCEPTION WHEN NO_DATA_FOUND THEN
-		            SELECT NVL(MAX(SEMSTR_SCRE_INNB),0)+1 INTO v_semstr_scre_innb FROM SEMSTR_SCRE;
-		            INSERT INTO SEMSTR_SCRE (
-		                SEMSTR_SCRE_INNB, STDNT_NO, TOT_REQST_PNT, TOT_ACQS_PNT, PNT_AVRG,
-		                SEMSTR, YEAR, SEMSTR_TOTPOINT, PNT_GRAD
-		            ) VALUES (
-		                v_semstr_scre_innb, v_stdnt_no, 0, 0, 0, v_semstr, v_year, 0, NULL
-		            );
-		        END;
-		
-		        v_acqs := CASE 
-		                    WHEN #{g.pntGrad} IN ('A+','A0','A') THEN 4
-		                    WHEN #{g.pntGrad} IN ('B+','B0','B') THEN 3
-		                    WHEN #{g.pntGrad} IN ('C+','C0','C') THEN 2
-		                    WHEN #{g.pntGrad} = 'D0' THEN 1
-		                    ELSE 0
-		                  END;
-		
-		        MERGE INTO SBJECT_SCRE G
-		        USING (
-		            SELECT #{g.atnlcReqstNo} AS ATNLC_REQST_NO, 
-		                   #{g.atendScore}   AS ATEND_SCORE,
-		                   #{g.taskScore}    AS TASK_SCORE,
-		                   #{g.middleScore}  AS MIDDLE_SCORE,
-		                   #{g.trmendScore}  AS TRMEND_SCORE,
-		                   #{g.sbjectTotpoint} AS SBJECT_TOTPOINT,
-		                   #{g.pntGrad}      AS PNT_GRAD,
-		                   #{g.pntAvrg}      AS AVRG_SCORE,
-		                   v_acqs            AS ACQS_PNT
-		            FROM DUAL
-		        ) S
-		        ON (G.ATNLC_REQST_NO = S.ATNLC_REQST_NO)
-		
-		        WHEN MATCHED THEN
-		            UPDATE SET 
-		                G.ATEND_SCORE     = S.ATEND_SCORE,
-		                G.TASK_SCORE      = S.TASK_SCORE,
-		                G.MIDDLE_SCORE    = S.MIDDLE_SCORE,
-		                G.TRMEND_SCORE    = S.TRMEND_SCORE,
-		                G.SBJECT_TOTPOINT = S.SBJECT_TOTPOINT,
-		                G.PNT_GRAD        = S.PNT_GRAD,
-		                G.AVRG_SCORE      = S.AVRG_SCORE,
-		                G.ACQS_PNT        = S.ACQS_PNT
-		
-		        WHEN NOT MATCHED THEN
-		            INSERT (
-		                G.SBJECT_SCRE_INNB, G.SEMSTR_SCRE_INNB, G.ATNLC_REQST_NO,
-		                G.PNT_GRAD, G.ACQS_PNT, G.ATEND_SCORE,
-		                G.TASK_SCORE, G.MIDDLE_SCORE, G.TRMEND_SCORE,
-		                G.SBJECT_TOTPOINT, G.AVRG_SCORE
-		            ) VALUES (
-		                (SELECT NVL(MAX(SBJECT_SCRE_INNB),0)+1 FROM SBJECT_SCRE),
-		                v_semstr_scre_innb, S.ATNLC_REQST_NO,
-		                S.PNT_GRAD, S.ACQS_PNT, S.ATEND_SCORE,
-		                S.TASK_SCORE, S.MIDDLE_SCORE, S.TRMEND_SCORE,
-		                S.SBJECT_TOTPOINT, S.AVRG_SCORE
-		            );
-		
-		        UPDATE SEMSTR_SCRE SET
-		            TOT_ACQS_PNT = (SELECT SUM(NVL(ACQS_PNT,0)) FROM SBJECT_SCRE WHERE SEMSTR_SCRE_INNB = v_semstr_scre_innb),
-		            SEMSTR_TOTPOINT = (SELECT SUM(NVL(SBJECT_TOTPOINT,0)) FROM SBJECT_SCRE WHERE SEMSTR_SCRE_INNB = v_semstr_scre_innb),
-		            PNT_AVRG = (
-		                SELECT ROUND(AVG(NVL(AVRG_SCORE,0)),2) 
-		                FROM SBJECT_SCRE WHERE SEMSTR_SCRE_INNB = v_semstr_scre_innb
-		            ),
-		            PNT_GRAD = (
-		                SELECT CASE
-		                    WHEN AVG(NVL(AVRG_SCORE,0)) >= 95 THEN 'A+'
-		                    WHEN AVG(NVL(AVRG_SCORE,0)) >= 90 THEN 'A'
-		                    WHEN AVG(NVL(AVRG_SCORE,0)) >= 85 THEN 'B+'
-		                    WHEN AVG(NVL(AVRG_SCORE,0)) >= 80 THEN 'B'
-		                    WHEN AVG(NVL(AVRG_SCORE,0)) >= 75 THEN 'C+'
-		                    WHEN AVG(NVL(AVRG_SCORE,0)) >= 70 THEN 'C'
-		                    ELSE 'F' END
-		                FROM SBJECT_SCRE WHERE SEMSTR_SCRE_INNB = v_semstr_scre_innb
-		            )
-		        WHERE SEMSTR_SCRE_INNB = v_semstr_scre_innb;
-		    </foreach>
-		
-		    END;
-		</update>
+		DECLARE
+		  v_semstr_scre_innb NUMBER;
+		  v_stdnt_no VARCHAR2(9);
+		  v_year      VARCHAR2(4);
+		  v_semstr    VARCHAR2(20);
+		BEGIN
 
+		  <foreach collection="list" item="g">
+
+		    SELECT STDNT_NO, REQST_YEAR, REQST_SEMSTR
+		    INTO v_stdnt_no, v_year, v_semstr
+		    FROM ATNLC_REQST
+		    WHERE ATNLC_REQST_NO = #{g.atnlcReqstNo};
+
+		    BEGIN
+		      SELECT SEMSTR_SCRE_INNB
+		      INTO v_semstr_scre_innb
+		      FROM SEMSTR_SCRE
+		      WHERE STDNT_NO = v_stdnt_no
+		        AND YEAR = v_year
+		        AND SEMSTR = v_semstr;
+		    EXCEPTION
+		      WHEN NO_DATA_FOUND THEN
+		        SELECT NVL(MAX(SEMSTR_SCRE_INNB), 0) + 1
+		        INTO v_semstr_scre_innb
+		        FROM SEMSTR_SCRE;
+
+		        INSERT INTO SEMSTR_SCRE (
+		          SEMSTR_SCRE_INNB, STDNT_NO, TOT_REQST_PNT,
+		          TOT_ACQS_PNT, PNT_AVRG, SEMSTR, YEAR,
+		          SEMSTR_TOTPOINT, PNT_GRAD
+		        ) VALUES (
+		          v_semstr_scre_innb, v_stdnt_no, 0,
+		          0, 0, v_semstr, v_year, 0, NULL
+		        );
+		    END;
+
+		    MERGE INTO SBJECT_SCRE G
+		    USING (
+		      SELECT
+		        #{g.atnlcReqstNo} AS ATNLC_REQST_NO,
+		        #{g.atendScore}   AS ATEND_SCORE,
+		        #{g.taskScore}    AS TASK_SCORE,
+		        #{g.middleScore}  AS MIDDLE_SCORE,
+		        #{g.trmendScore}  AS TRMEND_SCORE,
+		        #{g.sbjectTotpoint} AS SBJECT_TOTPOINT,
+		        #{g.pntGrad}      AS PNT_GRAD,
+		        #{g.pntAvrg}      AS AVRG_SCORE
+		      FROM DUAL
+		    ) S
+		    ON (G.ATNLC_REQST_NO = S.ATNLC_REQST_NO)
+
+		    WHEN MATCHED THEN
+		      UPDATE SET
+		        G.ATEND_SCORE     = S.ATEND_SCORE,
+		        G.TASK_SCORE      = S.TASK_SCORE,
+		        G.MIDDLE_SCORE    = S.MIDDLE_SCORE,
+		        G.TRMEND_SCORE    = S.TRMEND_SCORE,
+		        G.SBJECT_TOTPOINT = S.SBJECT_TOTPOINT,
+		        G.PNT_GRAD        = S.PNT_GRAD,
+		        G.AVRG_SCORE      = S.AVRG_SCORE
+
+		    WHEN NOT MATCHED THEN
+		      INSERT (
+		        G.SBJECT_SCRE_INNB, G.SEMSTR_SCRE_INNB, G.ATNLC_REQST_NO,
+		        G.PNT_GRAD, G.ACQS_PNT, G.ATEND_SCORE,
+		        G.TASK_SCORE, G.MIDDLE_SCORE, G.TRMEND_SCORE,
+		        G.SBJECT_TOTPOINT, G.AVRG_SCORE
+		      ) VALUES (
+		        (SELECT NVL(MAX(SBJECT_SCRE_INNB),0)+1 FROM SBJECT_SCRE),
+		        v_semstr_scre_innb,
+		        S.ATNLC_REQST_NO,
+		        S.PNT_GRAD,
+		        NULL,
+		        S.ATEND_SCORE,
+		        S.TASK_SCORE,
+		        S.MIDDLE_SCORE,
+		        S.TRMEND_SCORE,
+		        S.SBJECT_TOTPOINT,
+		        S.AVRG_SCORE
+		      );
+
+		  </foreach>
+
+		END;
+		</update>
 
 
 
@@ -172,44 +157,33 @@
     
     <select id="getStudentSemstrList" resultType="kr.ac.collage_api.grade.vo.GradeScreVO">
         SELECT
-            SEMSTR_SCRE_INNB
-           ,STDNT_NO
-           ,YEAR
-           ,SEMSTR
-           ,TOT_REQST_PNT
-           ,TOT_ACQS_PNT
-           ,SEMSTR_TOTPOINT
-           ,PNT_AVRG
-           ,PNT_GRAD
+            SEMSTR_SCRE_INNB, YEAR, SEMSTR
+            ,NVL(SEMSTR_TOTPOINT, 0) AS semstrTotpoint
+            ,NVL(PNT_AVRG, 0) AS pntAvrg
+            ,NVL(PNT_GRAD, '-') AS pntGrad
+            ,NVL(TOT_ACQS_PNT, 0) AS totAcqsPnt
         FROM SEMSTR_SCRE
         WHERE STDNT_NO = #{stdntNo}
-        ORDER BY YEAR, SEMSTR
+        ORDER BY YEAR DESC, SEMSTR DESC
     </select>
-
-    <select id="getSbjectScreListBySemstr" resultType="kr.ac.collage_api.grade.vo.GradeScreVO">
+    
+    <select id="getStudentSemstrDetail" resultType="kr.ac.collage_api.grade.vo.GradeScreVO">
         SELECT
-		    A.SBJECT_SCRE_INNB
-		   ,A.ATNLC_REQST_NO
-		   ,A.PNT_GRAD
-		   ,A.ACQS_PNT
-		   ,A.ATEND_SCORE
-		   ,A.TASK_SCORE
-		   ,A.MIDDLE_SCORE
-		   ,A.TRMEND_SCORE
-		   ,A.SBJECT_TOTPOINT
-		   ,A.AVRG_SCORE
-		   ,E.LCTRE_NM
-		FROM SBJECT_SCRE A
-		JOIN ATNLC_REQST B
-		  ON A.ATNLC_REQST_NO = B.ATNLC_REQST_NO
-		JOIN SEMSTR_SCRE C
-		  ON A.SEMSTR_SCRE_INNB = C.SEMSTR_SCRE_INNB
-		JOIN ESTBL_COURSE D
-		  ON B.ESTBLLCTRE_CODE = D.ESTBLLCTRE_CODE
-		JOIN ALL_COURSE E
-		  ON D.LCTRE_CODE = E.LCTRE_CODE
-		WHERE A.SEMSTR_SCRE_INNB = #{semstrScreInnb}
-		ORDER BY A.SBJECT_SCRE_INNB
+            C.LCTRE_NM, B.COMPL_SE, B.ACQS_PNT
+            ,NVL(A.PNT_GRAD, 'F') AS pntGrad
+            ,NVL(A.SBJECT_TOTPOINT, 0) AS sbjectTotpoint
+            ,NVL(A.AVRG_SCORE, 0) AS pntAvrg
+            ,NVL(A.ATEND_SCORE, 0) AS atendScore
+            ,NVL(A.TASK_SCORE, 0) AS taskScore
+            ,NVL(A.MIDDLE_SCORE, 0) AS middleScore
+            ,NVL(A.TRMEND_SCORE, 0) AS trmendScore
+            
+        FROM SBJECT_SCRE A
+        JOIN ATNLC_REQST AR ON A.ATNLC_REQST_NO = AR.ATNLC_REQST_NO
+        JOIN ESTBL_COURSE B ON AR.ESTBLLCTRE_CODE = B.ESTBLLCTRE_CODE
+        JOIN ALL_COURSE C ON B.LCTRE_CODE = C.LCTRE_CODE
+        WHERE A.SEMSTR_SCRE_INNB = #{semstrScreInnb}
+        ORDER BY C.LCTRE_NM
     </select>
 
 </mapper>
