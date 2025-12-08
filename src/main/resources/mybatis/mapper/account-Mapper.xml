@@ -1,0 +1,452 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.ac.collage_api.account.mapper.AccountMapper">
+  <!-- //계정아이디로 교수 아이디 가져오기
+  public String getProfsrNo(String acntId); -->
+  <select id="getProfsrNo" parameterType="String" resultType="String">
+   SELECT P.PROFSR_NO
+     FROM PROFSR P
+      JOIN SKLSTF S ON P.SKLSTF_ID = S.SKLSTF_ID
+    WHERE S.ACNT_ID = #{acntId}
+  </select>
+
+  <!-- 계정 아이디로 학생 아이디 가져오기
+  public String selectStdntNo(String acntId); -->
+
+  <select id="selectStdntNo" parameterType="String" resultType="String" >
+    SELECT S.STDNT_NO
+      FROM STDNT S
+      JOIN ACNT A ON A.ACNT_ID = S.ACNT_ID
+     WHERE S.ACNT_ID = #{acntId}
+  </select>
+
+  <!-- //대학 코드 이름 가져오기 public UnivVO selectUnivCNinfo(); -->
+
+  <select id="selectUnivCNinfo" resultType="UnivVO">
+  SELECT UNIV_CODE, UNIV_NM, BULD_LC
+  FROM UNIV
+  </select>
+
+  <!-- //학과코드에 맞는 대학 코드, 이름 가져오기
+  public List<SubjctVO> selectSubjctCNinfo(String univCode); -->
+
+  <select id="selectSubjctCNinfo" parameterType="string" resultType="SubjctVO">
+
+  SELECT SUBJCT_NM, SUBJCT_CODE
+  FROM SUBJCT
+  WHERE UNIV_CODE = #{univCode}
+  </select>
+
+  <!-- //학번 뒤에 붙일 3자리 시퀀스 찾기
+  public String findStdntSeq(String stdntFrontNo); -->
+
+  <select id="findStdntSeq" parameterType="string" resultType="string">
+  SELECT NVL(MAX(STDNT_NO),0)
+  FROM STDNT
+  WHERE STDNT_NO like #{stdntFrontNo} || '___'
+  </select>
+
+  <!-- //계정생성
+  public void insertAcnt(AcntVO acntVO); -->
+
+  <insert id="insertAcnt" parameterType="acntVO">
+    INSERT INTO ACNT (ACNT_ID, PASSWORD, ACNT_TY,EMAIL)
+    VALUES(#{acntId},#{password},#{acntTy},#{email})
+  </insert>
+
+  <!-- //학생계정생성
+  public void insertStdAccount(StdntVO stdntVO); -->
+
+  <insert id="insertStdAccount" parameterType="stdntVO">
+    INSERT INTO STDNT (STDNT_NO, ACNT_ID, SUBJCT_CODE, STDNT_NM, BRTHDY
+              , BASS_ADRES, DETAIL_ADRES, ZIP, CTTPC, EMGNC_CTTPC
+              , GRADE, SKNRGS_STTUS, ENTSCH_DE, BANK_NM
+             , ACNUTNO, LAST_UPDATED_TIME)
+    VALUES(#{stdntNo},	#{acntId},#{subjctCode},#{stdntNm},#{brthdy}
+        ,#{bassAdres},#{detailAdres},#{zip},#{cttpc},#{emgncCttpc}
+        ,#{grade},#{sknrgsSttus},#{entschDe},#{bankNm}
+        ,#{acnutno},SYSDATE)
+  </insert>
+
+  <!-- //권한 생성 계정
+  public int insertAuthor(AuthorVO authorVO); -->
+   <insert id="insertAuthor" parameterType="authorVO">
+    <selectKey resultType="string" order="BEFORE" keyProperty="authorId">
+      SELECT NVL(TO_CHAR(MAX(TO_NUMBER(AUTHOR_ID))+1), 0)
+      FROM AUTHOR
+    </selectKey>
+    INSERT INTO AUTHOR (ALWNC_DE, AUTHOR_ID, AUTHOR_NM, AUTHOR_DC, ACNT_ID)
+    VALUES (
+        SYSDATE,#{authorId},#{authorNm},#{authorDc},#{acntId})
+  </insert>
+
+  <!-- //검색 키워드로 학번, 학생이름 찾기
+  public List<StdntVO> selectStdntInfo(String keyword); -->
+
+  <select id="selectStdntInfo" parameterType="string" resultType="stdntVO">
+    SELECT STDNT_NO, STDNT_NM, BRTHDY, CTTPC
+    FROM STDNT
+    WHERE STDNT_NO LIKE '%' || #{keyword} || '%'
+      OR STDNT_NM LIKE '%' || #{keyword} || '%'
+  </select>
+
+  <!-- //학번으로 stdntVO 한행 읽어오기
+  public List<StdntVO> selectOneStdntInfo(String stdntNo); -->
+  <select id="selectOneStdntInfo" parameterType="string" resultType="stdntVO">
+    SELECT S.STDNT_NO, S.ACNT_ID, S.SUBJCT_CODE, S.STDNT_NM, S.BRTHDY
+    , S.BASS_ADRES,S. DETAIL_ADRES, S.ZIP, S.CTTPC, S.EMGNC_CTTPC
+    , S.GRADE, S.SKNRGS_STTUS, S.ENTSCH_DE, S.GRDTN_DE, S.BANK_NM
+    , S.ACNUTNO, S.LAST_UPDATED_TIME, J.UNIV_CODE
+    FROM STDNT S
+      JOIN SUBJCT J ON S.SUBJCT_CODE = J.SUBJCT_CODE
+    WHERE S.STDNT_NO = #{stdntNo}
+  </select>
+
+  <!-- 	//학생(stdnt 테이블) 업데이트
+  public int updateStdAccount(StdntVO stdntVO); -->
+
+  <update id="updateStdAccount" parameterType="stdntVO">
+  UPDATE STDNT
+  SET
+    SUBJCT_CODE = #{subjctCode}
+    , STDNT_NM = #{stdntNm}
+    , BRTHDY = #{brthdy}
+    , BASS_ADRES = #{bassAdres}
+    , DETAIL_ADRES = #{detailAdres}
+    , ZIP = #{zip}
+    , CTTPC = #{cttpc}
+    , EMGNC_CTTPC = #{emgncCttpc}
+    , GRADE = #{grade}
+    , ENTSCH_DE = #{entschDe}
+    , GRDTN_DE = #{grdtnDe}
+    , BANK_NM = #{bankNm}
+    , ACNUTNO = #{acnutno}
+  WHERE STDNT_NO = #{stdntNo}
+  </update>
+
+
+  <!--//파일 그룹 생성 public int insertFileGroup(FileGroupVO fileGroupVO); -->
+   <insert id="insertFileGroup" parameterType="fileGroupVO">
+      <selectKey resultType="long" order="BEFORE"
+         keyProperty="fileGroupNo">
+         SELECT
+                NVL(MAX(FILE_GROUP_NO), TO_NUMBER(TO_CHAR(SYSDATE, 'YYYYMMDD')) * 1000) + 1
+             FROM
+                 FILE_GROUP
+           WHERE
+                FILE_GROUP_NO >= TO_NUMBER(TO_CHAR(SYSDATE, 'YYYYMMDD')) * 1000
+      </selectKey>
+      INSERT INTO FILE_GROUP (FILE_GROUP_NO, FILE_REGIST_DE)
+      VALUES
+      (#{fileGroupNo},SYSDATE)
+   </insert>
+
+   <!-- //파일 디테일 생성
+   public int insertFileDetail(FileDetailVO fileDetailVO); -->
+   <insert id="insertFileDetail" parameterType="fileDetailVO">
+      <selectKey resultType="int" order="BEFORE" keyProperty="fileNo">
+         SELECT NVL(MAX(FILE_NO),0)+1
+         FROM FILE_DETAIL
+         WHERE FILE_GROUP_NO = #{fileGroupNo}
+      </selectKey>
+   INSERT INTO FILE_DETAIL
+      (FILE_NO, FILE_GROUP_NO, FILE_NM, FILE_STRE_NM, FILE_STREPLACE
+      , FILE_MG, FILE_EXTSN, FILE_TY, FILE_STRE_DE, FILE_DWLD_CO)
+   VALUES(#{fileNo},#{fileGroupNo},#{fileNm},#{fileStreNm},#{fileStreplace}
+   ,#{fileMg},#{fileExtsn},#{fileTy},SYSDATE,#{fileDwldCo})
+   </insert>
+
+  <!-- 파일 다운로드 -->
+  <select id="getFileDetailByGroupNo" parameterType="Long" resultType="FileDetailVO">
+    SELECT
+          FILE_NO
+          ,FILE_GROUP_NO
+          ,FILE_NM
+          ,FILE_STRE_NM
+          ,FILE_STREPLACE
+          ,FILE_MG
+          ,FILE_EXTSN
+          ,FILE_TY
+          ,FILE_STRE_DE
+          ,FILE_DWLD_CO
+      FROM
+          FILE_DETAIL
+      WHERE
+          FILE_GROUP_NO = #{fileGroupNo}
+          AND ROWNUM = 1
+  </select>
+
+
+  <!-- 교수 계정 생성 -->
+
+  <!--//P+입사년도2자리 로 시퀀스 확인
+  public String findIdSeq(String partOfId);
+  -->
+  <select id="findIdSeq" parameterType="string" resultType="string">
+    SELECT NVL(MAX(PROFSR_NO),#{partOfId}||'00')
+    FROM PROFSR
+    WHERE PROFSR_NO LIKE (#{partOfId}|| '%')
+  </select>
+
+  <!-- //교직원 계정 생성
+  public void insertSklstf(SklstfVO sklstfVO); -->
+  <insert id="insertSklstf" parameterType="sklstfVO">
+    INSERT INTO SKLSTF(
+      SKLSTF_ID, ACNT_ID, SKLSTF_NM, ECNY_DE, RETIRE_DE
+      , BRTHDY, CTTPC, EMGNC_CTTPC, HFFC_STTUS, BANK_NM
+      , ACNUTNO, BASS_ADRES, DETAIL_ADRES, ZIP
+    )
+    VALUES(
+      #{sklstfId},#{acntId},#{sklstfNm},#{ecnyDe},#{retireDe}
+      , #{brthdy},#{cttpc},#{emgncCttpc},#{hffcSttus},#{bankNm}
+      , #{acnutno},#{bassAdres},#{detailAdres},#{zip}
+    )
+  </insert>
+
+  <!-- //교수 계정 생성
+  public void insertProfsr(ProfsrVO profsrVO); -->
+  <insert id="insertProfsr" parameterType="profsrVO">
+    INSERT INTO PROFSR (
+      PROFSR_NO, SKLSTF_ID, SUBJCT_CODE, CLSF, LABRUM_LC
+      , NLTY, EMAIL_ADRES
+    ) VALUES (
+      #{profsrNo},#{sklstfId},#{subjctCode},#{clsf},#{labrumLc}
+      ,#{nlty},#{emailAdres}
+    )
+  </insert>
+
+  <!-- //학위 입력
+  public void insertProfsrDgri(ProfsrDgriVO profsrDgriVO); -->
+  <insert id="insertProfsrDgri">
+    <selectKey resultType="string" order="BEFORE" keyProperty="dgriNo">
+       SELECT TO_CHAR(NVL(MAX(TO_NUMBER(DGRI_NO)),0)+1)
+       FROM PROFSR_DGRI
+    </selectKey>
+    INSERT INTO PROFSR_DGRI (
+      DGRI_NO, PROFSR_NO, MAJOR, DGRI, ACQS_ENGN, ACQS_DE
+    ) VALUES (
+      #{dgriNo},#{profsrNo},#{major},#{dgri},#{acqsEngn},#{acqsDe}
+    )
+
+  </insert>
+
+  <!-- //검색 키워드로 교번, 이름 찾기
+  public List<Map<String, Object>> selectProfInfo(String keyword); -->
+
+  <select id="selectProfInfo" parameterType="string" resultType="sklstfVO">
+    SELECT SKLSTF_ID, SKLSTF_NM, CTTPC
+    FROM SKLSTF
+    WHERE 1=1
+      AND SKLSTF_ID LIKE '%' || #{keyword} || '%'
+      OR SKLSTF_NM LIKE '%' || #{keyword} || '%'
+  </select>
+
+  <!-- //교수 아이디로 교수 계정 수정페이지 정보 찾기
+  public ProfSelectEditDetailDTO selecteditdetail(String profsrNo); -->
+  <select id="selecteditdetail" parameterType="string" resultType="kr.ac.collage_api.account.dto.ProfSelectEditDetailDTO">
+    SELECT
+        P.PROFSR_NO,
+        P.SUBJCT_CODE,
+        P.CLSF,
+        P.LABRUM_LC,
+        P.NLTY,
+        P.EMAIL_ADRES,
+
+        S.SKLSTF_NM,
+      TO_CHAR(TO_DATE(S.ECNY_DE, 'YYYYMMDD'), 'YYYY-MM-DD') AS ECNY_DE,
+        TO_CHAR(TO_DATE(S.RETIRE_DE, 'YYYYMMDD'), 'YYYY-MM-DD') AS RETIRE_DE,
+      TO_CHAR(TO_DATE(S.BRTHDY, 'YYYYMMDD'), 'YYYY-MM-DD') AS BRTHDY,
+
+        S.CTTPC,
+        S.EMGNC_CTTPC,
+        S.PSITN_DEPT,
+        S.RSPOFC,
+        S.HFFC_STTUS,
+        S.BANK_NM,
+        S.ACNUTNO,
+        S.BASS_ADRES,
+        S.DETAIL_ADRES,
+        S.ZIP,
+
+        J.UNIV_CODE
+
+    FROM PROFSR P
+        JOIN SKLSTF S ON S.SKLSTF_ID = P.SKLSTF_ID
+        JOIN SUBJCT J ON J.SUBJCT_CODE = P.SUBJCT_CODE
+    WHERE 1=1
+        AND P.PROFSR_NO = #{profsrNo}
+
+
+  </select>
+
+  <!-- //교수 계정 리스트 불러오기
+  public List<SklstfVO> selectProfsrList(); -->
+  <select id="selectProfsrList" resultType="sklstfVO">
+    SELECT P.SKLSTF_ID, S.SKLSTF_NM, S.CTTPC
+    FROM SKLSTF S
+    	JOIN PROFSR P ON S.SKLSTF_ID = P.SKLSTF_ID
+  </select>
+
+  <!-- //교직원 테이블 업데이트
+  public int updateSklstf(SklstfVO sklstfVO); -->
+  <update id="updateSklstf" parameterType="sklstfVO">
+    UPDATE SKLSTF
+    SET
+      SKLSTF_NM   = #{sklstfNm},
+      ECNY_DE     = #{ecnyDe},
+      RETIRE_DE   = #{retireDe},
+      BRTHDY      = #{brthdy},
+      CTTPC       = #{cttpc},
+      EMGNC_CTTPC = #{emgncCttpc},
+      HFFC_STTUS  = #{hffcSttus},
+      BANK_NM     = #{bankNm},
+      ACNUTNO     = #{acnutno},
+      BASS_ADRES  = #{bassAdres},
+      DETAIL_ADRES= #{detailAdres},
+      ZIP         = #{zip}
+
+    WHERE SKLSTF_ID = #{sklstfId}
+  </update>
+
+
+  <!-- //교수 테이블 업데이트
+  public int updateProfsr(ProfsrVO profsrVO); -->
+
+  <update id="updateProfsr" parameterType="sklstfVO">
+    UPDATE PROFSR
+    SET
+      EMAIL_ADRES  = #{emailAdres},
+      SUBJCT_CODE  = #{subjctCode},
+      CLSF         = #{clsf},
+      LABRUM_LC    = #{labrumLc},
+      NLTY         = #{nlty}
+    WHERE PROFSR_NO = #{profsrNo}
+
+  </update>
+
+  <!-- //권한 삭제
+  public int deleteAuthor(String acntId); -->
+  <delete id="deleteAuthor" parameterType="string">
+    DELETE AUTHOR
+    WHERE ACNT_ID=#{acntId}
+  </delete>
+
+  <!-- 	//학위 삭제
+  public int deleteProfsrDgri(String profsrNo); -->
+  <delete id="deleteProfsrDgri" parameterType="string">
+    DELETE PROFSR_DGRI
+    WHERE PROFSR_NO=#{profsrNo}
+  </delete>
+
+  <!-- //교수 삭제
+  public int deleteProfsr(String profsrNo); -->
+  <delete id="deleteProfsr" parameterType="string">
+    DELETE PROFSR
+    WHERE PROFSR_NO=#{profsrNo}
+  </delete>
+
+  <!-- //교직원 삭제
+  public int deleteSklstf(String acntId); -->
+  <delete id="deleteSklstf" parameterType="string">
+    DELETE SKLSTF
+    WHERE ACNT_ID=#{acntId}
+  </delete>
+
+  <!-- //계정삭제
+  public int deleteAcntId(String acntId); -->
+  <delete id="deleteAcntId" parameterType="string">
+    DELETE ACNT
+    WHERE ACNT_ID = #{acntId}
+  </delete>
+
+
+  <!--
+  *********
+  교 수 학 위
+  *********
+   -->
+
+  <!-- //교수 학위 리스트 가져오기
+  public List<ProfsrDgriVO> selectProfsrDgriList(); -->
+  <select id="selectProfsrDgriList" resultType="ProfsrDgriVO">
+    select
+      D.DGRI_NO,
+      D.PROFSR_NO,
+      D.MAJOR,
+      D.DGRI,
+      D.ACQS_ENGN,
+      D.ACQS_DE,
+      S.SKLSTF_NM
+    FROM PROFSR_DGRI D
+      JOIN PROFSR P ON D.PROFSR_NO = P.PROFSR_NO
+      JOIN SKLSTF S ON S.SKLSTF_ID = P.SKLSTF_ID
+  </select>
+
+  <!-- //교수 아이디에 맞는 교수 이름 가져오기
+  public SklstfVO selectProfDgriInfo(SklstfVO sklstfId); -->
+  <select id="selectProfDgriInfo" parameterType="string" resultType="sklstfVO">
+  SELECT SKLSTF_ID, SKLSTF_NM
+  FROM SKLSTF
+  WHERE SKLSTF_ID = #{sklstfId}
+
+  </select>
+
+
+  <!-- //교수 학위 상세 정보 가져오기
+  public ProfsrDgriVO selectProfDgriInfoForUpdate(ProfsrDgriVO profsrDgriVO); -->
+  <select id="selectProfDgriInfoForUpdate" parameterType="profsrDgriVO" resultType="profsrDgriVO">
+    SELECT
+      D.DGRI_NO,
+      D.PROFSR_NO,
+      D.MAJOR,
+      D.DGRI,
+      D.ACQS_ENGN,
+      D.ACQS_DE,
+      S.SKLSTF_NM
+    FROM PROFSR_DGRI D
+      JOIN PROFSR P ON D.PROFSR_NO = P.PROFSR_NO
+      JOIN SKLSTF S ON S.SKLSTF_ID = P.SKLSTF_ID
+    WHERE D.DGRI_NO = #{dgriNo}
+  </select>
+
+  <!-- //교수 학위 상세 수정
+  public int updateProfDgri(ProfsrDgriVO profsrDgriVO); -->
+
+  <update id="updateProfDgri" parameterType="profsrDgriVO">
+    UPDATE PROFSR_DGRI
+    SET
+      MAJOR      = #{major   },
+      DGRI       = #{dgri    },
+      ACQS_ENGN  = #{acqsEngn},
+      ACQS_DE    = #{acqsDe  }
+    WHERE
+      DGRI_NO    = #{dgriNo  }
+  </update>
+
+
+  <!-- //교수 학위 삭제
+  public int deleteProfDgri(String dgriNo); -->
+
+  <delete id="deleteProfDgri" parameterType="string">
+
+  DELETE PROFSR_DGRI
+  WHERE DGRI_NO = #{dgriNo}
+
+  </delete>
+
+
+
+
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+

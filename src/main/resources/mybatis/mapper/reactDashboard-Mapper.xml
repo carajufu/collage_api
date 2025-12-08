@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.ac.collage_api.dashboard.mapper.ReactDashboardMapper">
+
+	<!-- //현재 재학생 수
+	public int currentStdntCount(); -->
+	<select id="currentStdntCount" parameterType="int">
+		SELECT COUNT(*)
+		FROM STDNT
+		WHERE SKNRGS_STTUS = '재학'
+	</select>
+
+	<!-- //현재 수업 수
+	public int currentCourseCount(String year, String semstr); -->
+	<select id="currentCourseCount" parameterType="string">
+	SELECT COUNT(*)
+	FROM ESTBL_COURSE
+	WHERE ESTBL_YEAR = #{strYear}
+		AND ESTBL_SEMSTR = #{semstr}
+
+	</select>
+
+	<!-- //현재 재직중인 교수 수
+	int currentProfsrCount = this.reactDashboardMapper.currentProfsrCount() -->
+	<select id="currentProfsrCount">
+	SELECT COUNT(*)
+	FROM SKLSTF
+	WHERE HFFC_STTUS = '1'
+	</select>
+
+	<!-- //학과별 학생수
+	public List<UnivRankVO> stdntCountInUniv(); -->
+	<select id="stdntCountInUniv" resultType="kr.ac.collage_api.dashboard.vo.ReactDashboardVO$UnivRankVO">
+	SELECT SUBJCT_NM as name
+	     , COUNT(STDNT_NO) as count
+	FROM STDNT S
+	JOIN SUBJCT J ON J.SUBJCT_CODE = S.SUBJCT_CODE
+	WHERE SKNRGS_STTUS = '재학'
+	GROUP BY SUBJCT_NM
+	ORDER BY COUNT DESC
+	</select>
+
+	<!-- //학적 상태별 학생수
+	public List<keyValue> enrollmentRatio(); -->
+	<select id="enrollmentRatio" resultType="kr.ac.collage_api.dashboard.vo.ReactDashboardVO$keyValue">
+	SELECT SKNRGS_STTUS AS name
+		 , COUNT(STDNT_NO) AS count
+	FROM STDNT
+	GROUP BY SKNRGS_STTUS
+	ORDER BY count DESC
+	</select>
+
+
+</mapper>

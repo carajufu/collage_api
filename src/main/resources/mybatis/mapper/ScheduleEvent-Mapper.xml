@@ -1,0 +1,556 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+[파일 의도]
+- 학사 일정 관련 모든 이벤트를 FullCalendar 등에 투영하기 위한 단일 조회 매퍼.
+- 강의, 과제, 팀프로젝트, 상담, 수강신청, 행정 처리 이력을 ScheduleEventVO 스키마로 통합 조회.
+
+[공통 스키마]
+- EVENT_ID : 문자열 식별자 (도메인+PK 조합 등)
+- TITLE    : 캘린더에 직접 노출할 제목
+- TYPE     : 이벤트 유형 코드 (LECTURE, TASK, PROJECT, COUNSEL_SLOT, COUNSEL, ENROLL_REQ, ADMIN_*)
+- PLACE    : 장소 정보(가능한 경우)
+- TARGET   : 대상(주로 ADMIN용 요약)
+- CONTENT  : 툴팁용 메모. 형식 규칙:
+             "라벨 : 값 | 라벨 : 값" 일관 사용, key=value 금지.
+- START_DT : 시작 (YYYY-MM-DD 또는 ISO datetime 문자열)
+- END_DT   : 종료 (동일 형식, All-day는 종료일+1 처리)
+- ALL_DAY_YN : 1=하루 종일, 0=시각 기반
+
+[입력 파라미터]
+- map:
+  - role      : ROLE_STUDENT / ROLE_PROF / ROLE_ADMIN / 기타
+  - stdntNo   : 학생 번호
+  - profsrNo  : 교수 번호
+  - startDate : 조회 시작일 (YYYYMMDD)
+  - endDate   : 조회 종료일 (YYYYMMDD)
+
+[보안/권한 원칙]
+- ROLE_STUDENT : 본인 관련 데이터만.
+- ROLE_PROF    : 본인 담당 강의/과제/상담만.
+- ROLE_ADMIN   : 행정 전용 전체 접근 허용.
+- 기타         : 각 쿼리에서 명시적으로 차단 또는 최소 노출.
+
+[유지보수 규칙]
+- 새 이벤트 추가 시:
+  - 공통 alias 준수.
+  - TYPE 상수 사전 합의.
+  - role 조건과 기간 조건 명시.
+- 민감정보 추가 노출은 서비스/권한 검증 후 별도 API로 처리.
+-->
+
+<mapper namespace="kr.ac.collage_api.schedule.mapper.ScheduleEventMapper">
+
+    <!-- 공통 매핑 -->
+    <resultMap id="ScheduleEventMap" type="kr.ac.collage_api.schedule.vo.ScheduleEventVO">
+        <id     property="id"        column="EVENT_ID"/>
+        <result property="title"     column="TITLE"/>
+        <result property="type"      column="TYPE"/>
+        <result property="place"     column="PLACE"/>
+        <result property="target"    column="TARGET"/>
+        <result property="memo"      column="CONTENT"/>
+        <result property="startDate" column="START_DT"/>
+        <result property="endDate"   column="END_DT"/>
+        <result property="allDay"    column="ALL_DAY_YN"/>
+    </resultMap>
+
+    <!--
+    [0] 더미: SCHEDULE_EVENT 미사용 환경용. 항상 0건 반환.
+    -->
+    <select id="selectScheduleEvents" parameterType="map" resultMap="ScheduleEventMap">
+        SELECT
+            '' AS EVENT_ID,
+            '' AS TITLE,
+            '' AS TYPE,
+            '' AS PLACE,
+            '' AS TARGET,
+            '' AS CONTENT,
+            '' AS START_DT,
+            '' AS END_DT,
+            0  AS ALL_DAY_YN
+        FROM DUAL
+        WHERE 1 = 0
+    </select>
+
+    <!--
+    [1] 강의 일정: LECTURE
+    - ROLE_STUDENT : 본인 수강 승인 강의만
+    - ROLE_PROF    : 본인 담당 강의만
+    - 기타         : 전체 (운영상 조회 허용)
+    -->
+    <select id="selectLectureEvents" parameterType="map" resultMap="ScheduleEventMap">
+        SELECT
+            TO_CHAR(t.TIMETABLE_NO)            AS EVENT_ID,
+            '[강의] ' || sj.SUBJCT_NM          AS TITLE,
+            'LECTURE'                          AS TYPE,
+            t.LCTRE_DFK                        AS PLACE,
+            NULL                               AS TARGET,
+            (
+                '구분 : 강의'
+                || ' | 과목 : '   || sj.SUBJCT_NM
+                || ' | 강의실 : ' || t.LCTRE_DFK
+                || ' | 시간 : '   || t.BEGIN_TM || '~' || t.END_TM
+            )                                  AS CONTENT,
+            t.BEGIN_TM                         AS START_DT,
+            t.END_TM                           AS END_DT,
+            0                                  AS ALL_DAY_YN
+        FROM LCTRE_TIMETABLE t
+        JOIN ESTBL_COURSE ec
+          ON ec.ESTBLLCTRE_CODE = t.ESTBLLCTRE_CODE
+        JOIN ALL_COURSE ac
+          ON ac.LCTRE_CODE = ec.LCTRE_CODE
+        JOIN SUBJCT sj
+          ON sj.SUBJCT_CODE = ac.SUBJCT_CODE
+        <where>
+            <choose>
+                <when test="role == 'ROLE_STUDENT'">
+                    EXISTS (
+                        SELECT 1
+                        FROM ATNLC_REQST ar
+                        WHERE ar.ESTBLLCTRE_CODE = ec.ESTBLLCTRE_CODE
+                          AND ar.STDNT_NO = #{stdntNo}
+                          AND ar.REQST_STTUS = 'APPROVED'
+                    )
+                </when>
+                <when test="role == 'ROLE_PROF'">
+                    ec.PROFSR_NO = #{profsrNo}
+                </when>
+                <otherwise>
+                    1 = 1
+                </otherwise>
+            </choose>
+        </where>
+    </select>
+
+    <!--
+    [2] 과제 일정: TASK
+    - 과제 기간이 조회 구간과 겹치는 건만.
+    - All-day 이벤트.
+    -->
+    <select id="selectTaskEvents" parameterType="map" resultMap="ScheduleEventMap">
+	SELECT
+	'TASK_' || t.TASK_NO AS EVENT_ID,
+	'[과제] ' || sj.SUBJCT_NM || ' - ' || t.TASK_SJ AS TITLE,
+	'TASK' AS TYPE,
+	NULL AS PLACE,
+	NULL AS TARGET,
+	(
+	'구분 : 과제'
+	|| ' | 과목 : ' || sj.SUBJCT_NM
+	|| ' | 제목 : ' || t.TASK_SJ
+	|| ' | 마감일 : ' ||
+	TO_CHAR(TO_DATE(t.TASK_CLOS_DE,'YYYYMMDD'),'YYYY-MM-DD')
+	) AS CONTENT,
+	TO_CHAR(TO_DATE(t.TASK_BEGIN_DE,'YYYYMMDD'),'YYYY-MM-DD') AS START_DT,
+	TO_CHAR(TO_DATE(t.TASK_CLOS_DE,'YYYYMMDD') + 1,'YYYY-MM-DD') AS END_DT,
+	1 AS ALL_DAY_YN
+	FROM TASK t
+	JOIN WEEK_ACCTO_LRN w
+	ON w.WEEK_ACCTO_LRN_NO = t.WEEK_ACCTO_LRN_NO
+	JOIN ESTBL_COURSE ec
+	ON ec.ESTBLLCTRE_CODE = w.ESTBLLCTRE_CODE
+	JOIN ALL_COURSE ac
+	ON ac.LCTRE_CODE = ec.LCTRE_CODE
+	JOIN SUBJCT sj
+	ON sj.SUBJCT_CODE = ac.SUBJCT_CODE
+        <where>
+            TO_DATE(t.TASK_CLOS_DE,'YYYYMMDD') &gt;= TO_DATE(#{startDate},'YYYYMMDD')
+            AND TO_DATE(t.TASK_BEGIN_DE,'YYYYMMDD') &lt;= TO_DATE(#{endDate},'YYYYMMDD')
+            <choose>
+                <when test="role == 'ROLE_STUDENT'">
+                    AND EXISTS (
+                        SELECT 1
+                        FROM ATNLC_REQST ar
+                        WHERE ar.ESTBLLCTRE_CODE = ec.ESTBLLCTRE_CODE
+                          AND ar.STDNT_NO = #{stdntNo}
+                          AND ar.REQST_STTUS = 'APPROVED'
+                    )
+                </when>
+                <when test="role == 'ROLE_PROF'">
+                    AND ec.PROFSR_NO = #{profsrNo}
+                </when>
+                <otherwise>
+                    AND 1 = 0
+                </otherwise>
+            </choose>
+        </where>
+    </select>
+
+    <!--
+    [3] 팀 프로젝트 일정: PROJECT
+    - 기간 겹치는 프로젝트만 All-day로 노출.
+    -->
+    <select id="selectTeamProjectEvents" parameterType="map" resultMap="ScheduleEventMap">
+        SELECT
+            'TP_' || tp.TEAM_PRJCT_ID                                   AS EVENT_ID,
+            '[프로젝트] ' || sj.SUBJCT_NM || ' - ' || tp.PRJCT_SJ       AS TITLE,
+            'PROJECT'                                                   AS TYPE,
+            NULL                                                        AS PLACE,
+            NULL                                                        AS TARGET,
+            (
+                '구분 : 팀프로젝트'
+                || ' | 과목 : '     || sj.SUBJCT_NM
+                || ' | 프로젝트 : ' || tp.PRJCT_SJ
+                || ' | 팀 아이디 : '     || tp.TEAM_PRJCT_ID
+                || ' | 기간 : '
+                || TO_CHAR(TO_DATE(tp.BEGIN_DE,'YYYYMMDD'),'YYYY-MM-DD')
+                || '~'
+                || TO_CHAR(TO_DATE(tp.CLOS_DE,'YYYYMMDD'),'YYYY-MM-DD')
+            )                                                           AS CONTENT,
+            TO_CHAR(TO_DATE(tp.BEGIN_DE,'YYYYMMDD'),'YYYY-MM-DD')       AS START_DT,
+            TO_CHAR(TO_DATE(tp.CLOS_DE,'YYYYMMDD') + 1,'YYYY-MM-DD')    AS END_DT,
+            1                                                           AS ALL_DAY_YN
+        FROM TEAM_PRJCT tp
+        JOIN ESTBL_COURSE ec
+          ON ec.ESTBLLCTRE_CODE = tp.ESTBLLCTRE_CODE
+        JOIN ALL_COURSE ac
+          ON ac.LCTRE_CODE = ec.LCTRE_CODE
+        JOIN SUBJCT sj
+          ON sj.SUBJCT_CODE = ac.SUBJCT_CODE
+        <where>
+            TO_DATE(tp.CLOS_DE,'YYYYMMDD') &gt;= TO_DATE(#{startDate},'YYYYMMDD')
+            AND TO_DATE(tp.BEGIN_DE,'YYYYMMDD') &lt;= TO_DATE(#{endDate},'YYYYMMDD')
+            <choose>
+                <when test="role == 'ROLE_STUDENT'">
+                    AND EXISTS (
+                        SELECT 1
+                        FROM TEAM_INFO ti
+                        JOIN TEAM_CONSTNT tc ON tc.TEAM_ID = ti.TEAM_ID
+                        WHERE ti.TEAM_PRJCT_ID = tp.TEAM_PRJCT_ID
+                          AND tc.STDNT_NO = #{stdntNo}
+                    )
+                </when>
+                <when test="role == 'ROLE_PROF'">
+                    AND ec.PROFSR_NO = #{profsrNo}
+                </when>
+                <otherwise>
+                    AND 1 = 0
+                </otherwise>
+            </choose>
+        </where>
+    </select>
+
+    <!--
+    [4] 상담 일정: COUNSEL_SLOT + COUNSEL
+    - SLOT: 교수의 상담 가능 시간
+    - COUNSEL: 실제 예약/진행 상담
+    - 학생은 자신 상담만, 교수는 본인 담당 상담만
+    - 학생에게는 교수번호/교수명을 노출
+    -->
+    
+    <select id="selectCounselEvents" parameterType="map" resultMap="ScheduleEventMap">
+
+        <!-- 4-1. 상담 가능 슬롯 (교수 전용) -->
+        SELECT
+            'CNSLT_SLOT_' || ca.CNSLT_INNB                               AS EVENT_ID,
+            '상담 가능'                                                   AS TITLE,
+            'COUNSEL_SLOT'                                               AS TYPE,
+            NULL                                                         AS PLACE,
+            NULL                                                         AS TARGET,
+            (	'구분 : 상담가능'
+			    || ' | 교수번호 : '     || ca.PROFSR_NO
+			    || ' | 교수명 : '       || NVL(ps.SKLSTF_NM, '')
+			    || ' | 교수 사무실 : ' || NVL(ps.DETAIL_ADRES, '')
+			    || ' | 전화번호 : '     || NVL(ps.CTTPC, '')
+            )                                                            AS CONTENT,
+            TO_CHAR(
+                ca.CNSLT_BEGIN_DE + (TO_NUMBER(ca.CNSLT_BEGIN_TIME)/24),
+                'YYYY-MM-DD"T"HH24:MI'
+            )                                                            AS START_DT,
+            TO_CHAR(
+                ca.CNSLT_BEGIN_DE + (TO_NUMBER(ca.CNSLT_END_TIME)/24),
+                'YYYY-MM-DD"T"HH24:MI'
+            )                                                            AS END_DT,
+            0                                                            AS ALL_DAY_YN
+        FROM CNSLT_AT ca
+        LEFT JOIN PROFSR pr
+          ON pr.PROFSR_NO = ca.PROFSR_NO
+        LEFT JOIN SKLSTF ps
+          ON ps.SKLSTF_ID = pr.SKLSTF_ID
+        <where>
+            <choose>
+                <when test="role == 'ROLE_PROF'">
+                    ca.PROFSR_NO = #{profsrNo}
+                </when>
+                <otherwise>
+                    1 = 0
+                </otherwise>
+            </choose>
+            AND ca.CNSLT_BEGIN_DE BETWEEN TO_DATE(#{startDate},'YYYYMMDD')
+                                      AND TO_DATE(#{endDate},'YYYYMMDD')
+        </where>
+
+        UNION ALL
+
+        <!-- 4-2. 실제 상담 -->
+        SELECT
+            'CNSLT_' || c.CNSLT_INNB                                     AS EVENT_ID,
+            CASE
+                WHEN #{role} = 'ROLE_PROF'
+                    THEN '상담 - ' || s.STDNT_NM
+                ELSE '상담(' || c.STTUS || ')'
+            END                                                          AS TITLE,
+            'COUNSEL'                                                    AS TYPE,
+            NULL                                                         AS PLACE,
+            NULL                                                         AS TARGET,
+            CASE
+                -- 교수: 학생 상세 정보
+                WHEN #{role} = 'ROLE_PROF' THEN
+                        '구분 : 상담'
+                    ||  ' | 상태 : '     || c.STTUS
+                    ||  ' | 학번 : '     || s.STDNT_NO
+                    ||  ' | 성명 : '     || s.STDNT_NM
+                    ||  ' | 전공 : '     || NVL(subj.SUBJCT_NM, '')
+                    ||  ' | 전화번호 : ' || NVL(s.CTTPC, '')
+                -- 학생: 교수 정보 노출 (요구사항)
+                WHEN #{role} = 'ROLE_STUDENT' THEN
+                        '구분 : 상담'
+                    ||  ' | 상태 : '     || c.STTUS
+                    ||  ' | 교수번호 : ' || c.PROFSR_NO
+                    ||  ' | 교수명 : '   || NVL(ps.SKLSTF_NM, '')
+                    ||  ' | 전화번호 : ' || NVL(ps.CTTPC, '')
+                ELSE
+                    NULL
+            END                                                          AS CONTENT,
+            TO_CHAR(
+                c.CNSLT_REQUST_DE + (TO_NUMBER(c.CNSLT_REQUST_HOUR)/24),
+                'YYYY-MM-DD"T"HH24:MI'
+            )                                                            AS START_DT,
+            TO_CHAR(
+                c.CNSLT_REQUST_DE + (TO_NUMBER(c.CNSLT_REQUST_HOUR)/24) + (1/24),
+                'YYYY-MM-DD"T"HH24:MI'
+            )                                                            AS END_DT,
+            0                                                            AS ALL_DAY_YN
+        FROM CNSLT c
+        JOIN STDNT s
+          ON s.STDNT_NO = c.STDNT_NO
+        LEFT JOIN SUBJCT subj
+          ON subj.SUBJCT_CODE = s.SUBJCT_CODE
+        LEFT JOIN PROFSR pr
+          ON pr.PROFSR_NO = c.PROFSR_NO
+        LEFT JOIN SKLSTF ps
+          ON ps.SKLSTF_ID = pr.SKLSTF_ID
+        <where>
+            <choose>
+                <when test="role == 'ROLE_STUDENT'">
+                    c.STDNT_NO = #{stdntNo}
+                </when>
+                <when test="role == 'ROLE_PROF'">
+                    c.PROFSR_NO = #{profsrNo}
+                </when>
+                <otherwise>
+                    1 = 0
+                </otherwise>
+            </choose>
+            AND c.CNSLT_REQUST_DE BETWEEN TO_DATE(#{startDate},'YYYYMMDD')
+                                      AND TO_DATE(#{endDate},'YYYYMMDD')
+        </where>
+    </select>
+
+    <!--
+    [5] 수강신청 이벤트: ENROLL_REQ
+    -->
+    <select id="selectEnrollRequestEvents" parameterType="map" resultMap="ScheduleEventMap">
+        SELECT
+            'ENROLL_' || ar.ATNLC_REQST_NO                               AS EVENT_ID,
+            '[수강신청] ' || sj.SUBJCT_NM || ' 신청(' || ar.REQST_STTUS || ')' AS TITLE,
+            'ENROLL_REQ'                                                 AS TYPE,
+            NULL                                                         AS PLACE,
+            NULL                                                         AS TARGET,
+            (
+                '구분 : 수강신청'
+                || ' | 과목 : '   || sj.SUBJCT_NM
+                || ' | 상태 : '   || ar.REQST_STTUS
+                || ' | 요청일 : ' || TO_CHAR(TO_DATE(ar.REQST_DE,'YYYYMMDD'),'YYYY-MM-DD')
+            )                                                            AS CONTENT,
+            TO_CHAR(TO_DATE(ar.REQST_DE,'YYYYMMDD'),'YYYY-MM-DD')        AS START_DT,
+            TO_CHAR(TO_DATE(ar.REQST_DE,'YYYYMMDD') + 1,'YYYY-MM-DD')    AS END_DT,
+            1                                                            AS ALL_DAY_YN
+        FROM ATNLC_REQST ar
+        JOIN ESTBL_COURSE ec
+          ON ec.ESTBLLCTRE_CODE = ar.ESTBLLCTRE_CODE
+        JOIN ALL_COURSE ac
+          ON ac.LCTRE_CODE = ec.LCTRE_CODE
+        JOIN SUBJCT sj
+          ON sj.SUBJCT_CODE = ac.SUBJCT_CODE
+        <where>
+            TO_DATE(ar.REQST_DE,'YYYYMMDD')
+                BETWEEN TO_DATE(#{startDate},'YYYYMMDD')
+                    AND TO_DATE(#{endDate},'YYYYMMDD')
+            <choose>
+                <when test="role == 'ROLE_STUDENT'">
+                    AND ar.STDNT_NO = #{stdntNo}
+                </when>
+                <when test="role == 'ROLE_PROF'">
+                    AND ec.PROFSR_NO = #{profsrNo}
+                </when>
+                <otherwise>
+                    AND 1 = 0
+                </otherwise>
+            </choose>
+        </where>
+    </select>
+
+    <!--
+    [6] 행정 이벤트: ADMIN_* (관리자 / 본인조회용)
+    -->
+    <select id="selectAdminEvents" parameterType="map" resultMap="ScheduleEventMap">
+
+
+        <!-- 6-3. 졸업요건 등록 -->
+        SELECT
+            'GRAD_' || gr.GRDTN_RQISIT_ID                                  AS EVENT_ID,
+            '졸업요건등록(' || gr.GRDTN_RQISIT_TY || ')'                    AS TITLE,
+            'ADMIN_GRAD'                                                   AS TYPE,
+            NULL                                                           AS PLACE,
+            CASE WHEN #{role} = 'ROLE_ADMIN'
+                    THEN '학번 : ' || gr.STDNT_NO
+                 ELSE NULL END                                             AS TARGET,
+            CASE WHEN #{role} = 'ROLE_ADMIN'
+                    THEN '구분 : 졸업요건등록'
+                 ELSE NULL END                                             AS CONTENT,
+            TO_CHAR(TO_DATE(gr.REGIST_DE,'YYYYMMDD'),'YYYY-MM-DD')         AS START_DT,
+            TO_CHAR(TO_DATE(gr.REGIST_DE,'YYYYMMDD') + 1,'YYYY-MM-DD')     AS END_DT,
+            1                                                              AS ALL_DAY_YN
+        FROM GRDTN_RQISIT gr
+        <where>
+            <choose>
+                <when test="role == 'ROLE_ADMIN'">
+                    1 = 1
+                </when>
+                <when test="role == 'ROLE_STUDENT'">
+                    gr.STDNT_NO = #{stdntNo}
+                </when>
+                <otherwise>
+                    1 = 0
+                </otherwise>
+            </choose>
+            AND TO_DATE(gr.REGIST_DE,'YYYYMMDD')
+                BETWEEN TO_DATE(#{startDate},'YYYYMMDD')
+                    AND TO_DATE(#{endDate},'YYYYMMDD')
+        </where>
+
+        UNION ALL
+
+        <!-- 6-4. 등록금 납부 기간 -->
+        SELECT
+            'REGIST_' || rc.REGIST_CT_NO                                    AS EVENT_ID,
+            '등록(' || rc.RQEST_YEAR || ' ' || rc.RQEST_SEMSTR || ')'       AS TITLE,
+            'ADMIN_REGIST'                                                  AS TYPE,
+            NULL                                                            AS PLACE,
+            NULL                                                            AS TARGET,
+            '구분 : 등록'
+            || ' | 연도 : '  || rc.RQEST_YEAR
+            || ' | 학기 : '  || rc.RQEST_SEMSTR                             AS CONTENT,
+            TO_CHAR(TO_DATE(rc.RQEST_DE,'YYYYMMDD'),'YYYY-MM-DD')           AS START_DT,
+            TO_CHAR(TO_DATE(rc.PAY_ENDDE,'YYYYMMDD') + 1,'YYYY-MM-DD')      AS END_DT,
+            1                                                               AS ALL_DAY_YN
+        FROM REGIST_CT rc
+        <where>
+            <choose>
+                <when test="role == 'ROLE_ADMIN'">
+                    1 = 1
+                </when>
+                <when test="role == 'ROLE_STUDENT'">
+                    EXISTS (
+                        SELECT 1
+                        FROM ATNLC_REQST ar
+                        WHERE ar.REGIST_CT_NO = rc.REGIST_CT_NO
+                          AND ar.STDNT_NO = #{stdntNo}
+                    )
+                </when>
+                <otherwise>
+                    1 = 0
+                </otherwise>
+            </choose>
+            AND TO_DATE(rc.RQEST_DE,'YYYYMMDD') &lt;= TO_DATE(#{endDate},'YYYYMMDD')
+            AND TO_DATE(rc.PAY_ENDDE,'YYYYMMDD') &gt;= TO_DATE(#{startDate},'YYYYMMDD')
+        </where>
+
+        UNION ALL
+
+        <!-- 6-5. 학사행정 일정: SCHAFS_SCHDUL (교무/행정 캘린더) -->
+	    SELECT
+	        'SCHAFS_' || S.SCHDUL_NO             AS EVENT_ID,
+	        S.SCHDUL_NM                          AS TITLE,
+	        'SCHAFS'                             AS TYPE,
+	        NULL                                  AS PLACE,
+	        NULL                                  AS TARGET,
+	        '구분 : 학사일정'
+	        || ' | 코드 : ' || NVL(S.SCHDUL_CODE, '기타')
+	        || ' | 기간 : '
+	        || TO_CHAR(TO_DATE(S.BEGIN_DE,'YYYYMMDD'),'YYYY.MM.DD')
+	        || ' ~ '
+	        || TO_CHAR(TO_DATE(S.END_DE,'YYYYMMDD'),'YYYY.MM.DD')
+	        || CASE
+	             WHEN S.BEGIN_TIME IS NOT NULL AND S.END_TIME IS NOT NULL
+	               THEN ' | 시간 : '
+	                    || SUBSTR(LPAD(S.BEGIN_TIME,4,'0'),1,2) || ':' || SUBSTR(LPAD(S.BEGIN_TIME,4,'0'),3,2)
+	                    || ' ~ '
+	                    || SUBSTR(LPAD(S.END_TIME,4,'0'),1,2)   || ':' || SUBSTR(LPAD(S.END_TIME,4,'0'),3,2)
+	             ELSE ''
+	           END                                AS CONTENT,
+	
+	        /* START_DT */
+	        CASE
+	          -- 멀티데이 or 시간 없음 or ALL_DAY_YN = 'Y' => all-day 멀티데이
+	          WHEN S.ALL_DAY_YN = 'Y'
+	            OR S.BEGIN_TIME IS NULL
+	            OR S.END_TIME   IS NULL
+	            OR S.BEGIN_DE  &lt;&gt; S.END_DE
+	          THEN TO_CHAR(
+	                 TO_DATE(S.BEGIN_DE,'YYYYMMDD'),
+	                 'YYYY-MM-DD'
+	               )
+	          -- 하루짜리 시간 이벤트
+	          ELSE TO_CHAR(
+	                 TO_DATE(
+	                   S.BEGIN_DE || LPAD(S.BEGIN_TIME,4,'0'),
+	                   'YYYYMMDDHH24MI'
+	                 ),
+	                 'YYYY-MM-DD"T"HH24:MI'
+	               )
+	        END                                   AS START_DT,
+	
+	        /* END_DT */
+	        CASE
+	          -- 멀티데이 or 시간 없음 or ALL_DAY_YN = 'Y' => all-day, 종료일+1
+	          WHEN S.ALL_DAY_YN = 'Y'
+	            OR S.BEGIN_TIME IS NULL
+	            OR S.END_TIME   IS NULL
+	            OR S.BEGIN_DE  &lt;&gt; S.END_DE
+	          THEN TO_CHAR(
+	                 TO_DATE(S.END_DE,'YYYYMMDD') + 1,
+	                 'YYYY-MM-DD'
+	               )
+	          -- 하루짜리 시간 이벤트
+	          ELSE TO_CHAR(
+	                 TO_DATE(
+	                   S.END_DE || LPAD(S.END_TIME,4,'0'),
+	                   'YYYYMMDDHH24MI'
+	                 ),
+	                 'YYYY-MM-DD"T"HH24:MI'
+	               )
+	        END                                   AS END_DT,
+	
+	        /* ALL_DAY_YN 플래그 (숫자) */
+	        CASE
+	          WHEN S.ALL_DAY_YN = 'Y'
+	            OR S.BEGIN_TIME IS NULL
+	            OR S.END_TIME   IS NULL
+	            OR S.BEGIN_DE  &lt;&gt; S.END_DE
+	          THEN 1
+	          ELSE 0
+	        END                                   AS ALL_DAY_YN
+	    FROM SCHAFS_SCHDUL S
+	    WHERE TO_DATE(S.BEGIN_DE,'YYYYMMDD') &lt;= TO_DATE(#{endDate},'YYYYMMDD')
+	      AND TO_DATE(S.END_DE  ,'YYYYMMDD') &gt;= TO_DATE(#{startDate},'YYYYMMDD')
+	      AND ( S.VIEW_SCOPE = 'ALL' OR S.VIEW_SCOPE = #{role} )
+
+    </select>
+
+
+</mapper>

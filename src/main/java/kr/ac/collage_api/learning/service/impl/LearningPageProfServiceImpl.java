@@ -1,0 +1,392 @@
+package kr.ac.collage_api.learning.service.impl;
+
+import kr.ac.collage_api.common.attach.service.BeanController;
+import kr.ac.collage_api.learning.mapper.LearningPageProfMapper;
+import kr.ac.collage_api.learning.vo.*;
+import kr.ac.collage_api.vo.BbsCttVO;
+import kr.ac.collage_api.vo.BbsVO;
+import kr.ac.collage_api.vo.FileDetailVO;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+@Service
+@RequiredArgsConstructor
+public class LearningPageProfServiceImpl {
+    @Autowired
+    private final LearningPageProfMapper learningPageProfMapper;
+    @Autowired
+    private BeanController beanController;
+
+    public String getLctreNm(String estbllctreCode) {
+        return learningPageProfMapper.getLctreNm(estbllctreCode);
+    }
+
+    public List<TaskVO> getTasks(String estbllctreCode) {
+        return learningPageProfMapper.selectTasks(estbllctreCode);
+    }
+
+    public List<TaskPresentnVO> getTaskPresentn(String estbllctreCode) {
+        return learningPageProfMapper.selectTaskPresentn(estbllctreCode);
+    }
+
+    public List<AtendAbsncVO> getAttendList(String estbllctreCode) {
+        return learningPageProfMapper.getAttendList(estbllctreCode);
+    }
+
+    public List<TaskPresentnVO> getTaskPresentnByTask(String estbllctreCode, String taskNo) {
+        return learningPageProfMapper.selectTaskPresentnByTask(estbllctreCode, taskNo);
+    }
+
+    @Transactional
+    public TaskVO createTask(String estbllctreCode,
+                             String week,
+                             String title,
+                             String content,
+                             String beginDe,
+                             String closDe) {
+
+        String weekAcctoLrnNo = learningPageProfMapper.findWeekAcctoLrnNo(estbllctreCode, week);
+        if (weekAcctoLrnNo == null) {
+            throw new IllegalArgumentException("해당 주차 정보를 찾을 수 없습니다.");
+        }
+
+        String nextTaskNo = learningPageProfMapper.nextTaskNo();
+
+        TaskVO vo = new TaskVO();
+        vo.setTaskNo(nextTaskNo);
+        vo.setWeekAcctoLrnNo(weekAcctoLrnNo);
+        vo.setTaskSj(title);
+        vo.setTaskCn(content);
+        vo.setTaskBeginDe(beginDe);
+        vo.setTaskClosDe(closDe);
+
+        learningPageProfMapper.insertTask(vo);
+        createTaskPresentnForStudents(estbllctreCode, nextTaskNo);
+        return learningPageProfMapper.getTaskByNo(nextTaskNo);
+    }
+
+    public TaskVO updateTask(String estbllctreCode,
+                             String taskNo,
+                             String title,
+                             String content,
+                             String beginDe,
+                             String closDe,
+                             String week) {
+        TaskVO existing = learningPageProfMapper.getTaskByNo(taskNo);
+        if (existing == null) {
+            throw new IllegalStateException("수정할 과제를 찾을 수 없습니다.");
+        }
+
+        String weekAcctoLrnNo = learningPageProfMapper.findWeekAcctoLrnNo(estbllctreCode, week);
+        if (weekAcctoLrnNo == null) {
+            throw new IllegalArgumentException("해당 주차 정보를 찾을 수 없습니다.");
+        }
+
+        TaskVO vo = new TaskVO();
+        vo.setTaskNo(taskNo);
+        vo.setTaskSj(title);
+        vo.setTaskCn(content);
+        vo.setTaskBeginDe(beginDe);
+        vo.setTaskClosDe(closDe);
+        vo.setWeekAcctoLrnNo(weekAcctoLrnNo);
+
+        int affected = learningPageProfMapper.updateTask(estbllctreCode, vo);
+        if (affected <= 0) {
+            throw new IllegalStateException("수정할 과제를 찾을 수 없습니다.");
+        }
+        return learningPageProfMapper.getTaskByNo(taskNo);
+    }
+
+    @Transactional
+    public int deleteTask(String estbllctreCode, String taskNo) {
+        // 제출물이 있으면 함께 삭제
+        learningPageProfMapper.deleteTaskPresentnByTask(taskNo);
+        return learningPageProfMapper.deleteTask(estbllctreCode, taskNo);
+    }
+
+    public List<QuizVO> getQuizzes(String estbllctreCode) {
+        List<QuizVO> quizzes = learningPageProfMapper.selectQuiz(estbllctreCode);
+        fillQuizEx(quizzes);
+
+        return quizzes;
+    }
+
+    public List<QuizPresentnVO> getQuizPresentn(String estbllctreCode) {
+        return learningPageProfMapper.selectQuizPresentn(estbllctreCode);
+    }
+
+    public List<QuizPresentnVO> getQuizPresentnByQuiz(String estbllctreCode, String quizCode) {
+        return learningPageProfMapper.selectQuizPresentnByQuiz(estbllctreCode, quizCode);
+    }
+
+    @Transactional
+    public QuizVO createQuiz(String estbllctreCode,
+                             String week,
+                             String quesCn,
+                             String beginDe,
+                             String closDe,
+                             List<Map<String, Object>> exList) {
+        String weekAcctoLrnNo = learningPageProfMapper.findWeekAcctoLrnNo(estbllctreCode, week);
+        if (weekAcctoLrnNo == null) throw new IllegalArgumentException("해당 주차 정보를 찾을 수 없습니다.");
+        String nextQuizCode = learningPageProfMapper.nextQuizCode();
+
+        QuizVO vo = new QuizVO();
+        vo.setQuizCode(nextQuizCode);
+        vo.setWeekAcctoLrnNo(weekAcctoLrnNo);
+        vo.setQuesCn(quesCn);
+        vo.setQuizBeginDe(beginDe);
+        vo.setQuizClosDe(closDe);
+
+        learningPageProfMapper.insertQuiz(vo);
+        saveQuizExList(nextQuizCode, exList);
+        createQuizPresentnForStudents(estbllctreCode, nextQuizCode);
+
+        QuizVO created = learningPageProfMapper.getQuizByCode(nextQuizCode);
+        created.setQuizeExVOList(learningPageProfMapper.selectQuizExByQuiz(nextQuizCode));
+        return created;
+    }
+
+    public QuizVO updateQuiz(String estbllctreCode,
+                             String quizCode,
+                             String week,
+                             String quesCn,
+                             String beginDe,
+                             String closDe,
+                             List<Map<String, Object>> exList) {
+
+        String weekAcctoLrnNo = learningPageProfMapper.findWeekAcctoLrnNo(estbllctreCode, week);
+        if (weekAcctoLrnNo == null) throw new IllegalArgumentException("해당 주차 정보를 찾을 수 없습니다.");
+
+        QuizVO vo = new QuizVO();
+        vo.setQuizCode(quizCode);
+        vo.setWeekAcctoLrnNo(weekAcctoLrnNo);
+        vo.setQuesCn(quesCn);
+        vo.setQuizBeginDe(beginDe);
+        vo.setQuizClosDe(closDe);
+
+        int affected = learningPageProfMapper.updateQuiz(vo);
+        if (affected <= 0) throw new IllegalStateException("수정 대상 퀴즈가 없습니다.");
+
+        // 기존 제출 데이터의 보기 FK를 모두 해제한 후 보기 삭제
+        learningPageProfMapper.clearQuizPresentnExByQuiz(quizCode);
+        learningPageProfMapper.deleteQuizExByQuiz(quizCode);
+        saveQuizExList(quizCode, exList);
+
+        QuizVO updated = learningPageProfMapper.getQuizByCode(quizCode);
+        updated.setQuizeExVOList(learningPageProfMapper.selectQuizExByQuiz(quizCode));
+        return updated;
+
+    }
+
+    @Transactional
+    public int deleteQuiz(String estbllctreCode, String quizCode) {
+        learningPageProfMapper.deleteQuizPresentnByQuiz(quizCode);
+        return learningPageProfMapper.deleteQuiz(estbllctreCode, quizCode);
+    }
+
+    private void fillQuizEx(List<QuizVO> list) {
+        if (list == null) return;
+        for (QuizVO q : list) {
+            q.setQuizeExVOList(learningPageProfMapper.selectQuizExByQuiz(q.getQuizCode()));
+        }
+    }
+
+    private void saveQuizExList(String quizCode, List<Map<String, Object>> exList) {
+        if (exList == null) return;
+        for (Map<String, Object> ex : exList) {
+            QuizExVO exVO = new QuizExVO();
+            exVO.setQuizExCode(learningPageProfMapper.nextQuizExCode());
+            exVO.setQuizCode(quizCode);
+            exVO.setExNo(String.valueOf(Integer.parseInt(String.valueOf(ex.getOrDefault("exNo", "0")))));
+            exVO.setExCn(String.valueOf(ex.getOrDefault("exCn", "")));
+            exVO.setCnslAt(String.valueOf(ex.getOrDefault("cnslAt", "0")));
+            learningPageProfMapper.insertQuizEx(exVO);
+        }
+    }
+
+    public List<BbsVO> getBoardMeta(String estbllctreCode) {
+        return learningPageProfMapper.selectLectureBbs(estbllctreCode);
+    }
+
+    public List<BbsCttVO> getBoardList(String estbllctreCode, Integer bbsCode) {
+        return learningPageProfMapper.selectBoardList(estbllctreCode, bbsCode);
+    }
+
+    public BbsCttVO getBoardDetail(String estbllctreCode, Integer bbscttNo) {
+        return learningPageProfMapper.selectBoardDetail(estbllctreCode, bbscttNo);
+    }
+
+    public BbsCttVO createBoard(String estbllctreCode,
+                                String bbsNm,
+                                Integer bbsCode,
+                                String title,
+                                String content,
+                                String acntId) {
+        Integer resolvedCode = resolveBbsCode(estbllctreCode, bbsCode, bbsNm);
+        if (resolvedCode == null) {
+            throw new IllegalArgumentException("게시판 코드를 찾을 수 없습니다.");
+        }
+        Integer nextNo = learningPageProfMapper.nextBoardNo();
+
+        BbsCttVO vo = new BbsCttVO();
+        vo.setBbscttNo(nextNo);
+        vo.setBbsCode(resolvedCode);
+        vo.setBbscttSj(title);
+        vo.setBbscttCn(content);
+        vo.setAcntId(acntId);
+        vo.setBbscttRdcnt(0);
+        vo.setParntsBbscttNo(null);
+
+        learningPageProfMapper.insertBoard(vo);
+        return learningPageProfMapper.selectBoardDetail(estbllctreCode, nextNo);
+    }
+
+    public BbsCttVO updateBoard(String estbllctreCode,
+                                Integer bbscttNo,
+                                Integer bbsCode,
+                                String title,
+                                String content,
+                                String acntId) {
+        if (bbscttNo == null) {
+            throw new IllegalArgumentException("bbscttNo is required");
+        }
+        BbsCttVO existing = learningPageProfMapper.selectBoardDetail(estbllctreCode, bbscttNo);
+        if (existing == null) {
+            throw new IllegalStateException("게시글을 찾을 수 없습니다.");
+        }
+
+        Integer resolvedCode = resolveBbsCode(estbllctreCode, bbsCode, null);
+
+        BbsCttVO vo = new BbsCttVO();
+        vo.setBbscttNo(bbscttNo);
+        vo.setBbsCode(resolvedCode != null ? resolvedCode : existing.getBbsCode());
+        vo.setBbscttSj(title);
+        vo.setBbscttCn(content);
+        vo.setAcntId(acntId);
+
+        learningPageProfMapper.updateBoard(vo);
+        return learningPageProfMapper.selectBoardDetail(estbllctreCode, bbscttNo);
+    }
+
+    public int deleteBoard(String estbllctreCode, Integer bbscttNo) {
+        if (bbscttNo == null) {
+            throw new IllegalArgumentException("bbscttNo is required");
+        }
+        return learningPageProfMapper.deleteBoard(estbllctreCode, bbscttNo);
+    }
+
+    private Integer resolveBbsCode(String estbllctreCode, Integer bbsCode, String bbsNm) {
+        if (bbsCode != null) {
+            return bbsCode;
+        }
+        if (bbsNm != null) {
+            return learningPageProfMapper.findBbsCode(estbllctreCode, bbsNm);
+        }
+        return null;
+    }
+
+    public FileDetailVO getFileDetail(long fileGroupNo, long fileNo) {
+        return learningPageProfMapper.selectFileDetailByFileNo(fileGroupNo, fileNo);
+    }
+
+    public ResponseEntity<Resource> downloadFile(long fileGroupNo, long fileNo) throws FileNotFoundException {
+        FileDetailVO fileVO = getFileDetail(fileGroupNo, fileNo);
+        if (fileVO == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        String uploadRoot = beanController.getUploadFolder();
+        File file = new File(uploadRoot + fileVO.getFileStreplace().replace("/", File.separator));
+        if (!file.exists()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        String encodedName = URLEncoder.encode(fileVO.getFileNm(), StandardCharsets.UTF_8);
+        InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + encodedName + "\"")
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .contentLength(file.length())
+                .body(resource);
+    }
+
+    public Map<String, Object> getBoard(Map<String, Object> paramMap) {
+        Map<String, Object> resp = learningPageProfMapper.getBoard(paramMap);
+        Object codeObj = paramMap.get("code");
+        Object noObj = paramMap.get("no");
+        Integer bbsCode = codeObj != null ? Integer.parseInt(String.valueOf(codeObj)) : null;
+        Integer bbscttNo = noObj != null ? Integer.parseInt(String.valueOf(noObj)) : null;
+        if (bbscttNo != null) {
+            learningPageProfMapper.updateBoardReadCount(bbscttNo);
+        }
+        if (bbsCode == null && resp != null && resp.get("BBS_CODE") != null) {
+            bbsCode = Integer.parseInt(String.valueOf(resp.get("BBS_CODE")));
+        }
+        if (bbsCode != null && bbscttNo != null) {
+            Map<String, Object> prev = learningPageProfMapper.selectPrevBoard(bbsCode, bbscttNo);
+            Map<String, Object> next = learningPageProfMapper.selectNextBoard(bbsCode, bbscttNo);
+            resp.put("prevCtt", prev);
+            resp.put("nextCtt", next);
+        }
+        return resp;
+    }
+
+    private int parseSequence(String seq) {
+        try {
+            return Integer.parseInt(Optional.ofNullable(seq).orElse("0"));
+        } catch (NumberFormatException e) {
+            return 0;
+        }
+    }
+
+    private void createTaskPresentnForStudents(String estbllctreCode, String taskNo) {
+        List<String> students = learningPageProfMapper.selectLectureStudents(estbllctreCode);
+        if (students == null || students.isEmpty()) return;
+
+        int next = parseSequence(learningPageProfMapper.nextTaskPresentnNo());
+        if (next <= 0) next = 1;
+
+        for (String stdntNo : students) {
+            TaskPresentnVO presentnVO = new TaskPresentnVO();
+            presentnVO.setTaskPresentnNo(String.valueOf(next++));
+            presentnVO.setStdntNo(stdntNo);
+            presentnVO.setTaskNo(taskNo);
+            presentnVO.setPresentnAt("0");
+            learningPageProfMapper.insertTaskPresentn(presentnVO);
+        }
+    }
+
+    private void createQuizPresentnForStudents(String estbllctreCode, String quizCode) {
+        List<String> students = learningPageProfMapper.selectLectureStudents(estbllctreCode);
+        if (students == null || students.isEmpty()) return;
+
+        int next = parseSequence(learningPageProfMapper.nextQuizPresentnNo());
+        if (next <= 0) next = 1;
+
+        for (String stdntNo : students) {
+            QuizPresentnVO presentnVO = new QuizPresentnVO();
+            presentnVO.setQuizPresentnNo(String.valueOf(next++));
+            presentnVO.setStdntNo(stdntNo);
+            presentnVO.setQuizCode(quizCode);
+            presentnVO.setPresentnAt("0");
+            learningPageProfMapper.insertQuizPresentn(presentnVO);
+        }
+    }
+}

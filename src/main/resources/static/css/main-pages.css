@@ -1,0 +1,672 @@
+/* ==========================================================================
+ * main-portal.css
+     <link rel="stylesheet"
+          href="${pageContext.request.contextPath}/css/main-pages.css" />
+           
+ * 대덕대학교 메인 페이지 공통 스타일
+ *
+ * [역할]
+ *  - 로그인 전 메인 인덱스 페이지의 레이아웃, 타이포그래피, 컬러 시스템을 통합 관리
+ *  - Bootstrap 기본 스타일 위에 “대덕대학교 포털 전용” 레이어만 얹는 용도
+ *
+ * [구성 섹션 요약]
+ *  0. 컬러 토큰 및 공통 변수 정의
+ *     - :root 에 메인/보조 색, 텍스트 색, 히어로 오버레이 농도 등 전역 테마 변수 선언
+ *
+ *  1. 전역 리셋 + 가로 스크롤 제거
+ *     - box-sizing: border-box, html/body margin·padding 0, overflow-x: hidden 으로
+ *       브라우저 기본 여백 제거 + 가로 스크롤바 발생 원천 차단
+ *
+ *  2. 헤더(main-header) 고정 + gradient 오버레이
+ *     - position: fixed 상단 고정, 배경 이미지를 덮는 상단 그라디언트 바 구현
+ *     - .is-scrolled 클래스 토글 시 불투명 배경 + 그림자 적용(스크롤 이후 가독성 확보)
+ *
+ *  3. 헤더 로고/메뉴/우측 유틸 버튼
+ *     - 로고, 중앙 메뉴(nav-link), 우측 로그인/회원가입/학사포털 버튼을
+ *       pill 형태와 통일된 타이포로 정렬
+ *     - active 메뉴 하단 gradient bar, 학사포털 버튼은 메인 CTA 스타일
+ *
+ *  4. 히어로 섹션(배경 이미지 + 오버레이)
+ *     - 고정 헤더에 가리지 않도록 상단 padding 확보
+ *     - 캠퍼스 전경 이미지를 background 로 사용하고 어두운 오버레이로 텍스트 대비 확보
+ *     - 좌/우 2열 레이아웃의 컨테이너 역할(.hero-layout)
+ *
+ *  5. 히어로 텍스트 블록
+ *     - hero-kicker / hero-title / hero-desc 로 카피 계층 구조 정의
+ *     - 최대 폭 제한 + line-height 조정으로 긴 문장의 가독성 확보
+ *
+ *  6. 히어로 검색바 + 빠른 링크 버튼
+ *     - 반투명 pill 형태 검색바(.hero-search-wrap)와 메인 gradient 검색 버튼 정의
+ *     - 재학생/예비대학생/동문용 빠른 링크 pill 버튼 스타일 통일
+ *
+ *  7. 히어로 우측 비주얼 카드(슬라이드 자리)
+ *     - 고정 폭 카드(.hero-visual-card)와 내부 이미지, 슬라이드 메타/도트/이동 화살표 스타일
+ *     - 추후 실제 슬라이더 연동 시 그대로 재사용 가능한 프레임
+ *
+ *  8. 하단 안내 섹션(How-section: “포털 사용 방법” 4단 안내)
+ *     - 히어로와 대비되는 밝은 배경, 넉넉한 상하 padding 으로 독립 섹션 느낌
+ *     - 4단 grid 단계 카드(아이콘/제목/설명)로 사용 흐름 요약
+ *
+ *  9. 반응형 브레이크포인트
+ *     - 992px / 768px / 576px 구간에서
+ *       · 히어로 padding, 레이아웃(2열→1열) 조정
+ *       · 헤더 nav 숨김, 검색바 세로 스택, how-steps 4→2→1열 전환
+ *       · 모바일에서 헤더 유틸 버튼 크기 축소
+ *
+ * [설계 의도]
+ *  - “상단 고정 헤더 + 전경 이미지 히어로 + 하단 가이드 섹션” 구조를
+ *    하나의 CSS 파일에서 일관되게 관리해, 포트폴리오/실 서비스 양쪽에서 재사용 가능하도록 함
+ * ========================================================================== */
+
+/*=========================================================================== */
+
+/* 전역 색상 토큰 정의 – 테마 바꿀 때 여기만 수정 */
+:root {
+    --dd-primary: #3d5afe;
+    --dd-primary-soft: rgba(61, 90, 254, 0.12);
+    --dd-accent: #ff6b6b;
+    --dd-text-main: #1f2937;
+    --dd-text-sub: #6b7280;
+    --dd-hero-overlay-top: rgba(15, 23, 42, 0.7);
+    --dd-hero-overlay-bottom: rgba(15, 23, 42, 0.55);
+}
+
+/* 전역 박스 모델 통일 */
+* {
+    box-sizing: border-box;
+}
+
+/* html, body 기본 여백 제거 + 가로 스크롤 차단 */
+html,
+body {
+    margin: 0;
+    padding: 0;
+    max-width: 100%;
+    overflow-x: hidden; /* 가로 스크롤 제거 핵심 */
+}
+
+/* 전역 폰트 · 배경색 설정 */
+body {
+    font-family: "Pretendard", system-ui, -apple-system, BlinkMacSystemFont,
+        "Segoe UI", sans-serif;
+    color: var(--dd-text-main);
+    background-color: #f3f4f6;
+}
+
+/* 링크 기본 밑줄 제거, 색상은 부모 상속 */
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* 헤더 로고 텍스트 스타일 */
+.main-header .navbar-brand {
+    font-weight: 00;
+    font-size: 1.3rem;
+    letter-spacing: 0.02em;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #f9fafb;
+}
+
+/* 헤더 중앙 메뉴 기본 스타일 */
+.main-header .nav-link {
+    color: #e5e7eb;
+    font-weight: 500;
+    padding-inline: 1rem;
+}
+
+/* 활성 메뉴 강조 – 색상 + 하단 바 */
+.main-header .nav-link.active {
+    color: #ffffff;
+    position: relative;
+}
+
+/* 활성 메뉴 하단 그라디언트 라인 */
+.main-header .nav-link.active::after {
+    content: "";
+    position: absolute;
+    left: 0.6rem;
+    right: 0.6rem;
+    bottom: -0.35rem;
+    height: 2px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #fb7185, #4f46e5);
+}
+
+/* 헤더 우측 버튼 공통(부트스트랩 .btn 기반 튜닝) */
+.main-header .navbar-util .btn {
+    font-size: 0.875rem;
+    padding-inline: 1rem;
+    border-radius: 999px;
+}
+
+
+/* 로그인 버튼 기본 – 라인형 */
+.btn-outline-login {
+    border-color: rgba(248, 250, 252, 0.6);
+    color: #f9fafb;
+    background-color: transparent;
+}
+
+/* 로그인 버튼 hover – 배경 어둡게 */
+.btn-outline-login:hover {
+    background-color: rgba(15, 23, 42, 0.6);
+    border-color: transparent;
+}
+
+/* 소프트 버튼 (기타 상황용) */
+.btn-soft {
+    background-color: rgba(248, 250, 252, 0.12);
+    color: #f9fafb;
+    border: none;
+}
+
+.btn-soft:hover {
+    background-color: rgba(248, 250, 252, 0.22);
+    color: #ffffff;
+}
+
+/* 히어로 섹션 */
+/* 어두운 반투명 오버레이 + 백그라운드 이미지(배경 이미지는 JS에서 주입) */
+.hero-section {
+    position: relative;
+    min-height: 520px;
+    padding: 140px 0 120px; /* 고정 헤더 높이만큼 상단 여백 확보 */
+    color: #ffffff;
+    /* 기본 배경색만 남기고 background-image 제거 */
+    background-color: #0f172a;
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+}
+
+/* 히어로 내부 레이아웃 – 좌 텍스트 / 우 비주얼 */
+.hero-layout {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 3rem;
+}
+
+/* 히어로 텍스트 영역 박스 폭 제한 */
+.hero-copy {
+    flex: 1 1 380px;
+    max-width: 670px;
+}
+
+/* 상단 소제목(스마트 캠퍼스 통합 포털 등) */
+.hero-kicker {
+    font-size: 0.9rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #e5e7eb;
+    margin-bottom: 1rem;
+}
+
+/* 메인 타이틀 */
+.hero-title {
+    font-size: 2.4rem;
+    line-height: 1.3;
+    font-weight: 800;
+    margin-bottom: 0.9rem;
+}
+
+/* 설명 문단 */
+.hero-desc {
+    font-size: 0.98rem;
+    line-height: 1.7;
+    max-width: 32rem;
+    color: #e5e7eb;
+    margin-bottom: 2rem;
+}
+
+/* 히어로 검색바 래퍼 – pill 카드 형태 */
+.hero-search-wrap {
+    background-color: rgba(15, 23, 42, 0.7);
+    border-radius: 999px;
+    padding: 0.35rem;
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    max-width: 600px;
+    box-shadow: 0 18px 45px rgba(15, 23, 42, 0.4);
+}
+
+/* 검색 인풋 – 둥근 흰색 필드 */
+.hero-search-input {
+    flex: 1;
+    border-radius: 999px;
+    border: none;
+    padding: 0.8rem 0.9rem;
+    font-size: 0.80rem;
+    outline: none;
+    font-weight: 400;
+    background-color: #f9fafb;
+    color: #111827;
+}
+
+.hero-search-input::placeholder {
+    color: #9ca3af;
+}
+
+/* 검색 버튼 – 메인 그라디언트 CTA */
+.hero-search-btn {
+    border-radius: 999px;
+    border: none;
+    padding: 0.8rem 0.9rem;
+    font-size: 0.98rem;
+    font-weight: 700;
+    background: linear-gradient(90deg, #6366f1, #3b82f6);
+    color: #ffffff;
+    white-space: nowrap;
+}
+
+.hero-search-btn:hover {
+    filter: brightness(1.05);
+}
+
+/* 히어로 하단 빠른 링크 버튼 묶음 */
+.hero-quick-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1rem;
+}
+
+.hero-quick-links .btn {
+    border-radius: 999px;
+    font-size: 0.86rem;
+    padding: 0.45rem 0.95rem;
+    border: none;
+    background-color: rgba(15, 23, 42, 0.75);
+    color: #e5e7eb;
+}
+
+.hero-quick-links .btn:hover {
+    background-color: rgba(15, 23, 42, 0.95);
+    color: #ffffff;
+}
+
+/* 히어로 우측 비주얼 영역 (슬라이드 자리) */
+.hero-visual {
+    flex: 0 0 360px;
+    max-width: 380px;
+}
+
+/* 비주얼 카드 – 둥근 모서리 + 그림자 */
+.hero-visual-card {
+    position: relative;
+    border-radius: 1.25rem;
+    overflow: hidden;
+    background-color: rgba(15, 23, 42, 0.75);
+    box-shadow: 0 22px 60px rgba(15, 23, 42, 0.7);
+}
+
+/* 카드 안 메인 이미지 */
+.hero-visual-card img {
+    display: block;
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    filter: brightness(1.02);
+}
+
+/* 카드 하단 메타 정보 라인 */
+.hero-visual-meta {
+    padding: 0.9rem 1.1rem 1.1rem;
+    font-size: 0.82rem;
+    color: #e5e7eb;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* 슬라이드 인디케이터 점들 */
+.hero-visual-dots {
+    display: flex;
+    gap: 0.35rem;
+}
+
+.hero-visual-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 999px;
+    background-color: rgba(249, 250, 251, 0.35);
+}
+
+.hero-visual-dot.is-active {
+    background-color: #f97316;
+    width: 14px;
+}
+
+/* 슬라이드 전후 이동 화살표 버튼 */
+.hero-visual-arrows {
+    position: absolute;
+    right: 0.75rem;
+    bottom: 1rem;
+    display: flex;
+    gap: 0.35rem;
+}
+
+.hero-visual-arrows button {
+    width: 30px;
+    height: 30px;
+    border-radius: 999px;
+    border: none;
+    background-color: rgba(15, 23, 42, 0.78);
+    color: #e5e7eb;
+    font-size: 0.8rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.hero-visual-arrows button:hover {
+    background-color: rgba(15, 23, 42, 0.98);
+}
+
+.how-section h2 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 0.6rem;
+    color: #111827;
+}
+
+.how-section p.lead {
+    font-size: 0.96rem;
+    color: var(--dd-text-sub);
+    text-align: center;
+    max-width: 640px;
+    margin: 0 auto 2.5rem;
+}
+
+/* 4단 그리드 단계 안내 */
+.how-steps {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 2rem;
+    max-width: 960px;
+    margin: 0 auto;
+}
+
+.how-step {
+    text-align: center;
+}
+
+.how-step-icon {
+    width: 46px;
+    height: 46px;
+    border-radius: 999px;
+    margin: 0 auto 0.75rem;
+    background-color: rgba(59, 130, 246, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+}
+
+.how-step-title {
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+    font-size: 0.95rem;
+}
+
+.how-step-text {
+    font-size: 0.86rem;
+    color: var(--dd-text-sub);
+    line-height: 1.6;
+}
+
+/* 992px 이하 – 히어로 패딩/레이아웃 조정 */
+@media (max-width: 991.98px) {
+    .hero-section {
+        padding: 120px 0 70px;
+    }
+
+    .hero-layout {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .hero-title {
+        font-size: 0.9rem;
+    }
+
+    .hero-visual {
+        width: 100%;
+        max-width: 420px;
+    }
+}
+
+/* 768px 이하 – 메뉴 숨김 + 검색바/그리드 재배치 */
+@media (max-width: 767.98px) {
+    .main-header .nav {
+        display: none;
+    }
+
+    .navbar-util {
+        gap: 0.4rem;
+    }
+
+    .hero-search-wrap {
+        flex-direction: column;
+        align-items: stretch;
+        border-radius: 1.25rem;
+    }
+
+    .hero-search-btn {
+        width: 100%;
+        text-align: center;
+    }
+
+    .how-steps {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        row-gap: 1.6rem;
+    }
+}
+
+/* 576px 이하 – 완전 1단 그리드 및 버튼 축소 */
+@media (max-width: 575.98px) {
+    .how-steps {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+/* 로그인: 라인형 기본 스타일 재정의 */
+.btn-outline-login {
+    border: 1.1px solid rgba(248, 250, 252, 0.65);
+    color: #f9fafb;
+    background-color: transparent;
+}
+
+.btn-outline-login:hover {
+    background-color: rgba(15, 23, 42, 0.75);
+    border-color: transparent;
+}
+
+/* 회원가입: 옅은 배경 버튼 */
+.btn-outline-signup {
+    border: 1.1px solid transparent;
+    background-color: rgba(248, 250, 252, 0.12);
+    color: #f9fafb;
+}
+
+.btn-outline-signup:hover {
+    background-color: rgba(248, 250, 252, 0.22);
+    color: #ffffff;
+}
+
+/* 학사포털: 메인 CTA 버튼 */
+.btn-portal {
+    border: none;
+    background: linear-gradient(90deg, #6366f1, #3b82f6);
+    color: #ffffff;
+    box-shadow: 0 8px 18px rgba(37, 99, 235, 0.45);
+}
+
+.btn-portal:hover {
+    filter: brightness(1.05);
+}
+
+/* 모바일에서 헤더 버튼 크기 축소 */
+@media (max-width: 575.98px) {
+    .navbar-util .navbar-util-btn {
+        padding: 0.4rem 0.9rem;
+        font-size: 0.85rem;
+    }
+}
+
+/* 헤더 우측 버튼 상세 튜닝 */
+.navbar-util .navbar-util-btn {
+    border-radius: 999px;
+    padding: 0.45rem 1.35rem;
+    font-size: 0.88rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    line-height: 1.4;
+    transition:
+        background-color 0.15s ease,
+        border-color 0.15s ease,
+        color 0.15s ease,
+        box-shadow 0.15s ease,
+        transform 0.1s ease;
+}
+
+/* 헤더 로그인 버튼 – 어두운 반투명 배경 + 테두리 */
+.navbar-util .btn-outline-login {
+    background-color: rgba(15, 23, 42, 0.45);
+    border: 1px solid rgba(148, 163, 184, 0.7);
+    color: #e5e7eb;
+}
+
+.navbar-util .btn-outline-login:hover,
+.navbar-util .btn-outline-login:focus {
+    background-color: rgba(15, 23, 42, 0.95);
+    border-color: rgba(248, 250, 252, 0.9);
+    color: #ffffff;
+    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.65);
+    transform: translateY(-1px);
+}
+
+/* 헤더 회원가입 버튼 – 살짝 밝은 톤 */
+.navbar-util .btn-outline-signup {
+    background-color: rgba(15, 23, 42, 0.25);
+    border: 1px solid rgba(148, 163, 184, 0.7);
+    color: #e5e7eb;
+}
+
+.navbar-util .btn-outline-signup:hover,
+.navbar-util .btn-outline-signup:focus {
+    background-color: rgba(248, 250, 252, 0.15);
+    border-color: rgba(248, 250, 252, 0.9);
+    color: #ffffff;
+    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.55);
+    transform: translateY(-1px);
+}
+
+/* 헤더 학사포털 버튼 – 메인 포인트 색 + 강한 그림자 */
+.navbar-util .btn-portal {
+    background: linear-gradient(90deg, #2563eb, #4f46e5);
+    border: none;
+    color: #ffffff;
+    box-shadow: 0 10px 22px rgba(37, 99, 235, 0.55);
+}
+
+.navbar-util .btn-portal:hover,
+.navbar-util .btn-portal:focus {
+    filter: brightness(1.05);
+    color: #ffffff;
+    box-shadow: 0 12px 26px rgba(37, 99, 235, 0.7);
+    transform: translateY(-1px);
+}
+
+/* 부트스트랩 기본 outline-hover 밑줄 제거 */
+.navbar-util .btn-outline-login:hover,
+.navbar-util .btn-outline-signup:hover {
+    text-decoration: none;
+}
+
+/* 고정 헤더 최종 정의 – 상단 그라디언트 + 스크롤 시 전환 대비용 */
+header.main-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background: linear-gradient(
+        to bottom,
+        rgba(15, 23, 42, 0.60),
+        rgba(15, 23, 42, 0)
+    );
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* 스크롤 후: 완전 어두운 바 + 그림자 */
+header.main-header.is-scrolled {
+    background: rgba(15, 23, 42, 0.96);
+    box-shadow: 0 2px 10px rgba(15, 23, 42, 0.6);
+}
+
+/* 히어로/하단 섹션 상하 여백 재조정(최종값) */
+.hero-section {
+    padding-top: 180px;   /* 헤더 + 여유 공간 */
+    padding-bottom: 160px;
+}
+
+.how-section {
+    padding-top: 100px;
+    padding-bottom: 120px;
+}
+
+/* 히어로 내부 요소 간 세부 간격 */
+.hero-kicker {
+    margin-bottom: 2rem;
+}
+
+.hero-title {
+    margin-bottom: 2rem;
+}
+
+.hero-desc {
+    margin-bottom: 3rem;
+}
+
+.hero-search-wrap {
+    margin-bottom: 2rem;
+}
+
+.hero-quick-links {
+    margin-top: 1.6rem;
+}
+
+/* 헤더 중앙 메뉴 폰트 사이즈 상향 */
+.main-header .nav-link {
+    font-size: 1.16rem;
+}
+
+/* 헤더 위아래 패딩 – 전체 높이 조정 */
+.main-header {
+    padding-top: 0.60rem;
+    padding-bottom: 0.60rem;
+}
+
+/* 고정 헤더 높이만큼 상단 여백 주는 공통 클래스 */
+.main-content-with-header {
+    padding-top: 220px;   /* 헤더 높이(대략 80~100) + 여유 간격 */
+    padding-bottom: 180px; /* 푸터랑도 약간 띄우기 */
+}
+
+.news-section.py-5,
+.section-main-bbs,
+.section-main-events,
+#research-section.section.py-5 {
+    padding-top: 2.3rem !important;   /* 기존 3rem → 2.5rem 같은 느낌으로 조절 */
+    padding-bottom: 2.5rem !important;
+}

@@ -1,0 +1,117 @@
+!HELP.md
+!README.md
+target/
+!.mvn/
+!.mvn/wrapper/
+!.mvn/wrapper/maven-wrapper.jar
+!mvnw
+!mvnw.cmd
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+# IntelliJ build cache
+out/
+# Eclipse workspace metadata
+bin/
+
+# Spring Boot 실행 로그
+logs/
+*.log
+*.hprof
+# H2 DB 파일
+*.db
+*.mv.db
+*.trace.db
+
+# 빌드 결과물
+*.jar
+*.war
+*.ear
+
+### --- OS / Misc ---
+.DS_Store
+Thumbs.db
+.zip
+
+### --- Web Assets (선택) ---
+uploads/
+upload/
+files/
+storage/
+tmp/
+temp/
+
+### --- Security & Environment ---
+# 환경변수 파일 (필요 시 샘플은 커밋: .env.example)
+.env
+.env.*
+!.env.example
+
+
+# Keystore / TLS / JWT keys
+*.jks
+*.p12
+*.pfx
+*.keystore
+*.pem
+*.key
+*.crt
+
+# Oracle wallet & client artifacts (로컬 접속용은 무조건 제외)
+wallet/
+**/wallet/**
+tnsnames.ora
+sqlnet.ora
+
+### --- Framework-specific (선별) ---
+# Bootstrap 테마를 산출물로 가져오지 않을 때만 제외
+adminlte/
+sbadmin/
+
+### --- Never ignore (중요 소스 리소스) ---
+# MyBatis 매퍼/XML, SQL 스크립트, 템플릿은 커밋 필수
+!src/main/resources/**/*.xml
+!src/main/resources/**/*.sql
+!src/main/resources/**/*.dtd
+!src/main/webapp/WEB-INF/**/*.jsp
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### VS Code ###
+.vscode/
+/.metadata/
+
+### velzon ###
+/src/main/resources/static/assets/**
+!/src/main/resources/static/assets/
+!/src/main/resources/static/assets/css/
+!/src/main/resources/static/assets/css/custom*
+!/src/main/resources/static/assets/js
+!/src/main/resources/static/assets/js/*.js
+!/src/main/resources/static/assets/json/
+!/src/main/resources/static/assets/json/**
+!/src/main/resources/static/assets/lang/
+!/src/main/resources/static/assets/lang/**

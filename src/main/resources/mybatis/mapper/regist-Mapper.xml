@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.ac.collage_api.regist.mapper.RegistMapper">
+
+ <select id="selectRegisterList" parameterType="map" resultType="kr.ac.collage_api.regist.vo.RegisterVO">
+    SELECT 
+      REG_NO, STU_ID, YEAR, SEMESTER, PAY_AMOUNT, PAY_STATUS,
+      TO_CHAR(REG_DATE, 'YYYY-MM-DD') AS REG_DATE
+    FROM REGISTER
+    WHERE STU_ID = #{stuId}
+    <if test="year != null and year != ''">
+      AND YEAR = #{year}
+    </if>
+    <if test="semester != null and semester != ''">
+      AND SEMESTER = #{semester}
+    </if>
+    ORDER BY YEAR DESC, SEMESTER DESC
+  </select>
+
+</mapper>

@@ -1,0 +1,354 @@
+/* =======================================================================
+ * schedule.css
+ * 학사 일정(calendar.jsp) + 강의 시간표(timetable.jsp) 공통 스타일
+ *
+ * 설계 목적
+ *  1. 두 화면 레이아웃, 폰트, 색상, 툴팁, 로딩 오버레이를 일관화
+ *  2. FullCalendar 헤더 및 버튼 크기 최적화 (과도하게 크거나 들쭉날쭉한 UI 제거)
+ *  3. 타입별 색상, 범례(legend) 스타일을 단일 정의로 관리
+ *  4. JSP 내 inline style 제거를 전제로 함
+ *  5. 상단 일자/날짜 링크의 파란색·밑줄 기본 스타일 제거
+ * ======================================================================= */
+
+/* 공통 컨테이너 카드
+ * - 학사 일정, 강의 시간표 모두 카드형 박스 레이아웃 사용
+ */
+
+#calendar,
+#timetable {
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+
+/* -----------------------------------------------------------------------
+ * 2. FullCalendar 헤더 / 버튼 + 링크 기본 스타일 정리
+ *    - 목표: compact + 일관된 크기
+ *    - 브라우저 기본 파란 텍스트/밑줄 제거
+ * ----------------------------------------------------------------------- */
+
+.fc .fc-toolbar {
+    gap: 8px;
+}
+
+.fc .fc-toolbar-title {
+    font-size: 25px;
+    font-weight: 1000;
+}
+
+/* 공통 버튼 사이즈 및 형태 */
+.fc .fc-button {
+    padding: 5px 10px;
+    height: 30px;
+    line-height: 1.2;
+    font-size: 15px;
+    font-weight: 1000;
+    border-radius: 8px;
+    box-shadow: none;
+}
+
+/* 기본(primary) 버튼 색상 */
+.fc .fc-button-primary {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+    color: #ffffff;
+}
+
+.fc .fc-button-primary:hover {
+    background-color: #0b5ed7;
+    border-color: #0b5ed7;
+}
+
+.fc .fc-button-primary:disabled {
+    background-color: #cfd4da;
+    border-color: #cfd4da;
+    color: #6c757d;
+}
+
+/* view 전환 탭 느낌 정리 */
+.fc .fc-button-group .fc-button {
+    min-width: 52px;
+}
+
+/* today 버튼만 살짝 강조 */
+.fc .fc-today-button {
+    font-weight: 600;
+}
+
+/* 상단 일자/날짜 링크 공통 스타일
+ * - 학기별 시간표 상단 네비게이션, FullCalendar 일자 숫자 등
+ * - 파란색/밑줄 제거, 주변 텍스트 색상 상속
+ */
+.calendar-container a,
+.timetable-container a,
+.fc a,
+.fc .fc-daygrid-day-number {
+    color: inherit;
+    text-decoration: none;
+}
+
+/* 필요 시 hover에만 미세 강조를 줄 경우 아래 주석 해제
+ * (기본 요구사항은 밑줄 제거이므로 현재는 비활성)
+ */
+/*
+.calendar-container a:hover,
+.timetable-container a:hover,
+.fc a:hover,
+.fc .fc-daygrid-day-number:hover {
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+*/
+
+
+/* -----------------------------------------------------------------------
+ * 3. Legend (타입 토글)
+ *    - calendar.jsp 에서 일정 타입별 on/off 토글 영역
+ * ----------------------------------------------------------------------- */
+
+.legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 10px;
+    font-size: 13px;
+}
+
+.legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.legend-color {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+/* legend 비활성 상태 시 시각적 약화 */
+.legend-item.disabled {
+    opacity: 0.35;
+}
+
+
+/* -----------------------------------------------------------------------
+ * 4. 타입별 색상 (FullCalendar event.classNames 와 연동)
+ *    - 서버/JS에서 classNames: ["type-" + TYPE] 로 부여하는 것을 전제로 함
+ * ----------------------------------------------------------------------- */
+
+/* 공통 팔레트 (한 군데만 값 정의) */
+:root {
+    --color-task:         #f57c00;
+    --color-project:      #7b1fa2;
+    --color-counsel:      #388e3c;
+    --color-counsel-slot: #388e3c;
+    --color-enroll-req:   #0288d1;
+    --color-admin-cert:   #455a64;
+    --color-admin-status: #5d4037;
+    --color-admin-grad:   #6d4c41;
+    --color-admin-regist: #00796b;
+    --color-system:       #512da8;
+    --color-holiday:      #e53935;
+}
+
+/* 4-1. Legend (점 표시) */
+.legend-color.type-TASK         { background-color: var(--color-task); }
+.legend-color.type-PROJECT      { background-color: var(--color-project); }
+.legend-color.type-COUNSEL      { background-color: var(--color-counsel); }
+.legend-color.type-COUNSEL_SLOT { background-color: var(--color-counsel-slot); }
+.legend-color.type-ENROLL_REQ   { background-color: var(--color-enroll-req); }
+.legend-color.type-ADMIN_CERT   { background-color: var(--color-admin-cert); }
+.legend-color.type-ADMIN_STATUS { background-color: var(--color-admin-status); }
+.legend-color.type-ADMIN_GRAD   { background-color: var(--color-admin-grad); }
+.legend-color.type-ADMIN_REGIST { background-color: var(--color-admin-regist); }
+.legend-color.type-SYSTEM       { background-color: var(--color-system); }
+.legend-color.type-HOLIDAY      { background-color: var(--color-holiday); }
+
+/* 4-2. Calendar Events (month/week/day/list 공통)
+ *      - FullCalendar 기본 색(#3788d8)을 완전히 덮어쓴다.
+ *      - .fc-event-main까지 같이 지정해서 글자/배경 일관 보장.
+ */
+
+/* 과제 */
+.fc-event.type-TASK,
+.fc-event.type-TASK .fc-event-main,
+.fc-list-event.type-TASK td {
+    background-color: var(--color-task);
+    border-color: var(--color-task);
+    color: #ffffff;
+}
+
+/* 팀프로젝트 */
+.fc-event.type-PROJECT,
+.fc-event.type-PROJECT .fc-event-main,
+.fc-list-event.type-PROJECT td {
+    background-color: var(--color-project);
+    border-color: var(--color-project);
+    color: #ffffff;
+}
+
+/* 상담 */
+.fc-event.type-COUNSEL,
+.fc-event.type-COUNSEL .fc-event-main,
+.fc-list-event.type-COUNSEL td {
+    background-color: var(--color-counsel);
+    border-color: var(--color-counsel);
+    color: #ffffff;
+}
+
+/* 상담 가능 */
+.fc-event.type-COUNSEL_SLOT,
+.fc-event.type-COUNSEL_SLOT .fc-event-main,
+.fc-list-event.type-COUNSEL_SLOT td {
+    background-color: var(--color-counsel-slot);
+    border-color: var(--color-counsel-slot);
+    color: #ffffff;
+}
+
+/* 수강신청 */
+.fc-event.type-ENROLL_REQ,
+.fc-event.type-ENROLL_REQ .fc-event-main,
+.fc-list-event.type-ENROLL_REQ td {
+    background-color: var(--color-enroll-req);
+    border-color: var(--color-enroll-req);
+    color: #ffffff;
+}
+
+/* 행정 (증명서/학적/졸업/등록) */
+.fc-event.type-ADMIN_CERT,
+.fc-event.type-ADMIN_CERT .fc-event-main,
+.fc-list-event.type-ADMIN_CERT td,
+.fc-event.type-ADMIN_STATUS,
+.fc-event.type-ADMIN_STATUS .fc-event-main,
+.fc-list-event.type-ADMIN_STATUS td,
+.fc-event.type-ADMIN_GRAD,
+.fc-event.type-ADMIN_GRAD .fc-event-main,
+.fc-list-event.type-ADMIN_GRAD td,
+.fc-event.type-ADMIN_REGIST,
+.fc-event.type-ADMIN_REGIST .fc-event-main,
+.fc-list-event.type-ADMIN_REGIST td {
+    background-color: var(--color-admin-regist);
+    border-color: var(--color-admin-regist);
+    color: #ffffff;
+}
+
+/* 시스템 공지 */
+.fc-event.type-SYSTEM,
+.fc-event.type-SYSTEM .fc-event-main,
+.fc-list-event.type-SYSTEM td {
+    background-color: var(--color-system);
+    border-color: var(--color-system);
+    color: #ffffff;
+}
+
+/* 공휴일 */
+.fc-event.type-HOLIDAY,
+.fc-event.type-HOLIDAY .fc-event-main,
+.fc-list-event.type-HOLIDAY td {
+    background-color: var(--color-holiday);
+    border-color: var(--color-holiday);
+    color: #ffffff;
+}
+
+
+/* -----------------------------------------------------------------------
+ * 5. 공통 로딩 오버레이
+ *    - 캘린더 데이터 비동기 로딩 시 영역 잠금/상태 표시
+ * ----------------------------------------------------------------------- */
+
+.calendar-loading {
+    position: absolute;
+    inset: 56px 20px 20px 20px;
+    background-color: rgba(255, 255, 255, 0.75);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: #666666;
+    border-radius: 8px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease-in-out;
+}
+
+.calendar-loading.visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+
+/* -----------------------------------------------------------------------
+ * 6. 공통 이벤트 툴팁
+ *    - hover / click(sticky) 공용 구조
+ *    - 실제 내용은 JS에서 innerHTML로 주입
+ * ----------------------------------------------------------------------- */
+
+.event-tooltip {
+    position: fixed;
+    z-index: 10000;
+    pointer-events: none;
+    background-color: #ffffff;
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-size: 12px;
+    line-height: 1.5;
+    color: #333333;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    border: 1px solid #eeeeee;
+    max-width: 260px;
+    display: none;
+    white-space: normal;
+}
+
+.event-tooltip .label {
+    font-weight: 600;
+    margin-right: 4px;
+}
+
+/* click 고정 모드 */
+.event-tooltip.sticky {
+    position: absolute;
+    pointer-events: auto;
+}
+
+.event-tooltip-close {
+    float: right;
+    cursor: pointer;
+    font-size: 12px;
+    color: #999999;
+}
+
+
+/* -----------------------------------------------------------------------
+ * 7. 강의 시간표(timetable.jsp) 전용
+ * ----------------------------------------------------------------------- */
+
+/* 강의 이벤트 텍스트 기본 값
+ * - 배경색은 JS에서 과목별로 주입
+ * - 여기서는 글자색, 크기만 관리
+ */
+.lecture-event {
+    font-size: 11px;
+    color: #ffffff;
+}
+
+/* 현재 시각(nowIndicator) 강조 */
+.fc-timegrid-now-indicator-line {
+    border-top-width: 3px !important;
+    border-color: #ff1744 !important;
+    box-shadow: 0 0 6px rgba(255, 23, 68, 0.9);
+    z-index: 30;
+}
+
+.fc-timegrid-now-indicator-arrow {
+    border-color: #ff1744 !important;
+}
+
+/* 오늘 열 배경 강조 (주간 시간표 가시성 개선) */
+.fc-timegrid-col.fc-day-today,
+.fc-timegrid-col.fc-day-today .fc-timegrid-col-frame {
+    background-color: #fffde7;
+}
