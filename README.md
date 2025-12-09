@@ -29,8 +29,9 @@ Spring Boot 3.5 / Java 21 기반의 대학 포털형 웹 애플리케이션입�
 - Gemini API Key 필수, Kakao Pay Key(결제 모의 흐름용)
 
 ## 설정
-기본 설정은 `src/main/resources/application.properties`에 있습니다. 실제 비밀값은 로컬에서만 오버라이드하고 VCS에 올리지 마세요. 예시:
+기본 설정은 `src/main/resources/application.properties`에 있습니다.
 
+예시:
 ```properties
 server.port=8085
 spring.datasource.url=jdbc:oracle:thin:@host:port/service

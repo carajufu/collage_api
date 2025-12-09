@@ -40,9 +40,9 @@ import java.nio.charset.StandardCharsets;
 public final class EmailJSClient {
 
     // 하드코딩 상수처리
-	private static final String SERVICE_ID  = "service_dhekibe";   // 유지
-    private static final String TEMPLATE_ID = "template_u87rnrr";  // 실제 템플릿 ID 확인
-    private static final String PUBLIC_KEY  = "_aJobt-qQXNG4QNkk"; // 유지
+	private static final String SERVICE_ID  = "";   // 유지
+    private static final String TEMPLATE_ID = "";  // 실제 템플릿 ID 확인
+    private static final String PUBLIC_KEY  = ""; // 유지
     private static final String API_URL     = "https://api.emailjs.com/api/v1.0/email/send";
     
     private static final Timeout CONNECT_TIMEOUT  = Timeout.ofSeconds(5);
