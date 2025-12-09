@@ -47,6 +47,16 @@ kakao.admin-key=YOUR_KAKAO_ADMIN_KEY
 
 권장: `application-local.properties`로 복사하거나 환경 변수를 사용하고, `--spring.profiles.active=local`로 실행하세요.
 
+## 민감정보/로컬 설정 복원
+민감정보는 모두 공백/대체 문구로 마스킹되어 있으니 실제 배포 전에 아래 항목을 채워주세요.
+- `src/main/resources/application.properties`: `spring.datasource.url`, `spring.datasource.username`, `spring.datasource.password`를 실제 Oracle 접속 정보로 변경
+- `src/main/resources/application.properties`: `kakao.admin-key`를 발급 키로 교체하고, 필요 시 `kakao.cid`와 리다이렉트 URL을 운영 도메인에 맞게 수정
+- Gemini 사용 시 같은 파일(또는 `application-local.properties`)에 `gemini.api.key`와 필요하면 `gemini.api.model`·`gemini.api.url` 값을 설정
+- 이메일 인증(EmailJS) 사용 시 `EmailJSClient`의 `SERVICE_ID`, `TEMPLATE_ID`, `PUBLIC_KEY`를 실제 값으로 교체
+- 공공데이터 포털(특일 정보) 사용 시 `SpcdeHolidayServiceImpl`의 `serviceKey`를 발급받은 키로 교체
+- Gemini 연동 로직은 현재 `ChatBotServiceImpl`, `CompetencyServiceImpl`에서 주석 처리되어 있으니, 사용 시 주석 해제 후 키를 주입(`@Value`)하거나 설정 파일에 추가
+비밀 값은 가급적 `application-local.properties`로 분리해 Git에 커밋하지 않도록 관리하세요.
+
 ## 실행
 프로젝트 루트(`collage_api`)에서 Maven Wrapper로 실행:
 
