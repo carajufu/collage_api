@@ -1,7 +1,7 @@
-# 프로젝트 소개
+# 📢 프로젝트 소개
 - 본 프로젝트는 <strong>(재)대덕인재개발원 [K-Digital Training] 전자정부 프레임워크 & React(AWS) 기반 풀-스택 개발자 양성과정 (9기)</strong>에서 수행된 최종 팀 프로젝트 결과물입니다.
 
-# 팀 구성원
+# 📮 팀 구성원
 - [carjufu](https://github.com/carajufu)
 - [shk-log](https://github.com/shk-log)
 - [bellrain21](https://github.com/bellrain21)
