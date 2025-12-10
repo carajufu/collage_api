@@ -22,6 +22,28 @@ Spring Boot 3.5 / Java 21 기반의 대학 포털형 웹 애플리케이션입�
 - `src/main/webapp/WEB-INF/views` - JSP 뷰(`header.jsp`, `footer.jsp`, `template.jsp` 및 기능별 폴더)
 - `src/test/java/kr/ac/collage_api` - Spring Boot 테스트
 
+## 관리자용 React 대시보드
+
+본 프로젝트는 전체 학사 포털의 **백엔드 API 서버 및 JSP 기반 사용자 화면(학생/교수용)** 을 제공하며,  
+**학사행정 관리자 기능**은 별도의 React 기반 관리자 대시보드 프로젝트에서 제공합니다.
+
+관리자용 프론트엔드 코드는 아래 저장소에서 확인하실 수 있습니다.
+
+- Collage React (학사행정 관리자): https://github.com/carajufu/collage_react  
+
+해당 React 프로젝트는 다음과 같은 관리자 업무 화면을 포함합니다.
+
+- 홈 대시보드: 재학생/개설 강좌/재직 교수 수 카드, 학과·학적 상태 통계 차트(Recharts 기반)
+- 학적/계정/학위 관리: ag-Grid 및 MUI DataGrid를 활용한 신청·계정·학위 조회/등록/수정
+- 단과대·학과·전공 관리: 트리 기반 구조 탐색 및 상세 정보 관리
+- 등록/장학 관리: 등록금 고지/납부 내역, 장학금 및 환급 관리
+- 수강/강의 관리: 개설 강의 조회, 신규 강의 개설 및 편집
+- 게시판·상담·캘린더: 공지/상담 통계, 학사 일정 캘린더(FullCalendar 기반)
+
+실행 방법, 상세 기술 스택(React 19, Vite, MUI 7, React Router v7 등)과  
+백엔드 연동 정보(`http://localhost:8085` API 기준)는  
+위 React 저장소의 README를 참고해 주세요.
+
 ## 선행 조건
 - JDK 21 설치 및 `JAVA_HOME` 설정
 - Maven 3.9+ (또는 제공된 Maven Wrapper)
