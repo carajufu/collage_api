@@ -1,3 +1,16 @@
+# 프로젝트 소개
+- 본 프로젝트는 <strong>(재)대덕인재개발원 [K-Digital Training] 전자정부 프레임워크 & React(AWS) 기반 풀-스택 개발자 양성과정 (9기)</strong>에서 수행된 최종 팀 프로젝트 결과물입니다.
+
+# 팀 구성원
+- [carjufu](https://github.com/carjufu)
+- [shk-log](https://github.com/shk-log)
+- [bellrain21](https://github.com/bellrain21)
+- [momong315](https://github.com/momong315)
+- [mingkong-cloud](https://github.com/mingkong-cloud)
+- [Hasxxd](https://github.com/Hasxxd)
+- [xloor99](https://github.com/xloor99)
+
+
 # Collage API
 
 Spring Boot 3.5 / Java 21 기반의 대학 포털형 웹 애플리케이션입니다. 계정 관리, 수강 신청, 성적, 졸업 요건, 증명서 발급, 상담, 대시보드, 학습 도구, Gemini 기반 챗봇, JSP UI를 제공하며 Oracle DB와 MyBatis(XML 매퍼)로 연동됩니다.
